@@ -44,6 +44,7 @@ kotlin {
             implementation(libs.sql.delight.android.driver)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.android)
+            implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
             implementation(project.dependencies.platform(libs.koin.bom))
@@ -61,6 +62,7 @@ kotlin {
             implementation(libs.lifecycle.viewmodel)
             implementation(libs.lifecycle.runtime)
             implementation(libs.androidx.navigation)
+            implementation(libs.paging)
             api(libs.moko.resources)
         }
         commonTest.dependencies {
@@ -68,6 +70,8 @@ kotlin {
         }
         iosMain.dependencies {
             implementation(libs.sql.delight.native.driver)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.ktor.client.darwin)
         }
     }
 }
@@ -100,6 +104,7 @@ multiplatformResources {
 sqldelight {
     databases {
         create("RustHubDatabase") {
+            dialect(libs.sqldelight.dialect.sqlite)
             packageName.set("pl.cuyer.rusthub.database")
         }
         linkSqlite.set(true)

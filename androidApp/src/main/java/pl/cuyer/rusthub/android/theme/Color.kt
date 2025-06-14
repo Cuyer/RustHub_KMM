@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.android.ui.theme
+package pl.cuyer.rusthub.android.theme
 import androidx.compose.ui.graphics.Color
 import pl.cuyer.rusthub.presentation.ui.Colors.BACKGROUND_DARK
 import pl.cuyer.rusthub.presentation.ui.Colors.BACKGROUND_LIGHT

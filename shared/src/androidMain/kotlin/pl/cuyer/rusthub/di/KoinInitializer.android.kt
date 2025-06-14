@@ -5,7 +5,9 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.dsl.module
 import pl.cuyer.rusthub.data.local.DatabaseDriverFactory
+import pl.cuyer.rusthub.data.network.HttpClientFactory
 
 actual val platformModule: Module = module {
     single<SqlDriver> { DatabaseDriverFactory(androidContext()).create() }
+    single { HttpClientFactory(get()).create() }
 }

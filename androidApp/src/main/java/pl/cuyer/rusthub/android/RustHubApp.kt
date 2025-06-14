@@ -26,7 +26,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
-import pl.cuyer.rusthub.android.ui.theme.RustHubTheme
+import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.navigation.Destination
 import pl.cuyer.rusthub.navigation.NavOptionsBuilder
 import pl.cuyer.rusthub.navigation.NavigationAction

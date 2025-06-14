@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.android.ui.theme
+package pl.cuyer.rusthub.android.theme
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable

@@ -1,0 +1,153 @@
+import pl.cuyer.rusthub.domain.model.Difficulty;
+import pl.cuyer.rusthub.domain.model.Flag;
+import pl.cuyer.rusthub.domain.model.Maps;
+import pl.cuyer.rusthub.domain.model.Region;
+import pl.cuyer.rusthub.domain.model.WipeSchedule;
+
+-- =============================================================================
+-- Table Definition
+-- =============================================================================
+CREATE TABLE server (
+    id             INTEGER    NOT NULL PRIMARY KEY,
+    name           TEXT       NOT NULL,
+    wipe           TEXT,                              -- ISO-8601 timestamp string, e.g. "2025-06-06T21:03:40.00+02:00"
+    ranking        REAL,
+    modded         INTEGER    NOT NULL DEFAULT 0,     -- store booleans as 0/1
+    player_count   INTEGER,
+    capacity       INTEGER,
+    map_name       TEXT       AS Maps,
+    cycle          REAL,                              -- the “cycle” float value
+    server_flag    TEXT       AS Flag,                -- e.g. "US"
+    region         TEXT       AS Region,
+    max_group      INTEGER,
+    difficulty     TEXT       AS Difficulty,          -- nullable
+    wipe_schedule  TEXT       AS WipeSchedule,
+    is_official    INTEGER    NOT NULL DEFAULT 0,
+    ip             TEXT,
+    map_image      TEXT,                              -- nullable URL/path
+    description    TEXT                               -- nullable long text
+);
+
+-- =============================================================================
+-- Paged, Filtered SELECT
+-- =============================================================================
+-- Returns a page of servers matching all non-null filters, ordered by wipe timestamp
+selectFilteredPaged:
+SELECT *
+FROM server
+WHERE (:name           IS NULL OR name           LIKE '%' || :name           || '%')
+  AND (:wipe           IS NULL OR date(wipe)        = date(:wipe))
+  AND (:ranking        IS NULL OR ranking         >= :ranking)
+  AND (:modded         IS NULL OR modded         = CASE WHEN :modded THEN 1 ELSE 0 END)
+  AND (:playerCount    IS NULL OR player_count   >= :playerCount)
+  AND (:serverCapacity IS NULL OR capacity      >= :serverCapacity)
+  AND (:mapName        IS NULL OR map_name        = :mapName)
+  AND (:serverFlag     IS NULL OR server_flag     = :serverFlag)
+  AND (:region         IS NULL OR region         = :region)
+  AND (:maxGroup       IS NULL OR max_group      = :maxGroup)
+  AND (:difficulty     IS NULL OR difficulty     = :difficulty)
+  AND (:wipeSchedule   IS NULL OR wipe_schedule  = :wipeSchedule)
+  AND (:isOfficial     IS NULL OR is_official  = :isOfficial)
+  AND (:serverIp       IS NULL OR ip             = :serverIp)
+ORDER BY
+    CASE WHEN :orderDesc = 1 THEN wipe END DESC,
+    CASE WHEN :orderDesc = 0 THEN wipe END ASC
+LIMIT   COALESCE(:limit, -1)     -- if :limit IS NULL → -1 → “no limit”
+OFFSET  COALESCE(:offset, 0);    -- if :offset IS NULL → 0
+
+-- =============================================================================
+-- Count Matching Rows
+-- =============================================================================
+countFiltered:
+SELECT COUNT(*) AS cnt
+FROM server
+WHERE (:name           IS NULL OR name           LIKE '%' || :name           || '%')
+  AND (:wipe           IS NULL OR date(wipe)        = date(:wipe))
+  AND (:ranking        IS NULL OR ranking         >= :ranking)
+  AND (:modded         IS NULL OR modded         = CASE WHEN :modded THEN 1 ELSE 0 END)
+  AND (:playerCount    IS NULL OR player_count   >= :playerCount)
+  AND (:serverCapacity IS NULL OR capacity      >= :serverCapacity)
+  AND (:mapName        IS NULL OR map_name        = :mapName)
+  AND (:serverFlag     IS NULL OR server_flag     = :serverFlag)
+  AND (:region         IS NULL OR region         = :region)
+  AND (:maxGroup       IS NULL OR max_group      >= :maxGroup)
+  AND (:difficulty     IS NULL OR difficulty     = :difficulty)
+  AND (:wipeSchedule   IS NULL OR wipe_schedule  = :wipeSchedule)
+  AND (:isOfficial     IS NULL OR is_official  = :isOfficial)
+  AND (:serverIp       IS NULL OR ip             = :serverIp);
+
+-- =============================================================================
+-- Upsert (Insert or Update on id conflict)
+-- =============================================================================
+upsertServers:
+INSERT INTO server (
+    id,
+    name,
+    wipe,
+    ranking,
+    modded,
+    player_count,
+    capacity,
+    map_name,
+    cycle,
+    server_flag,
+    region,
+    max_group,
+    difficulty,
+    wipe_schedule,
+    is_official,
+    ip,
+    map_image,
+    description
+) VALUES (
+    :id,
+    :name,
+    :wipe,                                -- ISO-8601 timestamp string
+    :ranking,
+    CASE WHEN :modded THEN 1 ELSE 0 END,  -- bind a boolean
+    :playerCount,
+    :capacity,
+    :mapName,
+    :cycle,
+    :serverFlag,
+    :region,
+    :maxGroup,
+    :difficulty,
+    :wipeSchedule,
+    CASE WHEN :isOfficial THEN 1 ELSE 0 END,
+    :ip,
+    :mapImage,
+    :description
+) ON CONFLICT(id) DO UPDATE SET
+    name           = excluded.name,
+    wipe           = excluded.wipe,
+    ranking         = excluded.ranking,
+    modded         = excluded.modded,
+    player_count   = excluded.player_count,
+    capacity       = excluded.capacity,
+    map_name       = excluded.map_name,
+    cycle          = excluded.cycle,
+    server_flag    = excluded.server_flag,
+    region         = excluded.region,
+    max_group      = excluded.max_group,
+    difficulty     = excluded.difficulty,
+    wipe_schedule  = excluded.wipe_schedule,
+    is_official    = excluded.is_official,
+    ip             = excluded.ip,
+    map_image      = excluded.map_image,
+    description    = excluded.description;
+
+CREATE TABLE remote_keys (
+  id       TEXT       NOT NULL PRIMARY KEY,  -- use a constant key, e.g. 'servers'
+  next_url TEXT,
+  prev_url TEXT
+);
+
+selectRemoteKey:
+SELECT * FROM remote_keys WHERE id = ?;
+
+insertOrReplaceRemoteKey:
+INSERT OR REPLACE INTO remote_keys(id, next_url, prev_url) VALUES (?, ?, ?);
+
+clearRemoteKeys:
+DELETE FROM remote_keys;
