@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.navigation
+package pl.cuyer.rusthub.presentation.navigation
 import androidx.navigation.NavOptions as AndroidNavOptions
 
 // Map our common NavOptions to Android's NavOptions.

@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.di
+package pl.cuyer.rusthub.presentation.di
 
 import android.app.Application
 import org.koin.android.ext.koin.androidContext

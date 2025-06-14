@@ -1,8 +1,8 @@
-package pl.cuyer.rusthub.di
+package pl.cuyer.rusthub.presentation.di
 
-import pl.cuyer.rusthub.navigation.DefaultNavigator
-import pl.cuyer.rusthub.navigation.Destination
-import pl.cuyer.rusthub.navigation.Navigator
+import pl.cuyer.rusthub.presentation.navigation.DefaultNavigator
+import pl.cuyer.rusthub.presentation.navigation.Destination
+import pl.cuyer.rusthub.presentation.navigation.Navigator
 
 interface AppModule {
     val navigator: Navigator

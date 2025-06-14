@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.navigation
+package pl.cuyer.rusthub.presentation.navigation
 
 import androidx.navigation.NavDestination
 

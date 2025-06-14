@@ -27,10 +27,10 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
-import pl.cuyer.rusthub.navigation.Destination
-import pl.cuyer.rusthub.navigation.NavOptionsBuilder
-import pl.cuyer.rusthub.navigation.NavigationAction
-import pl.cuyer.rusthub.navigation.Navigator
+import pl.cuyer.rusthub.presentation.navigation.Destination
+import pl.cuyer.rusthub.presentation.navigation.NavOptionsBuilder
+import pl.cuyer.rusthub.presentation.navigation.NavigationAction
+import pl.cuyer.rusthub.presentation.navigation.Navigator
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 
