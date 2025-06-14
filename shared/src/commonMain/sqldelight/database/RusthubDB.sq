@@ -32,7 +32,7 @@ CREATE TABLE server (
 -- Paged, Filtered SELECT
 -- =============================================================================
 -- Returns a page of servers matching all non-null filters, ordered by wipe timestamp
-selectFilteredPaged:
+findServers:
 SELECT *
 FROM server
 WHERE (:name           IS NULL OR name           LIKE '%' || :name           || '%')
@@ -51,30 +51,7 @@ WHERE (:name           IS NULL OR name           LIKE '%' || :name           || 
   AND (:serverIp       IS NULL OR ip             = :serverIp)
 ORDER BY
     CASE WHEN :orderDesc = 1 THEN wipe END DESC,
-    CASE WHEN :orderDesc = 0 THEN wipe END ASC
-LIMIT   COALESCE(:limit, -1)     -- if :limit IS NULL → -1 → “no limit”
-OFFSET  COALESCE(:offset, 0);    -- if :offset IS NULL → 0
-
--- =============================================================================
--- Count Matching Rows
--- =============================================================================
-countFiltered:
-SELECT COUNT(*) AS cnt
-FROM server
-WHERE (:name           IS NULL OR name           LIKE '%' || :name           || '%')
-  AND (:wipe           IS NULL OR date(wipe)        = date(:wipe))
-  AND (:ranking        IS NULL OR ranking         >= :ranking)
-  AND (:modded         IS NULL OR modded         = CASE WHEN :modded THEN 1 ELSE 0 END)
-  AND (:playerCount    IS NULL OR player_count   >= :playerCount)
-  AND (:serverCapacity IS NULL OR capacity      >= :serverCapacity)
-  AND (:mapName        IS NULL OR map_name        = :mapName)
-  AND (:serverFlag     IS NULL OR server_flag     = :serverFlag)
-  AND (:region         IS NULL OR region         = :region)
-  AND (:maxGroup       IS NULL OR max_group      >= :maxGroup)
-  AND (:difficulty     IS NULL OR difficulty     = :difficulty)
-  AND (:wipeSchedule   IS NULL OR wipe_schedule  = :wipeSchedule)
-  AND (:isOfficial     IS NULL OR is_official  = :isOfficial)
-  AND (:serverIp       IS NULL OR ip             = :serverIp);
+    CASE WHEN :orderDesc = 0 THEN wipe END ASC;
 
 -- =============================================================================
 -- Upsert (Insert or Update on id conflict)

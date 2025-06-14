@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.data.network.battlemetrics
+package pl.cuyer.rusthub.domain.repository.battlemetrics
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
@@ -6,13 +6,14 @@ import androidx.paging.PagingState
 import app.cash.paging.RemoteMediator
 import database.Server
 import kotlinx.io.IOException
+import pl.cuyer.rusthub.data.network.battlemetrics.extractNextPageKey
 import pl.cuyer.rusthub.database.RustHubDatabase
-import pl.cuyer.rusthub.domain.repository.battlemetrics.BattlemetricsClient
+import pl.cuyer.rusthub.domain.repository.ServerDataSource
 
 @OptIn(ExperimentalPagingApi::class)
 class BattlemetricsRemoteMediator(
     private val api: BattlemetricsClient,
-    private val db: RustHubDatabase,
+    private val dataSource: ServerDataSource,
     private val sort: String
 ) : RemoteMediator<Int, Server>() {
     private val REMOTE_KEY_ID = "servers"
