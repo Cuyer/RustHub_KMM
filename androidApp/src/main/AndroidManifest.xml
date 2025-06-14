@@ -4,7 +4,7 @@
     <application
         android:allowBackup="false"
         android:supportsRtl="true"
-        android:name="pl.cuyer.rusthub.di.RustHubApplication"
+        android:name="pl.cuyer.rusthub.presentation.di.RustHubApplication"
         android:theme="@style/AppTheme">
         <activity
             android:name="pl.cuyer.rusthub.android.MainActivity"

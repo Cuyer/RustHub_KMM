@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.navigation
+package pl.cuyer.rusthub.presentation.navigation
 
 sealed interface NavigationAction {
 

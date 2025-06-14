@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.di
+package pl.cuyer.rusthub.presentation.di
 
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
@@ -14,9 +14,9 @@ import pl.cuyer.rusthub.data.network.rustmap.RustmapsClientImpl
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.repository.battlemetrics.BattlemetricsClient
 import pl.cuyer.rusthub.domain.repository.rustmap.RustmapsClient
-import pl.cuyer.rusthub.navigation.DefaultNavigator
-import pl.cuyer.rusthub.navigation.Destination
-import pl.cuyer.rusthub.navigation.Navigator
+import pl.cuyer.rusthub.presentation.navigation.DefaultNavigator
+import pl.cuyer.rusthub.presentation.navigation.Destination
+import pl.cuyer.rusthub.presentation.navigation.Navigator
 
 val appModule = module {
     single { RustHubDatabase(get()) }
