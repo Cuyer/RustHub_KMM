@@ -15,6 +15,7 @@ import platform.Foundation.languageCode
 import io.ktor.client.engine.darwin.Darwin
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
 
 actual class HttpClientFactory actual constructor(
     private val json: Json
@@ -22,7 +23,7 @@ actual class HttpClientFactory actual constructor(
     actual fun create(): HttpClient {
         return HttpClient(Darwin) {
             install(ContentNegotiation) {
-                json
+                json(json)
             }
             install(Logging) {
                 logger = Logger.DEFAULT

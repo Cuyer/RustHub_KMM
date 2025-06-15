@@ -25,33 +25,37 @@ CREATE TABLE server (
     is_official    INTEGER    NOT NULL DEFAULT 0,
     ip             TEXT,
     map_image      TEXT,                              -- nullable URL/path
-    description    TEXT                               -- nullable long text
+    description    TEXT,                               -- nullable long text
+    favourite      INTEGER    NOT NULL DEFAULT 0,
+    map_id         TEXT
 );
 
 -- =============================================================================
 -- Paged, Filtered SELECT
 -- =============================================================================
 -- Returns a page of servers matching all non-null filters, ordered by wipe timestamp
-findServers:
+findServersPaged:
 SELECT *
 FROM server
 WHERE (:name           IS NULL OR name           LIKE '%' || :name           || '%')
   AND (:wipe           IS NULL OR date(wipe)        = date(:wipe))
   AND (:ranking        IS NULL OR ranking         >= :ranking)
-  AND (:modded         IS NULL OR modded         = CASE WHEN :modded THEN 1 ELSE 0 END)
+  AND (:modded         IS NULL OR modded          = :modded)
   AND (:playerCount    IS NULL OR player_count   >= :playerCount)
-  AND (:serverCapacity IS NULL OR capacity      >= :serverCapacity)
+  AND (:serverCapacity IS NULL OR capacity       >= :serverCapacity)
   AND (:mapName        IS NULL OR map_name        = :mapName)
   AND (:serverFlag     IS NULL OR server_flag     = :serverFlag)
-  AND (:region         IS NULL OR region         = :region)
-  AND (:maxGroup       IS NULL OR max_group      = :maxGroup)
-  AND (:difficulty     IS NULL OR difficulty     = :difficulty)
-  AND (:wipeSchedule   IS NULL OR wipe_schedule  = :wipeSchedule)
-  AND (:isOfficial     IS NULL OR is_official  = :isOfficial)
-  AND (:serverIp       IS NULL OR ip             = :serverIp)
+  AND (:region         IS NULL OR region          = :region)
+  AND (:maxGroup       IS NULL OR max_group       = :maxGroup)
+  AND (:difficulty     IS NULL OR difficulty      = :difficulty)
+  AND (:wipeSchedule   IS NULL OR wipe_schedule   = :wipeSchedule)
+  AND (:isOfficial     IS NULL OR is_official     = :isOfficial)
+  AND (:serverIp       IS NULL OR ip              = :serverIp)
+  AND (:favourite      IS NULL OR favourite       = :favourite)
 ORDER BY
     CASE WHEN :orderDesc = 1 THEN wipe END DESC,
-    CASE WHEN :orderDesc = 0 THEN wipe END ASC;
+    CASE WHEN :orderDesc = 0 THEN wipe END ASC
+LIMIT :limit OFFSET :offset;
 
 -- =============================================================================
 -- Upsert (Insert or Update on id conflict)
@@ -74,8 +78,8 @@ INSERT INTO server (
     wipe_schedule,
     is_official,
     ip,
-    map_image,
-    description
+    description,
+    map_id
 ) VALUES (
     :id,
     :name,
@@ -93,12 +97,12 @@ INSERT INTO server (
     :wipeSchedule,
     CASE WHEN :isOfficial THEN 1 ELSE 0 END,
     :ip,
-    :mapImage,
-    :description
+    :description,
+    :mapId
 ) ON CONFLICT(id) DO UPDATE SET
     name           = excluded.name,
     wipe           = excluded.wipe,
-    ranking         = excluded.ranking,
+    ranking        = excluded.ranking,
     modded         = excluded.modded,
     player_count   = excluded.player_count,
     capacity       = excluded.capacity,
@@ -111,8 +115,16 @@ INSERT INTO server (
     wipe_schedule  = excluded.wipe_schedule,
     is_official    = excluded.is_official,
     ip             = excluded.ip,
-    map_image      = excluded.map_image,
-    description    = excluded.description;
+    description    = excluded.description,
+    map_id         = excluded.map_id;
+
+updateFavourite:
+UPDATE server
+SET favourite=? WHERE id=?;
+
+updateMap:
+UPDATE server
+SET map_image=? WHERE id=?;
 
 CREATE TABLE remote_keys (
   id       TEXT       NOT NULL PRIMARY KEY,  -- use a constant key, e.g. 'servers'
@@ -128,3 +140,6 @@ INSERT OR REPLACE INTO remote_keys(id, next_url, prev_url) VALUES (?, ?, ?);
 
 clearRemoteKeys:
 DELETE FROM remote_keys;
+
+clearNotFavouriteServers:
+DELETE FROM server WHERE favourite = 0;

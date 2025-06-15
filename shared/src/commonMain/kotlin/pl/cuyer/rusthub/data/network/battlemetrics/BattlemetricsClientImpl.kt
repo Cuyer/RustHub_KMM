@@ -18,23 +18,16 @@ class BattlemetricsClientImpl(private val httpClient: HttpClient) : Battlemetric
     BaseApiResponse() {
     override fun getServers(size: Int, sort: String, key: String?): Flow<Result<BattlemetricsPage>> {
         return safeApiCall {
-            httpClient.get {
-                url(NetworkConstants.BATTLEMETRICS_BASE_URL)
-                parameters {
+            httpClient.get(NetworkConstants.BATTLEMETRICS_BASE_URL) {
+                url {
+                    parameters.append("page[size]", size.toString())
+                    parameters.append("sort", sort)
+                    parameters.append("filter[game]", "rust")
                     key?.let {
-                        append("page[key]", it)
+                        parameters.append("page[key]", it)
                     }
-                    append("page[size]", size.toString())
-                    append("sort", sort)
-                    append("filter[game]", "rust")
                 }
             }
         }
     }
-}
-//TODO dać to gdzieś indziej
-fun extractNextPageKey(url: String?): String? {
-    if (url == null) return null
-    val parsed = Url(url)
-    return parsed.parameters["page[key]"]
 }

@@ -46,5 +46,6 @@ dependencies {
     implementation(project.dependencies.platform(libs.koin.bom))
     implementation(libs.koin.compose)
     implementation(libs.androidx.navigation)
+    implementation(libs.paging.compose)
     debugImplementation(libs.compose.ui.tooling)
 }

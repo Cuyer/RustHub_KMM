@@ -57,7 +57,8 @@ fun BattlemetricsServerContent.toServerInfo(): ServerInfo =
         wipeSchedule = attributes.details?.rustSettings?.wipes?.let { WipeSchedule.from(it) },
         isOfficial = attributes.details?.official,
         serverIp = ipPort(attributes.ip ?: "", attributes.port?.toString() ?: ""),
-        description = attributes.details?.rustDescription
+        description = attributes.details?.rustDescription,
+        mapId = this.extractMapId()
     )
 
 private fun calculateCycle(wipes: List<RustWipe>): Double? {

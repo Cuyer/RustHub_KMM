@@ -3,11 +3,6 @@ package pl.cuyer.rusthub.domain.model
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import pl.cuyer.rusthub.domain.model.Difficulty
-import pl.cuyer.rusthub.domain.model.Flag
-import pl.cuyer.rusthub.domain.model.Maps
-import pl.cuyer.rusthub.domain.model.Region
-import pl.cuyer.rusthub.domain.model.WipeSchedule
 
 @Serializable
 data class ServerInfo(
@@ -35,5 +30,6 @@ data class ServerInfo(
     val serverIp: String? = null,
     @SerialName("map_image")
     val mapImage: String? = null,
-    val description: String? = null
+    val description: String? = null,
+    val mapId: String? = null
 )

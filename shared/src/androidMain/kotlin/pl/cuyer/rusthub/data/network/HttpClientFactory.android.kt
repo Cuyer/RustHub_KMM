@@ -11,6 +11,7 @@ import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import java.util.Locale
 
@@ -21,7 +22,7 @@ actual class HttpClientFactory actual constructor(
     actual fun create(): HttpClient {
         return HttpClient(OkHttp) {
             install(ContentNegotiation) {
-                json
+                json(json)
             }
             install(Logging) {
                 logger = Logger.SIMPLE

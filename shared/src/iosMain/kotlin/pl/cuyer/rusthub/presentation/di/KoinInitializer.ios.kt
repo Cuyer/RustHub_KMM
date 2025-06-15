@@ -7,8 +7,9 @@ import org.koin.dsl.module
 import org.koin.dsl.bind
 import pl.cuyer.rusthub.data.local.DatabaseDriverFactory
 import pl.cuyer.rusthub.data.network.HttpClientFactory
+import pl.cuyer.rusthub.database.RustHubDatabase
 
 actual val platformModule: Module = module {
-    single<SqlDriver> { DatabaseDriverFactory().create() }
+    single<RustHubDatabase> { DatabaseDriverFactory().create() }
     single { HttpClientFactory(get()).create() }
 }
