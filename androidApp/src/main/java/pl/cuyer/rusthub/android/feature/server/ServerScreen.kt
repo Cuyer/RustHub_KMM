@@ -2,27 +2,37 @@ package pl.cuyer.rusthub.android.feature.server
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.cash.paging.LoadState
 import app.cash.paging.PagingData
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
@@ -32,9 +42,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock.System
 import kotlinx.datetime.Instant
 import pl.cuyer.rusthub.android.designsystem.ServerListItem
+import pl.cuyer.rusthub.android.designsystem.ServerListItemShimmer
 import pl.cuyer.rusthub.android.model.Label
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
@@ -65,11 +77,19 @@ fun ServerScreen(
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
 
-    val isRefreshing = pagedList.loadState.refresh is androidx.paging.LoadState.Loading
+    val coroutineScope = rememberCoroutineScope()
 
     val pullToRefreshState = rememberPullToRefreshState()
 
     val isAppInForeground by isAppInForeground()
+
+    val lazyListState = rememberLazyListState()
+
+    val isAtTop by remember {
+        derivedStateOf {
+            lazyListState.firstVisibleItemIndex == 0 && lazyListState.firstVisibleItemScrollOffset == 0
+        }
+    }
 
     LaunchedEffect(isAppInForeground, state.value.isLoading) {
         if (!isAppInForeground && state.value.isLoading) {
@@ -78,17 +98,29 @@ fun ServerScreen(
     }
 
     PullToRefreshBox(
-        isRefreshing = isRefreshing,
+        isRefreshing = false,
         onRefresh = { onAction(ServerAction.OnRefresh) },
         state = pullToRefreshState,
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize()
     ) {
         AnimatedContent(state.value.isLoading) { isLoading ->
             if (isLoading) {
-
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(spacing.medium)
+                ) {
+                    items(
+                        count = 6
+                    ) {
+                        ServerListItemShimmer(
+                            modifier = Modifier
+                                .animateItem()
+                                .padding(horizontal = spacing.xmedium)
+                        )
+                    }
+                }
             } else {
                 LazyColumn(
+                    state = lazyListState,
                     verticalArrangement = Arrangement.spacedBy(spacing.medium)
                 ) {
                     items(
@@ -100,7 +132,9 @@ fun ServerScreen(
                             val labels by rememberUpdatedState(createLabels(item))
                             val details by rememberUpdatedState(createDetails(item))
                             ServerListItem(
-                                modifier = Modifier.padding(horizontal = spacing.xmedium),
+                                modifier = Modifier
+                                    .animateItem()
+                                    .padding(horizontal = spacing.xmedium),
                                 serverName = item.name.orEmpty(),
                                 flag = item.serverFlag.toDrawable(),
                                 labels = labels,
@@ -109,6 +143,38 @@ fun ServerScreen(
                         }
                     }
                 }
+            }
+        }
+        AnimatedVisibility(
+            visible = !isAtTop,
+            enter = slideInVertically(
+                initialOffsetY = { it },
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioLowBouncy,
+                    stiffness = Spring.StiffnessVeryLow
+                )
+            ) + scaleIn(
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioLowBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            ),
+            exit = slideOutVertically(
+                targetOffsetY = { it },
+                animationSpec = tween(durationMillis = 150)
+            ),
+            modifier = Modifier
+                .padding(spacing.medium)
+                .align(Alignment.BottomEnd)
+        ) {
+            FloatingActionButton(
+                onClick = {
+                    coroutineScope.launch {
+                        lazyListState.animateScrollToItem(0)
+                    }
+                }
+            ) {
+                Icon(Icons.Default.ArrowUpward, contentDescription = "Scroll to top")
             }
         }
     }
@@ -134,7 +200,9 @@ private fun createDetails(item: ServerInfo): Map<String, String> {
     }
 
     item.ranking?.let { details["Ranking"] = it.roundToInt().toString() }
-    item.cycle?.let { details["Cycle"] = "~ " + String.format(Locale.getDefault(), "%.2f", it) + " days" }
+    item.cycle?.let {
+        details["Cycle"] = "~ " + String.format(Locale.getDefault(), "%.2f", it) + " days"
+    }
     item.serverCapacity?.let { details["Players"] = "${item.playerCount ?: 0}/${it}" }
     item.mapName?.let { details["Map"] = it.name }
     item.modded?.let { details["Modded"] = if (it) "Yes" else "No" }

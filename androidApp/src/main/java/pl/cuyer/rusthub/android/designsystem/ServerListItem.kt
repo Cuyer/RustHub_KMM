@@ -4,13 +4,17 @@ import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -81,6 +86,76 @@ fun ServerListItem(
             DetailsRow(
                 details = details
             )
+        }
+    }
+}
+
+
+@Composable
+fun ServerListItemShimmer(modifier: Modifier = Modifier) {
+    ElevatedCard(
+        shape = RectangleShape,
+        modifier = modifier.wrapContentHeight()
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(
+                    horizontal = spacing.xmedium,
+                    vertical = spacing.xxmedium
+                ),
+            verticalArrangement = Arrangement.spacedBy(spacing.small)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(24.dp)
+                        .shimmer()
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clip(RectangleShape)
+                        .shimmer()
+                )
+            }
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(
+                    space = spacing.small,
+                    alignment = Alignment.Start
+                ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                repeat(3) {
+                    Box(
+                        modifier = Modifier
+                            .height(30.dp)
+                            .width(60.dp)
+                            .clip(RectangleShape)
+                            .shimmer()
+                    )
+                }
+            }
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(spacing.xsmall)
+            ) {
+                repeat(3) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(16.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .shimmer()
+                    )
+                }
+            }
         }
     }
 }

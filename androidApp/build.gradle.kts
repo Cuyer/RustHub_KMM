@@ -40,6 +40,7 @@ dependencies {
     implementation(projects.shared)
     implementation(project.dependencies.platform(libs.compose.bom))
     implementation(libs.compose.ui)
+    implementation(libs.compose.foundation)
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
     implementation(libs.kotlin.datetime)
