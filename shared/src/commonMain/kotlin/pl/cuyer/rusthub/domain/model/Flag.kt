@@ -31,7 +31,7 @@ enum class Flag {
     VA, VC, VE, VG, VI, VN, VU,
     WF, WS,
     YE, YT,
-    ZA, ZM, ZW;
+    ZA, ZM, ZW, ZZ, XK;
 
     companion object {
         fun Flag?.toDrawable(): Int {

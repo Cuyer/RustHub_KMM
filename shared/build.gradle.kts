@@ -63,6 +63,7 @@ kotlin {
             implementation(libs.lifecycle.viewmodel)
             implementation(libs.lifecycle.runtime)
             implementation(libs.paging)
+            implementation(libs.sqldelight.extensions.paging3)
             api(libs.moko.resources)
         }
         commonTest.dependencies {

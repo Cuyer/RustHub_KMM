@@ -12,12 +12,15 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import pl.cuyer.rusthub.data.local.remoteKey.RemoteKeyDataSourceImpl
 import pl.cuyer.rusthub.data.local.server.ServerDataSourceImpl
+import pl.cuyer.rusthub.data.local.timestamp.TimestampDataSourceImpl
 import pl.cuyer.rusthub.data.network.battlemetrics.BattlemetricsClientImpl
 import pl.cuyer.rusthub.data.network.rustmap.RustmapsClientImpl
 import pl.cuyer.rusthub.domain.repository.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.battlemetrics.BattlemetricsClient
 import pl.cuyer.rusthub.domain.repository.remoteKey.RemoteKeyDataSource
 import pl.cuyer.rusthub.domain.repository.rustmap.RustmapsClient
+import pl.cuyer.rusthub.domain.repository.timestamp.TimestampDataSource
+import pl.cuyer.rusthub.domain.usecase.FetchAllServersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.PrepareRustMapUseCase
 import pl.cuyer.rusthub.presentation.features.ServerViewModel
@@ -36,7 +39,9 @@ val appModule = module {
     singleOf(::RustmapsClientImpl) bind RustmapsClient::class
     singleOf(::ServerDataSourceImpl) bind ServerDataSource::class
     singleOf(::RemoteKeyDataSourceImpl) bind RemoteKeyDataSource::class
-    single { GetPagedServersUseCase (get(), get(), get()) }
+    singleOf(::TimestampDataSourceImpl) bind TimestampDataSource::class
+    single { GetPagedServersUseCase (get()) }
+    single { FetchAllServersUseCase (get(), get(), get(), get(), get()) }
     single { PrepareRustMapUseCase (get(), get()) }
     factoryOf(::ServerViewModel)
 }

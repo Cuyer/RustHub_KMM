@@ -22,15 +22,15 @@ abstract class BaseApiResponse {
             val response = apiCall()
             if (response.status.isSuccess()) {
                 val data: T = response.body()
-                emit(Result.Success(data))
+                emit(success(data))
             } else {
                 val errorResponse = response.bodyAsText()
                 emit(Result.Error(Exception(errorResponse)))
             }
         }.onStart {
-            emit(Result.Loading)
+            emit(loading())
         }.catch { e ->
-            emit(Result.Error(e))
+            emit(error(e))
         }
 
     fun loading(): Result.Loading = Result.Loading

@@ -3,6 +3,7 @@ package domain.models.server.battlemetrics
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import pl.cuyer.rusthub.data.network.battlemetrics.model.RustSettings
 
 @Serializable
 data class Details(
@@ -41,7 +42,7 @@ data class Details(
     @SerialName("rust_wipes")
     val rustWipes: List<RustWipe> = emptyList(),
     @SerialName("rust_world_seed")
-    val rustWorldSeed: Int?,
+    val rustWorldSeed: Long?,
     @SerialName("rust_world_size")
     val rustWorldSize: Int?
 )

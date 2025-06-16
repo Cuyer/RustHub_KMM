@@ -1,27 +1,33 @@
 package pl.cuyer.rusthub.android.feature.server
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.LoadState
-import androidx.paging.PagingData
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemContentType
-import androidx.paging.compose.itemKey
+import app.cash.paging.LoadState
+import app.cash.paging.PagingData
+import app.cash.paging.compose.LazyPagingItems
+import app.cash.paging.compose.collectAsLazyPagingItems
+import app.cash.paging.compose.itemContentType
+import app.cash.paging.compose.itemKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,6 +39,7 @@ import pl.cuyer.rusthub.android.model.Label
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.android.util.composeUtil.isAppInForeground
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.presentation.features.ServerAction
@@ -58,34 +65,49 @@ fun ServerScreen(
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
 
-    val isRefreshing = pagedList.loadState.refresh is LoadState.Loading
+    val isRefreshing = pagedList.loadState.refresh is androidx.paging.LoadState.Loading
 
     val pullToRefreshState = rememberPullToRefreshState()
 
+    val isAppInForeground by isAppInForeground()
+
+    LaunchedEffect(isAppInForeground, state.value.isLoading) {
+        if (!isAppInForeground && state.value.isLoading) {
+            onAction(ServerAction.OnStopAllJobs)
+        }
+    }
+
     PullToRefreshBox(
         isRefreshing = isRefreshing,
-        onRefresh = { pagedList.refresh() },
+        onRefresh = { onAction(ServerAction.OnRefresh) },
         state = pullToRefreshState,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(spacing.medium)
-        ) {
-            items(
-                count = pagedList.itemCount,
-                key = pagedList.itemKey { it.id ?: UUID.randomUUID() },
-                contentType = pagedList.itemContentType()
-            ) { index ->
-                pagedList[index]?.let { item ->
-                    val labels by rememberUpdatedState(createLabels(item))
-                    val details by rememberUpdatedState(createDetails(item))
-                    ServerListItem(
-                        modifier = Modifier.padding(horizontal = spacing.xmedium),
-                        serverName = item.name.orEmpty(),
-                        flag = item.serverFlag.toDrawable(),
-                        labels = labels,
-                        details = details
-                    )
+        AnimatedContent(state.value.isLoading) { isLoading ->
+            if (isLoading) {
+
+            } else {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(spacing.medium)
+                ) {
+                    items(
+                        count = pagedList.itemCount,
+                        key = pagedList.itemKey { it.id ?: UUID.randomUUID() },
+                        contentType = pagedList.itemContentType()
+                    ) { index ->
+                        pagedList[index]?.let { item ->
+                            val labels by rememberUpdatedState(createLabels(item))
+                            val details by rememberUpdatedState(createDetails(item))
+                            ServerListItem(
+                                modifier = Modifier.padding(horizontal = spacing.xmedium),
+                                serverName = item.name.orEmpty(),
+                                flag = item.serverFlag.toDrawable(),
+                                labels = labels,
+                                details = details
+                            )
+                        }
+                    }
                 }
             }
         }

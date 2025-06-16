@@ -57,6 +57,26 @@ ORDER BY
     CASE WHEN :orderDesc = 0 THEN wipe END ASC
 LIMIT :limit OFFSET :offset;
 
+countPagedServers:
+SELECT
+  COUNT(*)
+FROM server
+WHERE (:name           IS NULL OR name           LIKE '%' || :name           || '%')
+  AND (:wipe           IS NULL OR date(wipe)     = date(:wipe))
+  AND (:ranking        IS NULL OR ranking        >= :ranking)
+  AND (:modded         IS NULL OR modded         = CASE WHEN :modded THEN 1 ELSE 0 END)
+  AND (:playerCount    IS NULL OR player_count    >= :playerCount)
+  AND (:serverCapacity IS NULL OR capacity        >= :serverCapacity)
+  AND (:mapName        IS NULL OR map_name        = :mapName)
+  AND (:serverFlag     IS NULL OR server_flag     = :serverFlag)
+  AND (:region         IS NULL OR region          = :region)
+  AND (:maxGroup       IS NULL OR max_group       = :maxGroup)
+  AND (:difficulty     IS NULL OR difficulty      = :difficulty)
+  AND (:wipeSchedule   IS NULL OR wipe_schedule   = :wipeSchedule)
+  AND (:isOfficial     IS NULL OR is_official     = :isOfficial)
+  AND (:serverIp       IS NULL OR ip              = :serverIp)
+  AND (:favourite      IS NULL OR favourite       = :favourite);
+
 -- =============================================================================
 -- Upsert (Insert or Update on id conflict)
 -- =============================================================================
@@ -143,3 +163,17 @@ DELETE FROM remote_keys;
 
 clearNotFavouriteServers:
 DELETE FROM server WHERE favourite = 0;
+
+
+CREATE TABLE last_fetch_timestamp (
+    id         INTEGER NOT NULL PRIMARY KEY,
+    last_fetch TEXT
+);
+
+insertLastFetchTimestamp:
+INSERT INTO last_fetch_timestamp(id, last_fetch)
+VALUES(1, ?)
+ON CONFLICT(id) DO UPDATE SET last_fetch = excluded.last_fetch;
+
+getLastFetchTimestamp:
+SELECT * FROM last_fetch_timestamp WHERE id = 1;

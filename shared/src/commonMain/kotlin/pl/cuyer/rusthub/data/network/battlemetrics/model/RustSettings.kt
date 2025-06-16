@@ -1,14 +1,18 @@
-package domain.models.server.battlemetrics
+package pl.cuyer.rusthub.data.network.battlemetrics.model
 
 
+import domain.models.server.battlemetrics.Rates
+import domain.models.server.battlemetrics.Wipe
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import pl.cuyer.rusthub.data.network.util.serializers.FlexibleFloatSerializer
 
 @Serializable
 data class RustSettings(
     @SerialName("blueprints")
     val blueprints: Boolean?,
     @SerialName("decay")
+    @Serializable(with = FlexibleFloatSerializer::class)
     val decay: Float?,
     @SerialName("forceWipeType")
     val forceWipeType: String?,
