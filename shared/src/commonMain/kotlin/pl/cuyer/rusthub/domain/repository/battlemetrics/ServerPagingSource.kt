@@ -16,6 +16,9 @@ class ServerPagingSource(
         return try {
             val servers = dataSource.getPagedServers(query, params.loadSize.toLong(), offset.toLong())
 
+            Napier.i(message = "Loaded ${servers.size} servers with offset $offset", tag = "ServerPagingSource")
+            Napier.i(message = "limit is ${params.loadSize}", tag = "ServerPagingSource")
+
             LoadResult.Page(
                 data = servers,
                 prevKey = if (offset == 0) null else offset - params.loadSize,

@@ -67,7 +67,7 @@ class BattlemetricsRemoteMediator(
             val entities = page.data.map { it.toServerInfo() }
             val nextKey = extractPageKey(page.links?.next)
             val prevKey = extractPageKey(page.links?.prev)
-
+            Napier.i("loadType=$loadType, pageKey=$pageKey, API result: ${page.data.size}, nextKey=$nextKey", tag = "RemoteMediator")
             // Persist within one transaction
             if (loadType == LoadType.REFRESH) {
                 dataSource.clearNotFavouriteServers()
@@ -80,9 +80,8 @@ class BattlemetricsRemoteMediator(
                 nextKey = nextKey,
                 prevKey = prevKey
             )
-
-            Napier.i(message = "$nextKey", tag = "BattlemetricsRemoteMediator")
-            MediatorResult.Success(endOfPaginationReached = (nextKey == null))
+            Napier.i ("RemoteMediator: endOfPaginationReached:${nextKey == null && page.data.isEmpty()} ", tag = "RemoteMediator")
+            MediatorResult.Success(endOfPaginationReached = (nextKey == null && page.data.isEmpty()))
         } catch (e: IOException) {
             MediatorResult.Error(e)
         } catch (e: Exception) {
