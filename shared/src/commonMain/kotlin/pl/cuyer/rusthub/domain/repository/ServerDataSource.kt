@@ -1,6 +1,6 @@
 package pl.cuyer.rusthub.domain.repository
 
-import app.cash.paging.PagingSource
+import androidx.paging.PagingSource
 import kotlinx.coroutines.flow.Flow
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery

@@ -1,7 +1,7 @@
 package pl.cuyer.rusthub.presentation.features
 
-import app.cash.paging.PagingData
-import app.cash.paging.cachedIn
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.Flow

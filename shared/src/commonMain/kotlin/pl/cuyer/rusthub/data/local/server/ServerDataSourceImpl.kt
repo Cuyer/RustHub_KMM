@@ -1,6 +1,6 @@
 package pl.cuyer.rusthub.data.local.server
 
-import app.cash.paging.PagingSource
+import androidx.paging.PagingSource
 import pl.cuyer.rusthub.data.local.Queries
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.mapper.toServerInfo

@@ -1,7 +1,8 @@
 package pl.cuyer.rusthub.domain.repository.battlemetrics
 
-import app.cash.paging.PagingSource
-import app.cash.paging.PagingState
+import androidx.paging.PagingSource
+import androidx.paging.PagingState
+import io.github.aakira.napier.Napier
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.ServerDataSource
@@ -10,7 +11,6 @@ class ServerPagingSource(
     private val dataSource: ServerDataSource,
     private val query: ServerQuery
 ) : PagingSource<Int, ServerInfo>() {
-//TODO źle sie ładuje
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ServerInfo> {
         val offset = params.key ?: 0
         return try {
@@ -27,6 +27,7 @@ class ServerPagingSource(
     }
 
     override fun getRefreshKey(state: PagingState<Int, ServerInfo>): Int? {
+        Napier.i(message = "getRefreshKey called with state: $state", tag = "ServerPagingSource")
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(state.config.pageSize)
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(state.config.pageSize)

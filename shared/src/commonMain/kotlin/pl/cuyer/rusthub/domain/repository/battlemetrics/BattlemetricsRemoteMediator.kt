@@ -3,7 +3,7 @@ package pl.cuyer.rusthub.domain.repository.battlemetrics
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
-import app.cash.paging.RemoteMediator
+import androidx.paging.RemoteMediator
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
