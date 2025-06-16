@@ -10,7 +10,7 @@ class ServerPagingSource(
     private val dataSource: ServerDataSource,
     private val query: ServerQuery
 ) : PagingSource<Int, ServerInfo>() {
-
+//TODO źle sie ładuje
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ServerInfo> {
         val offset = params.key ?: 0
         return try {
