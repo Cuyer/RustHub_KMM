@@ -1,5 +1,7 @@
 package pl.cuyer.rusthub.android.designsystem
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -17,15 +19,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import pl.cuyer.rusthub.domain.model.Flag
+import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
 
 @OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun AppExposedDropdownMenu(
     label: String,
     options: List<String>
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val textFieldState = rememberTextFieldState(options[0])
+    val textFieldState = rememberTextFieldState("")
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -52,6 +59,17 @@ fun AppExposedDropdownMenu(
                         expanded = false
                     },
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                    trailingIcon = {
+                        Flag.fromDisplayName(option)?.let { flag ->
+                            if (label != "Region") {
+                                Image(
+                                    painter = painterResource(flag.toDrawable()),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        }
+                    }
                 )
             }
         }

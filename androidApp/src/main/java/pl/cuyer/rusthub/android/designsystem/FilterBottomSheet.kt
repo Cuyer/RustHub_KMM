@@ -1,25 +1,21 @@
 package pl.cuyer.rusthub.android.designsystem
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +29,7 @@ import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Maps
 import pl.cuyer.rusthub.domain.model.Region
 import pl.cuyer.rusthub.domain.model.WipeSchedule
+import pl.cuyer.rusthub.domain.model.displayName
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,7 +52,7 @@ fun FilterBottomSheet(
         FilterBottomSheetContent(
             filtersMap = mapOf(
                 "Map" to Maps.entries.map { it.name },
-                "Country" to Flag.entries.map { it.name },
+                "Country" to Flag.entries.map { it.displayName.uppercase() },
                 "Region" to Region.entries.map { it.name },
                 "Difficulty" to Difficulty.entries.map { it.name },
                 "Wipe Schedule" to WipeSchedule.entries.map { it.name }
@@ -69,6 +66,15 @@ fun FilterBottomSheet(
                 .padding(top = spacing.medium, start = spacing.large, end = spacing.large)
         ) {
             Text("Apply Filters")
+        }
+        TextButton(
+            shape = RectangleShape,
+            onClick = {  },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = spacing.small, horizontal = spacing.large)
+        ) {
+            Text("Reset Filters")
         }
     }
 }

@@ -2,6 +2,8 @@ package pl.cuyer.rusthub.domain.model
 
 import kotlinx.serialization.Serializable
 import pl.cuyer.rusthub.common.getImageByFileName
+import pl.cuyer.rusthub.util.getCountryCode
+import pl.cuyer.rusthub.util.getCountryDisplayName
 
 @Serializable
 enum class Flag {
@@ -29,11 +31,25 @@ enum class Flag {
     VA, VC, VE, VG, VI, VN, VU,
     WF, WS,
     YE, YT,
-    ZA, ZM, ZW ;
+    ZA, ZM, ZW;
 
     companion object {
         fun Flag?.toDrawable(): Int {
-            return getImageByFileName(this?.name?.lowercase() ?: "pl").drawableResId
+            return when(this) {
+                IN -> return getImageByFileName("ind").drawableResId
+                AS -> return getImageByFileName("asm").drawableResId
+                DO -> return getImageByFileName("dom").drawableResId
+                IS -> return getImageByFileName("isl").drawableResId
+                else -> return getImageByFileName(this?.name?.lowercase() ?: "pl").drawableResId
+            }
+        }
+
+        fun fromDisplayName(displayName: String): Flag? {
+            val code = getCountryCode(displayName)
+            return code?.let { runCatching { Flag.valueOf(it) }.getOrNull() }
         }
     }
 }
+
+val Flag.displayName: String
+    get() = getCountryDisplayName(name)
