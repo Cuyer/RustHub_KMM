@@ -2,12 +2,14 @@ package pl.cuyer.rusthub.presentation.features
 
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -30,7 +32,13 @@ class ServerViewModel(
     private val prepareRustMapUseCase: PrepareRustMapUseCase
 ) : BaseViewModel() {
 
-    var paging: Flow<PagingData<ServerInfo>> = getPagedServersUseCase(ServerQuery())
+    private val queryFlow = MutableStateFlow(ServerQuery())
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    var paging: Flow<PagingData<ServerInfo>> = queryFlow
+        .flatMapLatest { query ->
+            getPagedServersUseCase(query)
+        }
         .cachedIn(coroutineScope)
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)

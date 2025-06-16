@@ -20,8 +20,8 @@ class GetPagedServersUseCase(
     @OptIn(ExperimentalPagingApi::class)
     operator fun invoke(query: ServerQuery): Flow<PagingData<ServerInfo>> {
         return Pager(
-            config = PagingConfig(pageSize = 100, enablePlaceholders = false),
-            remoteMediator = BattlemetricsRemoteMediator(api, dataSource, remoteKeyDataSource),
+            config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+            //remoteMediator = BattlemetricsRemoteMediator(api, dataSource, remoteKeyDataSource),
             pagingSourceFactory = { dataSource.getServersPagingSource(query) }
         ).flow
     }

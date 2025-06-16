@@ -9,15 +9,19 @@ class RemoteKeyDataSourceImpl(
     db: RustHubDatabase
 ) : RemoteKeyDataSource, Queries(db) {
 
-    override fun findKey(key: String): String? {
+    override fun findNextKey(key: String): String? {
         return queries.selectRemoteKey(key).executeAsOneOrNull()?.next_url
+    }
+
+    override fun findPreviousKey(key: String): String? {
+        return queries.selectRemoteKey(key).executeAsOneOrNull()?.prev_url
     }
 
     override fun clearRemoteKeys() {
         queries.clearRemoteKeys()
     }
 
-    override fun insertOrReplaceRemoteKey(id: String, nextKey: String?) {
-        queries.insertOrReplaceRemoteKey(id, nextKey, null)
+    override fun insertOrReplaceRemoteKey(id: String, nextKey: String?, prevKey: String?) {
+        queries.insertOrReplaceRemoteKey(id, nextKey, prevKey)
     }
 }

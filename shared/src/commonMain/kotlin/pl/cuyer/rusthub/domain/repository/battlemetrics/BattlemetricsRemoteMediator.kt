@@ -4,6 +4,7 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
+import io.github.aakira.napier.Napier
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
@@ -24,6 +25,7 @@ class BattlemetricsRemoteMediator(
     companion object {
      private const val REMOTE_KEY_ID = "servers"
     }
+
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, ServerInfo>
@@ -32,9 +34,13 @@ class BattlemetricsRemoteMediator(
             LoadType.REFRESH -> null
             LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
             LoadType.APPEND -> {
-                remoteKeyDataSource.findKey(REMOTE_KEY_ID)
+                remoteKeyDataSource.findNextKey(REMOTE_KEY_ID)
             }
         }
+        Napier.i(
+            message = "loadType: $loadType, pageKey: $pageKey, state: $state",
+            tag = "BattlemetricsRemoteMediator"
+        )
 
         // If appending but no next_key, we've reached the end
         if (loadType == LoadType.APPEND && pageKey == null) {
@@ -59,7 +65,8 @@ class BattlemetricsRemoteMediator(
             }
 
             val entities = page.data.map { it.toServerInfo() }
-            val nextKey = extractNextPageKey(page.links?.next)
+            val nextKey = extractPageKey(page.links?.next)
+            val prevKey = extractPageKey(page.links?.prev)
 
             // Persist within one transaction
             if (loadType == LoadType.REFRESH) {
@@ -70,9 +77,11 @@ class BattlemetricsRemoteMediator(
 
             remoteKeyDataSource.insertOrReplaceRemoteKey(
                 id = REMOTE_KEY_ID,
-                nextKey = nextKey
+                nextKey = nextKey,
+                prevKey = prevKey
             )
 
+            Napier.i(message = "$nextKey", tag = "BattlemetricsRemoteMediator")
             MediatorResult.Success(endOfPaginationReached = (nextKey == null))
         } catch (e: IOException) {
             MediatorResult.Error(e)
@@ -82,7 +91,7 @@ class BattlemetricsRemoteMediator(
     }
 }
 
-fun extractNextPageKey(url: String?): String? {
+fun extractPageKey(url: String?): String? {
     if (url == null) return null
     val parsed = Url(url)
     return parsed.parameters["page[key]"]

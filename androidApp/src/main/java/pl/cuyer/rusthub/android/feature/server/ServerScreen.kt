@@ -20,6 +20,8 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,6 +40,7 @@ import pl.cuyer.rusthub.presentation.features.ServerState
 import pl.cuyer.rusthub.presentation.navigation.Destination
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import java.util.Locale
+import java.util.UUID
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,16 +71,22 @@ fun ServerScreen(
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(spacing.medium)
         ) {
-            items(pagedList.itemSnapshotList.items) { item ->
-                val labels by rememberUpdatedState(createLabels(item))
-                val details by rememberUpdatedState(createDetails(item))
-                ServerListItem(
-                    modifier = Modifier.padding(horizontal = spacing.xmedium),
-                    serverName = item.name.orEmpty(),
-                    flag = item.serverFlag.toDrawable(),
-                    labels = labels,
-                    details = details
-                )
+            items(
+                count = pagedList.itemCount,
+                key = pagedList.itemKey { it.id ?: UUID.randomUUID() },
+                contentType = pagedList.itemContentType()
+            ) { index ->
+                pagedList[index]?.let { item ->
+                    val labels by rememberUpdatedState(createLabels(item))
+                    val details by rememberUpdatedState(createDetails(item))
+                    ServerListItem(
+                        modifier = Modifier.padding(horizontal = spacing.xmedium),
+                        serverName = item.name.orEmpty(),
+                        flag = item.serverFlag.toDrawable(),
+                        labels = labels,
+                        details = details
+                    )
+                }
             }
         }
     }
