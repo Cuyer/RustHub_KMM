@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.domain.model
 
 import kotlinx.serialization.Serializable
+import pl.cuyer.rusthub.common.getImageByFileName
 
 @Serializable
 enum class Flag {
@@ -28,5 +29,11 @@ enum class Flag {
     VA, VC, VE, VG, VI, VN, VU,
     WF, WS,
     YE, YT,
-    ZA, ZM, ZW
+    ZA, ZM, ZW ;
+
+    companion object {
+        fun Flag?.toDrawable(): Int {
+            return getImageByFileName(this?.name?.lowercase() ?: "pl").drawableResId
+        }
+    }
 }

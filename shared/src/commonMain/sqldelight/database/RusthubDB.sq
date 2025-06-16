@@ -40,7 +40,7 @@ FROM server
 WHERE (:name           IS NULL OR name           LIKE '%' || :name           || '%')
   AND (:wipe           IS NULL OR date(wipe)        = date(:wipe))
   AND (:ranking        IS NULL OR ranking         >= :ranking)
-  AND (:modded         IS NULL OR modded          = :modded)
+  AND (:modded         IS NULL OR modded         = CASE WHEN :modded THEN 1 ELSE 0 END)
   AND (:playerCount    IS NULL OR player_count   >= :playerCount)
   AND (:serverCapacity IS NULL OR capacity       >= :serverCapacity)
   AND (:mapName        IS NULL OR map_name        = :mapName)

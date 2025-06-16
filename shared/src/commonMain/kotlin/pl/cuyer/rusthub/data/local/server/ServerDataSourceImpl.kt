@@ -52,7 +52,7 @@ class ServerDataSourceImpl(
             name = name,
             wipe = wipe?.toString(),
             ranking = ranking,
-            modded = if (modded == true) 1 else 0,
+            modded = modded,
             playerCount = playerCount,
             serverCapacity = serverCapacity,
             mapName = mapName,
@@ -78,20 +78,8 @@ class ServerDataSourceImpl(
         queries.updateFavourite(id = id, favourite = if (favourite == true) 1 else 0)
     }
 
-    override fun findKey(key: String): String? {
-        return queries.selectRemoteKey(key).executeAsOneOrNull()?.next_url
-    }
-
-    override fun insertOrReplaceRemoteKey(id: String, nextKey: String?) {
-        queries.insertOrReplaceRemoteKey(id, nextKey, null)
-    }
-
     override fun clearNotFavouriteServers() {
         queries.clearNotFavouriteServers()
-    }
-
-    override fun clearRemoteKeys() {
-        queries.clearRemoteKeys()
     }
 
     override fun getServersPagingSource(query: ServerQuery): PagingSource<Int, ServerInfo> {

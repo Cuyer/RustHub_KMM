@@ -12,11 +12,13 @@ import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.mapper.toServerInfo
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.repository.ServerDataSource
+import pl.cuyer.rusthub.domain.repository.remoteKey.RemoteKeyDataSource
 
 @OptIn(ExperimentalPagingApi::class)
 class BattlemetricsRemoteMediator(
     private val api: BattlemetricsClient,
-    private val dataSource: ServerDataSource
+    private val dataSource: ServerDataSource,
+    private val remoteKeyDataSource: RemoteKeyDataSource
 ) : RemoteMediator<Int, ServerInfo>() {
 
     companion object {
@@ -30,7 +32,7 @@ class BattlemetricsRemoteMediator(
             LoadType.REFRESH -> null
             LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
             LoadType.APPEND -> {
-                dataSource.findKey(REMOTE_KEY_ID)
+                remoteKeyDataSource.findKey(REMOTE_KEY_ID)
             }
         }
 
@@ -62,10 +64,11 @@ class BattlemetricsRemoteMediator(
             // Persist within one transaction
             if (loadType == LoadType.REFRESH) {
                 dataSource.clearNotFavouriteServers()
-                dataSource.clearRemoteKeys()
+                remoteKeyDataSource.clearRemoteKeys()
             }
             dataSource.upsertServers(entities)
-            dataSource.insertOrReplaceRemoteKey(
+
+            remoteKeyDataSource.insertOrReplaceRemoteKey(
                 id = REMOTE_KEY_ID,
                 nextKey = nextKey
             )

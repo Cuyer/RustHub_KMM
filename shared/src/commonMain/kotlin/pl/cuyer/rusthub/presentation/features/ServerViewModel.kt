@@ -1,17 +1,14 @@
 package pl.cuyer.rusthub.presentation.features
 
-import androidx.lifecycle.viewModelScope
 import app.cash.paging.PagingData
 import app.cash.paging.cachedIn
-import io.github.aakira.napier.LogLevel
-import io.github.aakira.napier.Napier
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -21,14 +18,23 @@ import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.PrepareRustMapUseCase
+import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import pl.cuyer.rusthub.presentation.snackbar.Duration
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 
 class ServerViewModel(
+    private val snackbarController: SnackbarController,
     getPagedServersUseCase: GetPagedServersUseCase,
     private val prepareRustMapUseCase: PrepareRustMapUseCase
 ) : BaseViewModel() {
 
-    var paging: Flow<PagingData<ServerInfo>>? = getPagedServersUseCase(ServerQuery())
+    var paging: Flow<PagingData<ServerInfo>> = getPagedServersUseCase(ServerQuery())
         .cachedIn(coroutineScope)
+
+    private val _uiEvent = Channel<UiEvent>(UNLIMITED)
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     private val _state = MutableStateFlow(ServerState())
     val state = _state
@@ -42,6 +48,7 @@ class ServerViewModel(
     fun onAction(action: ServerAction) {
         when (action) {
             is ServerAction.OnServerClick -> prepareRustMap(action.mapId, action.serverId)
+            is ServerAction.OnChangeLoadingState -> updateLoading(action.isLoading)
         }
     }
 
@@ -61,11 +68,29 @@ class ServerViewModel(
     }
 
     private fun navigateToServer() {
+        updateLoading(false)
 
     }
 
     private fun handleError(e: Throwable) {
+        updateLoading(false)
+        e.message?.let {
+            sendSnackbarEvent(
+                message = it
+            )
+        }
+    }
 
+    private fun sendSnackbarEvent(message: String, actionText: String? = null, action : () -> Unit = {}, duration: Duration? = null) {
+        coroutineScope.launch {
+            snackbarController.sendEvent(
+                event = SnackbarEvent(
+                    message = message,
+                    action = actionText?.let { SnackbarAction(name = it, action = action) },
+                    duration = duration ?: Duration.SHORT
+                )
+            )
+        }
     }
 
     private fun updateLoading(isLoading: Boolean) {

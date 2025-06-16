@@ -44,6 +44,7 @@ kotlin {
             implementation(libs.sql.delight.android.driver)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.android)
+            implementation(libs.androidx.navigation)
             implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
@@ -61,7 +62,6 @@ kotlin {
             implementation(libs.napier)
             implementation(libs.lifecycle.viewmodel)
             implementation(libs.lifecycle.runtime)
-            implementation(libs.androidx.navigation)
             implementation(libs.paging)
             api(libs.moko.resources)
         }
