@@ -1,11 +1,11 @@
 package pl.cuyer.rusthub.data.local
 
 import android.content.Context
-import app.cash.sqldelight.db.SqlDriver
-import app.cash.sqldelight.driver.android.AndroidSqliteDriver
-import pl.cuyer.rusthub.database.RustHubDatabase
 import app.cash.sqldelight.EnumColumnAdapter
-import database.Server
+import app.cash.sqldelight.driver.android.AndroidSqliteDriver
+import database.FiltersEntity
+import database.ServerEntity
+import pl.cuyer.rusthub.database.RustHubDatabase
 
 actual class DatabaseDriverFactory(
     private val context: Context
@@ -19,13 +19,21 @@ actual class DatabaseDriverFactory(
 
         return RustHubDatabase.Companion(
             driver = driver,
-            serverAdapter = Server.Adapter(
+            serverEntityAdapter = ServerEntity.Adapter(
                 map_nameAdapter = EnumColumnAdapter(),
                 server_flagAdapter = EnumColumnAdapter(),
                 regionAdapter = EnumColumnAdapter(),
                 difficultyAdapter = EnumColumnAdapter(),
                 wipe_scheduleAdapter = EnumColumnAdapter()
-            )
+            ),
+            filtersEntityAdapter = FiltersEntity.Adapter(
+                map_nameAdapter = EnumColumnAdapter(),
+                server_flagAdapter = EnumColumnAdapter(),
+                regionAdapter = EnumColumnAdapter(),
+                difficultyAdapter = EnumColumnAdapter(),
+                wipe_scheduleAdapter = EnumColumnAdapter(),
+                sort_orderAdapter = EnumColumnAdapter()
+            ),
         )
     }
 }

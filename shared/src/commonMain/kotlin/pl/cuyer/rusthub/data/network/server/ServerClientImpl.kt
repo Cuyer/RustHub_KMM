@@ -30,9 +30,7 @@ class ServerClientImpl(private val httpClient: HttpClient) : ServerRepository,
                     appendNonNull("difficulty" to query.difficulty)
                     appendNonNull("wipeSchedule" to query.wipeSchedule)
                     appendNonNull("official" to query.official)
-                    appendNonNull("favourite" to query.favourite)
                     appendNonNull("order" to query.order)
-
                 }
             }
         }

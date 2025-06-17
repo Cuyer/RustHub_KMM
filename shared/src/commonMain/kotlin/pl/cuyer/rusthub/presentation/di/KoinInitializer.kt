@@ -10,8 +10,10 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import pl.cuyer.rusthub.data.local.filter.FiltersDataSourceImpl
 import pl.cuyer.rusthub.data.local.server.ServerDataSourceImpl
 import pl.cuyer.rusthub.data.network.server.ServerClientImpl
+import pl.cuyer.rusthub.domain.repository.FiltersDataSource
 import pl.cuyer.rusthub.domain.repository.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
@@ -29,7 +31,8 @@ val appModule = module {
     }
     singleOf(::ServerClientImpl) bind ServerRepository::class
     singleOf(::ServerDataSourceImpl) bind ServerDataSource::class
-    single { GetPagedServersUseCase (get()) }
+    singleOf(::FiltersDataSourceImpl) bind FiltersDataSource::class)
+    single { GetPagedServersUseCase(get(), get(), get()) }
     factoryOf(::ServerViewModel)
 }
 

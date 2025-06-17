@@ -3,11 +3,12 @@ import pl.cuyer.rusthub.domain.model.Flag;
 import pl.cuyer.rusthub.domain.model.Maps;
 import pl.cuyer.rusthub.domain.model.Region;
 import pl.cuyer.rusthub.domain.model.WipeSchedule;
+import pl.cuyer.rusthub.domain.model.Order;
 
 -- =============================================================================
 -- Table Definition
 -- =============================================================================
-CREATE TABLE server (
+CREATE TABLE serverEntity (
     id             INTEGER    NOT NULL PRIMARY KEY,
     name           TEXT       NOT NULL,
     wipe           TEXT,                              -- ISO-8601 timestamp string, e.g. "2025-06-06T21:03:40.00+02:00"
@@ -30,50 +31,24 @@ CREATE TABLE server (
 );
 
 -- =============================================================================
--- Paged, Filtered SELECT
+-- Paged SELECT
 -- =============================================================================
--- Returns a page of servers matching all non-null filters, ordered by wipe timestamp
+-- Returns a page of servers
 findServersPaged:
 SELECT *
-FROM server
-WHERE (:name           IS NULL OR name           LIKE '%' || :name           || '%')
-  AND (:wipe           IS NULL OR date(wipe)        = date(:wipe))
-  AND (:ranking        IS NULL OR ranking         >= :ranking)
-  AND (:modded         IS NULL OR modded         = CASE WHEN :modded THEN 1 ELSE 0 END)
-  AND (:playerCount    IS NULL OR player_count   >= :playerCount)
-  AND (:mapName        IS NULL OR map_name        = :mapName)
-  AND (:serverFlag     IS NULL OR server_flag     = :serverFlag)
-  AND (:region         IS NULL OR region          = :region)
-  AND (:maxGroup       IS NULL OR max_group       = :maxGroup)
-  AND (:difficulty     IS NULL OR difficulty      = :difficulty)
-  AND (:wipeSchedule   IS NULL OR wipe_schedule   = :wipeSchedule)
-  AND (:isOfficial     IS NULL OR is_official     = :isOfficial)
-  AND (:favourite      IS NULL OR favourite       = :favourite)
+FROM serverEntity
 LIMIT :limit OFFSET :offset;
 
 countPagedServers:
 SELECT
   COUNT(*)
-FROM server
-WHERE (:name           IS NULL OR name           LIKE '%' || :name           || '%')
-  AND (:wipe           IS NULL OR date(wipe)     = date(:wipe))
-  AND (:ranking        IS NULL OR ranking        >= :ranking)
-  AND (:modded         IS NULL OR modded         = CASE WHEN :modded THEN 1 ELSE 0 END)
-  AND (:playerCount    IS NULL OR player_count    >= :playerCount)
-  AND (:mapName        IS NULL OR map_name        = :mapName)
-  AND (:serverFlag     IS NULL OR server_flag     = :serverFlag)
-  AND (:region         IS NULL OR region          = :region)
-  AND (:maxGroup       IS NULL OR max_group       = :maxGroup)
-  AND (:difficulty     IS NULL OR difficulty      = :difficulty)
-  AND (:wipeSchedule   IS NULL OR wipe_schedule   = :wipeSchedule)
-  AND (:isOfficial     IS NULL OR is_official     = :isOfficial)
-  AND (:favourite      IS NULL OR favourite       = :favourite);
+FROM serverEntity;
 
 -- =============================================================================
 -- Upsert (Insert or Update on id conflict)
 -- =============================================================================
 upsertServers:
-INSERT INTO server (
+INSERT INTO serverEntity (
     id,
     name,
     wipe,
@@ -128,4 +103,68 @@ INSERT INTO server (
     description    = excluded.description;
 
 clearServers:
-DELETE FROM server;
+DELETE FROM serverEntity;
+
+
+CREATE TABLE filtersEntity (
+    id             TEXT    NOT NULL PRIMARY KEY,
+    wipe           TEXT,                              -- ISO-8601 timestamp string, e.g. "2025-06-06T21:03:40.00+02:00"
+    ranking        REAL,
+    modded         INTEGER    NOT NULL DEFAULT 0,     -- store booleans as 0/1
+    player_count   INTEGER,
+    map_name       TEXT       AS Maps,                       -- the “cycle” float value
+    server_flag    TEXT       AS Flag,                -- e.g. "US"
+    region         TEXT       AS Region,
+    group_limit    INTEGER,
+    difficulty     TEXT       AS Difficulty,          -- nullable
+    wipe_schedule  TEXT       AS WipeSchedule,
+    is_official    INTEGER    NOT NULL DEFAULT 0,
+    sort_order     TEXT       AS Order
+);
+
+upsertFilters:
+INSERT INTO filtersEntity (
+    id,
+    wipe,
+    ranking,
+    player_count,
+    map_name,
+    server_flag,
+    region,
+    group_limit,
+    difficulty,
+    wipe_schedule,
+    is_official,
+    sort_order
+) VALUES (
+        :id,
+        :wipe,
+        :ranking,
+        :player_count,
+        :map_name,
+        :server_flag,
+        :region,
+        :group_limit,
+        :difficulty,
+        :wipe_schedule,
+        :is_official,
+        :sort_order
+) ON CONFLICT(id) DO UPDATE SET
+    id = excluded.id,
+    wipe = excluded.wipe,
+    ranking = excluded.ranking,
+    player_count = excluded.player_count,
+    map_name = excluded.map_name,
+    server_flag = excluded.server_flag,
+    region = excluded.region,
+    group_limit = excluded.group_limit,
+    difficulty = excluded.difficulty,
+    wipe_schedule = excluded.wipe_schedule,
+    is_official = excluded.is_official,
+    sort_order = excluded.sort_order;
+
+clearFilters:
+DELETE FROM filtersEntity;
+
+getFilters:
+SELECT * FROM filtersEntity WHERE id = ?;
