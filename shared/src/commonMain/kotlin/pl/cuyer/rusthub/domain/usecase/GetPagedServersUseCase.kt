@@ -19,6 +19,7 @@ class GetPagedServersUseCase(
                 pageSize = 20,
                 enablePlaceholders = false
             ),
+            remoteMediator = null,
             pagingSourceFactory = { dataSource.getServersPagingSource(query) }
         ).flow
     }

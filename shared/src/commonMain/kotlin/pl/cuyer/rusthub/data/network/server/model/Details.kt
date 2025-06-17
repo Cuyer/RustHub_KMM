@@ -3,7 +3,7 @@ package domain.models.server.battlemetrics
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import pl.cuyer.rusthub.data.network.battlemetrics.model.RustSettings
+import pl.cuyer.rusthub.data.network.server.model.RustSettings
 
 @Serializable
 data class Details(

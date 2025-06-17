@@ -8,15 +8,13 @@ data class ServerQuery(
     val ranking: Double? = null,
     val modded: Boolean? = null,
     val playerCount: Long? = null,
-    val serverCapacity: Long? = null,
-    val mapName: Maps? = null,
-    val serverFlag: Flag? = null,
+    val map: Maps? = null,
+    val flag: Flag? = null,
     val region: Region? = null,
-    val maxGroup: Long? = null,
+    val groupLimit: Long? = null,
     val difficulty: Difficulty? = null,
     val wipeSchedule: WipeSchedule? = null,
-    val isOfficial: Boolean? = null,
-    val serverIp: String? = null,
+    val official: Boolean? = null,
     val favourite: Boolean? = null,
-    val order: SortOrder = SortOrder.DESC
+    val order: Order = Order.WIPE
 )

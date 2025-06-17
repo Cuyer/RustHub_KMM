@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.data.network.battlemetrics.model
+package pl.cuyer.rusthub.data.network.server.model
 
 import domain.models.server.battlemetrics.BattlemetricsServerContent
 import kotlinx.serialization.SerialName

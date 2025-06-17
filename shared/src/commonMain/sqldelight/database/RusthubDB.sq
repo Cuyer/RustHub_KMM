@@ -26,8 +26,7 @@ CREATE TABLE server (
     ip             TEXT,
     map_image      TEXT,                              -- nullable URL/path
     description    TEXT,                               -- nullable long text
-    favourite      INTEGER    NOT NULL DEFAULT 0,
-    map_id         TEXT
+    favourite      INTEGER    NOT NULL DEFAULT 0
 );
 
 -- =============================================================================
@@ -42,7 +41,6 @@ WHERE (:name           IS NULL OR name           LIKE '%' || :name           || 
   AND (:ranking        IS NULL OR ranking         >= :ranking)
   AND (:modded         IS NULL OR modded         = CASE WHEN :modded THEN 1 ELSE 0 END)
   AND (:playerCount    IS NULL OR player_count   >= :playerCount)
-  AND (:serverCapacity IS NULL OR capacity       >= :serverCapacity)
   AND (:mapName        IS NULL OR map_name        = :mapName)
   AND (:serverFlag     IS NULL OR server_flag     = :serverFlag)
   AND (:region         IS NULL OR region          = :region)
@@ -50,11 +48,7 @@ WHERE (:name           IS NULL OR name           LIKE '%' || :name           || 
   AND (:difficulty     IS NULL OR difficulty      = :difficulty)
   AND (:wipeSchedule   IS NULL OR wipe_schedule   = :wipeSchedule)
   AND (:isOfficial     IS NULL OR is_official     = :isOfficial)
-  AND (:serverIp       IS NULL OR ip              = :serverIp)
   AND (:favourite      IS NULL OR favourite       = :favourite)
-ORDER BY
-    CASE WHEN :orderDesc = 1 THEN wipe END DESC,
-    CASE WHEN :orderDesc = 0 THEN wipe END ASC
 LIMIT :limit OFFSET :offset;
 
 countPagedServers:
@@ -66,7 +60,6 @@ WHERE (:name           IS NULL OR name           LIKE '%' || :name           || 
   AND (:ranking        IS NULL OR ranking        >= :ranking)
   AND (:modded         IS NULL OR modded         = CASE WHEN :modded THEN 1 ELSE 0 END)
   AND (:playerCount    IS NULL OR player_count    >= :playerCount)
-  AND (:serverCapacity IS NULL OR capacity        >= :serverCapacity)
   AND (:mapName        IS NULL OR map_name        = :mapName)
   AND (:serverFlag     IS NULL OR server_flag     = :serverFlag)
   AND (:region         IS NULL OR region          = :region)
@@ -74,7 +67,6 @@ WHERE (:name           IS NULL OR name           LIKE '%' || :name           || 
   AND (:difficulty     IS NULL OR difficulty      = :difficulty)
   AND (:wipeSchedule   IS NULL OR wipe_schedule   = :wipeSchedule)
   AND (:isOfficial     IS NULL OR is_official     = :isOfficial)
-  AND (:serverIp       IS NULL OR ip              = :serverIp)
   AND (:favourite      IS NULL OR favourite       = :favourite);
 
 -- =============================================================================
@@ -98,8 +90,7 @@ INSERT INTO server (
     wipe_schedule,
     is_official,
     ip,
-    description,
-    map_id
+    description
 ) VALUES (
     :id,
     :name,
@@ -117,8 +108,7 @@ INSERT INTO server (
     :wipeSchedule,
     CASE WHEN :isOfficial THEN 1 ELSE 0 END,
     :ip,
-    :description,
-    :mapId
+    :description
 ) ON CONFLICT(id) DO UPDATE SET
     name           = excluded.name,
     wipe           = excluded.wipe,
@@ -135,45 +125,7 @@ INSERT INTO server (
     wipe_schedule  = excluded.wipe_schedule,
     is_official    = excluded.is_official,
     ip             = excluded.ip,
-    description    = excluded.description,
-    map_id         = excluded.map_id;
+    description    = excluded.description;
 
-updateFavourite:
-UPDATE server
-SET favourite=? WHERE id=?;
-
-updateMap:
-UPDATE server
-SET map_image=? WHERE id=?;
-
-CREATE TABLE remote_keys (
-  id       TEXT       NOT NULL PRIMARY KEY,  -- use a constant key, e.g. 'servers'
-  next_url TEXT,
-  prev_url TEXT
-);
-
-selectRemoteKey:
-SELECT * FROM remote_keys WHERE id = ?;
-
-insertOrReplaceRemoteKey:
-INSERT OR REPLACE INTO remote_keys(id, next_url, prev_url) VALUES (?, ?, ?);
-
-clearRemoteKeys:
-DELETE FROM remote_keys;
-
-clearNotFavouriteServers:
-DELETE FROM server WHERE favourite = 0;
-
-
-CREATE TABLE last_fetch_timestamp (
-    id         INTEGER NOT NULL PRIMARY KEY,
-    last_fetch TEXT
-);
-
-insertLastFetchTimestamp:
-INSERT INTO last_fetch_timestamp(id, last_fetch)
-VALUES(1, ?)
-ON CONFLICT(id) DO UPDATE SET last_fetch = excluded.last_fetch;
-
-getLastFetchTimestamp:
-SELECT * FROM last_fetch_timestamp WHERE id = 1;
+clearServers:
+DELETE FROM server;
