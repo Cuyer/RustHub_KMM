@@ -37,6 +37,7 @@ CREATE TABLE serverEntity (
 findServersPaged:
 SELECT *
 FROM serverEntity
+ORDER BY wipe DESC
 LIMIT :limit OFFSET :offset;
 
 countPagedServers:

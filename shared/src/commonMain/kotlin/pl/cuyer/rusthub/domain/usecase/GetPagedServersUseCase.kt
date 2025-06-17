@@ -21,8 +21,8 @@ class GetPagedServersUseCase(
     operator fun invoke(query: ServerQuery): Flow<PagingData<ServerEntity>> {
         return Pager(
             config = PagingConfig(
-                pageSize = 20,
-                enablePlaceholders = false
+                pageSize = 40,
+                enablePlaceholders = true
             ),
             remoteMediator = ServerRemoteMediator(
                 dataSource,
