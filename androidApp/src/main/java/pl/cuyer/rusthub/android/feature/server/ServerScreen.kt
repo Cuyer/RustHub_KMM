@@ -23,7 +23,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -51,7 +50,6 @@ import pl.cuyer.rusthub.android.model.Label
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
-import pl.cuyer.rusthub.android.util.composeUtil.isAppInForeground
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.presentation.features.ServerAction
@@ -81,8 +79,6 @@ fun ServerScreen(
 
     val pullToRefreshState = rememberPullToRefreshState()
 
-    val isAppInForeground by isAppInForeground()
-
     val lazyListState = rememberLazyListState()
 
     val isAtTop by remember {
@@ -91,15 +87,12 @@ fun ServerScreen(
         }
     }
 
-    LaunchedEffect(isAppInForeground, state.value.isLoading) {
-        if (!isAppInForeground && state.value.isLoading) {
-            onAction(ServerAction.OnStopAllJobs)
-        }
-    }
-
     PullToRefreshBox(
         isRefreshing = false,
-        onRefresh = { onAction(ServerAction.OnRefresh) },
+        onRefresh = {
+            onAction(ServerAction.OnRefresh)
+            pagedList.refresh()
+        },
         state = pullToRefreshState,
         modifier = Modifier.fillMaxSize()
     ) {

@@ -1,10 +1,10 @@
 package pl.cuyer.rusthub.domain.mapper
 
-import database.Server
+import database.ServerEntity
 import kotlinx.datetime.Instant
 import pl.cuyer.rusthub.domain.model.ServerInfo
 
-fun Server.toServerInfo(): ServerInfo {
+fun ServerEntity.toServerInfo(): ServerInfo {
     return ServerInfo(
         id = id,
         name = name,
