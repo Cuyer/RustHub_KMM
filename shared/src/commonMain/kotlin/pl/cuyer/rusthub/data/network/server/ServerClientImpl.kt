@@ -4,16 +4,20 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import kotlinx.coroutines.flow.Flow
 import pl.cuyer.rusthub.common.Result
+import pl.cuyer.rusthub.data.network.server.model.PagedServerInfo
 import pl.cuyer.rusthub.data.network.util.BaseApiResponse
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
 import pl.cuyer.rusthub.data.network.util.appendNonNull
-import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
 
 class ServerClientImpl(private val httpClient: HttpClient) : ServerRepository,
     BaseApiResponse() {
-    override fun getServers(page: Int, size: Int, query: ServerQuery): Flow<Result<ServerInfo>> {
+    override fun getServers(
+        page: Int,
+        size: Int,
+        query: ServerQuery
+    ): Flow<Result<PagedServerInfo>> {
         return safeApiCall {
             httpClient.get(NetworkConstants.BASE_URL) {
                 url {

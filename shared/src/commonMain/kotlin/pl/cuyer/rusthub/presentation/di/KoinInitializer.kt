@@ -31,7 +31,7 @@ val appModule = module {
     }
     singleOf(::ServerClientImpl) bind ServerRepository::class
     singleOf(::ServerDataSourceImpl) bind ServerDataSource::class
-    singleOf(::FiltersDataSourceImpl) bind FiltersDataSource::class)
+    singleOf(::FiltersDataSourceImpl) bind FiltersDataSource::class
     single { GetPagedServersUseCase(get(), get(), get()) }
     factoryOf(::ServerViewModel)
 }
