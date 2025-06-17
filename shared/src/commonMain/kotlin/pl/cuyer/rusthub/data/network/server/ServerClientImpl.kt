@@ -19,7 +19,7 @@ class ServerClientImpl(private val httpClient: HttpClient) : ServerRepository,
         query: ServerQuery
     ): Flow<Result<PagedServerInfo>> {
         return safeApiCall {
-            httpClient.get(NetworkConstants.BASE_URL) {
+            httpClient.get(NetworkConstants.BASE_URL + "servers") {
                 url {
                     appendNonNull("page" to page)
                     appendNonNull("size" to size)

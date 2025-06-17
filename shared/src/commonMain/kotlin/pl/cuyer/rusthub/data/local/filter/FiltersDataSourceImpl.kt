@@ -11,7 +11,7 @@ class FiltersDataSourceImpl(
     db: RustHubDatabase
 ) : FiltersDataSource, Queries(db) {
 
-    override fun getFilters(): FiltersEntity? = queries.getFilters(DEFAULT_KEY).executeAsOne()
+    override fun getFilters(): FiltersEntity? = queries.getFilters(DEFAULT_KEY).executeAsOneOrNull()
 
     override fun upsertFilters(filters: ServerQuery) {
         queries.upsertFilters(
