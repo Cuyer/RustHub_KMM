@@ -70,7 +70,7 @@ fun FilterBottomSheet(
             text = "Filter Options",
             style = MaterialTheme.typography.titleLargeEmphasized,
             modifier = Modifier
-                .padding(spacing.medium)
+                .padding(start = spacing.medium, end = spacing.medium, bottom = spacing.medium)
         )
         HorizontalDivider()
         Column(
