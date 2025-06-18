@@ -9,3 +9,6 @@ enum class Maps {
     SAVAS_ISLAND_KOTH,
     SAVAS_ISLAND
 }
+
+val Maps.displayName: String
+    get() = this.name.lowercase().replaceFirstChar { it.uppercase() }

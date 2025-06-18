@@ -6,3 +6,6 @@ import kotlinx.serialization.Serializable
 enum class Difficulty {
     VANILLA, SOFTCORE, HARDCORE
 }
+
+val Difficulty.displayName: String
+    get() = this.name.lowercase().replaceFirstChar { it.uppercase() }

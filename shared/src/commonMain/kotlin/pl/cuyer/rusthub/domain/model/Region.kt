@@ -9,3 +9,6 @@ enum class Region {
     OCEANIA,
     AUSTRALIA
 }
+
+val Region.displayName: String
+    get() = this.name.lowercase().replaceFirstChar { it.uppercase() }

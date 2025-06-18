@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import pl.cuyer.rusthub.common.Constants.DEFAULT_KEY
 import pl.cuyer.rusthub.data.local.Queries
 import pl.cuyer.rusthub.data.local.mapper.toEntity
 import pl.cuyer.rusthub.data.local.mapper.toServerQuery
@@ -19,7 +20,7 @@ class FiltersDataSourceImpl(
 
     override fun getFilters(): Flow<ServerQuery?> {
         return queries
-            .getFilters()
+            .getFilters(DEFAULT_KEY)
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
             .map { it?.toServerQuery() }
@@ -27,7 +28,7 @@ class FiltersDataSourceImpl(
 
     override fun upsertFilters(filters: ServerQuery) {
         queries.upsertFilters(
-            id = 1,
+            id = DEFAULT_KEY,
             wipe = filters.wipe?.toString(),
             ranking = filters.ranking,
             player_count = filters.playerCount,

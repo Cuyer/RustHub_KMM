@@ -4,6 +4,7 @@ import app.cash.paging.PagingData
 import app.cash.paging.cachedIn
 import app.cash.paging.map
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
@@ -12,8 +13,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -21,8 +26,9 @@ import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.data.local.mapper.toServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
+import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.domain.usecase.ClearFiltersUseCase
-import pl.cuyer.rusthub.domain.usecase.GetFiltersOptions
+import pl.cuyer.rusthub.domain.usecase.GetFiltersOptionsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
@@ -38,8 +44,8 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 class ServerViewModel(
     private val snackbarController: SnackbarController,
     getPagedServersUseCase: GetPagedServersUseCase,
-    getFiltersUseCase: GetFiltersUseCase,
-    getFiltersOptions: GetFiltersOptions,
+    private val getFiltersUseCase: GetFiltersUseCase,
+    private val getFiltersOptions: GetFiltersOptionsUseCase,
     private val saveFiltersUseCase: SaveFiltersUseCase,
     private val clearFiltersUseCase: ClearFiltersUseCase
 ) : BaseViewModel() {
@@ -55,16 +61,10 @@ class ServerViewModel(
     val uiEvent = _uiEvent.receiveAsFlow()
 
     private val _state = MutableStateFlow(ServerState())
-    val state = combine(
-        _state,
-        getFiltersUseCase().map {
-            it?.toUi()
+    val state = _state
+        .onStart {
+            observeFilters()
         }
-    ) { currentState, filters ->
-        currentState.copy(
-            filters = filters ?: ServerQuery().toUi(),
-        )
-    }.distinctUntilChanged()
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),
@@ -77,6 +77,33 @@ class ServerViewModel(
                 Napier.i("ServerState: $it")
             }
         }
+    }
+
+    private fun observeFilters() {
+        combine(
+            getFiltersOptions.invoke(),
+            getFiltersUseCase.invoke()
+        ) { filtersOptions, filters ->
+            println("filtersOptions: $filtersOptions")
+            println("filters: $filters")
+            filters.toUi(
+                maps = filtersOptions?.maps?.map { it.displayName } ?: emptyList(),
+                flags = filtersOptions?.flags?.map { it.displayName } ?: emptyList(),
+                regions = filtersOptions?.regions?.map { it.displayName } ?: emptyList(),
+                difficulties = filtersOptions?.difficulty?.map { it.displayName } ?: emptyList(),
+                schedules = filtersOptions?.wipeSchedules?.map { it.displayName } ?: emptyList(),
+                playerCount = filtersOptions?.maxPlayerCount ?: 0,
+                groupLimit = filtersOptions?.maxGroupLimit ?: 0,
+                ranking = filtersOptions?.maxRanking ?: 0
+            )
+        }.filterNotNull()
+            .onEach { mappedFilters ->
+                _state.update {
+                    it.copy(filters = mappedFilters)
+                }
+            }
+            .flowOn(Dispatchers.Default)
+            .launchIn(coroutineScope)
     }
 
     fun onAction(action: ServerAction) {

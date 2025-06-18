@@ -21,7 +21,7 @@ import pl.cuyer.rusthub.domain.repository.filtersOptions.FiltersOptionsRepositor
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
 import pl.cuyer.rusthub.domain.usecase.ClearFiltersUseCase
-import pl.cuyer.rusthub.domain.usecase.GetFiltersOptions
+import pl.cuyer.rusthub.domain.usecase.GetFiltersOptionsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
@@ -46,7 +46,7 @@ val appModule = module {
     single { GetFiltersUseCase(get()) }
     single { SaveFiltersUseCase(get()) }
     single { ClearFiltersUseCase(get()) }
-    single { GetFiltersOptions(get(), get()) }
+    single { GetFiltersOptionsUseCase(get(), get()) }
     factoryOf(::ServerViewModel)
 }
 

@@ -5,3 +5,6 @@ enum class WipeSchedule {
     BIWEEKLY,
     MONTHLY
 }
+
+val WipeSchedule.displayName: String
+    get() = this.name.lowercase().replaceFirstChar { it.uppercase() }

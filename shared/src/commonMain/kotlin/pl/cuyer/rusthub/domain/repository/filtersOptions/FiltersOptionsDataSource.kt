@@ -5,6 +5,6 @@ import pl.cuyer.rusthub.domain.model.FiltersOptions
 
 interface FiltersOptionsDataSource {
     fun upsertFiltersOptions(filtersOptions: FiltersOptions)
-    fun getFiltersOptions(): Flow<FiltersOptions?>
+    fun getFiltersOptions(): Flow<FiltersOptions>
     fun clearFiltersOptions()
 }

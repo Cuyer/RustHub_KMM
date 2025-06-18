@@ -201,3 +201,111 @@ CREATE TABLE filtersWipeScheduleEntity (
     id TEXT NOT NULL PRIMARY KEY,
     label TEXT NOT NULL
 );
+
+
+upsertFiltersOptions:
+INSERT INTO filtersOptionsEntity (
+    id,
+    max_ranking,
+    max_player_count,
+    max_group_limit
+) VALUES (
+    :id,
+    :max_ranking,
+    :max_player_count,
+    :max_group_limit
+) ON CONFLICT(id) DO UPDATE SET
+    max_ranking = excluded.max_ranking,
+    max_player_count = excluded.max_player_count,
+    max_group_limit = excluded.max_group_limit;
+
+getFiltersOptions:
+SELECT * FROM filtersOptionsEntity WHERE id = ?;
+
+clearFiltersOptions:
+DELETE FROM filtersOptionsEntity;
+
+-- Flags
+upsertFiltersFlag:
+INSERT INTO filtersFlagEntity (
+    id,
+    label
+) VALUES (
+    :id,
+    :label
+) ON CONFLICT(id) DO UPDATE SET
+    label = excluded.label;
+
+getFiltersFlags:
+SELECT * FROM filtersFlagEntity;
+
+clearFiltersFlags:
+DELETE FROM filtersFlagEntity;
+
+-- Maps
+upsertFiltersMap:
+INSERT INTO filtersMapEntity (
+    id,
+    label
+) VALUES (
+    :id,
+    :label
+) ON CONFLICT(id) DO UPDATE SET
+    label = excluded.label;
+
+getFiltersMaps:
+SELECT * FROM filtersMapEntity;
+
+clearFiltersMaps:
+DELETE FROM filtersMapEntity;
+
+-- Regions
+upsertFiltersRegion:
+INSERT INTO filtersRegionEntity (
+    id,
+    label
+) VALUES (
+    :id,
+    :label
+) ON CONFLICT(id) DO UPDATE SET
+    label = excluded.label;
+
+getFiltersRegions:
+SELECT * FROM filtersRegionEntity;
+
+clearFiltersRegions:
+DELETE FROM filtersRegionEntity;
+
+-- Difficulty
+upsertFiltersDifficulty:
+INSERT INTO filtersDifficultyEntity (
+    id,
+    label
+) VALUES (
+    :id,
+    :label
+) ON CONFLICT(id) DO UPDATE SET
+    label = excluded.label;
+
+getFiltersDifficulty:
+SELECT * FROM filtersDifficultyEntity;
+
+clearFiltersDifficulty:
+DELETE FROM filtersDifficultyEntity;
+
+-- Wipe schedules
+upsertFiltersWipeSchedule:
+INSERT INTO filtersWipeScheduleEntity (
+    id,
+    label
+) VALUES (
+    :id,
+    :label
+) ON CONFLICT(id) DO UPDATE SET
+    label = excluded.label;
+
+getFiltersWipeSchedules:
+SELECT * FROM filtersWipeScheduleEntity;
+
+clearFiltersWipeSchedules:
+DELETE FROM filtersWipeScheduleEntity;
