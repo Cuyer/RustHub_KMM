@@ -18,20 +18,21 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,7 +53,6 @@ import pl.cuyer.rusthub.presentation.model.toDomain
 fun FilterBottomSheet(
     modifier: Modifier = Modifier,
     stateProvider: () -> State<ServerState>,
-    sheetState: SheetState,
     onDismiss: () -> Unit,
     onAction: (ServerAction) -> Unit,
 ) {
@@ -61,9 +61,7 @@ fun FilterBottomSheet(
     val currentFilters = stateProvider().value.filters
     var newFilters by remember(currentFilters) { mutableStateOf(currentFilters) }
 
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = sheetState,
+    Column(
         modifier = modifier
     ) {
         Text(
@@ -203,25 +201,25 @@ fun FilterBottomSheetContent(
 @Preview
 @Composable
 private fun FilterBottomSheetPreview() {
-    val sheetState = rememberModalBottomSheetState()
-    val coroutineScope = rememberCoroutineScope()
-
+    val sheetState = rememberStandardBottomSheetState(initialValue = SheetValue.Expanded)
+    val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
     RustHubTheme {
-        Surface(
-            modifier = Modifier
-                .fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
+        BottomSheetScaffold(
+            scaffoldState = scaffoldState,
+            sheetPeekHeight = 0.dp,
+            sheetContent = {
+                FilterBottomSheet(
+                    onDismiss = {},
+                    stateProvider = { mutableStateOf(ServerState()) },
+                    onAction = { },
+                )
+            }
         ) {
-            FilterBottomSheet(
-                sheetState = sheetState,
-                onDismiss = {
-                    coroutineScope.launch {
-                        sheetState.hide()
-                    }
-                },
-                stateProvider = { mutableStateOf(ServerState()) },
-                onAction = { }
-            )
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.background
+            ) {}
         }
     }
 }
+

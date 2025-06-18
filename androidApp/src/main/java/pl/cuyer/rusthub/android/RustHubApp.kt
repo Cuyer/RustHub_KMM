@@ -12,7 +12,8 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -21,7 +22,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -62,9 +66,21 @@ fun RustHubApp() {
     val snackbarController = SnackbarController
     val scope = rememberCoroutineScope()
     val backStack = remember { mutableStateListOf<Any>(ServerList) }
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheetState = rememberStandardBottomSheetState(initialValue = SheetValue.Hidden)
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = sheetState,
+        snackbarHostState = snackbarHostState
+    )
     val coroutineScope = rememberCoroutineScope()
     var showSheet by remember { mutableStateOf(false) }
+
+    LaunchedEffect(showSheet) {
+        if (showSheet) {
+            sheetState.expand()
+        } else {
+            sheetState.hide()
+        }
+    }
 
     ObserveAsEvents(flow = snackbarController.events, snackbarHostState) { event ->
         scope.launch {
@@ -150,25 +166,30 @@ fun RustHubApp() {
                                 val state = viewModel.state.collectAsStateWithLifecycle()
                                 val paging = viewModel.paging.collectAsLazyPagingItems()
 
-                                ServerScreen(
-                                    stateProvider = { state },
-                                    onAction = viewModel::onAction,
-                                    uiEvent = viewModel.uiEvent,
-                                    onNavigate = { destination ->
-                                        backStack.add(destination)
-                                    },
-                                    pagedList = paging
-                                )
-
-                                if (showSheet) {
-                                    FilterBottomSheet(
+                                BottomSheetScaffold(
+                                    scaffoldState = scaffoldState,
+                                    sheetPeekHeight = 0.dp,
+                                    sheetContent = {
+                                        if (showSheet) {
+                                            FilterBottomSheet(
+                                                stateProvider = { state },
+                                                onDismiss = {
+                                                    showSheet = false
+                                                    paging.refresh()
+                                                },
+                                                onAction = viewModel::onAction,
+                                            )
+                                        }
+                                    }
+                                ) {
+                                    ServerScreen(
                                         stateProvider = { state },
-                                        sheetState = sheetState,
-                                        onDismiss = {
-                                            showSheet = false
-                                            paging.refresh()
-                                        },
                                         onAction = viewModel::onAction,
+                                        uiEvent = viewModel.uiEvent,
+                                        onNavigate = { destination ->
+                                            backStack.add(destination)
+                                        },
+                                        pagedList = paging
                                     )
                                 }
                             }
