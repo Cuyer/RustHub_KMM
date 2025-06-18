@@ -67,12 +67,13 @@ fun FilterBottomSheet(
         Text(
             text = "Filter Options",
             style = MaterialTheme.typography.titleLargeEmphasized,
-            modifier = Modifier.padding(spacing.medium)
+            modifier = Modifier
+                .padding(horizontal = spacing.medium, vertical = spacing.small)
         )
         HorizontalDivider()
         Column(
             modifier = Modifier
-                .fillMaxHeight(0.9f)
+                .fillMaxHeight(0.85f)
                 .verticalScroll(scrollState)
         ) {
             FilterBottomSheetContent(
