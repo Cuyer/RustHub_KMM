@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,7 +58,8 @@ fun FilterBottomSheet(
 ) {
     val scrollState = rememberScrollState()
 
-    var newFilters by remember { mutableStateOf(FilterUi()) }
+    val currentFilters = stateProvider().value.filters
+    var newFilters by remember(currentFilters) { mutableStateOf(currentFilters) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -68,7 +70,7 @@ fun FilterBottomSheet(
             text = "Filter Options",
             style = MaterialTheme.typography.titleLargeEmphasized,
             modifier = Modifier
-                .padding(horizontal = spacing.medium, vertical = spacing.small)
+                .padding(spacing.medium)
         )
         HorizontalDivider()
         Column(
@@ -77,7 +79,8 @@ fun FilterBottomSheet(
                 .verticalScroll(scrollState)
         ) {
             FilterBottomSheetContent(
-                filters = stateProvider().value.filters
+                filters = newFilters,
+                onFiltersChange = { newFilters = it }
             )
             Button(
                 shape = RectangleShape,
@@ -119,7 +122,8 @@ fun FilterBottomSheet(
 @Composable
 fun FilterBottomSheetContent(
     modifier: Modifier = Modifier,
-    filters: FilterUi
+    filters: FilterUi,
+    onFiltersChange: (FilterUi) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -127,13 +131,16 @@ fun FilterBottomSheetContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
-        filters.lists.forEach { (label, options, selectedIndex) ->
+        filters.lists.forEachIndexed { index, (label, options, selectedIndex) ->
             AppExposedDropdownMenu(
                 label = label,
                 options = options,
                 selectedValue = selectedIndex ?: 0,
-                onSelectionChanged = { index ->
-
+                onSelectionChanged = { selected ->
+                    val updated = filters.lists.toMutableList()
+                    val old = updated[index]
+                    updated[index] = Triple(old.first, old.second, selected)
+                    onFiltersChange(filters.copy(lists = updated))
                 }
             )
         }
@@ -141,22 +148,28 @@ fun FilterBottomSheetContent(
             modifier = modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            filters.checkboxes.forEach { (label, isChecked) ->
+            filters.checkboxes.forEachIndexed { index, (label, isChecked) ->
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     SwitchWithText(
                         text = label,
-                        isChecked = isChecked
+                        isChecked = isChecked,
+                        onCheckedChange = { checked ->
+                            val updated = filters.checkboxes.toMutableList()
+                            updated[index] = label to checked
+                            onFiltersChange(filters.copy(checkboxes = updated))
+                        }
                     )
                 }
             }
         }
 
 
-        filters.ranges.forEach { (label, max, value) ->
-            val textFieldState = remember { TextFieldState(initialText = value?.toString() ?: "") }
+        filters.ranges.forEachIndexed { index, (label, max, value) ->
+            val textFieldState =
+                remember(value) { TextFieldState(initialText = value?.toString() ?: "") }
             OutlinedTextField(
                 state = textFieldState,
                 label = {
@@ -175,6 +188,13 @@ fun FilterBottomSheetContent(
                     )
                 }
             )
+            LaunchedEffect(textFieldState.text) {
+                val updated = filters.ranges.toMutableList()
+                val newValue = textFieldState.text.toString().toIntOrNull()
+                val old = updated[index]
+                updated[index] = Triple(old.first, old.second, newValue)
+                onFiltersChange(filters.copy(ranges = updated))
+            }
         }
     }
 }

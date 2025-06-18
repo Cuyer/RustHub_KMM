@@ -135,6 +135,7 @@ INSERT INTO filtersEntity (
     group_limit,
     difficulty,
     wipe_schedule,
+    modded,
     is_official,
     sort_order
 ) VALUES (
@@ -148,6 +149,7 @@ INSERT INTO filtersEntity (
         :group_limit,
         :difficulty,
         :wipe_schedule,
+        :modded,
         :is_official,
         :sort_order
 ) ON CONFLICT(id) DO UPDATE SET
@@ -161,6 +163,7 @@ INSERT INTO filtersEntity (
     group_limit = excluded.group_limit,
     difficulty = excluded.difficulty,
     wipe_schedule = excluded.wipe_schedule,
+    modded = excluded.modded,
     is_official = excluded.is_official,
     sort_order = excluded.sort_order;
 

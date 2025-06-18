@@ -45,13 +45,13 @@ import org.koin.compose.koinInject
 import pl.cuyer.rusthub.android.designsystem.FilterBottomSheet
 import pl.cuyer.rusthub.android.feature.server.ServerDetails
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
-import pl.cuyer.rusthub.presentation.navigation.Destination.ServerDetails
-import pl.cuyer.rusthub.presentation.navigation.Destination.ServerList
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.navigation.TwoPaneScene
 import pl.cuyer.rusthub.android.navigation.TwoPaneSceneStrategy
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.presentation.features.ServerViewModel
+import pl.cuyer.rusthub.presentation.navigation.Destination.ServerDetails
+import pl.cuyer.rusthub.presentation.navigation.Destination.ServerList
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 
@@ -166,6 +166,7 @@ fun RustHubApp() {
                                         sheetState = sheetState,
                                         onDismiss = {
                                             showSheet = false
+                                            paging.refresh()
                                         },
                                         onAction = viewModel::onAction,
                                     )
