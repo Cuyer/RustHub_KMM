@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.android.designsystem
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,12 +12,19 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -30,13 +38,18 @@ import pl.cuyer.rusthub.domain.model.Maps
 import pl.cuyer.rusthub.domain.model.Region
 import pl.cuyer.rusthub.domain.model.WipeSchedule
 import pl.cuyer.rusthub.domain.model.displayName
+import pl.cuyer.rusthub.presentation.features.ServerAction
+import pl.cuyer.rusthub.presentation.features.ServerState
+import pl.cuyer.rusthub.presentation.model.FilterUi
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterBottomSheet(
     modifier: Modifier = Modifier,
+    stateProvider: () -> State<ServerState>,
     sheetState: SheetState,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onAction: (ServerAction) -> Unit,
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -49,18 +62,15 @@ fun FilterBottomSheet(
             modifier = Modifier.padding(spacing.medium)
         )
         HorizontalDivider()
-        FilterBottomSheetContent(
-            filtersMap = mapOf(
-                "Map" to Maps.entries.map { it.name },
-                "Country" to Flag.entries.map { it.displayName.uppercase() },
-                "Region" to Region.entries.map { it.name },
-                "Difficulty" to Difficulty.entries.map { it.name },
-                "Wipe Schedule" to WipeSchedule.entries.map { it.name }
-            )
-        )
+        FilterBottomSheetContent(filters = stateProvider().value.filters)
         Button(
             shape = RectangleShape,
-            onClick = onDismiss,
+            onClick = {
+                /*onAction(
+                    ServerAction.OnSaveFilters(filters = state.filters)
+                )*/
+                onDismiss()
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = spacing.medium, start = spacing.large, end = spacing.large)
@@ -69,7 +79,12 @@ fun FilterBottomSheet(
         }
         TextButton(
             shape = RectangleShape,
-            onClick = {  },
+            onClick = {
+                onAction(
+                    ServerAction.OnClearFilters
+                )
+                onDismiss()
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = spacing.small, horizontal = spacing.large)
@@ -83,7 +98,7 @@ fun FilterBottomSheet(
 @Composable
 fun FilterBottomSheetContent(
     modifier: Modifier = Modifier,
-    filtersMap: Map<String, List<String>>
+    filters: FilterUi
 ) {
     Column(
         modifier = modifier
@@ -91,10 +106,43 @@ fun FilterBottomSheetContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
-        filtersMap.forEach {
-            AppExposedDropdownMenu(it.key, it.value)
+        filters.lists.forEach { (label, options, selectedIndex) ->
+            AppExposedDropdownMenu(
+                label = label,
+                options = options,
+                selectedValue = selectedIndex ?: 0
+            )
         }
-        SwitchRow()
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            filters.checkboxes.forEach { (label, isChecked) ->
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    SwitchWithText(
+                        text = label,
+                        isChecked = isChecked
+                    )
+                }
+            }
+        }
+
+        filters.ranges.forEach { (label, max, value) ->
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "$label: $value", style = MaterialTheme.typography.bodyLarge)
+                Slider(
+                    value = value.toFloat(),
+                    onValueChange = { /* TODO: Handle slider change */ },
+                    valueRange = 0f..max.toFloat(), // arbitrary max or make configurable
+                    steps = 10
+                )
+            }
+        }
     }
 }
 
@@ -117,7 +165,9 @@ private fun FilterBottomSheetPreview() {
                     coroutineScope.launch {
                         sheetState.hide()
                     }
-                }
+                },
+                stateProvider = { mutableStateOf(ServerState()) },
+                onAction = { }
             )
         }
     }

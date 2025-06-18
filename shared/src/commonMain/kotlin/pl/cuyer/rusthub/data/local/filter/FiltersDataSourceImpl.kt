@@ -1,5 +1,12 @@
 package pl.cuyer.rusthub.data.local.filter
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToOneOrNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import pl.cuyer.rusthub.common.Constants.DEFAULT_KEY
 import pl.cuyer.rusthub.data.local.Queries
 import pl.cuyer.rusthub.data.local.mapper.toEntity
@@ -12,7 +19,13 @@ class FiltersDataSourceImpl(
     db: RustHubDatabase
 ) : FiltersDataSource, Queries(db) {
 
-    override fun getFilters(): ServerQuery? = queries.getFilters(DEFAULT_KEY).executeAsOneOrNull()?.toServerQuery()
+    override fun getFilters(): Flow<ServerQuery?> {
+        return queries
+            .getFilters(DEFAULT_KEY)
+            .asFlow()
+            .mapToOneOrNull(Dispatchers.IO)
+            .map { it?.toServerQuery() }
+    }
 
     override fun upsertFilters(filters: ServerQuery) {
         queries.upsertFilters(

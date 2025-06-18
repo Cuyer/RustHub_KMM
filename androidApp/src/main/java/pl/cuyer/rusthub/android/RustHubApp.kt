@@ -147,7 +147,7 @@ fun RustHubApp() {
                                 metadata = TwoPaneScene.twoPane()
                             ) {
                                 val viewModel = koinInject<ServerViewModel>()
-                                val state = viewModel.state
+                                val state = viewModel.state.collectAsStateWithLifecycle()
                                 val paging = viewModel.paging.collectAsLazyPagingItems()
 
                                 ServerScreen(
@@ -162,10 +162,12 @@ fun RustHubApp() {
 
                                 if (showSheet) {
                                     FilterBottomSheet(
+                                        stateProvider = { state },
                                         sheetState = sheetState,
                                         onDismiss = {
                                             showSheet = false
-                                        }
+                                        },
+                                        onAction = viewModel::onAction,
                                     )
                                 }
                             }

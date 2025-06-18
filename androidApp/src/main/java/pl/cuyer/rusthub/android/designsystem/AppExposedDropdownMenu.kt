@@ -29,10 +29,11 @@ import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
 @Composable
 fun AppExposedDropdownMenu(
     label: String,
-    options: List<String>
+    options: List<String>,
+    selectedValue: Int?
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val textFieldState = rememberTextFieldState("")
+    val textFieldState = rememberTextFieldState(options.getOrElse(selectedValue ?: -1) { "" })
 
     ExposedDropdownMenuBox(
         expanded = expanded,

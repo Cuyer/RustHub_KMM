@@ -10,7 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun SwitchRow(modifier: Modifier = Modifier) {
+fun SwitchRow(
+    modifier: Modifier = Modifier,
+    label: String,
+    isChecked: Boolean
+) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
@@ -20,14 +24,18 @@ fun SwitchRow(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             SwitchWithText(
-                text = "Include Official Servers"
+                text = label,
+                isChecked = isChecked
             )
         }
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SwitchWithText(text = "Include modded servers")
+            SwitchWithText(
+                text = label,
+                isChecked = isChecked
+            )
         }
     }
 }

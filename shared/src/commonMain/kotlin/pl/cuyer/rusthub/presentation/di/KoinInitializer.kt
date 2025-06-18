@@ -16,7 +16,10 @@ import pl.cuyer.rusthub.data.network.server.ServerClientImpl
 import pl.cuyer.rusthub.domain.repository.FiltersDataSource
 import pl.cuyer.rusthub.domain.repository.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
+import pl.cuyer.rusthub.domain.usecase.ClearFiltersUseCase
+import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
+import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.presentation.features.ServerViewModel
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 
@@ -33,6 +36,9 @@ val appModule = module {
     singleOf(::ServerDataSourceImpl) bind ServerDataSource::class
     singleOf(::FiltersDataSourceImpl) bind FiltersDataSource::class
     single { GetPagedServersUseCase(get(), get(), get()) }
+    single { GetFiltersUseCase(get()) }
+    single { SaveFiltersUseCase(get()) }
+    single { ClearFiltersUseCase(get()) }
     factoryOf(::ServerViewModel)
 }
 

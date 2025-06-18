@@ -29,7 +29,7 @@ class ServerRemoteMediator(
         }
 
         return try {
-            val query: ServerQuery = filters.getFilters() ?: ServerQuery()
+            val query: ServerQuery = filters.getFilters().first() ?: ServerQuery()
             when (val result = api.getServers(page, state.config.pageSize, query)
                 .first { it !is Result.Loading }) {
                 is Result.Error -> MediatorResult.Error(result.exception)

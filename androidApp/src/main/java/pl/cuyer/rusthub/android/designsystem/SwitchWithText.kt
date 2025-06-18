@@ -6,9 +6,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun SwitchWithText(text: String) {
+fun SwitchWithText(text: String, isChecked: Boolean) {
     Text(text)
-    AppSwitch()
+    AppSwitch(isChecked = isChecked)
 }
 
 @Preview

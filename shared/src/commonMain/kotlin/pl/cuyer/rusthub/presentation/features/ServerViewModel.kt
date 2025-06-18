@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.presentation.features
 import app.cash.paging.PagingData
 import app.cash.paging.cachedIn
 import app.cash.paging.map
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -10,6 +11,9 @@ import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -17,7 +21,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.data.local.mapper.toServerInfo
+import pl.cuyer.rusthub.domain.model.ServerQuery
+import pl.cuyer.rusthub.domain.usecase.ClearFiltersUseCase
+import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
+import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.presentation.model.toUi
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
@@ -25,10 +33,14 @@ import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+
 //TODO pomyśleć co zrobić żeby uniknąć importu z data do viewmodela (mapowanie)
 class ServerViewModel(
     private val snackbarController: SnackbarController,
-    getPagedServersUseCase: GetPagedServersUseCase
+    getPagedServersUseCase: GetPagedServersUseCase,
+    getFiltersUseCase: GetFiltersUseCase,
+    private val saveFiltersUseCase: SaveFiltersUseCase,
+    private val clearFiltersUseCase: ClearFiltersUseCase
 ) : BaseViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -42,21 +54,46 @@ class ServerViewModel(
     val uiEvent = _uiEvent.receiveAsFlow()
 
     private val _state = MutableStateFlow(ServerState())
-    val state = _state
+    val state = combine(
+        _state,
+        getFiltersUseCase().map {
+            it?.toUi()
+        }
+    ) { currentState, filters ->
+        currentState.copy(
+            filters = filters ?: ServerQuery().toUi(),
+        )
+    }.distinctUntilChanged()
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = ServerState()
         )
 
+    init {
+        coroutineScope.launch {
+            state.collectLatest {
+                Napier.i("ServerState: $it")
+            }
+        }
+    }
+
     fun onAction(action: ServerAction) {
         when (action) {
             is ServerAction.OnServerClick -> {}
             is ServerAction.OnChangeLoadingState -> updateLoading(action.isLoading)
             is ServerAction.OnRefresh -> {}
-
-            is ServerAction.OnStopAllJobs -> {}
+            is ServerAction.OnSaveFilters -> onSaveFilters(action.filters)
+            is ServerAction.OnClearFilters -> clearFilters()
         }
+    }
+
+    private fun onSaveFilters(filters: ServerQuery) {
+        saveFiltersUseCase(filters)
+    }
+
+    private fun clearFilters() {
+        clearFiltersUseCase()
     }
 
     private fun navigateToServer() {
