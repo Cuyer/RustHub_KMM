@@ -1,10 +1,9 @@
-package pl.cuyer.rusthub.domain.model
+package pl.cuyer.rusthub.data.network.filtersOptions.model
 
-import pl.cuyer.rusthub.common.getImageByFileName
-import pl.cuyer.rusthub.util.getCountryCode
-import pl.cuyer.rusthub.util.getCountryDisplayName
+import kotlinx.serialization.Serializable
 
-enum class Flag {
+@Serializable
+enum class FlagDto {
     AD, AE, AF, AG, AI, AL, AM, AO, AQ, AR, AS, AT, AU, AW, AX, AZ,
     BA, BB, BD, BE, BF, BG, BH, BI, BJ, BL, BM, BN, BO, BQ, BR, BS, BT, BV, BW, BY, BZ,
     CA, CC, CD, CF, CG, CH, CI, CK, CL, CM, CN, CO, CR, CU, CV, CW, CX, CY, CZ,
@@ -30,24 +29,4 @@ enum class Flag {
     WF, WS,
     YE, YT,
     ZA, ZM, ZW, ZZ, XK;
-
-    companion object {
-        fun Flag?.toDrawable(): Int {
-            return when(this) {
-                IN -> return getImageByFileName("ind").drawableResId
-                AS -> return getImageByFileName("asm").drawableResId
-                DO -> return getImageByFileName("dom").drawableResId
-                IS -> return getImageByFileName("isl").drawableResId
-                else -> return getImageByFileName(this?.name?.lowercase() ?: "pl").drawableResId
-            }
-        }
-
-        fun fromDisplayName(displayName: String): Flag? {
-            val code = getCountryCode(displayName)
-            return code?.let { runCatching { Flag.valueOf(it) }.getOrNull() }
-        }
-    }
 }
-
-val Flag.displayName: String
-    get() = getCountryDisplayName(name)

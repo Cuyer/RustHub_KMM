@@ -11,12 +11,17 @@ import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import pl.cuyer.rusthub.data.local.filter.FiltersDataSourceImpl
+import pl.cuyer.rusthub.data.local.filtersOptions.FiltersOptionsDataSourceImpl
 import pl.cuyer.rusthub.data.local.server.ServerDataSourceImpl
+import pl.cuyer.rusthub.data.network.filtersOptions.FiltersOptionsClientImpl
 import pl.cuyer.rusthub.data.network.server.ServerClientImpl
-import pl.cuyer.rusthub.domain.repository.FiltersDataSource
-import pl.cuyer.rusthub.domain.repository.ServerDataSource
+import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
+import pl.cuyer.rusthub.domain.repository.filtersOptions.FiltersOptionsDataSource
+import pl.cuyer.rusthub.domain.repository.filtersOptions.FiltersOptionsRepository
+import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
 import pl.cuyer.rusthub.domain.usecase.ClearFiltersUseCase
+import pl.cuyer.rusthub.domain.usecase.GetFiltersOptions
 import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
@@ -35,10 +40,13 @@ val appModule = module {
     singleOf(::ServerClientImpl) bind ServerRepository::class
     singleOf(::ServerDataSourceImpl) bind ServerDataSource::class
     singleOf(::FiltersDataSourceImpl) bind FiltersDataSource::class
+    singleOf(::FiltersOptionsClientImpl) bind FiltersOptionsRepository::class
+    singleOf(::FiltersOptionsDataSourceImpl) bind FiltersOptionsDataSource::class
     single { GetPagedServersUseCase(get(), get(), get()) }
     single { GetFiltersUseCase(get()) }
     single { SaveFiltersUseCase(get()) }
     single { ClearFiltersUseCase(get()) }
+    single { GetFiltersOptions(get(), get()) }
     factoryOf(::ServerViewModel)
 }
 

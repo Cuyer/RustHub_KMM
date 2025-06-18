@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.domain.repository
+package pl.cuyer.rusthub.domain.repository.filters
 
 import kotlinx.coroutines.flow.Flow
 import pl.cuyer.rusthub.domain.model.ServerQuery

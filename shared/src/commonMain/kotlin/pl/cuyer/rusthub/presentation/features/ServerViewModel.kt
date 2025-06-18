@@ -5,7 +5,6 @@ import app.cash.paging.cachedIn
 import app.cash.paging.map
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.Flow
@@ -23,6 +22,7 @@ import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.data.local.mapper.toServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.usecase.ClearFiltersUseCase
+import pl.cuyer.rusthub.domain.usecase.GetFiltersOptions
 import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
@@ -39,6 +39,7 @@ class ServerViewModel(
     private val snackbarController: SnackbarController,
     getPagedServersUseCase: GetPagedServersUseCase,
     getFiltersUseCase: GetFiltersUseCase,
+    getFiltersOptions: GetFiltersOptions,
     private val saveFiltersUseCase: SaveFiltersUseCase,
     private val clearFiltersUseCase: ClearFiltersUseCase
 ) : BaseViewModel() {

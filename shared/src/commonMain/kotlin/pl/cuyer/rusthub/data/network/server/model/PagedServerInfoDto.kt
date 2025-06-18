@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.data.network.server.model.dto
+package pl.cuyer.rusthub.data.network.server.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

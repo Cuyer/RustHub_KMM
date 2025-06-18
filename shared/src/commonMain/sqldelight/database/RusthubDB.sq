@@ -169,3 +169,35 @@ DELETE FROM filtersEntity;
 
 getFilters:
 SELECT * FROM filtersEntity WHERE id = ?;
+
+CREATE TABLE filtersOptionsEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    max_ranking INTEGER NOT NULL,
+    max_player_count INTEGER NOT NULL,
+    max_group_limit INTEGER NOT NULL
+);
+
+CREATE TABLE filtersFlagEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    label TEXT NOT NULL
+);
+
+CREATE TABLE filtersMapEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    label TEXT NOT NULL
+);
+
+CREATE TABLE filtersRegionEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    label TEXT NOT NULL
+);
+
+CREATE TABLE filtersDifficultyEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    label TEXT NOT NULL
+);
+
+CREATE TABLE filtersWipeScheduleEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    label TEXT NOT NULL
+);

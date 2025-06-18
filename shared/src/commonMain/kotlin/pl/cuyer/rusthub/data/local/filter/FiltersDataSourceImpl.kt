@@ -5,15 +5,13 @@ import app.cash.sqldelight.coroutines.mapToOneOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import pl.cuyer.rusthub.common.Constants.DEFAULT_KEY
 import pl.cuyer.rusthub.data.local.Queries
 import pl.cuyer.rusthub.data.local.mapper.toEntity
 import pl.cuyer.rusthub.data.local.mapper.toServerQuery
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.ServerQuery
-import pl.cuyer.rusthub.domain.repository.FiltersDataSource
+import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
 
 class FiltersDataSourceImpl(
     db: RustHubDatabase
@@ -21,7 +19,7 @@ class FiltersDataSourceImpl(
 
     override fun getFilters(): Flow<ServerQuery?> {
         return queries
-            .getFilters(DEFAULT_KEY)
+            .getFilters()
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
             .map { it?.toServerQuery() }
@@ -29,7 +27,7 @@ class FiltersDataSourceImpl(
 
     override fun upsertFilters(filters: ServerQuery) {
         queries.upsertFilters(
-            id = DEFAULT_KEY,
+            id = 1,
             wipe = filters.wipe?.toString(),
             ranking = filters.ranking,
             player_count = filters.playerCount,
@@ -47,5 +45,4 @@ class FiltersDataSourceImpl(
     override fun clearFilters() {
         queries.clearFilters()
     }
-
 }
