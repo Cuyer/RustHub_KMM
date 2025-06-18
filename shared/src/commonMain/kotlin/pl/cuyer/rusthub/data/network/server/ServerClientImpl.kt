@@ -4,7 +4,10 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import kotlinx.coroutines.flow.Flow
 import pl.cuyer.rusthub.common.Result
-import pl.cuyer.rusthub.data.network.server.model.PagedServerInfo
+import kotlinx.coroutines.flow.map
+import pl.cuyer.rusthub.data.network.server.mapper.toDomain
+import pl.cuyer.rusthub.data.network.server.model.dto.PagedServerInfoDto
+import pl.cuyer.rusthub.domain.model.PagedServerInfo
 import pl.cuyer.rusthub.data.network.util.BaseApiResponse
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
 import pl.cuyer.rusthub.data.network.util.appendNonNull
@@ -18,7 +21,7 @@ class ServerClientImpl(private val httpClient: HttpClient) : ServerRepository,
         size: Int,
         query: ServerQuery
     ): Flow<Result<PagedServerInfo>> {
-        return safeApiCall {
+        return safeApiCall<PagedServerInfoDto> {
             httpClient.get(NetworkConstants.BASE_URL + "servers") {
                 url {
                     appendNonNull("page" to page)
@@ -36,6 +39,12 @@ class ServerClientImpl(private val httpClient: HttpClient) : ServerRepository,
                     appendNonNull("official" to query.official)
                     appendNonNull("order" to query.order)
                 }
+            }
+        }.map { result ->
+            when (result) {
+                is Result.Success -> Result.Success(result.data.toDomain())
+                is Result.Error -> result
+                Result.Loading -> Result.Loading
             }
         }
     }
