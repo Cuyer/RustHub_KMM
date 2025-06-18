@@ -21,7 +21,6 @@ fun ServerInfo.toUi(): ServerInfoUi {
         isOfficial = isOfficial,
         serverIp = serverIp,
         mapImage = mapImage,
-        description = description,
-        mapId = mapId,
+        description = description
     )
 }

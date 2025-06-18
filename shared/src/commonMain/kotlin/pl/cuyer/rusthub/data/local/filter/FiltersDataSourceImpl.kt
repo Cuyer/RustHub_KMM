@@ -1,10 +1,10 @@
 package pl.cuyer.rusthub.data.local.filter
 
-import database.FiltersEntity
 import pl.cuyer.rusthub.common.Constants.DEFAULT_KEY
 import pl.cuyer.rusthub.data.local.Queries
+import pl.cuyer.rusthub.data.local.mapper.toEntity
+import pl.cuyer.rusthub.data.local.mapper.toServerQuery
 import pl.cuyer.rusthub.database.RustHubDatabase
-import pl.cuyer.rusthub.data.model.*
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.FiltersDataSource
 
@@ -12,7 +12,7 @@ class FiltersDataSourceImpl(
     db: RustHubDatabase
 ) : FiltersDataSource, Queries(db) {
 
-    override fun getFilters(): FiltersEntity? = queries.getFilters(DEFAULT_KEY).executeAsOneOrNull()
+    override fun getFilters(): ServerQuery? = queries.getFilters(DEFAULT_KEY).executeAsOneOrNull()?.toServerQuery()
 
     override fun upsertFilters(filters: ServerQuery) {
         queries.upsertFilters(

@@ -7,7 +7,6 @@ import androidx.paging.RemoteMediator
 import database.ServerEntity
 import kotlinx.coroutines.flow.first
 import pl.cuyer.rusthub.common.Result
-import pl.cuyer.rusthub.domain.mapper.toServerQuery
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.FiltersDataSource
 import pl.cuyer.rusthub.domain.repository.ServerDataSource
@@ -30,7 +29,7 @@ class ServerRemoteMediator(
         }
 
         return try {
-            val query: ServerQuery = filters.getFilters()?.toServerQuery() ?: ServerQuery()
+            val query: ServerQuery = filters.getFilters() ?: ServerQuery()
             when (val result = api.getServers(page, state.config.pageSize, query)
                 .first { it !is Result.Loading }) {
                 is Result.Error -> MediatorResult.Error(result.exception)
