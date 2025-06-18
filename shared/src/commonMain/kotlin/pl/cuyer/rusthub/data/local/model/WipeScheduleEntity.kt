@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.data.model
+package pl.cuyer.rusthub.data.local.model
 
 import kotlinx.serialization.Serializable
 

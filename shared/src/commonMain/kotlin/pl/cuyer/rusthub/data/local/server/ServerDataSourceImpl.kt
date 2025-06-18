@@ -6,8 +6,8 @@ import database.ServerEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import pl.cuyer.rusthub.data.local.Queries
+import pl.cuyer.rusthub.data.local.mapper.toEntity
 import pl.cuyer.rusthub.database.RustHubDatabase
-import pl.cuyer.rusthub.data.model.*
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.repository.ServerDataSource
 

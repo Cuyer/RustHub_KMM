@@ -6,7 +6,6 @@ import app.cash.paging.PagingConfig
 import app.cash.paging.PagingData
 import database.ServerEntity
 import kotlinx.coroutines.flow.Flow
-import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.FiltersDataSource
 import pl.cuyer.rusthub.domain.repository.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerRemoteMediator
@@ -18,7 +17,7 @@ class GetPagedServersUseCase(
     private val filters: FiltersDataSource
 ) {
     @OptIn(ExperimentalPagingApi::class)
-    operator fun invoke(query: ServerQuery): Flow<PagingData<ServerEntity>> {
+    operator fun invoke(): Flow<PagingData<ServerEntity>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 40,
