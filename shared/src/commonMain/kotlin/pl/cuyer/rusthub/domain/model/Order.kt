@@ -3,7 +3,12 @@ package pl.cuyer.rusthub.domain.model
 enum class Order {
     WIPE,
     RANK,
-    PLAYER_COUNT
+    PLAYER_COUNT;
+
+    companion object {
+        fun fromDisplayName(name: String): Order? =
+            Order.entries.firstOrNull { it.displayName == name }
+    }
 }
 
 val Order.displayName: String

@@ -39,9 +39,9 @@ fun ServerQuery?.toUi(
             "Modded" to (this?.modded == true)
         ),
         ranges = listOf(
-            Triple("Player count", playerCount, (this?.playerCount ?: 0).toInt()),
-            Triple("Group limit", groupLimit, (this?.groupLimit ?: 0).toInt()),
-            Triple("Ranking", ranking, (this?.ranking ?: 0.0).toInt())
+            Triple("Player count", playerCount, (this?.playerCount)?.toInt()),
+            Triple("Group limit", groupLimit, (this?.groupLimit)?.toInt()),
+            Triple("Ranking", ranking, (this?.ranking)?.toInt())
         )
     )
 }

@@ -7,7 +7,12 @@ enum class Region {
     AFRICA,
     SOUTH_AMERICA,
     OCEANIA,
-    AUSTRALIA
+    AUSTRALIA;
+
+    companion object {
+        fun fromDisplayName(name: String): Region? =
+            Region.entries.firstOrNull { it.displayName == name }
+    }
 }
 
 val Region.displayName: String

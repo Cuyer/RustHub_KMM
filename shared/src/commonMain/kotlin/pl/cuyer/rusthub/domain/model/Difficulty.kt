@@ -4,7 +4,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class Difficulty {
-    VANILLA, SOFTCORE, HARDCORE
+    VANILLA, SOFTCORE, HARDCORE;
+
+    companion object {
+        fun fromDisplayName(name: String): Difficulty? =
+            Difficulty.entries.firstOrNull { it.displayName == name }
+    }
 }
 
 val Difficulty.displayName: String
