@@ -1,13 +1,12 @@
-package pl.cuyer.rusthub.data.network.server.model
+package pl.cuyer.rusthub.data.network.server.model.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import pl.cuyer.rusthub.domain.model.ServerInfo
 
 @Serializable
-data class PagedServerInfo(
+data class PagedServerInfoDto(
     @SerialName("servers")
-    val servers: List<ServerInfo>,
+    val servers: List<ServerInfoDto>,
     @SerialName("size")
     val size: Int,
     @SerialName("total_pages")

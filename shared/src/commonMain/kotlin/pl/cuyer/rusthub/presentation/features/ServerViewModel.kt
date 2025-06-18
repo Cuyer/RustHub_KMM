@@ -21,6 +21,8 @@ import pl.cuyer.rusthub.domain.mapper.toServerInfo
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
+import pl.cuyer.rusthub.presentation.model.ServerInfoUi
+import pl.cuyer.rusthub.presentation.model.toUi
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
@@ -35,9 +37,9 @@ class ServerViewModel(
     private val queryFlow = MutableStateFlow(ServerQuery())
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    var paging: Flow<PagingData<ServerInfo>> = queryFlow
+    var paging: Flow<PagingData<ServerInfoUi>> = queryFlow
         .flatMapLatest { query ->
-            getPagedServersUseCase(query).map { it.map { it.toServerInfo() } }
+            getPagedServersUseCase(query).map { it.map { it.toServerInfo().toUi() } }
         }
         .cachedIn(coroutineScope)
 

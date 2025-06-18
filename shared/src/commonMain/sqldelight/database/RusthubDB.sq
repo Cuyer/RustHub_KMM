@@ -1,9 +1,9 @@
-import pl.cuyer.rusthub.domain.model.Difficulty;
-import pl.cuyer.rusthub.domain.model.Flag;
-import pl.cuyer.rusthub.domain.model.Maps;
-import pl.cuyer.rusthub.domain.model.Region;
-import pl.cuyer.rusthub.domain.model.WipeSchedule;
-import pl.cuyer.rusthub.domain.model.Order;
+import pl.cuyer.rusthub.data.model.DifficultyEntity;
+import pl.cuyer.rusthub.data.model.FlagEntity;
+import pl.cuyer.rusthub.data.model.MapsEntity;
+import pl.cuyer.rusthub.data.model.RegionEntity;
+import pl.cuyer.rusthub.data.model.WipeScheduleEntity;
+import pl.cuyer.rusthub.data.model.OrderEntity;
 
 -- =============================================================================
 -- Table Definition
@@ -16,13 +16,13 @@ CREATE TABLE serverEntity (
     modded         INTEGER    NOT NULL DEFAULT 0,     -- store booleans as 0/1
     player_count   INTEGER,
     capacity       INTEGER,
-    map_name       TEXT       AS Maps,
+    map_name       TEXT       AS MapsEntity,
     cycle          REAL,                              -- the “cycle” float value
-    server_flag    TEXT       AS Flag,                -- e.g. "US"
-    region         TEXT       AS Region,
+    server_flag    TEXT       AS FlagEntity,                -- e.g. "US"
+    region         TEXT       AS RegionEntity,
     max_group      INTEGER,
-    difficulty     TEXT       AS Difficulty,          -- nullable
-    wipe_schedule  TEXT       AS WipeSchedule,
+    difficulty     TEXT       AS DifficultyEntity,          -- nullable
+    wipe_schedule  TEXT       AS WipeScheduleEntity,
     is_official    INTEGER    NOT NULL DEFAULT 0,
     ip             TEXT,
     map_image      TEXT,                              -- nullable URL/path
@@ -113,14 +113,14 @@ CREATE TABLE filtersEntity (
     ranking        REAL,
     modded         INTEGER    NOT NULL DEFAULT 0,     -- store booleans as 0/1
     player_count   INTEGER,
-    map_name       TEXT       AS Maps,                       -- the “cycle” float value
-    server_flag    TEXT       AS Flag,                -- e.g. "US"
-    region         TEXT       AS Region,
+    map_name       TEXT       AS MapsEntity,                       -- the “cycle” float value
+    server_flag    TEXT       AS FlagEntity,                -- e.g. "US"
+    region         TEXT       AS RegionEntity,
     group_limit    INTEGER,
-    difficulty     TEXT       AS Difficulty,          -- nullable
-    wipe_schedule  TEXT       AS WipeSchedule,
+    difficulty     TEXT       AS DifficultyEntity,          -- nullable
+    wipe_schedule  TEXT       AS WipeScheduleEntity,
     is_official    INTEGER    NOT NULL DEFAULT 0,
-    sort_order     TEXT       AS Order
+    sort_order     TEXT       AS OrderEntity
 );
 
 upsertFilters:
