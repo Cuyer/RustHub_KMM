@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import pl.cuyer.rusthub.data.local.Queries
 import pl.cuyer.rusthub.database.RustHubDatabase
+import pl.cuyer.rusthub.data.model.*
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.repository.ServerDataSource
 
@@ -27,13 +28,13 @@ class ServerDataSourceImpl(
                     modded = info.modded == true,
                     playerCount = info.playerCount,
                     capacity = info.serverCapacity,
-                    mapName = info.mapName,
+                    mapName = info.mapName.toEntity(),
                     cycle = info.cycle,
-                    serverFlag = info.serverFlag,
-                    region = info.region,
+                    serverFlag = info.serverFlag.toEntity(),
+                    region = info.region.toEntity(),
                     maxGroup = info.maxGroup,
-                    difficulty = info.difficulty,
-                    wipeSchedule = info.wipeSchedule,
+                    difficulty = info.difficulty.toEntity(),
+                    wipeSchedule = info.wipeSchedule.toEntity(),
                     isOfficial = info.isOfficial == true,
                     ip = info.serverIp,
                     description = info.description

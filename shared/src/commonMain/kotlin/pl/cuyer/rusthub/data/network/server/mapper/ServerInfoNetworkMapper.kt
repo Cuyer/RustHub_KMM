@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.data.network.server.mapper
 
+import pl.cuyer.rusthub.data.model.*
 import pl.cuyer.rusthub.data.network.server.model.dto.PagedServerInfoDto
 import pl.cuyer.rusthub.data.network.server.model.dto.ServerInfoDto
 import pl.cuyer.rusthub.domain.model.PagedServerInfo
@@ -14,13 +15,13 @@ fun ServerInfoDto.toDomain(): ServerInfo {
         modded = modded,
         playerCount = playerCount,
         serverCapacity = serverCapacity,
-        mapName = mapName,
+        mapName = mapName.toDomain(),
         cycle = cycle,
-        serverFlag = serverFlag,
-        region = region,
+        serverFlag = serverFlag.toDomain(),
+        region = region.toDomain(),
         maxGroup = maxGroup,
-        difficulty = difficulty,
-        wipeSchedule = wipeSchedule,
+        difficulty = difficulty.toDomain(),
+        wipeSchedule = wipeSchedule.toDomain(),
         isOfficial = isOfficial,
         serverIp = serverIp,
         mapImage = mapImage,

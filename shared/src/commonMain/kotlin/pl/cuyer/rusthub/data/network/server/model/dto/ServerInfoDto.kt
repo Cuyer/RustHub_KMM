@@ -3,11 +3,11 @@ package pl.cuyer.rusthub.data.network.server.model.dto
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import pl.cuyer.rusthub.domain.model.Difficulty
-import pl.cuyer.rusthub.domain.model.Flag
-import pl.cuyer.rusthub.domain.model.Maps
-import pl.cuyer.rusthub.domain.model.Region
-import pl.cuyer.rusthub.domain.model.WipeSchedule
+import pl.cuyer.rusthub.data.model.DifficultyEntity
+import pl.cuyer.rusthub.data.model.FlagEntity
+import pl.cuyer.rusthub.data.model.MapsEntity
+import pl.cuyer.rusthub.data.model.RegionEntity
+import pl.cuyer.rusthub.data.model.WipeScheduleEntity
 
 @Serializable
 data class ServerInfoDto(
@@ -21,16 +21,16 @@ data class ServerInfoDto(
     @SerialName("server_capacity")
     val serverCapacity: Long? = null,
     @SerialName("map_name")
-    val mapName: Maps? = null,
+    val mapName: MapsEntity? = null,
     val cycle: Double? = null,
     @SerialName("server_flag")
-    val serverFlag: Flag? = null,
-    val region: Region? = null,
+    val serverFlag: FlagEntity? = null,
+    val region: RegionEntity? = null,
     @SerialName("max_group")
     val maxGroup: Long? = null,
-    val difficulty: Difficulty? = null,
+    val difficulty: DifficultyEntity? = null,
     @SerialName("wipe_schedule")
-    val wipeSchedule: WipeSchedule? = null,
+    val wipeSchedule: WipeScheduleEntity? = null,
     val isOfficial: Boolean? = null,
     val serverIp: String? = null,
     @SerialName("map_image")
