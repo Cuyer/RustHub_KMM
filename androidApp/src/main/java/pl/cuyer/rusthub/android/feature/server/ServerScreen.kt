@@ -54,6 +54,7 @@ import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.presentation.features.ServerAction
 import pl.cuyer.rusthub.presentation.features.ServerState
+import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.presentation.navigation.Destination
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import java.util.Locale
@@ -66,7 +67,7 @@ fun ServerScreen(
     onNavigate: (Destination) -> Unit,
     stateProvider: () -> StateFlow<ServerState>,
     onAction: (ServerAction) -> Unit,
-    pagedList: LazyPagingItems<ServerInfo>,
+    pagedList: LazyPagingItems<ServerInfoUi>,
     uiEvent: Flow<UiEvent>
 ) {
     val state = stateProvider().collectAsStateWithLifecycle()
@@ -174,7 +175,7 @@ fun ServerScreen(
 }
 
 
-private fun createDetails(item: ServerInfo): Map<String, String> {
+private fun createDetails(item: ServerInfoUi): Map<String, String> {
     val details = mutableMapOf<String, String>()
 
     item.wipe?.let { wipeInstant: Instant ->
@@ -203,7 +204,7 @@ private fun createDetails(item: ServerInfo): Map<String, String> {
     return details
 }
 
-private fun createLabels(item: ServerInfo): List<Label> {
+private fun createLabels(item: ServerInfoUi): List<Label> {
     val labels = mutableListOf<Label>()
 
     item.wipeSchedule?.let {
@@ -228,7 +229,7 @@ private fun ServerScreenPreview() {
                 onAction = {},
                 onNavigate = {},
                 uiEvent = MutableStateFlow(UiEvent.Navigate(Destination.ServerDetails)),
-                pagedList = flowOf(PagingData.from(emptyList<ServerInfo>())).collectAsLazyPagingItems(),
+                pagedList = flowOf(PagingData.from(emptyList<ServerInfoUi>())).collectAsLazyPagingItems(),
             )
         }
     }
