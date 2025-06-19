@@ -96,7 +96,6 @@ fun ServerScreen(
     PullToRefreshBox(
         isRefreshing = false,
         onRefresh = {
-            onAction(ServerAction.OnRefresh)
             pagedList.refresh()
         },
         state = pullToRefreshState,

@@ -5,7 +5,6 @@ import pl.cuyer.rusthub.domain.model.ServerQuery
 sealed interface ServerAction {
     data class OnServerClick(val mapId: String?, val serverId: Long): ServerAction
     data class OnChangeLoadingState(val isLoading: Boolean): ServerAction
-    data object OnRefresh: ServerAction
     data class OnSaveFilters(val filters: ServerQuery): ServerAction
     data object OnClearFilters: ServerAction
 }

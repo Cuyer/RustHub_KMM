@@ -121,7 +121,6 @@ class ServerViewModel(
         when (action) {
             is ServerAction.OnServerClick -> {}
             is ServerAction.OnChangeLoadingState -> _state.update { it.copy(isLoading = action.isLoading) }
-            is ServerAction.OnRefresh -> {}
             is ServerAction.OnSaveFilters -> onSaveFilters(action.filters)
             is ServerAction.OnClearFilters -> clearFilters()
         }
