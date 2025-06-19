@@ -40,42 +40,10 @@ FROM serverEntity
 ORDER BY wipe DESC
 LIMIT :limit OFFSET :offset;
 
-findServersPagedFiltered:
-SELECT *
-FROM serverEntity
-WHERE (:wipe IS NULL OR wipe >= :wipe)
-  AND (:ranking IS NULL OR ranking >= :ranking)
-  AND (:modded IS NULL OR modded = CASE WHEN :modded THEN 1 ELSE 0 END)
-  AND (:player_count IS NULL OR player_count >= :player_count)
-  AND (:map_name IS NULL OR map_name = :map_name)
-  AND (:server_flag IS NULL OR server_flag = :server_flag)
-  AND (:region IS NULL OR region = :region)
-  AND (:group_limit IS NULL OR max_group <= :group_limit)
-  AND (:difficulty IS NULL OR difficulty = :difficulty)
-  AND (:wipe_schedule IS NULL OR wipe_schedule = :wipe_schedule)
-  AND (:is_official IS NULL OR is_official = CASE WHEN :is_official THEN 1 ELSE 0 END)
-ORDER BY wipe DESC
-LIMIT :limit OFFSET :offset;
-
 countPagedServers:
 SELECT
   COUNT(*)
 FROM serverEntity;
-
-countPagedServersFiltered:
-SELECT COUNT(*)
-FROM serverEntity
-WHERE (:wipe IS NULL OR wipe >= :wipe)
-  AND (:ranking IS NULL OR ranking >= :ranking)
-  AND (:modded IS NULL OR modded = CASE WHEN :modded THEN 1 ELSE 0 END)
-  AND (:player_count IS NULL OR player_count >= :player_count)
-  AND (:map_name IS NULL OR map_name = :map_name)
-  AND (:server_flag IS NULL OR server_flag = :server_flag)
-  AND (:region IS NULL OR region = :region)
-  AND (:group_limit IS NULL OR max_group <= :group_limit)
-  AND (:difficulty IS NULL OR difficulty = :difficulty)
-  AND (:wipe_schedule IS NULL OR wipe_schedule = :wipe_schedule)
-  AND (:is_official IS NULL OR is_official = CASE WHEN :is_official THEN 1 ELSE 0 END);
 
 -- =============================================================================
 -- Upsert (Insert or Update on id conflict)

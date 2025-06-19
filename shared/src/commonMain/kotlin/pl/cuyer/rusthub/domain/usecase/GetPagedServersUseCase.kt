@@ -6,8 +6,6 @@ import app.cash.paging.PagingConfig
 import app.cash.paging.PagingData
 import database.ServerEntity
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
 import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
@@ -33,10 +31,7 @@ class GetPagedServersUseCase(
                 filters,
                 remoteKeys
             ),
-            pagingSourceFactory = {
-                val query = runBlocking { filters.getFilters().first() }
-                dataSource.getServersPagingSource(query)
-            }
+            pagingSourceFactory = { dataSource.getServersPagingSource() }
         ).flow
     }
 }

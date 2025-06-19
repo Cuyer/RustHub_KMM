@@ -9,7 +9,6 @@ import pl.cuyer.rusthub.data.local.Queries
 import pl.cuyer.rusthub.data.local.mapper.toEntity
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.ServerInfo
-import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 
 class ServerDataSourceImpl(
@@ -44,38 +43,15 @@ class ServerDataSourceImpl(
         }
     }
 
-    override fun getServersPagingSource(query: ServerQuery?): PagingSource<Int, ServerEntity> {
+    override fun getServersPagingSource(): PagingSource<Int, ServerEntity> {
         val pagingSource: PagingSource<Int, ServerEntity> = QueryPagingSource(
-            countQuery = queries.countPagedServersFiltered(
-                wipe = query?.wipe?.toString(),
-                ranking = query?.ranking,
-                modded = query?.modded,
-                player_count = query?.playerCount,
-                map_name = query?.map?.toEntity(),
-                server_flag = query?.flag?.toEntity(),
-                region = query?.region?.toEntity(),
-                group_limit = query?.groupLimit,
-                difficulty = query?.difficulty?.toEntity(),
-                wipe_schedule = query?.wipeSchedule?.toEntity(),
-                is_official = query?.official
-            ),
+            countQuery = queries.countPagedServers(),
             transacter = queries,
             context = Dispatchers.IO,
             queryProvider = { limit: Long, offset: Long ->
-                queries.findServersPagedFiltered(
+                queries.findServersPaged(
                     limit = limit,
-                    offset = offset,
-                    wipe = query?.wipe?.toString(),
-                    ranking = query?.ranking,
-                    modded = query?.modded,
-                    player_count = query?.playerCount,
-                    map_name = query?.map?.toEntity(),
-                    server_flag = query?.flag?.toEntity(),
-                    region = query?.region?.toEntity(),
-                    group_limit = query?.groupLimit,
-                    difficulty = query?.difficulty?.toEntity(),
-                    wipe_schedule = query?.wipeSchedule?.toEntity(),
-                    is_official = query?.official
+                    offset = offset
                 )
             }
         )
