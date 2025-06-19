@@ -31,6 +31,7 @@ fun DifficultyDto.toDomain(): Difficulty {
         DifficultyDto.VANILLA -> Difficulty.VANILLA
         DifficultyDto.SOFTCORE -> Difficulty.SOFTCORE
         DifficultyDto.HARDCORE -> Difficulty.HARDCORE
+        DifficultyDto.PRIMITIVE -> Difficulty.PRIMITIVE
     }
 }
 
