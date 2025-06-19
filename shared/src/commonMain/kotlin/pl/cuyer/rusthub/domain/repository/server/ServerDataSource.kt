@@ -6,6 +6,6 @@ import pl.cuyer.rusthub.domain.model.ServerInfo
 
 interface ServerDataSource {
     fun upsertServers(servers: List<ServerInfo>)
-    fun getServersPagingSource(): PagingSource<Int, ServerEntity>
+    fun getServersPagingSource(query: ServerQuery?): PagingSource<Int, ServerEntity>
     fun deleteServers()
 }
