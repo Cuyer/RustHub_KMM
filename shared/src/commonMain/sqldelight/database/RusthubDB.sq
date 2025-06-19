@@ -12,7 +12,7 @@ CREATE TABLE serverEntity (
     id             INTEGER    NOT NULL PRIMARY KEY,
     name           TEXT       NOT NULL,
     wipe           TEXT,                              -- ISO-8601 timestamp string, e.g. "2025-06-06T21:03:40.00+02:00"
-    ranking        REAL,
+    ranking        INTEGER,
     modded         INTEGER    NOT NULL DEFAULT 0,     -- store booleans as 0/1
     player_count   INTEGER,
     capacity       INTEGER,
@@ -34,16 +34,41 @@ CREATE TABLE serverEntity (
 -- Paged SELECT
 -- =============================================================================
 -- Returns a page of servers
-findServersPaged:
+findServersPagedFiltered:
 SELECT *
 FROM serverEntity
-ORDER BY wipe DESC
+WHERE
+  (:ranking IS NULL OR ranking <= :ranking)
+  AND (:modded IS NULL OR modded = :modded)
+  AND (:player_count IS NULL OR player_count <= :player_count)
+  AND(:map_name IS NULL OR map_name = :map_name)
+  AND (:server_flag IS NULL OR server_flag = :server_flag)
+  AND (:region IS NULL OR region = :region)
+  AND (:group_limit IS NULL OR max_group <= :group_limit)
+  AND (:difficulty IS NULL OR difficulty = :difficulty)
+  AND (:wipe_schedule IS NULL OR wipe_schedule = :wipe_schedule)
+  AND (:is_official IS NULL OR is_official = :is_official)
+  ORDER BY
+    CASE WHEN :order = 'WIPE' THEN wipe END DESC,
+    CASE WHEN :order = 'PLAYER_COUNT' THEN player_count END DESC,
+    CASE WHEN :order = 'RANK' THEN ranking END ASC
 LIMIT :limit OFFSET :offset;
 
-countPagedServers:
-SELECT
-  COUNT(*)
-FROM serverEntity;
+countPagedServersFiltered:
+SELECT COUNT(*)
+FROM serverEntity
+WHERE
+  (:wipe IS NULL OR date(wipe) >= date(:wipe))
+  AND (:ranking IS NULL OR ranking <= :ranking)
+  AND (:modded IS NULL OR modded = :modded)
+  AND (:player_count IS NULL OR player_count <= :player_count)
+  AND(:map_name IS NULL OR map_name = :map_name)
+  AND (:server_flag IS NULL OR server_flag = :server_flag)
+  AND (:region IS NULL OR region = :region)
+  AND (:group_limit IS NULL OR max_group <= :group_limit)
+  AND (:difficulty IS NULL OR difficulty = :difficulty)
+  AND (:wipe_schedule IS NULL OR wipe_schedule = :wipe_schedule)
+  AND (:is_official IS NULL OR is_official = :is_official);
 
 -- =============================================================================
 -- Upsert (Insert or Update on id conflict)
@@ -172,6 +197,31 @@ DELETE FROM filtersEntity;
 
 getFilters:
 SELECT * FROM filtersEntity WHERE id = ?;
+
+CREATE TABLE remoteKeyEntity (
+    id            TEXT    NOT NULL PRIMARY KEY,
+    next_page     INTEGER,
+    last_updated  INTEGER NOT NULL
+);
+
+upsertRemoteKey:
+INSERT INTO remoteKeyEntity (
+    id,
+    next_page,
+    last_updated
+) VALUES (
+    :id,
+    :next_page,
+    :last_updated
+) ON CONFLICT(id) DO UPDATE SET
+    next_page = excluded.next_page,
+    last_updated = excluded.last_updated;
+
+clearRemoteKeys:
+DELETE FROM remoteKeyEntity;
+
+getRemoteKey:
+SELECT * FROM remoteKeyEntity WHERE id = ?;
 
 CREATE TABLE filtersOptionsEntity (
     id TEXT NOT NULL PRIMARY KEY,

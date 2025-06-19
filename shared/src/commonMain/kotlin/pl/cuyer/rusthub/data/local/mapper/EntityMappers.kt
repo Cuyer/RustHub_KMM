@@ -7,6 +7,7 @@ import database.FiltersMapEntity
 import database.FiltersOptionsEntity
 import database.FiltersRegionEntity
 import database.FiltersWipeScheduleEntity
+import database.RemoteKeyEntity
 import database.ServerEntity
 import kotlinx.datetime.Instant
 import pl.cuyer.rusthub.data.local.model.DifficultyEntity
@@ -21,6 +22,7 @@ import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Maps
 import pl.cuyer.rusthub.domain.model.Order
 import pl.cuyer.rusthub.domain.model.Region
+import pl.cuyer.rusthub.domain.model.RemoteKey
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.model.WipeSchedule
@@ -80,6 +82,22 @@ fun ServerEntity.toServerInfo(): ServerInfo {
         serverIp = ip,
         mapImage = map_image,
         description = description
+    )
+}
+
+fun RemoteKeyEntity.toDomain(): RemoteKey {
+    return RemoteKey(
+        id = id,
+        nextPage = next_page,
+        lastUpdated = last_updated
+    )
+}
+
+fun RemoteKey.toEntity(): RemoteKeyEntity {
+    return RemoteKeyEntity(
+        id = id,
+        next_page = nextPage,
+        last_updated = lastUpdated
     )
 }
 

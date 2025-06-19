@@ -67,7 +67,6 @@ fun FilterBottomSheet(
     val currentFilters = stateProvider().value.filters
     var newFilters by remember(currentFilters) { mutableStateOf(currentFilters) }
 
-
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
