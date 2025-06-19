@@ -7,15 +7,14 @@ import androidx.paging.RemoteMediator
 import database.ServerEntity
 import kotlinx.coroutines.flow.first
 import kotlinx.datetime.Clock
+import pl.cuyer.rusthub.common.Constants
 import pl.cuyer.rusthub.common.Constants.DEFAULT_KEY
 import pl.cuyer.rusthub.common.Result
-import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.model.RemoteKey
-import pl.cuyer.rusthub.domain.repository.FiltersDataSource
+import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
-import pl.cuyer.rusthub.domain.repository.ServerDataSource
-import kotlin.time.Duration.Companion.hours
 import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
+import kotlin.time.Duration.Companion.hours
 
 @OptIn(ExperimentalPagingApi::class)
 class ServerRemoteMediator(
@@ -28,9 +27,9 @@ class ServerRemoteMediator(
 
     override suspend fun initialize(): InitializeAction {
         val key = remoteKeys.getKey(keyId) ?: return InitializeAction.LAUNCH_INITIAL_REFRESH
-        val timeout = 1.hours
+        val timeout = Constants.SERVERS_VALIDITY_TIMEOUT.hours
         val now = Clock.System.now().toEpochMilliseconds()
-        return if (now - key.lastUpdated >= timeout.inWholeMilliseconds) {
+        return if (now - key.lastUpdated <= timeout.inWholeMilliseconds) {
             InitializeAction.SKIP_INITIAL_REFRESH
         } else {
             InitializeAction.LAUNCH_INITIAL_REFRESH
