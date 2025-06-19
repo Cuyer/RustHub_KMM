@@ -1,12 +1,17 @@
 package pl.cuyer.rusthub.android.designsystem
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
@@ -39,6 +44,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
@@ -54,13 +60,12 @@ fun FilterBottomSheet(
     stateProvider: () -> State<ServerState>,
     sheetState: SheetState,
     onDismiss: () -> Unit,
-    onAction: (ServerAction) -> Unit,
+    onAction: (ServerAction) -> Unit
 ) {
     val scrollState = rememberScrollState()
 
     val currentFilters = stateProvider().value.filters
     var newFilters by remember(currentFilters) { mutableStateOf(currentFilters) }
-
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
@@ -73,46 +78,45 @@ fun FilterBottomSheet(
                 .padding(start = spacing.medium, end = spacing.medium, bottom = spacing.medium)
         )
         HorizontalDivider()
-        Column(
-            modifier = Modifier
-                .fillMaxHeight(0.85f)
-                .verticalScroll(scrollState)
-        ) {
-            FilterBottomSheetContent(
-                filters = newFilters,
-                onFiltersChange = { newFilters = it }
-            )
-            Button(
-                shape = RectangleShape,
-                onClick = {
-                    onAction(
-                        ServerAction.OnSaveFilters(filters = newFilters.toDomain())
-                    )
-                    onDismiss()
-                },
+        AnimatedContent(stateProvider().value.isLoading) { loading ->
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = spacing.medium, start = spacing.large, end = spacing.large)
+                    .fillMaxHeight(0.9f)
+                    .verticalScroll(scrollState)
             ) {
-                Text(
-                    text = "Apply Filters",
-                )
-            }
-            TextButton(
-                shape = RectangleShape,
-                onClick = {
-                    onAction(
-                        ServerAction.OnClearFilters
+                if (loading) {
+                    ShimmerFilterBottomSheetContent()
+                } else {
+                    FilterBottomSheetContent(
+                        filters = newFilters,
+                        onFiltersChange = { newFilters = it }
                     )
-                    onDismiss()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = spacing.small, horizontal = spacing.large)
-            ) {
-                Text(
-                    text = "Reset Filters"
-                )
+                }
+                Spacer(Modifier.height(spacing.medium))
+                Button(
+                    shape = RectangleShape,
+                    onClick = {
+                        onAction(ServerAction.OnSaveFilters(filters = newFilters.toDomain()))
+                        onDismiss()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = spacing.large)
+                ) {
+                    Text("Apply Filters")
+                }
+                TextButton(
+                    shape = RectangleShape,
+                    onClick = {
+                        onAction(ServerAction.OnClearFilters)
+                        onDismiss()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = spacing.small, horizontal = spacing.large)
+                ) {
+                    Text("Reset Filters")
+                }
             }
         }
     }
@@ -195,6 +199,62 @@ fun FilterBottomSheetContent(
                 updated[index] = Triple(old.first, old.second, newValue)
                 onFiltersChange(filters.copy(ranges = updated))
             }
+        }
+    }
+}
+
+@Composable
+fun ShimmerFilterBottomSheetContent(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .padding(spacing.medium),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(spacing.medium)
+    ) {
+        repeat(6) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.6f)
+                    .height(36.dp)
+                    .shimmer()
+            )
+        }
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            repeat(2) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(
+                        spacing.medium,
+                        Alignment.CenterVertically
+                    ),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(
+                        Modifier
+                            .width(40.dp)
+                            .height(20.dp)
+                            .shimmer()
+                    )
+                    Box(
+                        modifier = Modifier
+                            .width(60.dp)
+                            .height(20.dp)
+                            .shimmer()
+                    )
+                }
+            }
+        }
+        repeat(3) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.6f)
+                    .height(36.dp)
+                    .shimmer()
+            )
         }
     }
 }

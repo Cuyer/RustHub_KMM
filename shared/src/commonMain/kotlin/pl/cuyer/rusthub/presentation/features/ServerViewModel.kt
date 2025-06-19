@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -96,10 +95,11 @@ class ServerViewModel(
                 groupLimit = filtersOptions?.maxGroupLimit ?: 0,
                 ranking = filtersOptions?.maxRanking ?: 0
             )
-        }.filterNotNull()
-            .onEach { mappedFilters ->
+        }.onEach { mappedFilters ->
                 _state.update {
-                    it.copy(filters = mappedFilters)
+                    it.copy(
+                        filters = mappedFilters
+                    )
                 }
             }
             .flowOn(Dispatchers.Default)

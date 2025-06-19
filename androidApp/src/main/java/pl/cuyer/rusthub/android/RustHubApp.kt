@@ -168,7 +168,7 @@ fun RustHubApp() {
                                             showSheet = false
                                             paging.refresh()
                                         },
-                                        onAction = viewModel::onAction,
+                                        onAction = viewModel::onAction
                                     )
                                 }
                             }
