@@ -6,26 +6,46 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import database.ServerEntity
 import kotlinx.coroutines.flow.first
+import kotlinx.datetime.Clock
+import pl.cuyer.rusthub.common.Constants.DEFAULT_KEY
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.ServerQuery
+import pl.cuyer.rusthub.domain.model.RemoteKey
 import pl.cuyer.rusthub.domain.repository.FiltersDataSource
+import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
 import pl.cuyer.rusthub.domain.repository.ServerDataSource
+import kotlin.time.Duration.Companion.hours
 
 @OptIn(ExperimentalPagingApi::class)
 class ServerRemoteMediator(
     private val dataSource: ServerDataSource,
     private val api: ServerRepository,
-    private val filters: FiltersDataSource
+    private val filters: FiltersDataSource,
+    private val remoteKeys: RemoteKeyDataSource
 ) : RemoteMediator<Int, ServerEntity>() {
-    private var currentPage: Int = 0
+    private val keyId = DEFAULT_KEY
+
+    override suspend fun initialize(): InitializeAction {
+        val key = remoteKeys.getKey(keyId) ?: return InitializeAction.LAUNCH_INITIAL_REFRESH
+        val timeout = 1.hours
+        val now = Clock.System.now().toEpochMilliseconds()
+        return if (now - key.lastUpdated >= timeout.inWholeMilliseconds) {
+            InitializeAction.SKIP_INITIAL_REFRESH
+        } else {
+            InitializeAction.LAUNCH_INITIAL_REFRESH
+        }
+    }
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, ServerEntity>
     ): MediatorResult {
         val page = when (loadType) {
-            LoadType.REFRESH -> 0.also { currentPage = 0 }
+            LoadType.REFRESH -> 0
             LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
-            LoadType.APPEND -> currentPage + 1
+            LoadType.APPEND -> {
+                val key = remoteKeys.getKey(keyId) ?: return MediatorResult.Success(true)
+                key.nextPage?.toInt() ?: return MediatorResult.Success(true)
+            }
         }
 
         return try {
@@ -36,10 +56,19 @@ class ServerRemoteMediator(
                 is Result.Success -> {
                     if (loadType == LoadType.REFRESH) {
                         dataSource.deleteServers()
+                        remoteKeys.clearKeys()
                     }
                     dataSource.upsertServers(result.data.servers)
-                    currentPage = page
                     val end = page >= result.data.totalPages - 1
+                    val nextPage = if (end) null else page + 1
+                    val now = Clock.System.now().toEpochMilliseconds()
+                    remoteKeys.upsertKey(
+                        RemoteKey(
+                            id = keyId,
+                            nextPage = nextPage?.toLong(),
+                            lastUpdated = now
+                        )
+                    )
                     MediatorResult.Success(endOfPaginationReached = end)
                 }
 

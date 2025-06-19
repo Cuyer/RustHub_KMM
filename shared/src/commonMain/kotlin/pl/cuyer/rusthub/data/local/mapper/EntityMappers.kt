@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.data.local.mapper
 
 import database.FiltersEntity
 import database.ServerEntity
+import database.RemoteKeyEntity
 import kotlinx.datetime.Instant
 import pl.cuyer.rusthub.data.local.model.DifficultyEntity
 import pl.cuyer.rusthub.data.local.model.FlagEntity
@@ -66,5 +67,21 @@ fun ServerEntity.toServerInfo(): ServerInfo {
         serverIp = ip,
         mapImage = map_image,
         description = description
+    )
+}
+
+fun RemoteKeyEntity.toDomain(): RemoteKey {
+    return RemoteKey(
+        id = id,
+        nextPage = next_page,
+        lastUpdated = last_updated
+    )
+}
+
+fun RemoteKey.toEntity(): RemoteKeyEntity {
+    return RemoteKeyEntity(
+        id = id,
+        next_page = nextPage,
+        last_updated = lastUpdated
     )
 }
