@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -33,7 +34,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cash.paging.PagingData
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
@@ -41,11 +41,11 @@ import app.cash.paging.compose.itemContentType
 import app.cash.paging.compose.itemKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock.System
 import kotlinx.datetime.Instant
+import pl.cuyer.rusthub.android.designsystem.FilterBottomSheet
 import pl.cuyer.rusthub.android.designsystem.ServerListItem
 import pl.cuyer.rusthub.android.designsystem.ServerListItemShimmer
 import pl.cuyer.rusthub.android.model.Label
@@ -53,7 +53,6 @@ import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
-import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.presentation.features.ServerAction
 import pl.cuyer.rusthub.presentation.features.ServerState
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
@@ -61,7 +60,6 @@ import pl.cuyer.rusthub.presentation.navigation.Destination
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import java.util.Locale
 import java.util.UUID
-import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,7 +68,9 @@ fun ServerScreen(
     stateProvider: () -> State<ServerState>,
     onAction: (ServerAction) -> Unit,
     pagedList: LazyPagingItems<ServerInfoUi>,
-    uiEvent: Flow<UiEvent>
+    uiEvent: Flow<UiEvent>,
+    onDismissSheet: () -> Unit,
+    showSheet: Boolean
 ) {
     val state = stateProvider()
 
@@ -89,6 +89,9 @@ fun ServerScreen(
             lazyListState.firstVisibleItemIndex == 0 && lazyListState.firstVisibleItemScrollOffset == 0
         }
     }
+
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
 
     PullToRefreshBox(
         isRefreshing = false,
@@ -140,6 +143,17 @@ fun ServerScreen(
                     }
                 }
             }
+        }
+        if (showSheet) {
+            FilterBottomSheet(
+                stateProvider = { state },
+                sheetState = sheetState,
+                onDismiss = {
+                    onDismissSheet()
+                    pagedList.refresh()
+                },
+                onAction = onAction
+            )
         }
         AnimatedVisibility(
             visible = !isAtTop,
@@ -195,7 +209,7 @@ private fun createDetails(item: ServerInfoUi): Map<String, String> {
         details["Wipe"] = parsedTimeAgo
     }
 
-    item.ranking?.let { details["Ranking"] = it.roundToInt().toString() }
+    item.ranking?.let { details["Ranking"] = it.toInt().toString() }
     item.cycle?.let {
         details["Cycle"] = "~ " + String.format(Locale.getDefault(), "%.2f", it) + " days"
     }
@@ -215,6 +229,7 @@ private fun createLabels(item: ServerInfoUi): List<Label> {
     item.difficulty?.let {
         labels.add(Label(text = it.name))
     }
+    if (item.isOfficial == true) labels.add(Label(text = "Official"))
     return labels
 }
 
@@ -232,6 +247,8 @@ private fun ServerScreenPreview() {
                 onNavigate = {},
                 uiEvent = MutableStateFlow(UiEvent.Navigate(Destination.ServerDetails)),
                 pagedList = flowOf(PagingData.from(emptyList<ServerInfoUi>())).collectAsLazyPagingItems(),
+                onDismissSheet = { },
+                showSheet = false
             )
         }
     }

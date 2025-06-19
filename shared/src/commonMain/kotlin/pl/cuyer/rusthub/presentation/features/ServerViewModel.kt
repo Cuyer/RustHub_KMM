@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -32,6 +34,7 @@ import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
+import pl.cuyer.rusthub.presentation.model.toDomain
 import pl.cuyer.rusthub.presentation.model.toUi
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.Duration
@@ -49,15 +52,6 @@ class ServerViewModel(
     private val clearFiltersUseCase: ClearFiltersUseCase
 ) : BaseViewModel() {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    var paging: Flow<PagingData<ServerInfoUi>> = getPagedServersUseCase()
-        .map {
-            it.map { it.toServerInfo().toUi() }
-        }
-        .flowOn(Dispatchers.Default)
-        .cachedIn(coroutineScope)
-
-
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
 
@@ -72,6 +66,22 @@ class ServerViewModel(
             initialValue = ServerState()
         )
 
+    private val queryFlow = state
+        .map { it.filters.toDomain() }
+        .distinctUntilChanged()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val paging: Flow<PagingData<ServerInfoUi>> =
+        queryFlow
+            .flatMapLatest { query ->
+                getPagedServersUseCase(query)
+                    .map { pagingData ->
+                        pagingData.map { it.toServerInfo().toUi() }
+                    }
+            }
+            .cachedIn(coroutineScope)
+
+
     init {
         coroutineScope.launch {
             state.collectLatest {
@@ -85,8 +95,6 @@ class ServerViewModel(
             getFiltersOptions.invoke(),
             getFiltersUseCase.invoke()
         ) { filtersOptions, filters ->
-            println("filtersOptions: $filtersOptions")
-            println("filters: $filters")
             filters.toUi(
                 maps = filtersOptions?.maps?.map { it.displayName } ?: emptyList(),
                 flags = filtersOptions?.flags?.map { it.displayName } ?: emptyList(),

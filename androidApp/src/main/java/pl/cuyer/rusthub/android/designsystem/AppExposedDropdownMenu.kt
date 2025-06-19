@@ -14,11 +14,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import pl.cuyer.rusthub.domain.model.Flag
@@ -35,10 +37,19 @@ fun AppExposedDropdownMenu(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val textFieldState = rememberTextFieldState(options.getOrElse(selectedValue ?: -1) { "" })
+    val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(expanded) {
+        if (!expanded) {
+            focusManager.clearFocus()
+        }
+    }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { expanded = it },
+        onExpandedChange = {
+            expanded = it
+        },
     ) {
         TextField(
             modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),

@@ -19,7 +19,6 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -40,7 +39,6 @@ import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-import pl.cuyer.rusthub.android.designsystem.FilterBottomSheet
 import pl.cuyer.rusthub.android.feature.server.ServerDetails
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
@@ -59,7 +57,6 @@ fun NavigationRoot() {
     val snackbarController = SnackbarController
     val scope = rememberCoroutineScope()
     val backStack = remember { mutableStateListOf<Any>(ServerList) }
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
     var showSheet by remember { mutableStateOf(false) }
 
@@ -148,20 +145,12 @@ fun NavigationRoot() {
                             onNavigate = { destination ->
                                 backStack.add(destination)
                             },
-                            pagedList = paging
+                            showSheet = showSheet,
+                            pagedList = paging,
+                            onDismissSheet = {
+                                showSheet = false
+                            }
                         )
-
-                        if (showSheet) {
-                            FilterBottomSheet(
-                                stateProvider = { state },
-                                sheetState = sheetState,
-                                onDismiss = {
-                                    showSheet = false
-                                    paging.refresh()
-                                },
-                                onAction = viewModel::onAction
-                            )
-                        }
                     }
                     entry<ServerDetails>(
                         metadata = TwoPaneScene.twoPane()
