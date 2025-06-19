@@ -4,6 +4,8 @@ import pl.cuyer.rusthub.data.local.model.MapsEntity;
 import pl.cuyer.rusthub.data.local.model.RegionEntity;
 import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity;
 import pl.cuyer.rusthub.data.local.model.OrderEntity;
+import pl.cuyer.rusthub.data.local.model.ServerStatusEntity;
+import pl.cuyer.rusthub.data.local.model.WipeTypeEntity;
 
 -- =============================================================================
 -- Table Definition
@@ -27,6 +29,8 @@ CREATE TABLE serverEntity (
     ip             TEXT,
     map_image      TEXT,                              -- nullable URL/path
     description    TEXT,                               -- nullable long text
+    server_status  TEXT       AS ServerStatusEntity,
+    wipe_type      TEXT       AS WipeTypeEntity,
     favourite      INTEGER    NOT NULL DEFAULT 0
 );
 
@@ -91,7 +95,9 @@ INSERT INTO serverEntity (
     wipe_schedule,
     is_official,
     ip,
-    description
+    description,
+    server_status,
+    wipe_type
 ) VALUES (
     :id,
     :name,
@@ -109,7 +115,9 @@ INSERT INTO serverEntity (
     :wipeSchedule,
     CASE WHEN :isOfficial THEN 1 ELSE 0 END,
     :ip,
-    :description
+    :description,
+    :server_status,
+    :wipe_type
 ) ON CONFLICT(id) DO UPDATE SET
     name           = excluded.name,
     wipe           = excluded.wipe,
@@ -126,7 +134,9 @@ INSERT INTO serverEntity (
     wipe_schedule  = excluded.wipe_schedule,
     is_official    = excluded.is_official,
     ip             = excluded.ip,
-    description    = excluded.description;
+    description    = excluded.description,
+    server_status   = excluded.server_status,
+    wipe_type       = excluded.wipe_type;
 
 clearServers:
 DELETE FROM serverEntity;

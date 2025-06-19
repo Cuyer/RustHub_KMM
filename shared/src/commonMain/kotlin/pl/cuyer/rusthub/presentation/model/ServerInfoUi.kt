@@ -7,7 +7,9 @@ import pl.cuyer.rusthub.domain.model.Difficulty
 import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Maps
 import pl.cuyer.rusthub.domain.model.Region
+import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.WipeSchedule
+import pl.cuyer.rusthub.domain.model.WipeType
 
 @Serializable
 data class ServerInfoUi(
@@ -37,4 +39,6 @@ data class ServerInfoUi(
     val mapImage: String? = null,
     val description: String? = null,
     val mapId: String? = null,
+    val serverStatus: ServerStatus? = null,
+    val wipeType: WipeType? = null
 )

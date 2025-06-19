@@ -15,7 +15,9 @@ import pl.cuyer.rusthub.data.local.model.FlagEntity
 import pl.cuyer.rusthub.data.local.model.MapsEntity
 import pl.cuyer.rusthub.data.local.model.OrderEntity
 import pl.cuyer.rusthub.data.local.model.RegionEntity
+import pl.cuyer.rusthub.data.local.model.ServerStatusEntity
 import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity
+import pl.cuyer.rusthub.data.local.model.WipeTypeEntity
 import pl.cuyer.rusthub.domain.model.Difficulty
 import pl.cuyer.rusthub.domain.model.FiltersOptions
 import pl.cuyer.rusthub.domain.model.Flag
@@ -25,7 +27,9 @@ import pl.cuyer.rusthub.domain.model.Region
 import pl.cuyer.rusthub.domain.model.RemoteKey
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
+import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.WipeSchedule
+import pl.cuyer.rusthub.domain.model.WipeType
 
 fun DifficultyEntity?.toDomain(): Difficulty? = this?.let { Difficulty.valueOf(it.name) }
 fun Difficulty?.toEntity(): DifficultyEntity? = this?.let { DifficultyEntity.valueOf(it.name) }
@@ -44,6 +48,13 @@ fun WipeSchedule?.toEntity(): WipeScheduleEntity? = this?.let { WipeScheduleEnti
 
 fun OrderEntity?.toDomain(): Order? = this?.let { Order.valueOf(it.name) }
 fun Order?.toEntity(): OrderEntity? = this?.let { OrderEntity.valueOf(it.name) }
+
+fun ServerStatusEntity?.toDomain(): ServerStatus? = this?.let { ServerStatus.valueOf(it.name) }
+fun ServerStatus?.toEntity(): ServerStatusEntity? =
+    this?.let { ServerStatusEntity.valueOf(it.name) }
+
+fun WipeTypeEntity?.toDomain(): WipeType? = this?.let { WipeType.valueOf(it.name) }
+fun WipeType?.toEntity(): WipeTypeEntity? = this?.let { WipeTypeEntity.valueOf(it.name) }
 
 fun FiltersEntity.toServerQuery(): ServerQuery {
     return ServerQuery(
@@ -81,7 +92,9 @@ fun ServerEntity.toServerInfo(): ServerInfo {
         isOfficial = is_official == 1L,
         serverIp = ip,
         mapImage = map_image,
-        description = description
+        description = description,
+        serverStatus = server_status.toDomain(),
+        wipeType = wipe_type.toDomain()
     )
 }
 

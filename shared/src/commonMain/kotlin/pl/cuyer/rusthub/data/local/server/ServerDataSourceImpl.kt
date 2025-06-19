@@ -39,7 +39,9 @@ class ServerDataSourceImpl(
                     wipeSchedule = info.wipeSchedule.toEntity(),
                     isOfficial = info.isOfficial == true,
                     ip = info.serverIp,
-                    description = info.description
+                    description = info.description,
+                    server_status = info.serverStatus.toEntity(),
+                    wipe_type = info.wipeType.toEntity()
                 )
             }
         }

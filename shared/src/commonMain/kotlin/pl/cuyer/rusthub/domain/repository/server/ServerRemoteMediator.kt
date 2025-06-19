@@ -40,7 +40,9 @@ class ServerRemoteMediator(
             val query: ServerQuery = filters.getFilters().first() ?: ServerQuery()
             when (val result = api.getServers(page, state.config.pageSize, query)
                 .first { it !is Result.Loading }) {
-                is Result.Error -> MediatorResult.Error(result.exception)
+                is Result.Error -> {
+                    MediatorResult.Error(result.exception)
+                }
                 is Result.Success -> {
                     if (loadType == LoadType.REFRESH) {
                         dataSource.deleteServers()

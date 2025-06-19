@@ -24,7 +24,9 @@ actual class DatabaseDriverFactory(
                 server_flagAdapter = EnumColumnAdapter(),
                 regionAdapter = EnumColumnAdapter(),
                 difficultyAdapter = EnumColumnAdapter(),
-                wipe_scheduleAdapter = EnumColumnAdapter()
+                wipe_scheduleAdapter = EnumColumnAdapter(),
+                wipe_typeAdapter = EnumColumnAdapter(),
+                server_statusAdapter = EnumColumnAdapter()
             ),
             filtersEntityAdapter = FiltersEntity.Adapter(
                 map_nameAdapter = EnumColumnAdapter(),
