@@ -53,7 +53,9 @@ class ServerViewModel(
     var paging: Flow<PagingData<ServerInfoUi>> = getPagedServersUseCase()
         .map {
             it.map { it.toServerInfo().toUi() }
-        }.cachedIn(coroutineScope)
+        }
+        .flowOn(Dispatchers.Default)
+        .cachedIn(coroutineScope)
 
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -98,7 +100,8 @@ class ServerViewModel(
         }.onEach { mappedFilters ->
                 _state.update {
                     it.copy(
-                        filters = mappedFilters
+                        filters = mappedFilters,
+                        isLoading = false
                     )
                 }
             }
@@ -109,7 +112,7 @@ class ServerViewModel(
     fun onAction(action: ServerAction) {
         when (action) {
             is ServerAction.OnServerClick -> {}
-            is ServerAction.OnChangeLoadingState -> updateLoading(action.isLoading)
+            is ServerAction.OnChangeLoadingState -> _state.update { it.copy(isLoading = action.isLoading) }
             is ServerAction.OnRefresh -> {}
             is ServerAction.OnSaveFilters -> onSaveFilters(action.filters)
             is ServerAction.OnClearFilters -> clearFilters()
@@ -125,11 +128,9 @@ class ServerViewModel(
     }
 
     private fun navigateToServer() {
-        updateLoading(false)
     }
 
     private fun handleError(e: Throwable) {
-        updateLoading(false)
         e.message?.let {
             sendSnackbarEvent(
                 message = it
@@ -150,14 +151,6 @@ class ServerViewModel(
                     action = actionText?.let { SnackbarAction(name = it, action = action) },
                     duration = duration ?: Duration.SHORT
                 )
-            )
-        }
-    }
-
-    private fun updateLoading(isLoading: Boolean) {
-        _state.update {
-            it.copy(
-                isLoading = isLoading
             )
         }
     }
