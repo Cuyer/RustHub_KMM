@@ -173,6 +173,31 @@ DELETE FROM filtersEntity;
 getFilters:
 SELECT * FROM filtersEntity WHERE id = ?;
 
+CREATE TABLE remoteKeyEntity (
+    id            TEXT    NOT NULL PRIMARY KEY,
+    next_page     INTEGER,
+    last_updated  INTEGER NOT NULL
+);
+
+upsertRemoteKey:
+INSERT INTO remoteKeyEntity (
+    id,
+    next_page,
+    last_updated
+) VALUES (
+    :id,
+    :next_page,
+    :last_updated
+) ON CONFLICT(id) DO UPDATE SET
+    next_page = excluded.next_page,
+    last_updated = excluded.last_updated;
+
+clearRemoteKeys:
+DELETE FROM remoteKeyEntity;
+
+getRemoteKey:
+SELECT * FROM remoteKeyEntity WHERE id = ?;
+
 CREATE TABLE filtersOptionsEntity (
     id TEXT NOT NULL PRIMARY KEY,
     max_ranking INTEGER NOT NULL,
