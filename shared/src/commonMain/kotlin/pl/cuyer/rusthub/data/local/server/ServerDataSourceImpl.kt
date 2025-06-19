@@ -9,7 +9,7 @@ import pl.cuyer.rusthub.data.local.Queries
 import pl.cuyer.rusthub.data.local.mapper.toEntity
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.ServerInfo
-import pl.cuyer.rusthub.domain.repository.ServerDataSource
+import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 
 class ServerDataSourceImpl(
     db: RustHubDatabase

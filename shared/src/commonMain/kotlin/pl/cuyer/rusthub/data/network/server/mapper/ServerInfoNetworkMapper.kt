@@ -1,8 +1,8 @@
 package pl.cuyer.rusthub.data.network.server.mapper
 
 import pl.cuyer.rusthub.data.local.mapper.toDomain
-import pl.cuyer.rusthub.data.network.server.model.dto.PagedServerInfoDto
-import pl.cuyer.rusthub.data.network.server.model.dto.ServerInfoDto
+import pl.cuyer.rusthub.data.network.server.model.PagedServerInfoDto
+import pl.cuyer.rusthub.data.network.server.model.ServerInfoDto
 import pl.cuyer.rusthub.domain.model.PagedServerInfo
 import pl.cuyer.rusthub.domain.model.ServerInfo
 

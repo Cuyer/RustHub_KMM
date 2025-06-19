@@ -4,7 +4,7 @@ import kotlinx.datetime.Instant
 
 data class ServerQuery(
     val wipe: Instant? = null,
-    val ranking: Double? = null,
+    val ranking: Long? = null,
     val modded: Boolean? = null,
     val playerCount: Long? = null,
     val map: Maps? = null,

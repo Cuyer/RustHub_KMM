@@ -6,9 +6,8 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.graphics.toColorInt
-import androidx.lifecycle.viewmodel.compose.viewModel
 import org.koin.compose.KoinContext
-import pl.cuyer.rusthub.presentation.features.ServerViewModel
+import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.presentation.ui.Colors
 
 class MainActivity : ComponentActivity() {
@@ -23,7 +22,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             KoinContext(
                 content = {
-                    RustHubApp()
+                    RustHubTheme {
+                        NavigationRoot()
+                    }
                 }
             )
 

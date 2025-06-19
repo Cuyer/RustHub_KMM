@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.domain.repository
+package pl.cuyer.rusthub.domain.repository.server
 
 import app.cash.paging.PagingSource
 import database.ServerEntity

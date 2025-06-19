@@ -16,12 +16,18 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 
 @Composable
-fun AppSwitch() {
-    var checked by remember { mutableStateOf(true) }
+fun AppSwitch(
+    isChecked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    var checked by remember(isChecked) { mutableStateOf(isChecked) }
     Switch(
         modifier = Modifier.semantics { contentDescription = "Demo with icon" },
         checked = checked,
-        onCheckedChange = { checked = it },
+        onCheckedChange = {
+            checked = it
+            onCheckedChange(it)
+        },
         thumbContent = {
             if (checked) {
                 Icon(

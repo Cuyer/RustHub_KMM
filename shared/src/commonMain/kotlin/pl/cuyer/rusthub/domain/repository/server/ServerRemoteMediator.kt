@@ -15,6 +15,7 @@ import pl.cuyer.rusthub.domain.repository.FiltersDataSource
 import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
 import pl.cuyer.rusthub.domain.repository.ServerDataSource
 import kotlin.time.Duration.Companion.hours
+import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
 
 @OptIn(ExperimentalPagingApi::class)
 class ServerRemoteMediator(
@@ -49,7 +50,7 @@ class ServerRemoteMediator(
         }
 
         return try {
-            val query: ServerQuery = filters.getFilters() ?: ServerQuery()
+            val query: ServerQuery = filters.getFilters().first() ?: ServerQuery()
             when (val result = api.getServers(page, state.config.pageSize, query)
                 .first { it !is Result.Loading }) {
                 is Result.Error -> MediatorResult.Error(result.exception)

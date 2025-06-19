@@ -1,6 +1,12 @@
 package pl.cuyer.rusthub.data.local.mapper
 
+import database.FiltersDifficultyEntity
 import database.FiltersEntity
+import database.FiltersFlagEntity
+import database.FiltersMapEntity
+import database.FiltersOptionsEntity
+import database.FiltersRegionEntity
+import database.FiltersWipeScheduleEntity
 import database.ServerEntity
 import database.RemoteKeyEntity
 import kotlinx.datetime.Instant
@@ -10,7 +16,15 @@ import pl.cuyer.rusthub.data.local.model.MapsEntity
 import pl.cuyer.rusthub.data.local.model.OrderEntity
 import pl.cuyer.rusthub.data.local.model.RegionEntity
 import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity
-import pl.cuyer.rusthub.domain.model.*
+import pl.cuyer.rusthub.domain.model.Difficulty
+import pl.cuyer.rusthub.domain.model.FiltersOptions
+import pl.cuyer.rusthub.domain.model.Flag
+import pl.cuyer.rusthub.domain.model.Maps
+import pl.cuyer.rusthub.domain.model.Order
+import pl.cuyer.rusthub.domain.model.Region
+import pl.cuyer.rusthub.domain.model.ServerInfo
+import pl.cuyer.rusthub.domain.model.ServerQuery
+import pl.cuyer.rusthub.domain.model.WipeSchedule
 
 fun DifficultyEntity?.toDomain(): Difficulty? = this?.let { Difficulty.valueOf(it.name) }
 fun Difficulty?.toEntity(): DifficultyEntity? = this?.let { DifficultyEntity.valueOf(it.name) }
@@ -85,3 +99,33 @@ fun RemoteKey.toEntity(): RemoteKeyEntity {
         last_updated = lastUpdated
     )
 }
+
+fun FiltersOptionsEntity?.toDomain(
+    flags: List<Flag?>,
+    maps: List<Maps?>,
+    regions: List<Region?>,
+    difficulty: List<Difficulty?>,
+    wipeSchedules: List<WipeSchedule?>
+): FiltersOptions {
+    return FiltersOptions(
+        maxRanking = this?.max_ranking?.toInt() ?: 0,
+        maxPlayerCount = this?.max_player_count?.toInt() ?: 0,
+        maxGroupLimit = this?.max_group_limit?.toInt() ?: 0,
+        flags = flags.filterNotNull(),
+        maps = maps.filterNotNull(),
+        regions = regions.filterNotNull(),
+        difficulty = difficulty.filterNotNull(),
+        wipeSchedules = wipeSchedules.filterNotNull()
+    )
+}
+
+fun FiltersDifficultyEntity?.toDomain(): Difficulty? = this?.let { Difficulty.valueOf(it.label) }
+
+fun FiltersFlagEntity?.toDomain(): Flag? = this?.let { Flag.valueOf(it.label) }
+
+fun FiltersMapEntity?.toDomain(): Maps? = this?.let { Maps.valueOf(it.label) }
+
+fun FiltersRegionEntity?.toDomain(): Region? = this?.let { Region.valueOf(it.label) }
+
+fun FiltersWipeScheduleEntity?.toDomain(): WipeSchedule? =
+    this?.let { WipeSchedule.valueOf(it.label) }

@@ -3,14 +3,14 @@ package pl.cuyer.rusthub.data.network.server
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import kotlinx.coroutines.flow.Flow
-import pl.cuyer.rusthub.common.Result
 import kotlinx.coroutines.flow.map
+import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.data.network.server.mapper.toDomain
-import pl.cuyer.rusthub.data.network.server.model.dto.PagedServerInfoDto
-import pl.cuyer.rusthub.domain.model.PagedServerInfo
+import pl.cuyer.rusthub.data.network.server.model.PagedServerInfoDto
 import pl.cuyer.rusthub.data.network.util.BaseApiResponse
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
 import pl.cuyer.rusthub.data.network.util.appendNonNull
+import pl.cuyer.rusthub.domain.model.PagedServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
 
