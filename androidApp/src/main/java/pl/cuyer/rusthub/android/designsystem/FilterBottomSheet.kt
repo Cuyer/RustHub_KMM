@@ -63,13 +63,18 @@ fun FilterBottomSheet(
     onAction: (ServerAction) -> Unit
 ) {
     val scrollState = rememberScrollState()
-
+    val coroutineScope = rememberCoroutineScope()
     val currentFilters = stateProvider().value.filters
     var newFilters by remember(currentFilters) { mutableStateOf(currentFilters) }
+
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        modifier = modifier
+        modifier = modifier.bottomSheetNestedScroll(sheetState) { velocity ->
+            coroutineScope.launch { sheetState.settleCompat(velocity) }
+                .invokeOnCompletion { if (!sheetState.isVisible) onDismiss() }
+        }
     ) {
         Text(
             text = "Filter Options",
