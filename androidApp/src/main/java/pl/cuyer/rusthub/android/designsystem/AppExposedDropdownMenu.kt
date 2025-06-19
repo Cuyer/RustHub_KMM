@@ -29,10 +29,12 @@ import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
 @Composable
 fun AppExposedDropdownMenu(
     label: String,
-    options: List<String>
+    options: List<String>,
+    selectedValue: Int?,
+    onSelectionChanged: (Int) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val textFieldState = rememberTextFieldState("")
+    val textFieldState = rememberTextFieldState(options.getOrElse(selectedValue ?: -1) { "" })
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -57,6 +59,7 @@ fun AppExposedDropdownMenu(
                     onClick = {
                         textFieldState.setTextAndPlaceCursorAtEnd(option)
                         expanded = false
+                        onSelectionChanged(options.indexOf(option))
                     },
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                     trailingIcon = {

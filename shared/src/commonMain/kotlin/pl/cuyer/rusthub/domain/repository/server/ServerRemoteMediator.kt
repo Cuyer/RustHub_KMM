@@ -8,8 +8,7 @@ import database.ServerEntity
 import kotlinx.coroutines.flow.first
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.ServerQuery
-import pl.cuyer.rusthub.domain.repository.FiltersDataSource
-import pl.cuyer.rusthub.domain.repository.ServerDataSource
+import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
 
 @OptIn(ExperimentalPagingApi::class)
 class ServerRemoteMediator(
@@ -29,7 +28,7 @@ class ServerRemoteMediator(
         }
 
         return try {
-            val query: ServerQuery = filters.getFilters() ?: ServerQuery()
+            val query: ServerQuery = filters.getFilters().first() ?: ServerQuery()
             when (val result = api.getServers(page, state.config.pageSize, query)
                 .first { it !is Result.Loading }) {
                 is Result.Error -> MediatorResult.Error(result.exception)

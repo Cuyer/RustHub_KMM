@@ -1,19 +1,19 @@
 package pl.cuyer.rusthub.domain.model
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-
-@Serializable
 enum class Region {
     ASIA,
     EUROPE,
-    @SerialName("NORTH AMERICA")
     AMERICA,
     AFRICA,
-    @SerialName("SOUTH AMERICA")
     SOUTH_AMERICA,
-    @SerialName("OCEANIA")
     OCEANIA,
-    @SerialName("AUSTRALIA")
-    AUSTRALIA
+    AUSTRALIA;
+
+    companion object {
+        fun fromDisplayName(name: String): Region? =
+            Region.entries.firstOrNull { it.displayName == name }
+    }
 }
+
+val Region.displayName: String
+    get() = this.name.lowercase().replaceFirstChar { it.uppercase() }

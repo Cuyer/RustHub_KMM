@@ -23,8 +23,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -65,12 +67,12 @@ import kotlin.math.roundToInt
 @Composable
 fun ServerScreen(
     onNavigate: (Destination) -> Unit,
-    stateProvider: () -> StateFlow<ServerState>,
+    stateProvider: () -> State<ServerState>,
     onAction: (ServerAction) -> Unit,
     pagedList: LazyPagingItems<ServerInfoUi>,
     uiEvent: Flow<UiEvent>
 ) {
-    val state = stateProvider().collectAsStateWithLifecycle()
+    val state = stateProvider()
 
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
@@ -225,7 +227,7 @@ private fun ServerScreenPreview() {
             color = MaterialTheme.colorScheme.background
         ) {
             ServerScreen(
-                stateProvider = { MutableStateFlow(ServerState(isLoading = false)) },
+                stateProvider = { mutableStateOf(ServerState(isLoading = false)) },
                 onAction = {},
                 onNavigate = {},
                 uiEvent = MutableStateFlow(UiEvent.Navigate(Destination.ServerDetails)),
