@@ -39,40 +39,42 @@ CREATE TABLE serverEntity (
 -- =============================================================================
 -- Returns a page of servers
 findServersPagedFiltered:
-SELECT *
+SELECT serverEntity.*
 FROM serverEntity
+    CROSS JOIN filtersEntity ON filtersEntity.id = :id
 WHERE
-  (:ranking IS NULL OR ranking <= :ranking)
-  AND (:modded IS NULL OR modded = :modded)
-  AND (:player_count IS NULL OR player_count <= :player_count)
-  AND(:map_name IS NULL OR map_name = :map_name)
-  AND (:server_flag IS NULL OR server_flag = :server_flag)
-  AND (:region IS NULL OR region = :region)
-  AND (:group_limit IS NULL OR max_group <= :group_limit)
-  AND (:difficulty IS NULL OR difficulty = :difficulty)
-  AND (:wipe_schedule IS NULL OR wipe_schedule = :wipe_schedule)
-  AND (:is_official IS NULL OR is_official = :is_official)
+  (filtersEntity.ranking IS NULL OR ranking <= filtersEntity.ranking)
+  AND (filtersEntity.modded IS NULL OR modded = filtersEntity.modded)
+  AND (filtersEntity.player_count IS NULL OR player_count <= filtersEntity.player_count)
+  AND (filtersEntity.map_name IS NULL OR map_name = filtersEntity.map_name)
+  AND (filtersEntity.server_flag IS NULL OR server_flag = filtersEntity.server_flag)
+  AND (filtersEntity.region IS NULL OR region = filtersEntity.region)
+  AND (filtersEntity.group_limit IS NULL OR max_group <= filtersEntity.group_limit)
+  AND (filtersEntity.difficulty IS NULL OR difficulty = filtersEntity.difficulty)
+  AND (filtersEntity.wipe_schedule IS NULL OR wipe_schedule = filtersEntity.wipe_schedule)
+  AND (filtersEntity.is_official IS NULL OR is_official = filtersEntity.is_official)
   ORDER BY
-    CASE WHEN :order = 'WIPE' THEN wipe END DESC,
-    CASE WHEN :order = 'PLAYER_COUNT' THEN player_count END DESC,
-    CASE WHEN :order = 'RANK' THEN ranking END ASC
+    CASE WHEN filtersEntity.sort_order = 'WIPE' THEN wipe END DESC,
+    CASE WHEN filtersEntity.sort_order = 'PLAYER_COUNT' THEN player_count END DESC,
+    CASE WHEN filtersEntity.sort_order = 'RANK' THEN ranking END ASC
 LIMIT :limit OFFSET :offset;
 
 countPagedServersFiltered:
 SELECT COUNT(*)
 FROM serverEntity
+    CROSS JOIN filtersEntity ON filtersEntity.id = :id
 WHERE
-  (:wipe IS NULL OR date(wipe) >= date(:wipe))
-  AND (:ranking IS NULL OR ranking <= :ranking)
-  AND (:modded IS NULL OR modded = :modded)
-  AND (:player_count IS NULL OR player_count <= :player_count)
-  AND(:map_name IS NULL OR map_name = :map_name)
-  AND (:server_flag IS NULL OR server_flag = :server_flag)
-  AND (:region IS NULL OR region = :region)
-  AND (:group_limit IS NULL OR max_group <= :group_limit)
-  AND (:difficulty IS NULL OR difficulty = :difficulty)
-  AND (:wipe_schedule IS NULL OR wipe_schedule = :wipe_schedule)
-  AND (:is_official IS NULL OR is_official = :is_official);
+  (filtersEntity.wipe IS NULL OR date(wipe) >= date(filtersEntity.wipe))
+  AND (filtersEntity.ranking IS NULL OR ranking <= filtersEntity.ranking)
+  AND (filtersEntity.modded IS NULL OR modded = filtersEntity.modded)
+  AND (filtersEntity.player_count IS NULL OR player_count <= filtersEntity.player_count)
+  AND (filtersEntity.map_name IS NULL OR map_name = filtersEntity.map_name)
+  AND (filtersEntity.server_flag IS NULL OR server_flag = filtersEntity.server_flag)
+  AND (filtersEntity.region IS NULL OR region = filtersEntity.region)
+  AND (filtersEntity.group_limit IS NULL OR max_group <= filtersEntity.group_limit)
+  AND (filtersEntity.difficulty IS NULL OR difficulty = filtersEntity.difficulty)
+  AND (filtersEntity.wipe_schedule IS NULL OR wipe_schedule = filtersEntity.wipe_schedule)
+  AND (filtersEntity.is_official IS NULL OR is_official = filtersEntity.is_official);
 
 -- =============================================================================
 -- Upsert (Insert or Update on id conflict)
