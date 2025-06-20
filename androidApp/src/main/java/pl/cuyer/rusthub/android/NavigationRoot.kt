@@ -5,20 +5,16 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -28,7 +24,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entry
@@ -39,6 +34,7 @@ import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
+import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.feature.server.ServerDetails
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
@@ -79,30 +75,20 @@ fun NavigationRoot() {
             }
         }
     }
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Rust server list",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+            val searchBarState = rememberSearchBarState()
+            val textFieldState = rememberTextFieldState()
+            RustSearchBarTopAppBar(
+                searchBarState = searchBarState,
+                textFieldState = textFieldState,
+                onSearchTriggered = {
+
                 },
-                actions = {
-                    IconButton(onClick = {
-                        coroutineScope.launch {
-                            showSheet = true
-                        }
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.FilterList,
-                            contentDescription = "Button to open filter list"
-                        )
-                    }
-                },
-                scrollBehavior = scrollBehavior
+                onOpenFilters = {
+                    coroutineScope.launch { showSheet = true }
+                }
             )
         },
         modifier = Modifier
