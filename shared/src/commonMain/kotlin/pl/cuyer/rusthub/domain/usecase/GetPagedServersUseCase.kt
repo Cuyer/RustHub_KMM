@@ -19,7 +19,7 @@ class GetPagedServersUseCase(
     private val remoteKeys: RemoteKeyDataSource
 ) {
     @OptIn(ExperimentalPagingApi::class)
-    operator fun invoke(): Flow<PagingData<ServerEntity>> {
+    operator fun invoke(searchQuery: String?): Flow<PagingData<ServerEntity>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 40,
@@ -29,9 +29,10 @@ class GetPagedServersUseCase(
                 dataSource,
                 api,
                 filters,
-                remoteKeys
+                remoteKeys,
+                searchQuery
             ),
-            pagingSourceFactory = { dataSource.getServersPagingSource() }
+            pagingSourceFactory = { dataSource.getServersPagingSource(searchQuery) }
         ).flow
     }
 }

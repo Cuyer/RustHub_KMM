@@ -19,7 +19,8 @@ class ServerClientImpl(private val httpClient: HttpClient) : ServerRepository,
     override fun getServers(
         page: Int,
         size: Int,
-        query: ServerQuery
+        query: ServerQuery,
+        searchQuery: String?
     ): Flow<Result<PagedServerInfo>> {
         return safeApiCall<PagedServerInfoDto> {
             httpClient.get(NetworkConstants.BASE_URL + "servers") {
@@ -36,6 +37,7 @@ class ServerClientImpl(private val httpClient: HttpClient) : ServerRepository,
                     appendNonNull("difficulty" to query.difficulty)
                     appendNonNull("wipeSchedule" to query.wipeSchedule)
                     appendNonNull("order" to query.order)
+                    if (!searchQuery.isNullOrBlank()) parameters.append("name", searchQuery)
                     if (query.official == true) parameters.append("official", true.toString())
                     if (query.modded == true) parameters.append("modded", true.toString())
                 }

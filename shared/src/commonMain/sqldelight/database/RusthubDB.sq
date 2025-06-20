@@ -53,6 +53,7 @@ WHERE
   AND (fe.difficulty IS NULL OR se.difficulty = fe.difficulty)
   AND (fe.wipe_schedule IS NULL OR se.wipe_schedule = fe.wipe_schedule)
   AND (fe.is_official IS NULL OR se.is_official = fe.is_official)
+  AND (se.name LIKE '%' || :name || '%' COLLATE NOCASE)
 ORDER BY
   CASE WHEN fe.sort_order = 'WIPE' THEN se.wipe END DESC,
   CASE WHEN fe.sort_order = 'PLAYER_COUNT' THEN se.player_count END DESC,
@@ -74,7 +75,8 @@ WHERE
   AND (fe.group_limit IS NULL OR se.max_group <= fe.group_limit)
   AND (fe.difficulty IS NULL OR se.difficulty = fe.difficulty)
   AND (fe.wipe_schedule IS NULL OR se.wipe_schedule = fe.wipe_schedule)
-  AND (fe.is_official IS NULL OR se.is_official = fe.is_official);
+  AND (fe.is_official IS NULL OR se.is_official = fe.is_official)
+  AND (se.name LIKE '%' || :name || '%' COLLATE NOCASE);
 
 -- =============================================================================
 -- Upsert (Insert or Update on id conflict)
@@ -374,3 +376,25 @@ SELECT * FROM filtersWipeScheduleEntity;
 
 clearFiltersWipeSchedules:
 DELETE FROM filtersWipeScheduleEntity;
+
+CREATE TABLE searchQueryEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    query TEXT NOT NULL UNIQUE,
+    timestamp TEXT NOT NULL
+);
+
+upsertSearchQuery:
+INSERT INTO searchQueryEntity (query, timestamp)
+VALUES (:query, :timestamp)
+ON CONFLICT(query) DO UPDATE SET
+    timestamp = excluded.timestamp;
+
+getSearchQueries:
+SELECT * FROM searchQueryEntity
+ORDER BY timestamp DESC;
+
+clearSearchQueries:
+DELETE FROM searchQueryEntity;
+
+deleteSearchQueryByQuery:
+DELETE FROM searchQueryEntity WHERE query = :query;

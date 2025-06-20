@@ -7,5 +7,9 @@ sealed interface ServerAction {
     data class OnChangeLoadingState(val isLoading: Boolean): ServerAction
     data class OnSaveFilters(val filters: ServerQuery): ServerAction
     data class OnLongServerClick(val ipAddress: String?) : ServerAction
+    data class OnSearch(val query: String) : ServerAction
     data object OnClearFilters: ServerAction
+    data object DeleteSearchQueries : ServerAction
+    data class DeleteSearchQueryByQuery(val query: String) : ServerAction
+    data object OnClearSearchQuery : ServerAction
 }

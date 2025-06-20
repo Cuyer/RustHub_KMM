@@ -20,7 +20,8 @@ class ServerRemoteMediator(
     private val dataSource: ServerDataSource,
     private val api: ServerRepository,
     private val filters: FiltersDataSource,
-    private val remoteKeys: RemoteKeyDataSource
+    private val remoteKeys: RemoteKeyDataSource,
+    private val searchQuery: String?
 ) : RemoteMediator<Int, ServerEntity>() {
     private val keyId = DEFAULT_KEY
 
@@ -40,7 +41,7 @@ class ServerRemoteMediator(
 
         return try {
             val query: ServerQuery = filters.getFilters().first() ?: ServerQuery()
-            when (val result = api.getServers(page, state.config.pageSize, query)
+            when (val result = api.getServers(page, state.config.pageSize, query, searchQuery)
                 .first { it !is Result.Loading }) {
                 is Result.Error -> {
                     MediatorResult.Error(result.exception)
