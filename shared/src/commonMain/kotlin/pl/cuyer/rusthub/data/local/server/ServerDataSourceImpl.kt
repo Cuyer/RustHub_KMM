@@ -47,7 +47,8 @@ class ServerDataSourceImpl(
         }
     }
 
-    override fun getServersPagingSource(query: ServerQuery?): PagingSource<Int, ServerEntity> {
+    override fun getServersPagingSource(): PagingSource<Int, ServerEntity> {
+        ensureFiltersRowExist()
         val pagingSource: PagingSource<Int, ServerEntity> = QueryPagingSource(
             countQuery = queries.countPagedServersFiltered(id = DEFAULT_KEY),
             transacter = queries,
@@ -65,5 +66,26 @@ class ServerDataSourceImpl(
 
     override fun deleteServers() {
         queries.clearServers()
+    }
+
+    private fun ensureFiltersRowExist() {
+        if (queries.getFilters(id = DEFAULT_KEY).executeAsOneOrNull() == null) {
+            val filters = ServerQuery()
+            queries.upsertFilters(
+                id = DEFAULT_KEY,
+                wipe = filters.wipe?.toString(),
+                ranking = filters.ranking,
+                player_count = filters.playerCount,
+                map_name = filters.map.toEntity(),
+                server_flag = filters.flag.toEntity(),
+                region = filters.region.toEntity(),
+                group_limit = filters.groupLimit,
+                difficulty = filters.difficulty.toEntity(),
+                wipe_schedule = filters.wipeSchedule.toEntity(),
+                is_official = if (filters.official == true) 1 else null,
+                modded = if (filters.modded == true) 1 else null,
+                sort_order = filters.order.toEntity()
+            )
+        }
     }
 }

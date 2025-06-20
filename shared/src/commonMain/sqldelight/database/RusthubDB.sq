@@ -15,7 +15,7 @@ CREATE TABLE serverEntity (
     name           TEXT       NOT NULL,
     wipe           TEXT,                              -- ISO-8601 timestamp string, e.g. "2025-06-06T21:03:40.00+02:00"
     ranking        INTEGER,
-    modded         INTEGER    NOT NULL DEFAULT 0,     -- store booleans as 0/1
+    modded         INTEGER,
     player_count   INTEGER,
     capacity       INTEGER,
     map_name       TEXT       AS MapsEntity,
@@ -25,7 +25,7 @@ CREATE TABLE serverEntity (
     max_group      INTEGER,
     difficulty     TEXT       AS DifficultyEntity,          -- nullable
     wipe_schedule  TEXT       AS WipeScheduleEntity,
-    is_official    INTEGER    NOT NULL DEFAULT 0,
+    is_official    INTEGER,
     ip             TEXT,
     map_image      TEXT,                              -- nullable URL/path
     description    TEXT,                               -- nullable long text
@@ -39,42 +39,42 @@ CREATE TABLE serverEntity (
 -- =============================================================================
 -- Returns a page of servers
 findServersPagedFiltered:
-SELECT serverEntity.*
-FROM serverEntity
-    CROSS JOIN filtersEntity ON filtersEntity.id = :id
+SELECT se.*
+FROM serverEntity se
+CROSS JOIN filtersEntity fe ON fe.id = :id
 WHERE
-  (filtersEntity.ranking IS NULL OR ranking <= filtersEntity.ranking)
-  AND (filtersEntity.modded IS NULL OR modded = filtersEntity.modded)
-  AND (filtersEntity.player_count IS NULL OR player_count <= filtersEntity.player_count)
-  AND (filtersEntity.map_name IS NULL OR map_name = filtersEntity.map_name)
-  AND (filtersEntity.server_flag IS NULL OR server_flag = filtersEntity.server_flag)
-  AND (filtersEntity.region IS NULL OR region = filtersEntity.region)
-  AND (filtersEntity.group_limit IS NULL OR max_group <= filtersEntity.group_limit)
-  AND (filtersEntity.difficulty IS NULL OR difficulty = filtersEntity.difficulty)
-  AND (filtersEntity.wipe_schedule IS NULL OR wipe_schedule = filtersEntity.wipe_schedule)
-  AND (filtersEntity.is_official IS NULL OR is_official = filtersEntity.is_official)
-  ORDER BY
-    CASE WHEN filtersEntity.sort_order = 'WIPE' THEN wipe END DESC,
-    CASE WHEN filtersEntity.sort_order = 'PLAYER_COUNT' THEN player_count END DESC,
-    CASE WHEN filtersEntity.sort_order = 'RANK' THEN ranking END ASC
+  (fe.ranking IS NULL OR se.ranking <= fe.ranking)
+  AND (fe.modded IS NULL OR se.modded = fe.modded)
+  AND (fe.player_count IS NULL OR se.player_count <= fe.player_count)
+  AND (fe.map_name IS NULL OR se.map_name = fe.map_name)
+  AND (fe.server_flag IS NULL OR se.server_flag = fe.server_flag)
+  AND (fe.region IS NULL OR se.region = fe.region)
+  AND (fe.group_limit IS NULL OR se.max_group <= fe.group_limit)
+  AND (fe.difficulty IS NULL OR se.difficulty = fe.difficulty)
+  AND (fe.wipe_schedule IS NULL OR se.wipe_schedule = fe.wipe_schedule)
+  AND (fe.is_official IS NULL OR se.is_official = fe.is_official)
+ORDER BY
+  CASE WHEN fe.sort_order = 'WIPE' THEN se.wipe END DESC,
+  CASE WHEN fe.sort_order = 'PLAYER_COUNT' THEN se.player_count END DESC,
+  CASE WHEN fe.sort_order = 'RANK' THEN se.ranking END ASC
 LIMIT :limit OFFSET :offset;
 
 countPagedServersFiltered:
 SELECT COUNT(*)
-FROM serverEntity
-    CROSS JOIN filtersEntity ON filtersEntity.id = :id
+FROM serverEntity se
+CROSS JOIN filtersEntity fe ON fe.id = :id
 WHERE
-  (filtersEntity.wipe IS NULL OR date(wipe) >= date(filtersEntity.wipe))
-  AND (filtersEntity.ranking IS NULL OR ranking <= filtersEntity.ranking)
-  AND (filtersEntity.modded IS NULL OR modded = filtersEntity.modded)
-  AND (filtersEntity.player_count IS NULL OR player_count <= filtersEntity.player_count)
-  AND (filtersEntity.map_name IS NULL OR map_name = filtersEntity.map_name)
-  AND (filtersEntity.server_flag IS NULL OR server_flag = filtersEntity.server_flag)
-  AND (filtersEntity.region IS NULL OR region = filtersEntity.region)
-  AND (filtersEntity.group_limit IS NULL OR max_group <= filtersEntity.group_limit)
-  AND (filtersEntity.difficulty IS NULL OR difficulty = filtersEntity.difficulty)
-  AND (filtersEntity.wipe_schedule IS NULL OR wipe_schedule = filtersEntity.wipe_schedule)
-  AND (filtersEntity.is_official IS NULL OR is_official = filtersEntity.is_official);
+  (fe.wipe IS NULL OR date(se.wipe) >= date(fe.wipe))
+  AND (fe.ranking IS NULL OR se.ranking <= fe.ranking)
+  AND (fe.modded IS NULL OR se.modded = fe.modded)
+  AND (fe.player_count IS NULL OR se.player_count <= fe.player_count)
+  AND (fe.map_name IS NULL OR se.map_name = fe.map_name)
+  AND (fe.server_flag IS NULL OR se.server_flag = fe.server_flag)
+  AND (fe.region IS NULL OR se.region = fe.region)
+  AND (fe.group_limit IS NULL OR se.max_group <= fe.group_limit)
+  AND (fe.difficulty IS NULL OR se.difficulty = fe.difficulty)
+  AND (fe.wipe_schedule IS NULL OR se.wipe_schedule = fe.wipe_schedule)
+  AND (fe.is_official IS NULL OR se.is_official = fe.is_official);
 
 -- =============================================================================
 -- Upsert (Insert or Update on id conflict)
