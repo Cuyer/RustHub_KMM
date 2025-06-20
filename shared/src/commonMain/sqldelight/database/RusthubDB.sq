@@ -374,20 +374,25 @@ SELECT * FROM filtersWipeScheduleEntity;
 
 clearFiltersWipeSchedules:
 DELETE FROM filtersWipeScheduleEntity;
+
 CREATE TABLE searchQueryEntity (
-    query TEXT NOT NULL PRIMARY KEY
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    query TEXT NOT NULL UNIQUE,
+    timestamp TEXT NOT NULL
 );
 
 upsertSearchQuery:
-INSERT INTO searchQueryEntity (
-    query
-) VALUES (
-    :query
-) ON CONFLICT(query) DO UPDATE SET
-    query = excluded.query;
+INSERT INTO searchQueryEntity (query, timestamp)
+VALUES (:query, :timestamp)
+ON CONFLICT(query) DO UPDATE SET
+    timestamp = excluded.timestamp;
 
 getSearchQueries:
-SELECT * FROM searchQueryEntity;
+SELECT * FROM searchQueryEntity
+ORDER BY timestamp DESC;
 
 clearSearchQueries:
 DELETE FROM searchQueryEntity;
+
+deleteSearchQueryByQuery:
+DELETE FROM searchQueryEntity WHERE query = :query;

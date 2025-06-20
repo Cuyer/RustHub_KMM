@@ -7,4 +7,5 @@ interface SearchQueryDataSource {
     fun getQueries(): Flow<List<SearchQuery>>
     fun upsertQuery(query: SearchQuery)
     fun clearQueries()
+    fun deleteByQuery(query: String)
 }

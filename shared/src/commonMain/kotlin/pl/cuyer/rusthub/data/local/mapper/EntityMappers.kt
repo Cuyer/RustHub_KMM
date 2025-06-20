@@ -8,6 +8,7 @@ import database.FiltersOptionsEntity
 import database.FiltersRegionEntity
 import database.FiltersWipeScheduleEntity
 import database.RemoteKeyEntity
+import database.SearchQueryEntity
 import database.ServerEntity
 import kotlinx.datetime.Instant
 import pl.cuyer.rusthub.data.local.model.DifficultyEntity
@@ -25,6 +26,7 @@ import pl.cuyer.rusthub.domain.model.Maps
 import pl.cuyer.rusthub.domain.model.Order
 import pl.cuyer.rusthub.domain.model.Region
 import pl.cuyer.rusthub.domain.model.RemoteKey
+import pl.cuyer.rusthub.domain.model.SearchQuery
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.model.ServerStatus
@@ -144,9 +146,5 @@ fun FiltersRegionEntity?.toDomain(): Region? = this?.let { Region.valueOf(it.lab
 fun FiltersWipeScheduleEntity?.toDomain(): WipeSchedule? =
     this?.let { WipeSchedule.valueOf(it.label) }
 
-import database.SearchQueryEntity
-import pl.cuyer.rusthub.domain.model.SearchQuery
-
-fun SearchQueryEntity.toDomain(): SearchQuery = SearchQuery(query)
-fun SearchQuery.toEntity(): SearchQueryEntity = SearchQueryEntity(query)
+fun SearchQueryEntity.toDomain(): SearchQuery = SearchQuery(id, query, Instant.parse(timestamp))
 

@@ -9,4 +9,6 @@ sealed interface ServerAction {
     data class OnLongServerClick(val ipAddress: String?) : ServerAction
     data class OnSearch(val query: String) : ServerAction
     data object OnClearFilters: ServerAction
+    data object DeleteSearchQueries : ServerAction
+    data class DeleteSearchQueryByQuery(val query: String) : ServerAction
 }

@@ -12,8 +12,8 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import pl.cuyer.rusthub.data.local.filter.FiltersDataSourceImpl
 import pl.cuyer.rusthub.data.local.filtersOptions.FiltersOptionsDataSourceImpl
-import pl.cuyer.rusthub.data.local.search.SearchQueryDataSourceImpl
 import pl.cuyer.rusthub.data.local.remotekey.RemoteKeyDataSourceImpl
+import pl.cuyer.rusthub.data.local.search.SearchQueryDataSourceImpl
 import pl.cuyer.rusthub.data.local.server.ServerDataSourceImpl
 import pl.cuyer.rusthub.data.network.filtersOptions.FiltersOptionsClientImpl
 import pl.cuyer.rusthub.data.network.server.ServerClientImpl
@@ -25,9 +25,11 @@ import pl.cuyer.rusthub.domain.repository.search.SearchQueryDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
 import pl.cuyer.rusthub.domain.usecase.ClearFiltersUseCase
+import pl.cuyer.rusthub.domain.usecase.DeleteSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetFiltersOptionsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
+import pl.cuyer.rusthub.domain.usecase.GetSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
 import pl.cuyer.rusthub.presentation.features.ServerViewModel
@@ -56,6 +58,8 @@ val appModule = module {
     single { SaveSearchQueryUseCase(get()) }
     single { ClearFiltersUseCase(get()) }
     single { GetFiltersOptionsUseCase(get(), get()) }
+    single { GetSearchQueriesUseCase(get()) }
+    single { DeleteSearchQueriesUseCase(get()) }
     factoryOf(::ServerViewModel)
 }
 
