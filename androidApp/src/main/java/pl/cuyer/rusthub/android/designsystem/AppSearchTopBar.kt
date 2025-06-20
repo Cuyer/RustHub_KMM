@@ -90,7 +90,7 @@ fun RustSearchBarTopAppBar(
                             Icon(Icons.Default.Close, contentDescription = "Clear")
                         }
                     }
-                    if (searchBarState.currentValue == SearchBarValue.Collapsed) {
+                    if (searchBarState.currentValue == SearchBarValue.Collapsed && textFieldState.text.isEmpty()) {
                         IconButton(onClick = onOpenFilters) {
                             Icon(Icons.Default.FilterList, contentDescription = "Open Filters")
                         }
