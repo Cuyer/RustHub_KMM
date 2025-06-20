@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -62,6 +63,8 @@ class ServerViewModel(
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
 
+    private val queryFlow = MutableStateFlow("")
+
     private val _state = MutableStateFlow(ServerState())
     val state = _state
         .onStart {
@@ -75,11 +78,15 @@ class ServerViewModel(
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val paging: Flow<PagingData<ServerInfoUi>> =
-        getPagedServersUseCase()
-            .map { pagingData ->
-                pagingData.map { it.toServerInfo().toUi() }
-            }.cachedIn(coroutineScope)
+    val paging: Flow<PagingData<ServerInfoUi>> = queryFlow
+        .flatMapLatest { query ->
+            getPagedServersUseCase(query)
+                .map { pagingData ->
+                    pagingData.map { it.toServerInfo().toUi() }
+                }.cachedIn(coroutineScope)
+        }
+
+
 
     init {
         coroutineScope.launch {
@@ -92,14 +99,18 @@ class ServerViewModel(
     private fun observeSearchQueries() {
         getSearchQueriesUseCase.invoke()
             .map { searchQuery ->
-                val mapped = searchQuery.map { it.toUi() }
+                searchQuery.map { it.toUi() }
+            }.onEach { mappedQuery ->
                 _state.update {
                     it.copy(
-                        searchQuery = mapped
+                        searchQuery = mappedQuery
                     )
                 }
-            }.launchIn(coroutineScope)
+            }
+            .flowOn(Dispatchers.Default)
+            .launchIn(coroutineScope)
     }
+
 
     private fun observeFilters() {
         combine(
@@ -134,17 +145,27 @@ class ServerViewModel(
             is ServerAction.OnLongServerClick -> saveIpToClipboard(action.ipAddress)
             is ServerAction.OnChangeLoadingState -> _state.update { it.copy(isLoading = action.isLoading) }
             is ServerAction.OnSaveFilters -> onSaveFilters(action.filters)
-            is ServerAction.OnSearch -> saveSearchQueryUseCase(
-                SearchQuery(
-                    query = action.query,
-                    timestamp = System.now(),
-                    id = null
-                )
-            )
+            is ServerAction.OnSearch -> handleSearch(query = action.query)
             is ServerAction.OnClearFilters -> clearFilters()
+            is ServerAction.OnClearSearchQuery -> clearSearchQuery()
             is ServerAction.DeleteSearchQueries -> deleteSearchQueriesUseCase()
             is ServerAction.DeleteSearchQueryByQuery -> deleteSearchQueriesUseCase(action.query)
         }
+    }
+
+    private fun handleSearch(query: String) {
+        saveSearchQueryUseCase(
+            SearchQuery(
+                query = query,
+                timestamp = System.now(),
+                id = null
+            )
+        )
+        queryFlow.update { query }
+    }
+
+    private fun clearSearchQuery() {
+        queryFlow.update { "" }
     }
 
     private fun saveIpToClipboard(ipAddress: String?) {

@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopSearchBar
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,9 +52,14 @@ fun RustSearchBarTopAppBar(
     onOpenFilters: () -> Unit,
     searchQueryUi: List<SearchQueryUi>,
     onDelete: (String) -> Unit,
+    onClearSearchQuery: () -> Unit,
     scrollBehavior: SearchBarScrollBehavior
 ) {
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(textFieldState.text) {
+        if (textFieldState.text.isBlank()) onClearSearchQuery()
+    }
 
     val inputField = @Composable {
         SearchBarDefaults.InputField(

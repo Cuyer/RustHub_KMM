@@ -121,6 +121,9 @@ fun ServerScreen(
                         ServerAction.DeleteSearchQueryByQuery(it)
                     )
                 },
+                onClearSearchQuery = {
+                    onAction(ServerAction.OnClearSearchQuery)
+                },
                 scrollBehavior = scrollBehavior
             )
         },

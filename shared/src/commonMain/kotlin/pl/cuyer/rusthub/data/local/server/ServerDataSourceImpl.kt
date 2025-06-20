@@ -47,15 +47,19 @@ class ServerDataSourceImpl(
         }
     }
 
-    override fun getServersPagingSource(): PagingSource<Int, ServerEntity> {
+    override fun getServersPagingSource(searchQuery: String?): PagingSource<Int, ServerEntity> {
         ensureFiltersRowExist()
         val pagingSource: PagingSource<Int, ServerEntity> = QueryPagingSource(
-            countQuery = queries.countPagedServersFiltered(id = DEFAULT_KEY),
+            countQuery = queries.countPagedServersFiltered(
+                id = DEFAULT_KEY,
+                name = searchQuery ?: ""
+            ),
             transacter = queries,
             context = Dispatchers.IO,
             queryProvider = { limit: Long, offset: Long ->
                 queries.findServersPagedFiltered(
                     id = DEFAULT_KEY,
+                    name = searchQuery ?: "",
                     limit = limit,
                     offset = offset
                 )

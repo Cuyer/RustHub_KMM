@@ -11,4 +11,5 @@ sealed interface ServerAction {
     data object OnClearFilters: ServerAction
     data object DeleteSearchQueries : ServerAction
     data class DeleteSearchQueryByQuery(val query: String) : ServerAction
+    data object OnClearSearchQuery : ServerAction
 }
