@@ -53,6 +53,7 @@ import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
+import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.presentation.features.ServerAction
 import pl.cuyer.rusthub.presentation.features.ServerState
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
@@ -136,7 +137,8 @@ fun ServerScreen(
                                 serverName = item.name.orEmpty(),
                                 flag = item.serverFlag.toDrawable(),
                                 labels = labels,
-                                details = details
+                                details = details,
+                                isOnline = item.serverStatus == ServerStatus.ONLINE
                             )
                         }
                     }

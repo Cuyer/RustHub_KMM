@@ -13,8 +13,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -34,7 +32,6 @@ import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
-import pl.cuyer.rusthub.presentation.model.toDomain
 import pl.cuyer.rusthub.presentation.model.toUi
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.Duration
@@ -66,21 +63,12 @@ class ServerViewModel(
             initialValue = ServerState()
         )
 
-    private val queryFlow = state
-        .map { it.filters.toDomain() }
-        .distinctUntilChanged()
-
     @OptIn(ExperimentalCoroutinesApi::class)
     val paging: Flow<PagingData<ServerInfoUi>> =
-        queryFlow
-            .flatMapLatest { query ->
-                getPagedServersUseCase(query)
-                    .map { pagingData ->
-                        pagingData.map { it.toServerInfo().toUi() }
-                    }
-            }
-            .cachedIn(coroutineScope)
-
+        getPagedServersUseCase()
+            .map { pagingData ->
+                pagingData.map { it.toServerInfo().toUi() }
+            }.cachedIn(coroutineScope)
 
     init {
         coroutineScope.launch {

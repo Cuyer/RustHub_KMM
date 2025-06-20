@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.data.network.filtersOptions.model
+package pl.cuyer.rusthub.data.network.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -7,11 +7,9 @@ import kotlinx.serialization.Serializable
 enum class RegionDto {
     ASIA,
     EUROPE,
-
     @SerialName("NORTH AMERICA")
     NORTH_AMERICA,
     AFRICA,
-
     @SerialName("SOUTH AMERICA")
     SOUTH_AMERICA,
     OCEANIA,

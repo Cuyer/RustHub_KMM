@@ -38,8 +38,8 @@ class FiltersDataSourceImpl(
             group_limit = filters.groupLimit,
             difficulty = filters.difficulty.toEntity(),
             wipe_schedule = filters.wipeSchedule.toEntity(),
-            is_official = if (filters.official == true) 1 else 0,
-            modded = if (filters.modded == true) 1 else 0,
+            is_official = if (filters.official == true) 1 else null,
+            modded = if (filters.modded == true) 1 else null,
             sort_order = filters.order.toEntity()
         )
     }

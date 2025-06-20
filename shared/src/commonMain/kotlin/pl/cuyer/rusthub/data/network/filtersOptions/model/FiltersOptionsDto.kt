@@ -2,6 +2,11 @@ package pl.cuyer.rusthub.data.network.filtersOptions.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import pl.cuyer.rusthub.data.network.model.DifficultyDto
+import pl.cuyer.rusthub.data.network.model.FlagDto
+import pl.cuyer.rusthub.data.network.model.MapsDto
+import pl.cuyer.rusthub.data.network.model.RegionDto
+import pl.cuyer.rusthub.data.network.model.WipeScheduleDto
 
 @Serializable
 data class FiltersOptionsDto(

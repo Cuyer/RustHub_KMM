@@ -4,6 +4,8 @@ import pl.cuyer.rusthub.data.local.model.MapsEntity;
 import pl.cuyer.rusthub.data.local.model.RegionEntity;
 import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity;
 import pl.cuyer.rusthub.data.local.model.OrderEntity;
+import pl.cuyer.rusthub.data.local.model.ServerStatusEntity;
+import pl.cuyer.rusthub.data.local.model.WipeTypeEntity;
 
 -- =============================================================================
 -- Table Definition
@@ -13,7 +15,7 @@ CREATE TABLE serverEntity (
     name           TEXT       NOT NULL,
     wipe           TEXT,                              -- ISO-8601 timestamp string, e.g. "2025-06-06T21:03:40.00+02:00"
     ranking        INTEGER,
-    modded         INTEGER    NOT NULL DEFAULT 0,     -- store booleans as 0/1
+    modded         INTEGER,
     player_count   INTEGER,
     capacity       INTEGER,
     map_name       TEXT       AS MapsEntity,
@@ -23,10 +25,12 @@ CREATE TABLE serverEntity (
     max_group      INTEGER,
     difficulty     TEXT       AS DifficultyEntity,          -- nullable
     wipe_schedule  TEXT       AS WipeScheduleEntity,
-    is_official    INTEGER    NOT NULL DEFAULT 0,
+    is_official    INTEGER,
     ip             TEXT,
     map_image      TEXT,                              -- nullable URL/path
     description    TEXT,                               -- nullable long text
+    server_status  TEXT       AS ServerStatusEntity,
+    wipe_type      TEXT       AS WipeTypeEntity,
     favourite      INTEGER    NOT NULL DEFAULT 0
 );
 
@@ -35,40 +39,42 @@ CREATE TABLE serverEntity (
 -- =============================================================================
 -- Returns a page of servers
 findServersPagedFiltered:
-SELECT *
-FROM serverEntity
+SELECT se.*
+FROM serverEntity se
+CROSS JOIN filtersEntity fe ON fe.id = :id
 WHERE
-  (:ranking IS NULL OR ranking <= :ranking)
-  AND (:modded IS NULL OR modded = :modded)
-  AND (:player_count IS NULL OR player_count <= :player_count)
-  AND(:map_name IS NULL OR map_name = :map_name)
-  AND (:server_flag IS NULL OR server_flag = :server_flag)
-  AND (:region IS NULL OR region = :region)
-  AND (:group_limit IS NULL OR max_group <= :group_limit)
-  AND (:difficulty IS NULL OR difficulty = :difficulty)
-  AND (:wipe_schedule IS NULL OR wipe_schedule = :wipe_schedule)
-  AND (:is_official IS NULL OR is_official = :is_official)
-  ORDER BY
-    CASE WHEN :order = 'WIPE' THEN wipe END DESC,
-    CASE WHEN :order = 'PLAYER_COUNT' THEN player_count END DESC,
-    CASE WHEN :order = 'RANK' THEN ranking END ASC
+  (fe.ranking IS NULL OR se.ranking <= fe.ranking)
+  AND (fe.modded IS NULL OR se.modded = fe.modded)
+  AND (fe.player_count IS NULL OR se.player_count <= fe.player_count)
+  AND (fe.map_name IS NULL OR se.map_name = fe.map_name)
+  AND (fe.server_flag IS NULL OR se.server_flag = fe.server_flag)
+  AND (fe.region IS NULL OR se.region = fe.region)
+  AND (fe.group_limit IS NULL OR se.max_group <= fe.group_limit)
+  AND (fe.difficulty IS NULL OR se.difficulty = fe.difficulty)
+  AND (fe.wipe_schedule IS NULL OR se.wipe_schedule = fe.wipe_schedule)
+  AND (fe.is_official IS NULL OR se.is_official = fe.is_official)
+ORDER BY
+  CASE WHEN fe.sort_order = 'WIPE' THEN se.wipe END DESC,
+  CASE WHEN fe.sort_order = 'PLAYER_COUNT' THEN se.player_count END DESC,
+  CASE WHEN fe.sort_order = 'RANK' THEN se.ranking END ASC
 LIMIT :limit OFFSET :offset;
 
 countPagedServersFiltered:
 SELECT COUNT(*)
-FROM serverEntity
+FROM serverEntity se
+CROSS JOIN filtersEntity fe ON fe.id = :id
 WHERE
-  (:wipe IS NULL OR date(wipe) >= date(:wipe))
-  AND (:ranking IS NULL OR ranking <= :ranking)
-  AND (:modded IS NULL OR modded = :modded)
-  AND (:player_count IS NULL OR player_count <= :player_count)
-  AND(:map_name IS NULL OR map_name = :map_name)
-  AND (:server_flag IS NULL OR server_flag = :server_flag)
-  AND (:region IS NULL OR region = :region)
-  AND (:group_limit IS NULL OR max_group <= :group_limit)
-  AND (:difficulty IS NULL OR difficulty = :difficulty)
-  AND (:wipe_schedule IS NULL OR wipe_schedule = :wipe_schedule)
-  AND (:is_official IS NULL OR is_official = :is_official);
+  (fe.wipe IS NULL OR date(se.wipe) >= date(fe.wipe))
+  AND (fe.ranking IS NULL OR se.ranking <= fe.ranking)
+  AND (fe.modded IS NULL OR se.modded = fe.modded)
+  AND (fe.player_count IS NULL OR se.player_count <= fe.player_count)
+  AND (fe.map_name IS NULL OR se.map_name = fe.map_name)
+  AND (fe.server_flag IS NULL OR se.server_flag = fe.server_flag)
+  AND (fe.region IS NULL OR se.region = fe.region)
+  AND (fe.group_limit IS NULL OR se.max_group <= fe.group_limit)
+  AND (fe.difficulty IS NULL OR se.difficulty = fe.difficulty)
+  AND (fe.wipe_schedule IS NULL OR se.wipe_schedule = fe.wipe_schedule)
+  AND (fe.is_official IS NULL OR se.is_official = fe.is_official);
 
 -- =============================================================================
 -- Upsert (Insert or Update on id conflict)
@@ -91,7 +97,9 @@ INSERT INTO serverEntity (
     wipe_schedule,
     is_official,
     ip,
-    description
+    description,
+    server_status,
+    wipe_type
 ) VALUES (
     :id,
     :name,
@@ -109,7 +117,9 @@ INSERT INTO serverEntity (
     :wipeSchedule,
     CASE WHEN :isOfficial THEN 1 ELSE 0 END,
     :ip,
-    :description
+    :description,
+    :server_status,
+    :wipe_type
 ) ON CONFLICT(id) DO UPDATE SET
     name           = excluded.name,
     wipe           = excluded.wipe,
@@ -126,7 +136,9 @@ INSERT INTO serverEntity (
     wipe_schedule  = excluded.wipe_schedule,
     is_official    = excluded.is_official,
     ip             = excluded.ip,
-    description    = excluded.description;
+    description    = excluded.description,
+    server_status   = excluded.server_status,
+    wipe_type       = excluded.wipe_type;
 
 clearServers:
 DELETE FROM serverEntity;
@@ -136,7 +148,7 @@ CREATE TABLE filtersEntity (
     id             TEXT    NOT NULL PRIMARY KEY,
     wipe           TEXT,                              -- ISO-8601 timestamp string, e.g. "2025-06-06T21:03:40.00+02:00"
     ranking        INTEGER,
-    modded         INTEGER    NOT NULL DEFAULT 0,     -- store booleans as 0/1
+    modded         INTEGER,     -- store booleans as 0/1
     player_count   INTEGER,
     map_name       TEXT       AS MapsEntity,                       -- the “cycle” float value
     server_flag    TEXT       AS FlagEntity,                -- e.g. "US"
@@ -144,7 +156,7 @@ CREATE TABLE filtersEntity (
     group_limit    INTEGER,
     difficulty     TEXT       AS DifficultyEntity,          -- nullable
     wipe_schedule  TEXT       AS WipeScheduleEntity,
-    is_official    INTEGER    NOT NULL DEFAULT 0,
+    is_official    INTEGER,
     sort_order     TEXT       AS OrderEntity
 );
 

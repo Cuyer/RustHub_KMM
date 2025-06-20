@@ -1,17 +1,21 @@
 package pl.cuyer.rusthub.data.network.filtersOptions.mapper
 
-import pl.cuyer.rusthub.data.network.filtersOptions.model.DifficultyDto
 import pl.cuyer.rusthub.data.network.filtersOptions.model.FiltersOptionsDto
-import pl.cuyer.rusthub.data.network.filtersOptions.model.FlagDto
-import pl.cuyer.rusthub.data.network.filtersOptions.model.MapsDto
-import pl.cuyer.rusthub.data.network.filtersOptions.model.RegionDto
-import pl.cuyer.rusthub.data.network.filtersOptions.model.WipeScheduleDto
+import pl.cuyer.rusthub.data.network.model.DifficultyDto
+import pl.cuyer.rusthub.data.network.model.FlagDto
+import pl.cuyer.rusthub.data.network.model.MapsDto
+import pl.cuyer.rusthub.data.network.model.RegionDto
+import pl.cuyer.rusthub.data.network.model.ServerStatusDto
+import pl.cuyer.rusthub.data.network.model.WipeScheduleDto
+import pl.cuyer.rusthub.data.network.model.WipeTypeDto
 import pl.cuyer.rusthub.domain.model.Difficulty
 import pl.cuyer.rusthub.domain.model.FiltersOptions
 import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Maps
 import pl.cuyer.rusthub.domain.model.Region
+import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.WipeSchedule
+import pl.cuyer.rusthub.domain.model.WipeType
 
 fun FiltersOptionsDto.toDomain(): FiltersOptions {
     return FiltersOptions(
@@ -64,6 +68,22 @@ fun RegionDto.toDomain(): Region {
         RegionDto.SOUTH_AMERICA -> Region.SOUTH_AMERICA
         RegionDto.OCEANIA -> Region.OCEANIA
         RegionDto.AUSTRALIA -> Region.AUSTRALIA
+    }
+}
+
+fun ServerStatusDto.toDomain(): ServerStatus {
+    return when (this) {
+        ServerStatusDto.ONLINE -> ServerStatus.ONLINE
+        ServerStatusDto.OFFLINE -> ServerStatus.OFFLINE
+    }
+}
+
+fun WipeTypeDto.toDomain(): WipeType {
+    return when (this) {
+        WipeTypeDto.MAP -> WipeType.MAP
+        WipeTypeDto.FULL -> WipeType.FULL
+        WipeTypeDto.BP -> WipeType.BP
+        WipeTypeDto.UNKNOWN -> WipeType.UNKNOWN
     }
 }
 
