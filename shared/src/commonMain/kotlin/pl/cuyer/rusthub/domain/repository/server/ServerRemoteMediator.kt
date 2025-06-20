@@ -5,6 +5,7 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import database.ServerEntity
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.first
 import kotlinx.datetime.Clock
 import pl.cuyer.rusthub.common.Constants.DEFAULT_KEY
@@ -31,6 +32,7 @@ class ServerRemoteMediator(
             LoadType.REFRESH -> 0
             LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
             LoadType.APPEND -> {
+                Napier.i("State: $state", tag = "ServerRemoteMediator")
                 val key = remoteKeys.getKey(keyId) ?: return MediatorResult.Success(true)
                 key.nextPage?.toInt() ?: return MediatorResult.Success(true)
             }
@@ -40,12 +42,18 @@ class ServerRemoteMediator(
             val query: ServerQuery = filters.getFilters().first() ?: ServerQuery()
             when (val result = api.getServers(page, state.config.pageSize, query)
                 .first { it !is Result.Loading }) {
-                is Result.Error -> MediatorResult.Error(result.exception)
+                is Result.Error -> {
+                    MediatorResult.Error(result.exception)
+                }
                 is Result.Success -> {
                     if (loadType == LoadType.REFRESH) {
                         dataSource.deleteServers()
                         remoteKeys.clearKeys()
                     }
+                    Napier.d(
+                        "Fetched servers size: ${result.data.servers.size}",
+                        tag = "ServerRemoteMediator"
+                    )
                     dataSource.upsertServers(result.data.servers)
                     val end = page >= result.data.totalPages - 1
                     val nextPage = if (end) null else page + 1

@@ -5,10 +5,10 @@ import app.cash.sqldelight.paging3.QueryPagingSource
 import database.ServerEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import pl.cuyer.rusthub.common.Constants.DEFAULT_KEY
 import pl.cuyer.rusthub.data.local.Queries
 import pl.cuyer.rusthub.data.local.mapper.toEntity
 import pl.cuyer.rusthub.database.RustHubDatabase
-import pl.cuyer.rusthub.domain.model.Order
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
@@ -39,44 +39,25 @@ class ServerDataSourceImpl(
                     wipeSchedule = info.wipeSchedule.toEntity(),
                     isOfficial = info.isOfficial == true,
                     ip = info.serverIp,
-                    description = info.description
+                    description = info.description,
+                    server_status = info.serverStatus.toEntity(),
+                    wipe_type = info.wipeType.toEntity()
                 )
             }
         }
     }
 
-    override fun getServersPagingSource(query: ServerQuery?): PagingSource<Int, ServerEntity> {
+    override fun getServersPagingSource(): PagingSource<Int, ServerEntity> {
+        ensureFiltersRowExist()
         val pagingSource: PagingSource<Int, ServerEntity> = QueryPagingSource(
-            countQuery = queries.countPagedServersFiltered(
-                wipe = query?.wipe?.toString(),
-                ranking = query?.ranking,
-                modded = if (query?.modded == true) 1 else 0,
-                player_count = query?.playerCount,
-                map_name = query?.map?.toEntity(),
-                server_flag = query?.flag?.toEntity(),
-                region = query?.region?.toEntity(),
-                group_limit = query?.groupLimit,
-                difficulty = query?.difficulty?.toEntity(),
-                wipe_schedule = query?.wipeSchedule?.toEntity(),
-                is_official = if (query?.official == true) 1 else 0
-            ),
+            countQuery = queries.countPagedServersFiltered(id = DEFAULT_KEY),
             transacter = queries,
             context = Dispatchers.IO,
             queryProvider = { limit: Long, offset: Long ->
                 queries.findServersPagedFiltered(
+                    id = DEFAULT_KEY,
                     limit = limit,
-                    offset = offset,
-                    ranking = query?.ranking,
-                    modded = if (query?.modded == true) 1 else 0,
-                    player_count = query?.playerCount,
-                    map_name = query?.map?.toEntity(),
-                    server_flag = query?.flag?.toEntity(),
-                    region = query?.region?.toEntity(),
-                    group_limit = query?.groupLimit,
-                    difficulty = query?.difficulty?.toEntity(),
-                    wipe_schedule = query?.wipeSchedule?.toEntity(),
-                    is_official = if (query?.official == true) 1 else 0,
-                    order = query?.order?.name ?: Order.WIPE.name
+                    offset = offset
                 )
             }
         )
@@ -85,5 +66,26 @@ class ServerDataSourceImpl(
 
     override fun deleteServers() {
         queries.clearServers()
+    }
+
+    private fun ensureFiltersRowExist() {
+        if (queries.getFilters(id = DEFAULT_KEY).executeAsOneOrNull() == null) {
+            val filters = ServerQuery()
+            queries.upsertFilters(
+                id = DEFAULT_KEY,
+                wipe = filters.wipe?.toString(),
+                ranking = filters.ranking,
+                player_count = filters.playerCount,
+                map_name = filters.map.toEntity(),
+                server_flag = filters.flag.toEntity(),
+                region = filters.region.toEntity(),
+                group_limit = filters.groupLimit,
+                difficulty = filters.difficulty.toEntity(),
+                wipe_schedule = filters.wipeSchedule.toEntity(),
+                is_official = if (filters.official == true) 1 else null,
+                modded = if (filters.modded == true) 1 else null,
+                sort_order = filters.order.toEntity()
+            )
+        }
     }
 }

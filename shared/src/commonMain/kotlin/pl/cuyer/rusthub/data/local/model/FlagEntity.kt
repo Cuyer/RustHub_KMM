@@ -1,8 +1,5 @@
 package pl.cuyer.rusthub.data.local.model
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 enum class FlagEntity {
     AD, AE, AF, AG, AI, AL, AM, AO, AQ, AR, AS, AT, AU, AW, AX, AZ,
     BA, BB, BD, BE, BF, BG, BH, BI, BJ, BL, BM, BN, BO, BQ, BR, BS, BT, BV, BW, BY, BZ,

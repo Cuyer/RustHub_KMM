@@ -20,5 +20,7 @@ data class ServerInfo(
     val isOfficial: Boolean? = null,
     val serverIp: String? = null,
     val mapImage: String? = null,
-    val description: String? = null
+    val description: String? = null,
+    val serverStatus: ServerStatus? = null,
+    val wipeType: WipeType? = null
 )
