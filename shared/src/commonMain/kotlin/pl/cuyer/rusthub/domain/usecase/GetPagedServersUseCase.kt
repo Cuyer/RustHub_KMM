@@ -29,7 +29,8 @@ class GetPagedServersUseCase(
                 dataSource,
                 api,
                 filters,
-                remoteKeys
+                remoteKeys,
+                searchQuery
             ),
             pagingSourceFactory = { dataSource.getServersPagingSource(searchQuery) }
         ).flow

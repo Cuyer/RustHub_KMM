@@ -6,5 +6,10 @@ import pl.cuyer.rusthub.domain.model.PagedServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
 
 interface ServerRepository {
-    fun getServers(page: Int, size: Int, query: ServerQuery): Flow<Result<PagedServerInfo>>
+    fun getServers(
+        page: Int,
+        size: Int,
+        query: ServerQuery,
+        searchQuery: String?
+    ): Flow<Result<PagedServerInfo>>
 }
