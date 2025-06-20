@@ -28,7 +28,6 @@ class ServerClientImpl(private val httpClient: HttpClient) : ServerRepository,
                     appendNonNull("size" to size)
                     appendNonNull("wipe" to query.wipe)
                     appendNonNull("ranking" to query.ranking)
-                    appendNonNull("modded" to query.modded)
                     appendNonNull("playerCount" to query.playerCount)
                     appendNonNull("map" to query.map)
                     appendNonNull("flag" to query.flag)
@@ -36,8 +35,9 @@ class ServerClientImpl(private val httpClient: HttpClient) : ServerRepository,
                     appendNonNull("groupLimit" to query.groupLimit)
                     appendNonNull("difficulty" to query.difficulty)
                     appendNonNull("wipeSchedule" to query.wipeSchedule)
-                    appendNonNull("official" to query.official)
                     appendNonNull("order" to query.order)
+                    if (query.official == true) parameters.append("official", true.toString())
+                    if (query.modded == true) parameters.append("modded", true.toString())
                 }
             }
         }.map { result ->

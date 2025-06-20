@@ -146,7 +146,7 @@ CREATE TABLE filtersEntity (
     id             TEXT    NOT NULL PRIMARY KEY,
     wipe           TEXT,                              -- ISO-8601 timestamp string, e.g. "2025-06-06T21:03:40.00+02:00"
     ranking        INTEGER,
-    modded         INTEGER    NOT NULL DEFAULT 0,     -- store booleans as 0/1
+    modded         INTEGER,     -- store booleans as 0/1
     player_count   INTEGER,
     map_name       TEXT       AS MapsEntity,                       -- the “cycle” float value
     server_flag    TEXT       AS FlagEntity,                -- e.g. "US"
@@ -154,7 +154,7 @@ CREATE TABLE filtersEntity (
     group_limit    INTEGER,
     difficulty     TEXT       AS DifficultyEntity,          -- nullable
     wipe_schedule  TEXT       AS WipeScheduleEntity,
-    is_official    INTEGER    NOT NULL DEFAULT 0,
+    is_official    INTEGER,
     sort_order     TEXT       AS OrderEntity
 );
 

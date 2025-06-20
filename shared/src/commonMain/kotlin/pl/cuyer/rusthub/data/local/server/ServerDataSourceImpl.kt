@@ -52,7 +52,7 @@ class ServerDataSourceImpl(
             countQuery = queries.countPagedServersFiltered(
                 wipe = query?.wipe?.toString(),
                 ranking = query?.ranking,
-                modded = if (query?.modded == true) 1 else 0,
+                modded = if (query?.modded == true) 1 else null,
                 player_count = query?.playerCount,
                 map_name = query?.map?.toEntity(),
                 server_flag = query?.flag?.toEntity(),
@@ -60,7 +60,7 @@ class ServerDataSourceImpl(
                 group_limit = query?.groupLimit,
                 difficulty = query?.difficulty?.toEntity(),
                 wipe_schedule = query?.wipeSchedule?.toEntity(),
-                is_official = if (query?.official == true) 1 else 0
+                is_official = if (query?.official == true) 1 else null
             ),
             transacter = queries,
             context = Dispatchers.IO,
@@ -69,7 +69,7 @@ class ServerDataSourceImpl(
                     limit = limit,
                     offset = offset,
                     ranking = query?.ranking,
-                    modded = if (query?.modded == true) 1 else 0,
+                    modded = if (query?.modded == true) 1 else null,
                     player_count = query?.playerCount,
                     map_name = query?.map?.toEntity(),
                     server_flag = query?.flag?.toEntity(),
@@ -77,7 +77,7 @@ class ServerDataSourceImpl(
                     group_limit = query?.groupLimit,
                     difficulty = query?.difficulty?.toEntity(),
                     wipe_schedule = query?.wipeSchedule?.toEntity(),
-                    is_official = if (query?.official == true) 1 else 0,
+                    is_official = if (query?.official == true) 1 else null,
                     order = query?.order?.name ?: Order.WIPE.name
                 )
             }
