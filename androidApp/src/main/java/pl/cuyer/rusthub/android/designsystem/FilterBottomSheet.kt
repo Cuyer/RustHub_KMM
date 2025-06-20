@@ -68,17 +68,23 @@ fun FilterBottomSheet(
 ) {
     val json = koinInject<Json>()
     val filterUiSaver = remember {
-        Saver<FilterUi, String>(
-            save = { json.encodeToString(FilterUi.serializer(), it) },
-            restore = { json.decodeFromString(FilterUi.serializer(), it) }
+        Saver<FilterUi?, String>(
+            save = { it?.let { json.encodeToString(FilterUi.serializer(), it) } },
+            restore = { it.let { json.decodeFromString(FilterUi.serializer(), it) } }
         )
+    }
+    var newFilters by rememberSaveable(stateSaver = filterUiSaver) {
+        mutableStateOf(stateProvider().value.filters)
+    }
+
+    LaunchedEffect(stateProvider().value.filters) {
+        if (newFilters == null && stateProvider().value.filters?.lists?.isNotEmpty() == true) {
+            newFilters = stateProvider().value.filters
+        }
     }
 
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
-    var newFilters by rememberSaveable(stateSaver = filterUiSaver) {
-        mutableStateOf(stateProvider().value.filters)
-    }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -108,39 +114,55 @@ fun FilterBottomSheet(
                     )
                 }
             } else {
-                Column(
-                    modifier = Modifier
-                        .fillMaxHeight(0.85f)
-                        .verticalScroll(scrollState)
-                ) {
-                    FilterBottomSheetContent(
-                        filters = newFilters,
-                        onFiltersChange = { newFilters = it }
-                    )
-                    Spacer(Modifier.height(spacing.medium))
-                    Button(
-                        shape = RectangleShape,
-                        onClick = {
-                            onAction(ServerAction.OnSaveFilters(filters = newFilters.toDomain()))
-                            onDismissAndRefresh()
-                        },
+                if (stateProvider().value.filters?.lists?.isEmpty() == true) {
+                    Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = spacing.large)
+                            .fillMaxHeight(0.85f)
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text("Apply Filters")
+                        Text(
+                            text = "No filters available",
+                            modifier = Modifier.align(Alignment.Center)
+                        )
                     }
-                    TextButton(
-                        shape = RectangleShape,
-                        onClick = {
-                            onAction(ServerAction.OnClearFilters)
-                            onDismissAndRefresh()
-                        },
+                } else {
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = spacing.small, horizontal = spacing.large)
+                            .fillMaxHeight(0.85f)
+                            .verticalScroll(scrollState)
                     ) {
-                        Text("Reset Filters")
+                        newFilters?.let {
+                            FilterBottomSheetContent(
+                                filters = it,
+                                onFiltersChange = { newFilters = it }
+                            )
+                            Spacer(Modifier.height(spacing.medium))
+                            Button(
+                                shape = RectangleShape,
+                                onClick = {
+                                    onAction(ServerAction.OnSaveFilters(filters = it.toDomain()))
+                                    onDismissAndRefresh()
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = spacing.large)
+                            ) {
+                                Text("Apply Filters")
+                            }
+                            TextButton(
+                                shape = RectangleShape,
+                                onClick = {
+                                    onAction(ServerAction.OnClearFilters)
+                                    onDismissAndRefresh()
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = spacing.small, horizontal = spacing.large)
+                            ) {
+                                Text("Reset Filters")
+                            }
+                        }
                     }
                 }
             }
@@ -176,7 +198,7 @@ fun FilterBottomSheetContent(
         }
         Row(
             modifier = modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             filters.checkboxes.forEachIndexed { index, (label, isChecked) ->
                 Column(

@@ -39,6 +39,7 @@ import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.presentation.model.toUi
+import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
@@ -136,7 +137,7 @@ class ServerViewModel(
 
     fun onAction(action: ServerAction) {
         when (action) {
-            is ServerAction.OnServerClick -> {}
+            is ServerAction.OnServerClick -> navigateToServer(action.id, action.name)
             is ServerAction.OnLongServerClick -> saveIpToClipboard(action.ipAddress)
             is ServerAction.OnChangeLoadingState -> _state.update { it.copy(isLoading = action.isLoading) }
             is ServerAction.OnSaveFilters -> onSaveFilters(action.filters)
@@ -195,7 +196,10 @@ class ServerViewModel(
         clearFiltersUseCase()
     }
 
-    private fun navigateToServer() {
+    private fun navigateToServer(id: Int, name: String) {
+        coroutineScope.launch {
+            _uiEvent.send(UiEvent.Navigate(ServerDetails(id, name)))
+        }
     }
 
     private fun handleError(e: Throwable) {

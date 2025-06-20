@@ -13,30 +13,28 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entry
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-import pl.cuyer.rusthub.android.feature.server.ServerDetails
+import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.navigation.TwoPaneScene
 import pl.cuyer.rusthub.android.navigation.TwoPaneSceneStrategy
 import pl.cuyer.rusthub.presentation.features.ServerViewModel
-import pl.cuyer.rusthub.presentation.navigation.Destination.ServerDetails
-import pl.cuyer.rusthub.presentation.navigation.Destination.ServerList
+import pl.cuyer.rusthub.presentation.navigation.ServerDetails
+import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 
@@ -46,8 +44,7 @@ fun NavigationRoot() {
     val snackbarHostState = remember { SnackbarHostState() }
     val snackbarController = SnackbarController
     val scope = rememberCoroutineScope()
-    val backStack = remember { mutableStateListOf<Any>(ServerList) }
-    val coroutineScope = rememberCoroutineScope()
+    val backStack = rememberNavBackStack(ServerList)
 
     ObserveAsEvents(flow = snackbarController.events, snackbarHostState) { event ->
         scope.launch {
@@ -113,8 +110,11 @@ fun NavigationRoot() {
                     }
                     entry<ServerDetails>(
                         metadata = TwoPaneScene.twoPane()
-                    ) {
-                        ServerDetails()
+                    ) { key ->
+                        ServerDetailsScreen(
+                            id = key.id,
+                            name = key.name
+                        )
                     }
                 }
             )
