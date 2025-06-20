@@ -11,8 +11,8 @@ import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
@@ -68,6 +68,7 @@ class ServerViewModel(
     private val _state = MutableStateFlow(ServerState())
     val state = _state
         .onStart {
+            _state.update { it.copy(isLoading = true) }
             observeFilters()
             observeSearchQueries()
         }
@@ -83,18 +84,10 @@ class ServerViewModel(
             getPagedServersUseCase(query)
                 .map { pagingData ->
                     pagingData.map { it.toServerInfo().toUi() }
-                }.cachedIn(coroutineScope)
+                }
+                .flowOn(Dispatchers.Default)
+                .cachedIn(coroutineScope)
         }
-
-
-
-    init {
-        coroutineScope.launch {
-            state.collectLatest {
-                Napier.i("ServerState: $it")
-            }
-        }
-    }
 
     private fun observeSearchQueries() {
         getSearchQueriesUseCase.invoke()
@@ -127,14 +120,16 @@ class ServerViewModel(
                 groupLimit = filtersOptions?.maxGroupLimit ?: 0,
                 ranking = filtersOptions?.maxRanking ?: 0
             )
-        }.onEach { mappedFilters ->
-            _state.update {
-                it.copy(
-                    filters = mappedFilters,
-                    isLoading = false
-                )
+        }.distinctUntilChanged()
+            .onEach { mappedFilters ->
+                Napier.i("Filters: $mappedFilters")
+                _state.update {
+                    it.copy(
+                        filters = mappedFilters,
+                        isLoading = false
+                    )
+                }
             }
-        }
             .flowOn(Dispatchers.Default)
             .launchIn(coroutineScope)
     }

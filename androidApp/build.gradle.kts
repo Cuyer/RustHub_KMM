@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 android {
@@ -66,5 +67,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.process)
     implementation(libs.compose.icons)
     implementation(libs.paging.compose)
+    implementation(libs.kotlin.serialization)
     debugImplementation(libs.compose.ui.tooling)
 }
