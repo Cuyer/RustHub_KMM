@@ -85,7 +85,7 @@ fun FilterBottomSheet(
         AnimatedContent(stateProvider().value.isLoading) { loading ->
             Column(
                 modifier = Modifier
-                    .fillMaxHeight(0.9f)
+                    .fillMaxHeight(0.85f)
                     .verticalScroll(scrollState)
             ) {
                 if (loading) {
