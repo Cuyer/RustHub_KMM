@@ -181,7 +181,7 @@ fun ServerScreen(
                                         onClick = {
                                             onAction(
                                                 ServerAction.OnServerClick(
-                                                    item.id?.toInt() ?: -1, item.name ?: ""
+                                                    item.id ?: Long.MAX_VALUE, item.name ?: ""
                                                 )
                                             )
                                         }

@@ -145,6 +145,9 @@ INSERT INTO serverEntity (
 clearServers:
 DELETE FROM serverEntity;
 
+getServerById:
+SELECT * FROM serverEntity WHERE id == :id;
+
 
 CREATE TABLE filtersEntity (
     id             TEXT    NOT NULL PRIMARY KEY,

@@ -196,7 +196,7 @@ class ServerViewModel(
         clearFiltersUseCase()
     }
 
-    private fun navigateToServer(id: Int, name: String) {
+    private fun navigateToServer(id: Long, name: String) {
         coroutineScope.launch {
             _uiEvent.send(UiEvent.Navigate(ServerDetails(id, name)))
         }

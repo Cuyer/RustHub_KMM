@@ -30,8 +30,10 @@ import pl.cuyer.rusthub.domain.usecase.GetFiltersOptionsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetSearchQueriesUseCase
+import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
+import pl.cuyer.rusthub.presentation.features.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.ServerViewModel
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 
@@ -60,7 +62,15 @@ val appModule = module {
     single { GetFiltersOptionsUseCase(get(), get()) }
     single { GetSearchQueriesUseCase(get()) }
     single { DeleteSearchQueriesUseCase(get()) }
+    single { GetServerDetailsUseCase(get()) }
     factoryOf(::ServerViewModel)
+    factory { (serverId: Long, serverName: String?) ->
+        ServerDetailsViewModel(
+            getServerDetailsUseCase = get(),
+            serverId = serverId,
+            serverName = serverName
+        )
+    }
 }
 
 expect val platformModule: Module

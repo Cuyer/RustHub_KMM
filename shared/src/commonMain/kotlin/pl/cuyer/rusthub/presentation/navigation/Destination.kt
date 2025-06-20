@@ -8,6 +8,6 @@ data object ServerList : NavKey
 
 @Serializable
 data class ServerDetails(
-    val id: Int,
+    val id: Long,
     val name: String
 ) : NavKey

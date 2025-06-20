@@ -27,11 +27,13 @@ import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.navigation.TwoPaneScene
 import pl.cuyer.rusthub.android.navigation.TwoPaneSceneStrategy
+import pl.cuyer.rusthub.presentation.features.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.ServerViewModel
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
@@ -111,9 +113,20 @@ fun NavigationRoot() {
                     entry<ServerDetails>(
                         metadata = TwoPaneScene.twoPane()
                     ) { key ->
+                        val viewModel = koinInject<ServerDetailsViewModel>() {
+                            parametersOf(
+                                key.id,
+                                key.name
+                            )
+                        }
+                        val state = viewModel.state.collectAsStateWithLifecycle()
                         ServerDetailsScreen(
-                            id = key.id,
-                            name = key.name
+                            stateProvider = { state },
+                            onAction = viewModel::onAction,
+                            uiEvent = viewModel.uiEvent,
+                            onNavigate = { destination ->
+                                backStack.add(destination)
+                            }
                         )
                     }
                 }
