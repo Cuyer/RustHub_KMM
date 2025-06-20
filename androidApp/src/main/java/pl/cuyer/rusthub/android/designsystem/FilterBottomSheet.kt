@@ -60,6 +60,7 @@ fun FilterBottomSheet(
     stateProvider: () -> State<ServerState>,
     sheetState: SheetState,
     onDismiss: () -> Unit,
+    onDismissAndRefresh: () -> Unit,
     onAction: (ServerAction) -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -101,7 +102,7 @@ fun FilterBottomSheet(
                     shape = RectangleShape,
                     onClick = {
                         onAction(ServerAction.OnSaveFilters(filters = newFilters.toDomain()))
-                        onDismiss()
+                        onDismissAndRefresh()
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -113,7 +114,7 @@ fun FilterBottomSheet(
                     shape = RectangleShape,
                     onClick = {
                         onAction(ServerAction.OnClearFilters)
-                        onDismiss()
+                        onDismissAndRefresh()
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -284,7 +285,8 @@ private fun FilterBottomSheetPreview() {
                     }
                 },
                 stateProvider = { mutableStateOf(ServerState()) },
-                onAction = { }
+                onAction = { },
+                onDismissAndRefresh = { }
             )
         }
     }

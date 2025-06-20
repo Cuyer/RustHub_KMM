@@ -198,6 +198,9 @@ fun ServerScreen(
                 sheetState = sheetState,
                 onDismiss = {
                     showSheet = false
+                },
+                onDismissAndRefresh = {
+                    showSheet = false
                     pagedList.refresh()
                 },
                 onAction = onAction
