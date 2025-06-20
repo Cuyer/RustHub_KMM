@@ -5,25 +5,20 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entry
@@ -34,7 +29,6 @@ import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.feature.server.ServerDetails
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
@@ -54,7 +48,6 @@ fun NavigationRoot() {
     val scope = rememberCoroutineScope()
     val backStack = remember { mutableStateListOf<Any>(ServerList) }
     val coroutineScope = rememberCoroutineScope()
-    var showSheet by remember { mutableStateOf(false) }
 
     ObserveAsEvents(flow = snackbarController.events, snackbarHostState) { event ->
         scope.launch {
@@ -75,25 +68,9 @@ fun NavigationRoot() {
             }
         }
     }
-    val scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
     Scaffold(
-        topBar = {
-            val searchBarState = rememberSearchBarState()
-            val textFieldState = rememberTextFieldState()
-            RustSearchBarTopAppBar(
-                searchBarState = searchBarState,
-                textFieldState = textFieldState,
-                onSearchTriggered = {
-
-                },
-                onOpenFilters = {
-                    coroutineScope.launch { showSheet = true }
-                }
-            )
-        },
         modifier = Modifier
-            .navigationBarsPadding()
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+            .navigationBarsPadding(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         content = { innerPadding ->
@@ -131,11 +108,7 @@ fun NavigationRoot() {
                             onNavigate = { destination ->
                                 backStack.add(destination)
                             },
-                            showSheet = showSheet,
-                            pagedList = paging,
-                            onDismissSheet = {
-                                showSheet = false
-                            }
+                            pagedList = paging
                         )
                     }
                     entry<ServerDetails>(

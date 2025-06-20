@@ -22,7 +22,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.rememberSearchBarState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -49,6 +54,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock.System
 import kotlinx.datetime.Instant
 import pl.cuyer.rusthub.android.designsystem.FilterBottomSheet
+import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.designsystem.ServerListItem
 import pl.cuyer.rusthub.android.designsystem.ServerListItemShimmer
 import pl.cuyer.rusthub.android.model.Label
@@ -73,11 +79,14 @@ fun ServerScreen(
     stateProvider: () -> State<ServerState>,
     onAction: (ServerAction) -> Unit,
     pagedList: LazyPagingItems<ServerInfoUi>,
-    uiEvent: Flow<UiEvent>,
-    onDismissSheet: () -> Unit,
-    showSheet: Boolean
+    uiEvent: Flow<UiEvent>
 ) {
     val state = stateProvider()
+
+    var showSheet by remember { mutableStateOf(false) }
+    val searchBarState = rememberSearchBarState()
+    val textFieldState = rememberTextFieldState()
+    val scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
 
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
@@ -97,20 +106,34 @@ fun ServerScreen(
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-
-    PullToRefreshBox(
-        isRefreshing = false,
-        onRefresh = {
-            pagedList.refresh()
+    Scaffold(
+        topBar = {
+            RustSearchBarTopAppBar(
+                searchBarState = searchBarState,
+                textFieldState = textFieldState,
+                onSearchTriggered = {
+                    onAction(ServerAction.OnSearch(textFieldState.text))
+                },
+                onOpenFilters = { showSheet = true }
+            )
         },
-        state = pullToRefreshState,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        AnimatedContent(state.value.isLoading) { isLoading ->
-            if (isLoading) {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(spacing.medium)
-                ) {
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+    ) { padding ->
+        PullToRefreshBox(
+            isRefreshing = false,
+            onRefresh = {
+                pagedList.refresh()
+            },
+            state = pullToRefreshState,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            AnimatedContent(state.value.isLoading) { isLoading ->
+                if (isLoading) {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(spacing.medium)
+                    ) {
                     items(
                         count = 6
                     ) {
@@ -164,7 +187,7 @@ fun ServerScreen(
                 stateProvider = { state },
                 sheetState = sheetState,
                 onDismiss = {
-                    onDismissSheet()
+                    showSheet = false
                     pagedList.refresh()
                 },
                 onAction = onAction
@@ -201,6 +224,7 @@ fun ServerScreen(
             ) {
                 Icon(Icons.Default.ArrowUpward, contentDescription = "Scroll to top")
             }
+        }
         }
     }
 }
@@ -268,9 +292,7 @@ private fun ServerScreenPreview() {
                 onAction = {},
                 onNavigate = {},
                 uiEvent = MutableStateFlow(UiEvent.Navigate(Destination.ServerDetails)),
-                pagedList = flowOf(PagingData.from(emptyList<ServerInfoUi>())).collectAsLazyPagingItems(),
-                onDismissSheet = { },
-                showSheet = false
+                pagedList = flowOf(PagingData.from(emptyList<ServerInfoUi>())).collectAsLazyPagingItems()
             )
         }
     }

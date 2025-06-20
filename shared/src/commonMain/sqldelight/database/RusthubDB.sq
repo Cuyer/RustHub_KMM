@@ -374,3 +374,20 @@ SELECT * FROM filtersWipeScheduleEntity;
 
 clearFiltersWipeSchedules:
 DELETE FROM filtersWipeScheduleEntity;
+CREATE TABLE searchQueryEntity (
+    query TEXT NOT NULL PRIMARY KEY
+);
+
+upsertSearchQuery:
+INSERT INTO searchQueryEntity (
+    query
+) VALUES (
+    :query
+) ON CONFLICT(query) DO UPDATE SET
+    query = excluded.query;
+
+getSearchQueries:
+SELECT * FROM searchQueryEntity;
+
+clearSearchQueries:
+DELETE FROM searchQueryEntity;

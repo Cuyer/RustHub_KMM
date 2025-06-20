@@ -31,6 +31,8 @@ import pl.cuyer.rusthub.domain.usecase.GetFiltersOptionsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
+import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
+import pl.cuyer.rusthub.domain.model.SearchQuery
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.presentation.model.toUi
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
@@ -48,7 +50,8 @@ class ServerViewModel(
     private val getFiltersUseCase: GetFiltersUseCase,
     private val getFiltersOptions: GetFiltersOptionsUseCase,
     private val saveFiltersUseCase: SaveFiltersUseCase,
-    private val clearFiltersUseCase: ClearFiltersUseCase
+    private val clearFiltersUseCase: ClearFiltersUseCase,
+    private val saveSearchQueryUseCase: SaveSearchQueryUseCase
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -113,6 +116,7 @@ class ServerViewModel(
             is ServerAction.OnLongServerClick -> saveIpToClipboard(action.ipAddress)
             is ServerAction.OnChangeLoadingState -> _state.update { it.copy(isLoading = action.isLoading) }
             is ServerAction.OnSaveFilters -> onSaveFilters(action.filters)
+            is ServerAction.OnSearch -> saveSearchQueryUseCase(SearchQuery(action.query))
             is ServerAction.OnClearFilters -> clearFilters()
         }
     }
