@@ -54,6 +54,7 @@ import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
 import pl.cuyer.rusthub.domain.model.ServerStatus
+import pl.cuyer.rusthub.domain.model.WipeType
 import pl.cuyer.rusthub.presentation.features.ServerAction
 import pl.cuyer.rusthub.presentation.features.ServerState
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
@@ -231,6 +232,13 @@ private fun createLabels(item: ServerInfoUi): List<Label> {
         labels.add(Label(text = it.name))
     }
     if (item.isOfficial == true) labels.add(Label(text = "Official"))
+
+    item.wipeType?.let {
+        if (it != WipeType.UNKNOWN) {
+            labels.add(Label(text = it.name + " Wipe"))
+        }
+    }
+
     return labels
 }
 

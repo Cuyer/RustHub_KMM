@@ -30,7 +30,7 @@ fun PulsatingCircle(
     )
 
     val coreColor = remember(isOnline) {
-        if (isOnline) Color.Yellow else Color.Red
+        if (isOnline) Color(0xFF00C853) else Color(0xFFF44336)
     }
     Canvas(
         modifier = modifier
