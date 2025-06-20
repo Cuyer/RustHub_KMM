@@ -2,18 +2,13 @@ package pl.cuyer.rusthub.android.designsystem
 
 import android.content.res.Configuration
 import androidx.annotation.DrawableRes
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,9 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -58,70 +51,56 @@ fun ServerListItem(
         modifier = modifier
             .wrapContentHeight()
     ) {
-        Box {
-            val infiniteTransition = rememberInfiniteTransition()
-            val pulse = infiniteTransition.animateFloat(
-                initialValue = 0.8f,
-                targetValue = 1.2f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
-                    repeatMode = RepeatMode.Reverse
-                )
-            )
-            Canvas(
+        Column(
+            modifier = Modifier
+                .padding(
+                    horizontal = spacing.xmedium,
+                    vertical = spacing.xxmedium
+                ),
+            verticalArrangement = Arrangement.spacedBy(spacing.small)
+        ) {
+            Row(
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(spacing.small)
-                    .size(spacing.small)
-                    .graphicsLayer {
-                        scaleX = pulse.value
-                        scaleY = pulse.value
-                    }
+                    .height(IntrinsicSize.Max),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                drawCircle(
-                    color = if (isOnline) Color.Green else Color.Red,
-                    radius = size.minDimension / 2f
-                )
-            }
-            Column(
-                modifier = Modifier
-                    .padding(
-                        horizontal = spacing.xmedium,
-                        vertical = spacing.xxmedium
-                    ),
-                verticalArrangement = Arrangement.spacedBy(spacing.small)
-            ) {
-                Row(
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .fillMaxHeight()
+                        .fillMaxWidth(0.80f),
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f),
-                    ) {
-                        Text(
-                            style = MaterialTheme.typography.titleLargeEmphasized,
-                            maxLines = 2,
-                            text = serverName
-                        )
-                    }
+                    Text(
+                        style = MaterialTheme.typography.titleLargeEmphasized,
+                        maxLines = 2,
+                        text = serverName
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.End
+                ) {
+                    PulsatingCircle(
+                        modifier = Modifier,
+                        isOnline = isOnline
+                    )
                     Image(
+                        modifier = modifier
+                            .size(24.dp),
                         painter = painterResource(flag),
                         contentDescription = "Server flag",
-                        modifier = Modifier
-                            .size(24.dp),
                         contentScale = ContentScale.Fit
                     )
                 }
-                LabelRow(
-                    labels = labels
-                )
-                DetailsRow(
-                    details = details
-                )
             }
+            LabelRow(
+                labels = labels
+            )
+            DetailsRow(
+                details = details
+            )
         }
     }
 }
