@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.android.feature.server
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -8,6 +9,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -131,10 +134,20 @@ fun ServerScreen(
                         pagedList[index]?.let { item ->
                             val labels by rememberUpdatedState(createLabels(item))
                             val details by rememberUpdatedState(createDetails(item))
+                            val interactionSource = remember { MutableInteractionSource() }
                             ServerListItem(
                                 modifier = Modifier
                                     .animateItem()
-                                    .padding(horizontal = spacing.xmedium),
+                                    .padding(horizontal = spacing.xmedium)
+                                    .combinedClickable(
+                                        interactionSource = interactionSource,
+                                        onLongClick = {
+                                            onAction(ServerAction.OnLongServerClick(item.serverIp))
+                                        },
+                                        onClick = {
+                                            Log.d("Click", "ServerScreen: onClick item ")
+                                        }
+                                    ),
                                 serverName = item.name.orEmpty(),
                                 flag = item.serverFlag.toDrawable(),
                                 labels = labels,

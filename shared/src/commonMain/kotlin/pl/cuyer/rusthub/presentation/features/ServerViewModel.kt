@@ -38,9 +38,11 @@ import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.util.ClipboardHandler
 
 //TODO pomyśleć co zrobić żeby uniknąć importu z data do viewmodela (mapowanie)
 class ServerViewModel(
+    private val clipboardHandler: ClipboardHandler,
     private val snackbarController: SnackbarController,
     getPagedServersUseCase: GetPagedServersUseCase,
     private val getFiltersUseCase: GetFiltersUseCase,
@@ -108,10 +110,35 @@ class ServerViewModel(
     fun onAction(action: ServerAction) {
         when (action) {
             is ServerAction.OnServerClick -> {}
+            is ServerAction.OnLongServerClick -> saveIpToClipboard(action.ipAddress)
             is ServerAction.OnChangeLoadingState -> _state.update { it.copy(isLoading = action.isLoading) }
             is ServerAction.OnSaveFilters -> onSaveFilters(action.filters)
             is ServerAction.OnClearFilters -> clearFilters()
         }
+    }
+
+    private fun saveIpToClipboard(ipAddress: String?) {
+        ipAddress?.let {
+            clipboardHandler.copyToClipboard("Server address", it)
+            coroutineScope.launch {
+                snackbarController.sendEvent(
+                    event = SnackbarEvent(
+                        message = "Saved $it to the clipboard!",
+                        duration = Duration.SHORT
+                    )
+                )
+            }
+        } ?: run {
+            coroutineScope.launch {
+                snackbarController.sendEvent(
+                    event = SnackbarEvent(
+                        message = "There is no IP available for this server.",
+                        duration = Duration.SHORT
+                    )
+                )
+            }
+        }
+
     }
 
     private fun onSaveFilters(filters: ServerQuery) {
