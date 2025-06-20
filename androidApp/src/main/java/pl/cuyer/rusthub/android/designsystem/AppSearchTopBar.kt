@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.android.designsystem
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExpandedFullScreenSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -114,6 +116,20 @@ fun RustSearchBarTopAppBar(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(spacing.xxmedium)
         ) {
+            item {
+                AnimatedVisibility(
+                    visible = searchQueryUi.isNotEmpty()
+                ) {
+                    Row {
+                        Text(
+                            modifier = Modifier
+                                .padding(spacing.medium),
+                            text = "Recent searches"
+                        )
+                    }
+                }
+            }
+
             items(
                 items = searchQueryUi,
                 key = { it.query }
@@ -161,6 +177,31 @@ fun RustSearchBarTopAppBar(
                         )
                     }
                 )
+            }
+            item {
+                AnimatedVisibility(
+                    visible = searchQueryUi.isNotEmpty()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(spacing.medium),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Button(
+                            onClick = {
+                                onDelete("")
+                                coroutineScope.launch {
+                                    searchBarState.animateToCollapsed()
+                                }
+                            }
+                        ) {
+                            Text(
+                                text = "Clear search history"
+                            )
+                        }
+                    }
+                }
             }
         }
     }

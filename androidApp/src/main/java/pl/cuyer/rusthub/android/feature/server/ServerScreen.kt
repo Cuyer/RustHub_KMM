@@ -116,7 +116,11 @@ fun ServerScreen(
                 },
                 onOpenFilters = { showSheet = true },
                 searchQueryUi = state.value.searchQuery,
-                onDelete = { onAction(ServerAction.DeleteSearchQueryByQuery(it)) },
+                onDelete = {
+                    if (it.isBlank()) onAction(ServerAction.DeleteSearchQueries) else onAction(
+                        ServerAction.DeleteSearchQueryByQuery(it)
+                    )
+                },
                 scrollBehavior = scrollBehavior
             )
         },
