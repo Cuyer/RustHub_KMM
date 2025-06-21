@@ -46,7 +46,15 @@ class ServerDataSourceImpl(
                     ip = info.serverIp,
                     description = info.description,
                     server_status = info.serverStatus.toEntity(),
-                    wipe_type = info.wipeType.toEntity()
+                    wipe_type = info.wipeType.toEntity(),
+                    blueprints = info.blueprints == true,
+                    kits = info.kits == true,
+                    decay = info.decay?.toDouble(),
+                    upkeep = info.upkeep?.toDouble(),
+                    rates = info.rates?.toLong(),
+                    seed = info.seed?.toLong(),
+                    mapSize = info.mapSize?.toLong(),
+                    monuments = info.monuments?.toLong()
                 )
             }
         }

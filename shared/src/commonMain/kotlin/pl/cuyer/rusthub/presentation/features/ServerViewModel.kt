@@ -3,7 +3,6 @@ package pl.cuyer.rusthub.presentation.features
 import app.cash.paging.PagingData
 import app.cash.paging.cachedIn
 import app.cash.paging.map
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -123,7 +122,6 @@ class ServerViewModel(
             )
         }.distinctUntilChanged()
             .onEach { mappedFilters ->
-                Napier.i("Filters: $mappedFilters")
                 _state.update {
                     it.copy(
                         filters = mappedFilters,

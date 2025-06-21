@@ -96,7 +96,15 @@ fun ServerEntity.toServerInfo(): ServerInfo {
         mapImage = map_image,
         description = description,
         serverStatus = server_status.toDomain(),
-        wipeType = wipe_type.toDomain()
+        wipeType = wipe_type.toDomain(),
+        blueprints = blueprints == 1L,
+        kits = kits == 1L,
+        decay = decay?.toFloat(),
+        upkeep = upkeep?.toFloat(),
+        rates = rates?.toInt(),
+        seed = seed?.toLong(),
+        mapSize = map_size?.toInt(),
+        monuments = monuments?.toInt()
     )
 }
 

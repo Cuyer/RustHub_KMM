@@ -41,5 +41,14 @@ data class ServerInfoDto(
     @SerialName("status")
     val serverStatus: ServerStatusDto? = null,
     @SerialName("wipe_type")
-    val wipeType: WipeTypeDto? = null
+    val wipeType: WipeTypeDto? = null,
+    val blueprints: Boolean? = null,
+    val kits: Boolean? = null,
+    val decay: Float? = null,
+    val upkeep: Float? = null,
+    val rates: Int? = null,
+    val seed: Long? = null,
+    @SerialName("map_size")
+    val mapSize: Int? = null,
+    val monuments: Int? = null
 )

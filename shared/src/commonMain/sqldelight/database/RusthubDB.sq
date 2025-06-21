@@ -31,6 +31,14 @@ CREATE TABLE serverEntity (
     description    TEXT,                               -- nullable long text
     server_status  TEXT       AS ServerStatusEntity,
     wipe_type      TEXT       AS WipeTypeEntity,
+    blueprints     INTEGER,
+    kits           INTEGER,
+    decay          REAL,
+    upkeep         REAL,
+    rates          INTEGER,
+    seed           INTEGER,
+    map_size       INTEGER,
+    monuments      INTEGER,
     favourite      INTEGER    NOT NULL DEFAULT 0
 );
 
@@ -101,7 +109,15 @@ INSERT INTO serverEntity (
     ip,
     description,
     server_status,
-    wipe_type
+    wipe_type,
+    blueprints,
+    kits,
+    decay,
+    upkeep,
+    rates,
+    seed,
+    map_size,
+    monuments
 ) VALUES (
     :id,
     :name,
@@ -121,7 +137,15 @@ INSERT INTO serverEntity (
     :ip,
     :description,
     :server_status,
-    :wipe_type
+    :wipe_type,
+    CASE WHEN :blueprints THEN 1 ELSE 0 END,
+    CASE WHEN :kits THEN 1 ELSE 0 END,
+    :decay,
+    :upkeep,
+    :rates,
+    :seed,
+    :mapSize,
+    :monuments
 ) ON CONFLICT(id) DO UPDATE SET
     name           = excluded.name,
     wipe           = excluded.wipe,
@@ -139,8 +163,16 @@ INSERT INTO serverEntity (
     is_official    = excluded.is_official,
     ip             = excluded.ip,
     description    = excluded.description,
-    server_status   = excluded.server_status,
-    wipe_type       = excluded.wipe_type;
+    server_status  = excluded.server_status,
+    wipe_type      = excluded.wipe_type,
+    blueprints     = excluded.blueprints,
+    kits           = excluded.kits,
+    decay          = excluded.decay,
+    upkeep         = excluded.upkeep,
+    rates          = excluded.rates,
+    seed           = excluded.seed,
+    map_size       = excluded.map_size,
+    monuments      = excluded.monuments;
 
 clearServers:
 DELETE FROM serverEntity;
