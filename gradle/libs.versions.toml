@@ -49,6 +49,7 @@ koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-compose = { module = "io.insert-koin:koin-compose" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
 
 #KTOR
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
