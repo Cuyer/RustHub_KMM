@@ -20,8 +20,7 @@ fun ServerDetail(
         modifier = modifier
     ) {
         Text(
-            style = MaterialTheme.typography.bodyLarge.copy(
-            ),
+            style = MaterialTheme.typography.bodyLarge,
             text = "$label: "
         )
         Text(
@@ -45,8 +44,7 @@ fun ServerDetail(
         modifier = modifier
     ) {
         Text(
-            style = MaterialTheme.typography.bodyLarge.copy(
-            ),
+            style = MaterialTheme.typography.bodyLarge,
             text = "$label: "
         )
         Text(
@@ -70,8 +68,7 @@ fun ServerDetail(
         modifier = modifier
     ) {
         Text(
-            style = MaterialTheme.typography.bodyLarge.copy(
-            ),
+            style = MaterialTheme.typography.bodyLarge,
             text = "$label: "
         )
         Text(

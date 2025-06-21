@@ -1,9 +1,12 @@
 package pl.cuyer.rusthub.android.feature.server
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -36,7 +39,7 @@ import pl.cuyer.rusthub.presentation.features.ServerDetailsState
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ServerDetailsScreen(
     onNavigate: (NavKey) -> Unit,
@@ -53,7 +56,7 @@ fun ServerDetailsScreen(
                 title = {
                     Text(
                         text = stateProvider().value.serverName ?: "",
-                        maxLines = 2,
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.titleLarge
                     )
@@ -62,126 +65,125 @@ fun ServerDetailsScreen(
             )
         }
     ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-        ) {
-            item {
-                Text(
-                    modifier = Modifier.padding(spacing.medium),
-                    style = MaterialTheme.typography.titleLarge,
-                    text = "Settings"
-                )
+        AnimatedContent(targetState = stateProvider().value.details != null) { detailsReady ->
+            if (detailsReady) {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize()
+                ) {
+                    stateProvider().value.details!!.let {
+                        item {
+                            Text(
+                                modifier = Modifier.padding(spacing.medium),
+                                style = MaterialTheme.typography.titleLarge,
+                                text = "Settings"
+                            )
 
-                with(stateProvider().value.details) {
-                    this?.maxGroup?.toInt()?.let {
-                        ServerDetail(
-                            modifier = Modifier.padding(spacing.medium),
-                            label = "Group limit",
-                            value = it
-                        )
-                    }
+                            it.maxGroup?.toInt()?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = "Group limit",
+                                    value = it
+                                )
+                            }
 
-                    this?.blueprints?.let {
-                        ServerDetail(
-                            modifier = Modifier.padding(spacing.medium),
-                            label = "Blueprints",
-                            value = if (it) "Enabled" else "Disabled"
-                        )
-                    }
+                            it.blueprints?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = "Blueprints",
+                                    value = if (it) "Enabled" else "Disabled"
+                                )
+                            }
 
-                    this?.kits?.let {
-                        ServerDetail(
-                            modifier = Modifier.padding(spacing.medium),
-                            label = "Kits",
-                            value = if (it) "Yes" else "No kits"
-                        )
-                    }
+                            it.kits?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = "Kits",
+                                    value = if (it) "Yes" else "No kits"
+                                )
+                            }
 
-                    this?.decay?.let {
-                        ServerDetail(
-                            modifier = Modifier.padding(spacing.medium),
-                            label = "Decay",
-                            value = it * 100L
-                        )
-                    }
+                            it.decay?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = "Decay",
+                                    value = it * 100L
+                                )
+                            }
 
-                    this?.upkeep?.let {
-                        ServerDetail(
-                            modifier = Modifier.padding(spacing.medium),
-                            label = "Upkeep",
-                            value = it * 100L
-                        )
-                    }
+                            it.upkeep?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = "Upkeep",
+                                    value = it * 100L
+                                )
+                            }
 
-                    this?.rates?.let {
-                        ServerDetail(
-                            modifier = Modifier.padding(spacing.medium),
-                            label = "Rates",
-                            value = it
-                        )
+                            it.rates?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = "Rates",
+                                    value = it
+                                )
+                            }
+                        }
+                        item {
+                            Text(
+                                modifier = Modifier.padding(spacing.medium),
+                                style = MaterialTheme.typography.titleLarge,
+                                text = "Description"
+                            )
+                            HtmlStyledText(
+                                modifier = Modifier.padding(spacing.medium),
+                                html = it.description ?: ""
+                            )
+                        }
+                        item {
+                            Text(
+                                modifier = Modifier.padding(spacing.medium),
+                                style = MaterialTheme.typography.titleLarge,
+                                text = "Map information"
+                            )
+                            it.seed?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = "Seed",
+                                    value = it.toString()
+                                )
+                            }
+                            it.mapSize?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = "Map size",
+                                    value = it
+                                )
+                            }
+                            it.mapName?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = "Map name",
+                                    value = it.displayName
+                                )
+                            }
+                            it.monuments?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = "Monuments",
+                                    value = it
+                                )
+                            }
+                            it.mapImage?.let {
+                                AsyncImage(
+                                    model = it,
+                                    contentDescription = null,
+                                )
+                            }
+                        }
                     }
                 }
-            }
-            stateProvider().value.details?.description?.let {
-                item {
-                    Text(
-                        modifier = Modifier.padding(spacing.medium),
-                        style = MaterialTheme.typography.titleLarge,
-                        text = "Description"
-                    )
-                    HtmlStyledText(
-                        modifier = Modifier.padding(spacing.medium),
-                        html = stateProvider().value.details?.description ?: ""
-                    )
-                }
-            }
-
-
-            item {
-                Text(
-                    modifier = Modifier.padding(spacing.medium),
-                    style = MaterialTheme.typography.titleLarge,
-                    text = "Map information"
-                )
-
-                with(stateProvider().value.details) {
-                    this?.seed?.let {
-                        ServerDetail(
-                            modifier = Modifier.padding(spacing.medium),
-                            label = "Seed",
-                            value = it.toString()
-                        )
-                    }
-                    this?.mapSize?.let {
-                        ServerDetail(
-                            modifier = Modifier.padding(spacing.medium),
-                            label = "Map size",
-                            value = it
-                        )
-                    }
-                    this?.mapName?.let {
-                        ServerDetail(
-                            modifier = Modifier.padding(spacing.medium),
-                            label = "Map name",
-                            value = it.displayName
-                        )
-                    }
-                    this?.monuments?.let {
-                        ServerDetail(
-                            modifier = Modifier.padding(spacing.medium),
-                            label = "Monuments",
-                            value = it
-                        )
-                    }
-                    this?.mapImage?.let {
-                        AsyncImage(
-                            model = it,
-                            contentDescription = null,
-                        )
-                    }
-                }
+            } else {
+                LoadingIndicator()
             }
         }
     }
@@ -289,8 +291,6 @@ fun parseHtmlToAnnotatedString(html: String): AnnotatedString {
 
     return builder.toAnnotatedString()
 }
-
-
 
 
 @Preview
