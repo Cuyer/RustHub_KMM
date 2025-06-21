@@ -9,12 +9,16 @@ import pl.cuyer.rusthub.data.network.HttpClientFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.presentation.features.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.ServerViewModel
+import pl.cuyer.rusthub.presentation.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory(androidContext()).create() }
     single { HttpClientFactory(get()).create() }
     single { ClipboardHandler(get()) }
+    viewModel {
+        OnboardingViewModel()
+    }
     viewModel {
         ServerViewModel(
             clipboardHandler = get(),

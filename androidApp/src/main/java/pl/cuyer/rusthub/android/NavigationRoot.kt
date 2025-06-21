@@ -28,16 +28,24 @@ import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import app.cash.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
+import pl.cuyer.rusthub.android.feature.onboarding.OnboardingScreen
+import pl.cuyer.rusthub.android.feature.auth.LoginScreen
+import pl.cuyer.rusthub.android.feature.auth.RegisterScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.presentation.features.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.ServerViewModel
+import pl.cuyer.rusthub.presentation.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
+import pl.cuyer.rusthub.presentation.navigation.Onboarding
+import pl.cuyer.rusthub.presentation.navigation.Login
+import pl.cuyer.rusthub.presentation.navigation.Register
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 
@@ -76,7 +84,7 @@ fun NavigationRoot() {
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         content = { innerPadding ->
-            val backStack = rememberNavBackStack(ServerList)
+            val backStack = rememberNavBackStack(Onboarding)
             val listDetailStrategy = rememberListDetailSceneStrategy<Any>()
             NavDisplay(
                 entryDecorators = listOf(
@@ -92,6 +100,30 @@ fun NavigationRoot() {
                 onBack = { keysToRemove -> repeat(keysToRemove) { backStack.removeLastOrNull() } },
                 sceneStrategy = listDetailStrategy,
                 entryProvider = entryProvider {
+                    entry<Onboarding> {
+                        val viewModel = koinViewModel<OnboardingViewModel>()
+                        val state = viewModel.state.collectAsStateWithLifecycle()
+                        OnboardingScreen(
+                            stateProvider = { state },
+                            onAction = viewModel::onAction,
+                            uiEvent = viewModel.uiEvent,
+                            onNavigate = { destination -> backStack.add(destination) }
+                        )
+                    }
+                    entry<Login> {
+                        LoginScreen(
+                            onNavigate = { destination -> backStack.add(destination) },
+                            uiEvent = flowOf(),
+                            onBack = { backStack.removeLastOrNull() }
+                        )
+                    }
+                    entry<Register> {
+                        RegisterScreen(
+                            onNavigate = { destination -> backStack.add(destination) },
+                            uiEvent = flowOf(),
+                            onBack = { backStack.removeLastOrNull() }
+                        )
+                    }
                     entry<ServerList>(
                         metadata = ListDetailSceneStrategy.listPane()
                     ) {
