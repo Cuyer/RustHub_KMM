@@ -59,7 +59,9 @@ class ServerDataSourceImpl(
                     pve = info.pve == true,
                     website = info.website,
                     isPremium = info.isPremium == true,
-                    monuments = info.monuments?.toLong()
+                    monuments = info.monuments?.toLong(),
+                    mapUrl = info.mapUrl,
+                    headerImage = info.headerImage
                 )
             }
         }

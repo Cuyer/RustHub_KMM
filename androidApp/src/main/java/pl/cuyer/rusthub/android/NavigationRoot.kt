@@ -104,7 +104,14 @@ fun NavigationRoot() {
                             onAction = viewModel::onAction,
                             uiEvent = viewModel.uiEvent,
                             onNavigate = { destination ->
-                                backStack.add(destination)
+                                val last = backStack.lastOrNull()
+                                if (destination is ServerDetails && last is ServerDetails) {
+                                    if (last != destination) {
+                                        backStack[backStack.lastIndex] = destination
+                                    }
+                                } else {
+                                    backStack.add(destination)
+                                }
                             },
                             pagedList = paging
                         )

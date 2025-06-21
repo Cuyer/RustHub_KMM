@@ -39,7 +39,9 @@ fun ServerInfoDto.toDomain(): ServerInfo {
         averageFps = averageFps,
         pve = pve,
         website = website,
-        isPremium = isPremium
+        isPremium = isPremium,
+        mapUrl = mapUrl,
+        headerImage = headerImage
     )
 }
 

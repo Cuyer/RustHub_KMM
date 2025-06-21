@@ -1,5 +1,5 @@
 package pl.cuyer.rusthub.util
 
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 
-expect fun formatLocalDate(date: LocalDate): String
+expect fun formatLocalDateTime(dateTime: LocalDateTime): String

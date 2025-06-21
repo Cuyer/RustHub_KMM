@@ -4,8 +4,8 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import pl.cuyer.rusthub.util.formatLocalDate
 import pl.cuyer.rusthub.domain.model.ServerInfo
+import pl.cuyer.rusthub.util.formatLocalDateTime
 
 fun ServerInfo.toUi(): ServerInfoUi {
     return ServerInfoUi(
@@ -41,7 +41,9 @@ fun ServerInfo.toUi(): ServerInfoUi {
         lastWipe = wipe?.let { formatLastWipe(it) },
         pve = pve,
         website = website,
-        isPremium = isPremium
+        isPremium = isPremium,
+        mapUrl = mapUrl,
+        headerImage = headerImage
     )
 
 }
@@ -49,8 +51,8 @@ fun ServerInfo.toUi(): ServerInfoUi {
 fun formatLastWipe(wipeInstant: Instant): String {
     val now = Clock.System.now()
     val duration = now - wipeInstant
-    val localDate = wipeInstant.toLocalDateTime(TimeZone.currentSystemDefault()).date
-    val formattedDate = formatLocalDate(localDate)
+    val localDateTime = wipeInstant.toLocalDateTime(TimeZone.currentSystemDefault())
+    val formattedDate = formatLocalDateTime(localDateTime)
 
     val timeAgo = when {
         duration.inWholeDays >= 1 -> "${duration.inWholeDays} days ago"

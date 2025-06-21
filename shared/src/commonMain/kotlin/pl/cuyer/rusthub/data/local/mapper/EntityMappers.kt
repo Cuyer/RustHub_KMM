@@ -108,7 +108,9 @@ fun ServerEntity.toServerInfo(): ServerInfo {
         averageFps = average_fps?.toLong(),
         pve = pve == 1L,
         website = website,
-        isPremium = is_premium == 1L
+        isPremium = is_premium == 1L,
+        mapUrl = map_url,
+        headerImage = header_image
     )
 }
 

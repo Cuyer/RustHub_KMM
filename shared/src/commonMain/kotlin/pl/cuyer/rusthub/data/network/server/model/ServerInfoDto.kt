@@ -56,5 +56,9 @@ data class ServerInfoDto(
     val pve: Boolean? = null,
     val website: String? = null,
     @SerialName("is_premium")
-    val isPremium: Boolean? = null
+    val isPremium: Boolean? = null,
+    @SerialName("map_url")
+    val mapUrl: String? = null,
+    @SerialName("header_image")
+    val headerImage: String? = null
 )

@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.style.TextOverflow
 import pl.cuyer.rusthub.android.theme.Spacing
 
 @Composable
@@ -17,6 +18,7 @@ fun ServerWebsite(
     modifier: Modifier = Modifier,
     spacing: Spacing,
     label: String = "Website",
+    alias: String? = null,
     labelColor: Color = MaterialTheme.colorScheme.onSurface,
     urlColor: Color = MaterialTheme.colorScheme.primary
 ) {
@@ -25,14 +27,16 @@ fun ServerWebsite(
 
         Row(modifier = modifier.padding(spacing.medium)) {
             Text(
-                text = "$label: ",
+                text = if (alias != null) "$label " else "$label: ",
                 style = MaterialTheme.typography.bodyLarge,
                 color = labelColor
             )
             Text(
-                text = website,
+                text = alias ?: website,
                 style = MaterialTheme.typography.bodyLarge,
                 color = urlColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.clickable {
                     uriHandler.openUri(website)
                 }

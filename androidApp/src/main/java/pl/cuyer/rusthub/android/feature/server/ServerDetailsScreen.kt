@@ -8,11 +8,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -68,6 +70,7 @@ fun ServerDetailsScreen(
     uiEvent: Flow<UiEvent>
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val lazyListState = rememberLazyListState()
 
     Scaffold(
         modifier = Modifier
@@ -91,18 +94,30 @@ fun ServerDetailsScreen(
         AnimatedContent(targetState = stateProvider().value.details != null) { detailsReady ->
             if (detailsReady) {
                 LazyColumn(
+                    state = lazyListState,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
                         .consumeWindowInsets(innerPadding)
                 ) {
-                    stateProvider().value.details!!.let {
+                    stateProvider().value.details?.let {
                         item {
                             Text(
                                 modifier = Modifier.padding(spacing.medium),
                                 style = MaterialTheme.typography.titleLarge,
                                 text = "General info"
                             )
+
+                            it.headerImage?.let {
+                                AsyncImage(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = spacing.medium),
+                                    model = it,
+                                    contentDescription = null,
+                                )
+                            }
 
                             it.ranking?.let {
                                 ServerDetail(
@@ -123,7 +138,7 @@ fun ServerDetailsScreen(
                             }
                             it.serverIp?.let {
                                 Row(
-                                    modifier = Modifier.padding(spacing.medium),
+                                    modifier = Modifier.padding(horizontal = spacing.medium),
                                     verticalAlignment = Alignment.CenterVertically,
                                 ) {
                                     Text(
@@ -323,10 +338,25 @@ fun ServerDetailsScreen(
                                     value = it
                                 )
                             }
+                            it.mapUrl?.let {
+                                ServerWebsite(
+                                    label = "Additional information available at",
+                                    website = it,
+                                    alias = "RustMaps",
+                                    spacing = spacing,
+                                    urlColor = Color(0xFF1E88E5)
+                                )
+                            }
+
                             it.mapImage?.let {
                                 AsyncImage(
+                                    modifier = Modifier.padding(
+                                        start = spacing.medium,
+                                        end = spacing.medium,
+                                        bottom = spacing.medium
+                                    ),
                                     model = it,
-                                    contentDescription = null,
+                                    contentDescription = "Rust map image"
                                 )
                             }
                         }
