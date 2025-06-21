@@ -50,5 +50,11 @@ data class ServerInfoDto(
     val seed: Long? = null,
     @SerialName("map_size")
     val mapSize: Int? = null,
-    val monuments: Int? = null
+    val monuments: Int? = null,
+    @SerialName("average_fps")
+    val averageFps: Long? = null,
+    val pve: Boolean? = null,
+    val website: String? = null,
+    @SerialName("is_premium")
+    val isPremium: Boolean? = null
 )

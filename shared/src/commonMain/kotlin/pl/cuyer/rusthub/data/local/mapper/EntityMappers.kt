@@ -104,7 +104,11 @@ fun ServerEntity.toServerInfo(): ServerInfo {
         rates = rates?.toInt(),
         seed = seed?.toLong(),
         mapSize = map_size?.toInt(),
-        monuments = monuments?.toInt()
+        monuments = monuments?.toInt(),
+        averageFps = average_fps?.toLong(),
+        pve = pve == 1L,
+        website = website,
+        isPremium = is_premium == 1L
     )
 }
 

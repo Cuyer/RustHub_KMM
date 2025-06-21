@@ -1,14 +1,24 @@
 package pl.cuyer.rusthub.android.feature.server
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -19,9 +29,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -29,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.flow.Flow
@@ -36,6 +49,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import pl.cuyer.rusthub.android.designsystem.ServerDetail
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.domain.model.Flag
+import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
+import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.presentation.features.ServerDetailsAction
 import pl.cuyer.rusthub.presentation.features.ServerDetailsState
@@ -84,14 +100,134 @@ fun ServerDetailsScreen(
                             Text(
                                 modifier = Modifier.padding(spacing.medium),
                                 style = MaterialTheme.typography.titleLarge,
+                                text = "General info"
+                            )
+
+                            it.ranking?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = "Ranking",
+                                    value = it.toInt()
+                                )
+                            }
+                            it.serverStatus?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = "Status",
+                                    value = it.name,
+                                    valueColor = if (it == ServerStatus.ONLINE) Color(0xFF00C853) else Color(
+                                        0xFFF44336
+                                    )
+                                )
+                            }
+                            it.serverIp?.let {
+                                Row(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Text(
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        text = "IP: "
+                                    )
+                                    Text(
+                                        style = MaterialTheme.typography.bodyLarge.copy(
+                                            color = MaterialTheme.colorScheme.primary
+                                        ),
+                                        text = it
+                                    )
+                                    Spacer(modifier = Modifier.width(spacing.small))
+                                    IconButton(
+                                        onClick = { /*TODO*/ }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.ContentCopy,
+                                            contentDescription = "Icon to copy IP address"
+                                        )
+                                    }
+                                }
+                            }
+                            it.serverFlag?.let {
+                                Row(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(spacing.small)
+                                ) {
+                                    Text(
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        text = "Country:"
+                                    )
+                                    Flag.fromDisplayName(it.displayName)?.let { flag ->
+                                        Image(
+                                            painter = painterResource(flag.toDrawable()),
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .size(26.dp)
+                                        )
+                                    }
+                                }
+                            }
+
+                            it.averageFps?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = "Average FPS",
+                                    value = it.toString()
+                                )
+                            }
+
+                            it.lastWipe?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = "Last wipe",
+                                    value = it
+                                )
+                            }
+
+                            it.pve?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = "PVE",
+                                    value = if (it) "True" else "False"
+                                )
+                            }
+
+                            it.website?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = "Website",
+                                    value = it
+                                )
+                            }
+
+                            it.isOfficial?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = "Official",
+                                    value = if (it) "True" else "False"
+                                )
+                            }
+
+                            it.isPremium?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = "Premium",
+                                    value = if (it) "True" else "False"
+                                )
+                            }
+                        }
+
+                        item {
+                            Text(
+                                modifier = Modifier.padding(spacing.medium),
+                                style = MaterialTheme.typography.titleLarge,
                                 text = "Settings"
                             )
 
-                            it.maxGroup?.toInt()?.let {
+                            it.maxGroup?.let {
                                 ServerDetail(
                                     modifier = Modifier.padding(spacing.medium),
                                     label = "Group limit",
-                                    value = it
+                                    value = if (it == 999999L) "None" else it.toString()
                                 )
                             }
 

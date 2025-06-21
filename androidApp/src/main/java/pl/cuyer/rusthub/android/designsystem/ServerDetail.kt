@@ -8,13 +8,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ServerDetail(
     modifier: Modifier = Modifier,
     label: String,
-    value: String
+    value: String,
+    valueColor: Color = MaterialTheme.colorScheme.primary
 ) {
     Row(
         modifier = modifier
@@ -25,7 +27,7 @@ fun ServerDetail(
         )
         Text(
             style = MaterialTheme.typography.bodyLarge.copy(
-                color = MaterialTheme.colorScheme.primary
+                color = valueColor
             ),
             text = value
         )
