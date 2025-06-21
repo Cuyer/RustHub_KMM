@@ -11,7 +11,10 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -128,8 +131,11 @@ fun ServerScreen(
                 scrollBehavior = scrollBehavior
             )
         },
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
-    ) { padding ->
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .navigationBarsPadding(),
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
+    ) { innerPadding ->
         PullToRefreshBox(
             isRefreshing = false,
             onRefresh = {
@@ -138,7 +144,8 @@ fun ServerScreen(
             state = pullToRefreshState,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
         ) {
             AnimatedContent(state.value.isLoading) { isLoading ->
                 if (isLoading) {

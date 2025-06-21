@@ -8,25 +8,26 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ServerDetail(
     modifier: Modifier = Modifier,
     label: String,
-    value: String
+    value: String,
+    valueColor: Color = MaterialTheme.colorScheme.primary
 ) {
     Row(
         modifier = modifier
     ) {
         Text(
-            style = MaterialTheme.typography.bodyLarge.copy(
-            ),
+            style = MaterialTheme.typography.bodyLarge,
             text = "$label: "
         )
         Text(
             style = MaterialTheme.typography.bodyLarge.copy(
-                color = MaterialTheme.colorScheme.primary
+                color = valueColor
             ),
             text = value
         )
@@ -45,8 +46,7 @@ fun ServerDetail(
         modifier = modifier
     ) {
         Text(
-            style = MaterialTheme.typography.bodyLarge.copy(
-            ),
+            style = MaterialTheme.typography.bodyLarge,
             text = "$label: "
         )
         Text(
@@ -70,8 +70,7 @@ fun ServerDetail(
         modifier = modifier
     ) {
         Text(
-            style = MaterialTheme.typography.bodyLarge.copy(
-            ),
+            style = MaterialTheme.typography.bodyLarge,
             text = "$label: "
         )
         Text(

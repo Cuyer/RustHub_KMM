@@ -39,6 +39,12 @@ CREATE TABLE serverEntity (
     seed           INTEGER,
     map_size       INTEGER,
     monuments      INTEGER,
+    average_fps    INTEGER,
+    pve            INTEGER,
+    website        TEXT,
+    is_premium     INTEGER,
+    map_url        TEXT,
+    header_image   TEXT,
     favourite      INTEGER    NOT NULL DEFAULT 0
 );
 
@@ -118,6 +124,12 @@ INSERT INTO serverEntity (
     seed,
     map_size,
     map_image,
+    average_fps,
+    pve,
+    website,
+    is_premium,
+    map_url,
+    header_image,
     monuments
 ) VALUES (
     :id,
@@ -146,7 +158,13 @@ INSERT INTO serverEntity (
     :rates,
     :seed,
     :mapSize,
-    :map_image,
+    :mapImage,
+    :averageFps,
+    CASE WHEN :pve THEN 1 ELSE 0 END,
+    :website,
+    CASE WHEN :isPremium THEN 1 ELSE 0 END,
+    :mapUrl,
+    :headerImage,
     :monuments
 ) ON CONFLICT(id) DO UPDATE SET
     name           = excluded.name,
@@ -175,7 +193,13 @@ INSERT INTO serverEntity (
     seed           = excluded.seed,
     map_size       = excluded.map_size,
     map_image      = excluded.map_image,
-    monuments      = excluded.monuments;
+    monuments      = excluded.monuments,
+    average_fps    = excluded.average_fps,
+    pve            = excluded.pve,
+    website        = excluded.website,
+    is_premium     = excluded.is_premium,
+    map_url        = excluded.map_url,
+    header_image   = excluded.header_image;
 
 clearServers:
 DELETE FROM serverEntity;

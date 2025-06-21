@@ -12,6 +12,9 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
+import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -26,13 +29,11 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
-import pl.cuyer.rusthub.android.navigation.TwoPaneScene
-import pl.cuyer.rusthub.android.navigation.TwoPaneSceneStrategy
 import pl.cuyer.rusthub.presentation.features.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.ServerViewModel
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
@@ -40,13 +41,15 @@ import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class,
+    ExperimentalMaterial3AdaptiveApi::class
+)
 @Composable
 fun NavigationRoot() {
     val snackbarHostState = remember { SnackbarHostState() }
     val snackbarController = SnackbarController
     val scope = rememberCoroutineScope()
-    val backStack = rememberNavBackStack(ServerList)
 
     ObserveAsEvents(flow = snackbarController.events, snackbarHostState) { event ->
         scope.launch {
@@ -73,6 +76,8 @@ fun NavigationRoot() {
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         content = { innerPadding ->
+            val backStack = rememberNavBackStack(ServerList)
+            val listDetailStrategy = rememberListDetailSceneStrategy<Any>()
             NavDisplay(
                 entryDecorators = listOf(
                     rememberSceneSetupNavEntryDecorator(),
@@ -84,19 +89,13 @@ fun NavigationRoot() {
                     .padding(innerPadding)
                     .consumeWindowInsets(innerPadding),
                 backStack = backStack,
-                onBack = { count ->
-                    repeat(count) {
-                        if (backStack.isNotEmpty()) {
-                            backStack.removeLastOrNull()
-                        }
-                    }
-                },
-                sceneStrategy = TwoPaneSceneStrategy<Any>(),
+                onBack = { keysToRemove -> repeat(keysToRemove) { backStack.removeLastOrNull() } },
+                sceneStrategy = listDetailStrategy,
                 entryProvider = entryProvider {
                     entry<ServerList>(
-                        metadata = TwoPaneScene.twoPane()
+                        metadata = ListDetailSceneStrategy.listPane()
                     ) {
-                        val viewModel = koinInject<ServerViewModel>()
+                        val viewModel = koinViewModel<ServerViewModel>()
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         val paging = viewModel.paging.collectAsLazyPagingItems()
 
@@ -105,15 +104,22 @@ fun NavigationRoot() {
                             onAction = viewModel::onAction,
                             uiEvent = viewModel.uiEvent,
                             onNavigate = { destination ->
-                                backStack.add(destination)
+                                val last = backStack.lastOrNull()
+                                if (destination is ServerDetails && last is ServerDetails) {
+                                    if (last != destination) {
+                                        backStack[backStack.lastIndex] = destination
+                                    }
+                                } else {
+                                    backStack.add(destination)
+                                }
                             },
                             pagedList = paging
                         )
                     }
                     entry<ServerDetails>(
-                        metadata = TwoPaneScene.twoPane()
+                        metadata = ListDetailSceneStrategy.detailPane()
                     ) { key ->
-                        val viewModel = koinInject<ServerDetailsViewModel>() {
+                        val viewModel = koinViewModel<ServerDetailsViewModel>() {
                             parametersOf(
                                 key.id,
                                 key.name

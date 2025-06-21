@@ -30,5 +30,11 @@ data class ServerInfo(
     val rates: Int? = null,
     val seed: Long? = null,
     val mapSize: Int? = null,
-    val monuments: Int? = null
+    val monuments: Int? = null,
+    val averageFps: Long? = null,
+    val pve: Boolean? = null,
+    val website: String? = null,
+    val isPremium: Boolean? = null,
+    val mapUrl: String? = null,
+    val headerImage: String? = null
 )

@@ -35,7 +35,13 @@ fun ServerInfoDto.toDomain(): ServerInfo {
         rates = rates,
         seed = seed,
         mapSize = mapSize,
-        monuments = monuments
+        monuments = monuments,
+        averageFps = averageFps,
+        pve = pve,
+        website = website,
+        isPremium = isPremium,
+        mapUrl = mapUrl,
+        headerImage = headerImage
     )
 }
 

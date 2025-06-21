@@ -54,8 +54,14 @@ class ServerDataSourceImpl(
                     rates = info.rates?.toLong(),
                     seed = info.seed?.toLong(),
                     mapSize = info.mapSize?.toLong(),
-                    map_image = info.mapImage,
-                    monuments = info.monuments?.toLong()
+                    mapImage = info.mapImage,
+                    averageFps = info.averageFps?.toLong(),
+                    pve = info.pve == true,
+                    website = info.website,
+                    isPremium = info.isPremium == true,
+                    monuments = info.monuments?.toLong(),
+                    mapUrl = info.mapUrl,
+                    headerImage = info.headerImage
                 )
             }
         }
