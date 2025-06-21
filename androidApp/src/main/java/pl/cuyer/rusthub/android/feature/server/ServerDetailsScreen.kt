@@ -103,7 +103,7 @@ fun ServerDetailsScreen(
                         ServerDetail(
                             modifier = Modifier.padding(spacing.medium),
                             label = "Decay",
-                            value = it
+                            value = it * 100L
                         )
                     }
 
@@ -111,7 +111,7 @@ fun ServerDetailsScreen(
                         ServerDetail(
                             modifier = Modifier.padding(spacing.medium),
                             label = "Upkeep",
-                            value = it
+                            value = it * 100L
                         )
                     }
 
