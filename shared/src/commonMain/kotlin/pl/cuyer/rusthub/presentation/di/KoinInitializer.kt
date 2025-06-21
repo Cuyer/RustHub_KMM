@@ -63,14 +63,6 @@ val appModule = module {
     single { GetSearchQueriesUseCase(get()) }
     single { DeleteSearchQueriesUseCase(get()) }
     single { GetServerDetailsUseCase(get()) }
-    factoryOf(::ServerViewModel)
-    factory { (serverId: Long, serverName: String?) ->
-        ServerDetailsViewModel(
-            getServerDetailsUseCase = get(),
-            serverId = serverId,
-            serverName = serverName
-        )
-    }
 }
 
 expect val platformModule: Module
