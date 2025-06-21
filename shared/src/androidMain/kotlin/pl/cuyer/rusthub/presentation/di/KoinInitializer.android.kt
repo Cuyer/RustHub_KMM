@@ -33,7 +33,9 @@ actual val platformModule: Module = module {
         ServerDetailsViewModel(
             getServerDetailsUseCase = get(),
             serverName = serverName,
-            serverId = serverId
+            serverId = serverId,
+            clipboardHandler = get(),
+            snackbarController = get()
         )
     }
 }

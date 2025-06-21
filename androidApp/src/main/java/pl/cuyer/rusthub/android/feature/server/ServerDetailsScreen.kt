@@ -47,6 +47,7 @@ import coil3.compose.AsyncImage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import pl.cuyer.rusthub.android.designsystem.ServerDetail
+import pl.cuyer.rusthub.android.designsystem.ServerWebsite
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.domain.model.Flag
@@ -137,7 +138,13 @@ fun ServerDetailsScreen(
                                     )
                                     Spacer(modifier = Modifier.width(spacing.small))
                                     IconButton(
-                                        onClick = { /*TODO*/ }
+                                        onClick = {
+                                            onAction(
+                                                ServerDetailsAction.OnSaveToClipboard(
+                                                    it
+                                                )
+                                            )
+                                        }
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.ContentCopy,
@@ -191,11 +198,11 @@ fun ServerDetailsScreen(
                                 )
                             }
 
-                            it.website?.let {
-                                ServerDetail(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    label = "Website",
-                                    value = it
+                            it.website?.let { url ->
+                                ServerWebsite(
+                                    website = url,
+                                    spacing = spacing,
+                                    urlColor = Color(0xFF1E88E5)
                                 )
                             }
 
