@@ -117,6 +117,7 @@ INSERT INTO serverEntity (
     rates,
     seed,
     map_size,
+    map_image,
     monuments
 ) VALUES (
     :id,
@@ -145,6 +146,7 @@ INSERT INTO serverEntity (
     :rates,
     :seed,
     :mapSize,
+    :map_image,
     :monuments
 ) ON CONFLICT(id) DO UPDATE SET
     name           = excluded.name,
@@ -172,6 +174,7 @@ INSERT INTO serverEntity (
     rates          = excluded.rates,
     seed           = excluded.seed,
     map_size       = excluded.map_size,
+    map_image      = excluded.map_image,
     monuments      = excluded.monuments;
 
 clearServers:

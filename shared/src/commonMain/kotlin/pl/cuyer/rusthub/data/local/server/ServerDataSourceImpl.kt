@@ -54,6 +54,7 @@ class ServerDataSourceImpl(
                     rates = info.rates?.toLong(),
                     seed = info.seed?.toLong(),
                     mapSize = info.mapSize?.toLong(),
+                    map_image = info.mapImage,
                     monuments = info.monuments?.toLong()
                 )
             }
