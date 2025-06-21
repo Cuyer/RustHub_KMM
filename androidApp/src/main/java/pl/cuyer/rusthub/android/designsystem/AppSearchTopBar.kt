@@ -74,7 +74,6 @@ fun RustSearchBarTopAppBar(
 
     val inputField = @Composable {
         SearchBarDefaults.InputField(
-            modifier = Modifier.fillMaxWidth(),
             searchBarState = searchBarState,
             textFieldState = textFieldState,
             onSearch = {
@@ -231,7 +230,7 @@ fun RustSearchBarTopAppBar(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(device = "spec:parent=pixel_5,orientation=landscape")
 @Composable
 private fun AppSearchTopBarPreview() {
     RustHubTheme {

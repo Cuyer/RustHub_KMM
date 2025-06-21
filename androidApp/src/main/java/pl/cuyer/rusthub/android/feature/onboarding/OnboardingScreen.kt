@@ -1,30 +1,57 @@
 package pl.cuyer.rusthub.android.feature.onboarding
 
+import android.app.Activity
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.onboarding.OnboardingAction
 import pl.cuyer.rusthub.presentation.onboarding.OnboardingState
 
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun OnboardingScreen(
     onNavigate: (NavKey) -> Unit,
@@ -33,33 +60,203 @@ fun OnboardingScreen(
     uiEvent: Flow<UiEvent>
 ) {
     val state = stateProvider()
-
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
 
+    val context = LocalContext.current
+    val windowSizeClass = calculateWindowSizeClass(context as Activity)
+
+    val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
+
+    if (isTabletMode) {
+        OnboardingScreenExpanded(onAction)
+    } else {
+        OnboardingScreenCompact(onAction)
+    }
+}
+
+@Composable
+private fun OnboardingScreenCompact(onAction: (OnboardingAction) -> Unit) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(spacing.medium),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.spacedBy(spacing.medium, Alignment.CenterVertically)
     ) {
-        Text(text = "Welcome to RustHub", style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.height(spacing.large))
-        Button(onClick = { onAction(OnboardingAction.OnLoginClick) }) {
-            Text("Log In")
+        HeaderSection()
+        FeatureList()
+        ActionButtons(onAction)
+    }
+}
+
+@Composable
+private fun OnboardingScreenExpanded(onAction: (OnboardingAction) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxSize() // Ensure full screen height to allow vertical centering
+            .padding(spacing.medium),
+        horizontalArrangement = Arrangement.spacedBy(spacing.large),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(spacing.medium)
+        ) {
+            HeaderSectionExpanded()
+            FeatureList()
         }
-        Spacer(modifier = Modifier.height(spacing.medium))
-        Button(onClick = { onAction(OnboardingAction.OnRegisterClick) }) {
-            Text("Register")
-        }
-        Spacer(modifier = Modifier.height(spacing.medium))
-        TextButton(onClick = { onAction(OnboardingAction.OnContinueAsGuest) }) {
-            Text("Continue as Guest")
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            ActionButtons(onAction)
         }
     }
 }
 
-@Preview
+@Composable
+fun HeaderSectionExpanded() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(spacing.medium),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column {
+            Text(
+                text = "Welcome to RustHub",
+                style = MaterialTheme.typography.headlineLarge,
+                textAlign = TextAlign.Center
+            )
+
+            Text(
+                text = "Your gateway to the Rust server world",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+        }
+
+        Image(
+            painter = painterResource(id = getImageByFileName("rusthub_logo").drawableResId),
+            contentDescription = "Application logo"
+        )
+    }
+}
+
+
+@Composable
+private fun HeaderSection() {
+    Image(
+        painter = painterResource(id = getImageByFileName("rusthub_logo").drawableResId),
+        contentDescription = "Application logo"
+    )
+
+    Text(
+        text = "Welcome to RustHub",
+        style = MaterialTheme.typography.headlineLarge,
+        textAlign = TextAlign.Center
+    )
+
+    Text(
+        text = "Your gateway to the Rust server world",
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.Center
+    )
+}
+
+@Composable
+private fun FeatureList() {
+    FeatureItem(
+        Icons.Default.Search,
+        "Find Servers",
+        "Search and explore Rust servers by name, type, last wipe or more."
+    )
+    FeatureItem(
+        Icons.Default.ContentCopy,
+        "Copy IPs",
+        "Quickly copy server IP addresses to send them to your friends."
+    )
+    FeatureItem(
+        Icons.Default.Info,
+        "View Details",
+        "See server info like time of last wipe, map, ranking and more."
+    )
+    FeatureItem(
+        Icons.Default.FilterList,
+        "Smart Filters",
+        "Narrow your search using advanced filtering options."
+    )
+}
+
+@Composable
+private fun ActionButtons(onAction: (OnboardingAction) -> Unit) {
+    Button(
+        onClick = { onAction(OnboardingAction.OnLoginClick) },
+        shape = RectangleShape,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text("Log In")
+    }
+
+    Button(
+        onClick = { onAction(OnboardingAction.OnRegisterClick) },
+        shape = RectangleShape,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text("Register")
+    }
+
+    TextButton(
+        shape = RectangleShape,
+        onClick = { onAction(OnboardingAction.OnContinueAsGuest) }
+    ) {
+        Text("Continue as Guest")
+    }
+}
+
+
+@Composable
+private fun FeatureItem(icon: ImageVector, title: String, description: String) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .size(40.dp), // fixed space for all icons
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = title,
+                modifier = Modifier.size(24.dp) // standard icon size
+            )
+        }
+
+        Spacer(modifier = Modifier.width(spacing.xmedium))
+
+        Column {
+            Text(text = title, style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+
+@Preview(device = "spec:parent=pixel_5,orientation=landscape")
 @Composable
 private fun OnboardingPrev() {
     RustHubTheme {
