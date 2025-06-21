@@ -1,7 +1,10 @@
 package pl.cuyer.rusthub.android.feature.server
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,7 +53,10 @@ fun ServerDetailsScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .navigationBarsPadding(),
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             TopAppBar(
                 title = {
@@ -69,8 +75,9 @@ fun ServerDetailsScreen(
             if (detailsReady) {
                 LazyColumn(
                     modifier = Modifier
-                        .padding(innerPadding)
                         .fillMaxSize()
+                        .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding)
                 ) {
                     stateProvider().value.details!!.let {
                         item {
