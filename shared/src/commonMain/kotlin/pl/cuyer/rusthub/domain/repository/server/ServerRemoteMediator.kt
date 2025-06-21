@@ -33,7 +33,6 @@ class ServerRemoteMediator(
             LoadType.REFRESH -> 0
             LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
             LoadType.APPEND -> {
-                Napier.i("State: $state", tag = "ServerRemoteMediator")
                 val key = remoteKeys.getKey(keyId) ?: return MediatorResult.Success(true)
                 key.nextPage?.toInt() ?: return MediatorResult.Success(true)
             }

@@ -5,6 +5,6 @@ import pl.cuyer.rusthub.presentation.model.SearchQueryUi
 
 data class ServerState(
     val isLoading: Boolean = false,
-    val filters: FilterUi = FilterUi(),
+    val filters: FilterUi? = null,
     val searchQuery: List<SearchQueryUi> = emptyList()
 )

@@ -1,6 +1,5 @@
 package pl.cuyer.rusthub.android.feature.server
 
-import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -38,11 +37,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation3.runtime.NavKey
 import app.cash.paging.PagingData
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
@@ -68,7 +69,7 @@ import pl.cuyer.rusthub.domain.model.WipeType
 import pl.cuyer.rusthub.presentation.features.ServerAction
 import pl.cuyer.rusthub.presentation.features.ServerState
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
-import pl.cuyer.rusthub.presentation.navigation.Destination
+import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import java.util.Locale
 import java.util.UUID
@@ -76,7 +77,7 @@ import java.util.UUID
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ServerScreen(
-    onNavigate: (Destination) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     stateProvider: () -> State<ServerState>,
     onAction: (ServerAction) -> Unit,
     pagedList: LazyPagingItems<ServerInfoUi>,
@@ -84,7 +85,7 @@ fun ServerScreen(
 ) {
     val state = stateProvider()
 
-    var showSheet by remember { mutableStateOf(false) }
+    var showSheet by rememberSaveable { mutableStateOf(false) }
     val searchBarState = rememberSearchBarState()
     val textFieldState = rememberTextFieldState()
     val scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
@@ -178,7 +179,11 @@ fun ServerScreen(
                                             onAction(ServerAction.OnLongServerClick(item.serverIp))
                                         },
                                         onClick = {
-                                            Log.d("Click", "ServerScreen: onClick item ")
+                                            onAction(
+                                                ServerAction.OnServerClick(
+                                                    item.id ?: Long.MAX_VALUE, item.name ?: ""
+                                                )
+                                            )
                                         }
                                     ),
                                 serverName = item.name.orEmpty(),
@@ -304,7 +309,14 @@ private fun ServerScreenPreview() {
                 stateProvider = { mutableStateOf(ServerState(isLoading = false)) },
                 onAction = {},
                 onNavigate = {},
-                uiEvent = MutableStateFlow(UiEvent.Navigate(Destination.ServerDetails)),
+                uiEvent = MutableStateFlow(
+                    UiEvent.Navigate(
+                        ServerDetails(
+                            id = 1,
+                            name = "Repulsion"
+                        )
+                    )
+                ),
                 pagedList = flowOf(PagingData.from(emptyList<ServerInfoUi>())).collectAsLazyPagingItems()
             )
         }

@@ -3,7 +3,6 @@ package pl.cuyer.rusthub.presentation.features
 import app.cash.paging.PagingData
 import app.cash.paging.cachedIn
 import app.cash.paging.map
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -11,8 +10,8 @@ import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
@@ -39,6 +38,7 @@ import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.presentation.model.toUi
+import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
@@ -68,6 +68,7 @@ class ServerViewModel(
     private val _state = MutableStateFlow(ServerState())
     val state = _state
         .onStart {
+            _state.update { it.copy(isLoading = true) }
             observeFilters()
             observeSearchQueries()
         }
@@ -83,18 +84,10 @@ class ServerViewModel(
             getPagedServersUseCase(query)
                 .map { pagingData ->
                     pagingData.map { it.toServerInfo().toUi() }
-                }.cachedIn(coroutineScope)
+                }
+                .flowOn(Dispatchers.Default)
+                .cachedIn(coroutineScope)
         }
-
-
-
-    init {
-        coroutineScope.launch {
-            state.collectLatest {
-                Napier.i("ServerState: $it")
-            }
-        }
-    }
 
     private fun observeSearchQueries() {
         getSearchQueriesUseCase.invoke()
@@ -127,21 +120,22 @@ class ServerViewModel(
                 groupLimit = filtersOptions?.maxGroupLimit ?: 0,
                 ranking = filtersOptions?.maxRanking ?: 0
             )
-        }.onEach { mappedFilters ->
-            _state.update {
-                it.copy(
-                    filters = mappedFilters,
-                    isLoading = false
-                )
+        }.distinctUntilChanged()
+            .onEach { mappedFilters ->
+                _state.update {
+                    it.copy(
+                        filters = mappedFilters,
+                        isLoading = false
+                    )
+                }
             }
-        }
             .flowOn(Dispatchers.Default)
             .launchIn(coroutineScope)
     }
 
     fun onAction(action: ServerAction) {
         when (action) {
-            is ServerAction.OnServerClick -> {}
+            is ServerAction.OnServerClick -> navigateToServer(action.id, action.name)
             is ServerAction.OnLongServerClick -> saveIpToClipboard(action.ipAddress)
             is ServerAction.OnChangeLoadingState -> _state.update { it.copy(isLoading = action.isLoading) }
             is ServerAction.OnSaveFilters -> onSaveFilters(action.filters)
@@ -200,7 +194,10 @@ class ServerViewModel(
         clearFiltersUseCase()
     }
 
-    private fun navigateToServer() {
+    private fun navigateToServer(id: Long, name: String) {
+        coroutineScope.launch {
+            _uiEvent.send(UiEvent.Navigate(ServerDetails(id, name)))
+        }
     }
 
     private fun handleError(e: Throwable) {

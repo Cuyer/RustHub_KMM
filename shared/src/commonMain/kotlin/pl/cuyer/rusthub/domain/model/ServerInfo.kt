@@ -22,5 +22,13 @@ data class ServerInfo(
     val mapImage: String? = null,
     val description: String? = null,
     val serverStatus: ServerStatus? = null,
-    val wipeType: WipeType? = null
+    val wipeType: WipeType? = null,
+    val blueprints: Boolean? = null,
+    val kits: Boolean? = null,
+    val decay: Float? = null,
+    val upkeep: Float? = null,
+    val rates: Int? = null,
+    val seed: Long? = null,
+    val mapSize: Int? = null,
+    val monuments: Int? = null
 )

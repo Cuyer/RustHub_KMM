@@ -1,13 +1,18 @@
 package pl.cuyer.rusthub.data.local.server
 
 import app.cash.paging.PagingSource
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToOneOrNull
 import app.cash.sqldelight.paging3.QueryPagingSource
 import database.ServerEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import pl.cuyer.rusthub.common.Constants.DEFAULT_KEY
 import pl.cuyer.rusthub.data.local.Queries
 import pl.cuyer.rusthub.data.local.mapper.toEntity
+import pl.cuyer.rusthub.data.local.mapper.toServerInfo
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
@@ -41,7 +46,16 @@ class ServerDataSourceImpl(
                     ip = info.serverIp,
                     description = info.description,
                     server_status = info.serverStatus.toEntity(),
-                    wipe_type = info.wipeType.toEntity()
+                    wipe_type = info.wipeType.toEntity(),
+                    blueprints = info.blueprints == true,
+                    kits = info.kits == true,
+                    decay = info.decay?.toDouble(),
+                    upkeep = info.upkeep?.toDouble(),
+                    rates = info.rates?.toLong(),
+                    seed = info.seed?.toLong(),
+                    mapSize = info.mapSize?.toLong(),
+                    map_image = info.mapImage,
+                    monuments = info.monuments?.toLong()
                 )
             }
         }
@@ -66,6 +80,13 @@ class ServerDataSourceImpl(
             }
         )
         return pagingSource
+    }
+
+    override fun getServerById(serverId: Long): Flow<ServerInfo?> {
+        return queries.getServerById(serverId)
+            .asFlow()
+            .mapToOneOrNull(Dispatchers.IO)
+            .map { it?.toServerInfo() }
     }
 
     override fun deleteServers() {

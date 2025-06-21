@@ -1,7 +1,6 @@
 package pl.cuyer.rusthub.presentation.model
 
 import kotlinx.datetime.Instant
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import pl.cuyer.rusthub.domain.model.Difficulty
 import pl.cuyer.rusthub.domain.model.Flag
@@ -18,27 +17,27 @@ data class ServerInfoUi(
     val wipe: Instant? = null,
     val ranking: Long? = null,
     val modded: Boolean? = null,
-    @SerialName("player_count")
     val playerCount: Long? = null,
-    @SerialName("server_capacity")
     val serverCapacity: Long? = null,
-    @SerialName("map_name")
     val mapName: Maps? = null,
     val cycle: Double? = null,
-    @SerialName("server_flag")
     val serverFlag: Flag? = null,
     val region: Region? = null,
-    @SerialName("max_group")
     val maxGroup: Long? = null,
     val difficulty: Difficulty? = null,
-    @SerialName("wipe_schedule")
     val wipeSchedule: WipeSchedule? = null,
     val isOfficial: Boolean? = null,
     val serverIp: String? = null,
-    @SerialName("map_image")
     val mapImage: String? = null,
     val description: String? = null,
-    val mapId: String? = null,
     val serverStatus: ServerStatus? = null,
-    val wipeType: WipeType? = null
+    val wipeType: WipeType? = null,
+    val blueprints: Boolean? = null,
+    val kits: Boolean? = null,
+    val decay: Float? = null,
+    val upkeep: Float? = null,
+    val rates: Int? = null,
+    val seed: Long? = null,
+    val mapSize: Int? = null,
+    val monuments: Int? = null
 )

@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.presentation.model
 
+import kotlinx.serialization.Serializable
 import pl.cuyer.rusthub.domain.model.Difficulty
 import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Maps
@@ -8,6 +9,7 @@ import pl.cuyer.rusthub.domain.model.Region
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.model.WipeSchedule
 
+@Serializable
 data class FilterUi(
     val lists: List<Triple<String, List<String>, Int?>> = listOf(),
     val checkboxes: List<Pair<String, Boolean>> = listOf(),

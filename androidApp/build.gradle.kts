@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 android {
@@ -54,6 +55,8 @@ dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(project.dependencies.platform(libs.koin.bom))
     implementation(libs.koin.compose)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network)
     implementation(libs.androidx.navigation)
     implementation(libs.androidx.navigation.ui)
     implementation(libs.androidx.navigation.viewmodel)
@@ -66,5 +69,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.process)
     implementation(libs.compose.icons)
     implementation(libs.paging.compose)
+    implementation(libs.kotlin.serialization)
     debugImplementation(libs.compose.ui.tooling)
 }

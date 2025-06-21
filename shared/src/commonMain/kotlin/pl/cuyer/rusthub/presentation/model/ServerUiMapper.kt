@@ -23,6 +23,14 @@ fun ServerInfo.toUi(): ServerInfoUi {
         mapImage = mapImage,
         description = description,
         serverStatus = serverStatus,
-        wipeType = wipeType
+        wipeType = wipeType,
+        blueprints = blueprints,
+        kits = kits,
+        decay = decay,
+        upkeep = upkeep,
+        rates = rates,
+        seed = seed,
+        mapSize = mapSize,
+        monuments = monuments
     )
 }
