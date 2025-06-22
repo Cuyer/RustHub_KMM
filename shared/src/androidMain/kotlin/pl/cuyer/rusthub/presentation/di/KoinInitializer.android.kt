@@ -23,7 +23,10 @@ actual val platformModule: Module = module {
         StartupViewModel(get())
     }
     viewModel {
-        OnboardingViewModel()
+        OnboardingViewModel(
+            authAnonymouslyUseCase = get(),
+            snackbarController = get(),
+        )
     }
     viewModel {
         LoginViewModel(

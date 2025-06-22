@@ -16,6 +16,14 @@ import org.koin.compose.KoinContext
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.getKoin
+import org.koin.compose.KoinContext
+import pl.cuyer.rusthub.android.theme.RustHubTheme
+import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
+import pl.cuyer.rusthub.presentation.navigation.Onboarding
+import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.ui.Colors
 
 class MainActivity : ComponentActivity() {
@@ -42,6 +50,9 @@ class MainActivity : ComponentActivity() {
                 keepSplash = state.isLoading
                 isLoading.value = state.isLoading
             }
+            val user = getKoin().get<GetUserUseCase>().invoke().firstOrNull()
+            startDestination.value = if (user != null) ServerList else Onboarding
+            keepSplash = false
         }
 
         setContent {

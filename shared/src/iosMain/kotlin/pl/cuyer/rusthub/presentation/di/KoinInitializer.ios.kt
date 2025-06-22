@@ -17,7 +17,12 @@ actual val platformModule: Module = module {
     single { HttpClientFactory(get(), get()).create() }
     single { ClipboardHandler() }
     factory { StartupViewModel(get()) }
-    factory { OnboardingViewModel() }
+    factory {
+        OnboardingViewModel(
+            authAnonymouslyUseCase = get(),
+            snackbarController = get(),
+        )
+    }
     factory {
         LoginViewModel(
             loginUserUseCase = get(),
