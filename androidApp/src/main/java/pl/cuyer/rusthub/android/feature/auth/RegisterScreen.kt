@@ -4,6 +4,7 @@ import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -41,7 +44,7 @@ import pl.cuyer.rusthub.presentation.features.auth.RegisterAction
 import pl.cuyer.rusthub.presentation.features.auth.RegisterState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun RegisterScreen(
     onNavigate: (NavKey) -> Unit,
@@ -60,24 +63,34 @@ fun RegisterScreen(
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
     val focusManager = LocalFocusManager.current
 
-    if (isTabletMode) {
-        RegisterScreenExpanded(
-            onRegister = {
-                focusManager.clearFocus()
-                onAction(RegisterAction.OnRegister)
-            },
-            state = state.value,
-            onAction = onAction
-        )
-    } else {
-        RegisterScreenCompact(
-            onRegister = {
-                focusManager.clearFocus()
-                onAction(RegisterAction.OnRegister)
-            },
-            state = state.value,
-            onAction = onAction
-        )
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        if (isTabletMode) {
+            RegisterScreenExpanded(
+                onRegister = {
+                    focusManager.clearFocus()
+                    onAction(RegisterAction.OnRegister)
+                },
+                state = state.value,
+                onAction = onAction
+            )
+        } else {
+            RegisterScreenCompact(
+                onRegister = {
+                    focusManager.clearFocus()
+                    onAction(RegisterAction.OnRegister)
+                },
+                state = state.value,
+                onAction = onAction
+            )
+        }
+
+        if (state.value.isLoading) {
+            LoadingIndicator()
+        }
     }
 }
 
