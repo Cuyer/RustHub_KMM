@@ -19,10 +19,10 @@ class AuthDataSourceImpl(
 ) : AuthDataSource, Queries(db) {
 
     override suspend fun insertUser(
-        email: String,
+        email: String?,
         username: String,
         accessToken: String,
-        refreshToken: String
+        refreshToken: String?
     ) {
         withContext(Dispatchers.IO) {
             queries.insertUser(

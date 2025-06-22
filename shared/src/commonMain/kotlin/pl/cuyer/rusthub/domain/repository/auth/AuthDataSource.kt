@@ -5,10 +5,10 @@ import pl.cuyer.rusthub.domain.model.User
 
 interface AuthDataSource {
     suspend fun insertUser(
-        email: String,
+        email: String?,
         username: String,
         accessToken: String,
-        refreshToken: String
+        refreshToken: String?
     )
 
     suspend fun deleteUser()

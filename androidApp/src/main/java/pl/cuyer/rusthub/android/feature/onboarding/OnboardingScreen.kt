@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -68,10 +69,16 @@ fun OnboardingScreen(
 
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
 
-    if (isTabletMode) {
-        OnboardingScreenExpanded(onAction)
-    } else {
-        OnboardingScreenCompact(onAction)
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        if (isTabletMode) {
+            OnboardingScreenExpanded(onAction)
+        } else {
+            OnboardingScreenCompact(onAction)
+        }
+
+        if (state.value.isLoading) {
+            LoadingIndicator()
+        }
     }
 }
 
