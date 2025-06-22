@@ -463,10 +463,10 @@ DELETE FROM searchQueryEntity WHERE query = :query;
 
 CREATE TABLE userEntity (
   id TEXT NOT NULL PRIMARY KEY,
-  email         TEXT   NOT NULL,
+  email         TEXT,
   username      TEXT   NOT NULL,
   access_token  TEXT   NOT NULL,
-  refresh_token TEXT   NOT NULL
+  refresh_token TEXT
 );
 
 insertUser:

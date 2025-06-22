@@ -5,16 +5,28 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
+import pl.cuyer.rusthub.common.Result
+import pl.cuyer.rusthub.domain.usecase.AuthAnonymouslyUseCase
 import pl.cuyer.rusthub.presentation.navigation.Login
 import pl.cuyer.rusthub.presentation.navigation.Register
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 
-class OnboardingViewModel : BaseViewModel() {
+class OnboardingViewModel(
+    private val authAnonymouslyUseCase: AuthAnonymouslyUseCase,
+    private val snackbarController: SnackbarController,
+) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
 
@@ -29,8 +41,32 @@ class OnboardingViewModel : BaseViewModel() {
         when (action) {
             OnboardingAction.OnLoginClick -> navigate(Login)
             OnboardingAction.OnRegisterClick -> navigate(Register)
-            OnboardingAction.OnContinueAsGuest -> navigate(ServerList)
+            OnboardingAction.OnContinueAsGuest -> continueAsGuest()
         }
+    }
+
+    private fun continueAsGuest() {
+        coroutineScope.launch {
+            authAnonymouslyUseCase()
+                .onStart { updateLoading(true) }
+                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .onCompletion { updateLoading(false) }
+                .collectLatest { result ->
+                    when (result) {
+                        is Result.Success -> navigate(ServerList)
+                        is Result.Error -> showErrorSnackbar(result.exception.message ?: "Unknown error")
+                        else -> Unit
+                    }
+                }
+        }
+    }
+
+    private suspend fun showErrorSnackbar(message: String) {
+        snackbarController.sendEvent(SnackbarEvent(message = message))
+    }
+
+    private fun updateLoading(isLoading: Boolean) {
+        _state.update { it.copy(isLoading = isLoading) }
     }
 
     private fun navigate(destination: NavKey) {
