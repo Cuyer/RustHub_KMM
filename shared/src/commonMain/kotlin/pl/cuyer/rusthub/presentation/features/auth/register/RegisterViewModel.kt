@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.presentation.features.auth
+package pl.cuyer.rusthub.presentation.features.auth.register
 
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Job

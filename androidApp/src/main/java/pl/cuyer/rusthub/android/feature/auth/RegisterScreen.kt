@@ -40,8 +40,8 @@ import pl.cuyer.rusthub.android.designsystem.SignProviderButton
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
-import pl.cuyer.rusthub.presentation.features.auth.RegisterAction
-import pl.cuyer.rusthub.presentation.features.auth.RegisterState
+import pl.cuyer.rusthub.presentation.features.auth.register.RegisterAction
+import pl.cuyer.rusthub.presentation.features.auth.register.RegisterState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3ExpressiveApi::class)

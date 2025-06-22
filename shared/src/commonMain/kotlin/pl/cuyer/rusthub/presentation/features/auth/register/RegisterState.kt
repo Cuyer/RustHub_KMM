@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.presentation.features.auth
+package pl.cuyer.rusthub.presentation.features.auth.register
 
 data class RegisterState(
     val isLoading: Boolean = false,

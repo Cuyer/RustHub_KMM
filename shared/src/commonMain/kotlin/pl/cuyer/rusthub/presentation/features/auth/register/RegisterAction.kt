@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.presentation.features.auth
+package pl.cuyer.rusthub.presentation.features.auth.register
 
 sealed interface RegisterAction {
     data object OnRegister : RegisterAction
