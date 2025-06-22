@@ -7,29 +7,53 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.graphics.toColorInt
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.compose.runtime.mutableStateOf
+import androidx.navigation3.runtime.NavKey
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.compose.KoinContext
 import pl.cuyer.rusthub.android.theme.RustHubTheme
+import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
+import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.ui.Colors
 
 class MainActivity : ComponentActivity() {
+    private val startupViewModel: StartupViewModel by viewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        var keepSplash = true
+        val startDestination = mutableStateOf<NavKey>(Onboarding)
+        val isLoading = mutableStateOf(true)
+        val splashScreen = installSplashScreen()
+        splashScreen.setKeepOnScreenCondition { keepSplash }
+
         enableEdgeToEdge(
             navigationBarStyle = SystemBarStyle.auto(
                 lightScrim,
                 darkScrim
             )
         )
+
         super.onCreate(savedInstanceState)
+
+        lifecycleScope.launch {
+            startupViewModel.state.collect { state ->
+                startDestination.value = state.startDestination
+                keepSplash = state.isLoading
+                isLoading.value = state.isLoading
+            }
+        }
+
         setContent {
             KoinContext(
                 content = {
                     RustHubTheme {
-                        NavigationRoot()
+                        if (!isLoading.value) {
+                            NavigationRoot(startDestination = startDestination.value)
+                        }
                     }
                 }
             )
-
         }
     }
 }

@@ -9,12 +9,14 @@ import pl.cuyer.rusthub.presentation.features.auth.RegisterViewModel
 import pl.cuyer.rusthub.presentation.features.auth.LoginViewModel
 import pl.cuyer.rusthub.presentation.features.auth.register.RegisterViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
+import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
     single { HttpClientFactory(get(), get()).create() }
     single { ClipboardHandler() }
+    factory { StartupViewModel(get()) }
     factory { OnboardingViewModel() }
     factory {
         LoginViewModel(
