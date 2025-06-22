@@ -142,7 +142,7 @@ private fun RegisterScreenCompact(
         AppSecureTextField(
             value = state.password,
             labelText = "Password",
-            placeholderText = "Enter password",
+            placeholderText = "Enter your password",
             onSubmit = onRegister,
             modifier = Modifier.fillMaxWidth(),
             imeAction = if (state.username.isNotBlank() && state.email.isNotBlank()) ImeAction.Send else ImeAction.Done,
