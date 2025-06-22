@@ -16,7 +16,7 @@ import pl.cuyer.rusthub.util.ClipboardHandler
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory(androidContext()).create() }
-    single { HttpClientFactory(get()).create() }
+    single { HttpClientFactory(get(), get()).create() }
     single { ClipboardHandler(get()) }
     viewModel {
         OnboardingViewModel()
