@@ -5,20 +5,27 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItem
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+import androidx.compose.material3.adaptive.navigationsuite.WindowAdaptiveInfoDefault
 import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.material3.Text
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entry
@@ -30,6 +37,7 @@ import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 import pl.cuyer.rusthub.android.feature.auth.LoginScreen
 import pl.cuyer.rusthub.android.feature.auth.RegisterScreen
@@ -49,6 +57,7 @@ import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
+import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class,
@@ -79,20 +88,54 @@ fun NavigationRoot() {
             }
         }
     }
-    Scaffold(
-        modifier = Modifier
-            .navigationBarsPadding(),
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        content = { innerPadding ->
-            val backStack = rememberNavBackStack(Onboarding)
-            val listDetailStrategy = rememberListDetailSceneStrategy<Any>()
-            NavDisplay(
-                entryDecorators = listOf(
-                    rememberSceneSetupNavEntryDecorator(),
-                    rememberSavedStateNavEntryDecorator(),
-                    rememberViewModelStoreNavEntryDecorator()
-                ),
+    val backStack = rememberNavBackStack(Onboarding)
+    val listDetailStrategy = rememberListDetailSceneStrategy<Any>()
+    val logoutUseCase = koinInject<LogoutUserUseCase>()
+
+    NavigationSuiteScaffold(
+        navigationSuiteItems = {
+            val current = backStack.lastOrNull()
+            if (current is ServerList || current is ServerDetails) {
+                NavigationSuiteItem(
+                    selected = current is ServerList,
+                    onClick = {
+                        if (backStack.lastOrNull() !is ServerList) {
+                            while (backStack.lastOrNull() !is ServerList && backStack.isNotEmpty()) {
+                                backStack.removeLastOrNull()
+                            }
+                        }
+                    },
+                    icon = { androidx.compose.material3.Icon(Icons.Default.List, contentDescription = "Servers") },
+                    label = { Text("Servers") }
+                )
+                NavigationSuiteItem(
+                    selected = false,
+                    onClick = {
+                        scope.launch {
+                            logoutUseCase()
+                            backStack.clear()
+                            backStack.add(Onboarding)
+                        }
+                    },
+                    icon = { androidx.compose.material3.Icon(Icons.Default.Logout, contentDescription = "Log out") },
+                    label = { Text("Log out") }
+                )
+            }
+        },
+        layoutType = NavigationSuiteScaffoldDefaults.navigationSuiteType(WindowAdaptiveInfoDefault)
+    ) {
+        Scaffold(
+            modifier = Modifier
+                .navigationBarsPadding(),
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            content = { innerPadding ->
+                NavDisplay(
+                    entryDecorators = listOf(
+                        rememberSceneSetupNavEntryDecorator(),
+                        rememberSavedStateNavEntryDecorator(),
+                        rememberViewModelStoreNavEntryDecorator()
+                    ),
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
