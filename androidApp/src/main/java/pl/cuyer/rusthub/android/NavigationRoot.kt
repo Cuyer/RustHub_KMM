@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.material3.Text
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entry
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -64,7 +65,7 @@ import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
     ExperimentalMaterial3AdaptiveApi::class
 )
 @Composable
-fun NavigationRoot() {
+fun NavigationRoot(startDestination: NavKey = Onboarding) {
     val snackbarHostState = remember { SnackbarHostState() }
     val snackbarController = SnackbarController
     val scope = rememberCoroutineScope()
@@ -151,7 +152,16 @@ fun NavigationRoot() {
                             stateProvider = { state },
                             onAction = viewModel::onAction,
                             uiEvent = viewModel.uiEvent,
-                            onNavigate = { destination -> backStack.add(destination) }
+                            onNavigate = { destination ->
+                                with(backStack) {
+                                    if (destination is ServerList) {
+                                        clear()
+                                        add(destination)
+                                    } else {
+                                        add(destination)
+                                    }
+                                }
+                            },
                         )
                     }
                     entry<Login> {

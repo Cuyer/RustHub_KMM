@@ -15,7 +15,12 @@ actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
     single { HttpClientFactory(get(), get()).create() }
     single { ClipboardHandler() }
-    factory { OnboardingViewModel() }
+    factory {
+        OnboardingViewModel(
+            authAnonymouslyUseCase = get(),
+            snackbarController = get(),
+        )
+    }
     factory {
         LoginViewModel(
             loginUserUseCase = get(),
