@@ -1,30 +1,32 @@
 package pl.cuyer.rusthub.data.network
 
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BearerTokens
+import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
-import io.ktor.client.request.post
-import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.BearerTokens
-import io.ktor.client.plugins.auth.providers.bearer
-import io.ktor.client.call.body
-import io.ktor.http.isSuccess
 import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.http.encodedPath
+import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.firstOrNull
-import java.util.Locale
-import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
+import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.data.network.auth.model.RefreshRequest
 import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
+import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
+import java.util.Locale
 
 actual class HttpClientFactory actual constructor(
     private val json: Json,
@@ -43,10 +45,15 @@ actual class HttpClientFactory actual constructor(
                             BearerTokens(it.accessToken, it.refreshToken ?: "")
                         }
                     }
-                    refreshTokens { tokens ->
-                        val response = client.post(NetworkConstants.BASE_URL + "auth/refresh") {
-                            setBody(RefreshRequest(tokens.refreshToken))
+                    refreshTokens {
+                        val oldRefresh = oldTokens?.refreshToken ?: return@refreshTokens null
+
+                        val response = client.post("${NetworkConstants.BASE_URL}auth/refresh") {
+                            markAsRefreshTokenRequest()
+                            contentType(ContentType.Application.Json)
+                            setBody(RefreshRequest(oldRefresh))
                         }
+
                         if (response.status.isSuccess()) {
                             val newTokens: TokenPairDto = response.body()
                             authDataSource.insertUser(
@@ -57,6 +64,9 @@ actual class HttpClientFactory actual constructor(
                             )
                             BearerTokens(newTokens.accessToken, newTokens.refreshToken)
                         } else null
+                    }
+                    sendWithoutRequest { request ->
+                        !request.url.encodedPath.startsWith("/auth")
                     }
                 }
             }
