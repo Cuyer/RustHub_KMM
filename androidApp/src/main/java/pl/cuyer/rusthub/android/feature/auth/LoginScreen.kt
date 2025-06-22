@@ -5,10 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,6 +17,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.android.designsystem.AppButton
+import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 
@@ -38,16 +38,15 @@ fun LoginScreen(
     ) {
         Text(text = "Login", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(spacing.large))
-        Button(onClick = { onNavigate(ServerList) }) {
+        AppButton(onClick = { onNavigate(ServerList) }) {
             Text("Login")
         }
         Spacer(modifier = Modifier.height(spacing.medium))
-        TextButton(
+        AppTextButton(
             onClick = onBack
         ) {
             Text(
                 text = "Back",
-                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
