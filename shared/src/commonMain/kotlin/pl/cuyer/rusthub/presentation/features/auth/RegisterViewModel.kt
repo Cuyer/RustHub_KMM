@@ -8,14 +8,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
@@ -39,13 +35,7 @@ class RegisterViewModel(
     val uiEvent = _uiEvent.receiveAsFlow()
 
     private val _state = MutableStateFlow(RegisterState())
-    val state = _state
-        .onStart {
-            observeEmail()
-            observePassword()
-            observeUsername()
-        }
-        .stateIn(
+    val state = _state.stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = RegisterState()
@@ -56,9 +46,26 @@ class RegisterViewModel(
     fun onAction(action: RegisterAction) {
         when (action) {
             RegisterAction.OnRegister -> register()
-            is RegisterAction.OnEmailChange -> _state.update { it.copy(email = action.email) }
-            is RegisterAction.OnPasswordChange -> _state.update { it.copy(password = action.password) }
-            is RegisterAction.OnUsernameChange -> _state.update { it.copy(username = action.username) }
+            is RegisterAction.OnEmailChange -> _state.update {
+                it.copy(
+                    email = action.email,
+                    emailError = null
+                )
+            }
+
+            is RegisterAction.OnPasswordChange -> _state.update {
+                it.copy(
+                    password = action.password,
+                    passwordError = null
+                )
+            }
+
+            is RegisterAction.OnUsernameChange -> _state.update {
+                it.copy(
+                    username = action.username,
+                    usernameError = null
+                )
+            }
         }
     }
 
@@ -81,7 +88,15 @@ class RegisterViewModel(
                 )
             }
 
-            if (!emailResult.isValid || !passwordResult.isValid || !usernameResult.isValid) return@launch
+            if (!emailResult.isValid || !passwordResult.isValid || !usernameResult.isValid) {
+                snackbarController.sendEvent(
+                    SnackbarEvent(
+                        message = "Please correct the errors above and try again.",
+                        action = null
+                    )
+                )
+                return@launch
+            }
 
             registerUserUseCase(email, password, username)
                 .onStart {
@@ -124,38 +139,5 @@ class RegisterViewModel(
                 isLoading = isLoading
             )
         }
-    }
-
-    private fun observeEmail() {
-        _state
-            .map { it.email }
-            .distinctUntilChanged()
-            .onEach { value ->
-                val validation = emailValidator.validate(value)
-                _state.update { it.copy(emailError = validation.errorMessage) }
-            }
-            .launchIn(coroutineScope)
-    }
-
-    private fun observePassword() {
-        _state
-            .map { it.password }
-            .distinctUntilChanged()
-            .onEach { value ->
-                val validation = passwordValidator.validate(value)
-                _state.update { it.copy(passwordError = validation.errorMessage) }
-            }
-            .launchIn(coroutineScope)
-    }
-
-    private fun observeUsername() {
-        _state
-            .map { it.username }
-            .distinctUntilChanged()
-            .onEach { value ->
-                val validation = usernameValidator.validate(value)
-                _state.update { it.copy(usernameError = validation.errorMessage) }
-            }
-            .launchIn(coroutineScope)
     }
 }
