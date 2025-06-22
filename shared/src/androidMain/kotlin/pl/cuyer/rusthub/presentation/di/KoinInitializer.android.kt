@@ -22,8 +22,11 @@ actual val platformModule: Module = module {
     }
     viewModel {
         RegisterViewModel(
-            get(),
-            get()
+            registerUserUseCase = get(),
+            snackbarController = get(),
+            emailValidator = get(),
+            passwordValidator = get(),
+            usernameValidator = get()
         )
     }
     viewModel {

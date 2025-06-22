@@ -37,6 +37,9 @@ import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
+import pl.cuyer.rusthub.util.validator.EmailValidator
+import pl.cuyer.rusthub.util.validator.PasswordValidator
+import pl.cuyer.rusthub.util.validator.UsernameValidator
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 
 val appModule = module {
@@ -58,6 +61,9 @@ val appModule = module {
     singleOf(::FiltersOptionsDataSourceImpl) bind FiltersOptionsDataSource::class
     singleOf(::AuthRepositoryImpl) bind AuthRepository::class
     singleOf(::AuthDataSourceImpl) bind AuthDataSource::class
+    single { EmailValidator }
+    single { PasswordValidator }
+    single { UsernameValidator }
     single { GetPagedServersUseCase(get(), get(), get(), get()) }
     single { GetFiltersUseCase(get()) }
     single { SaveFiltersUseCase(get()) }
