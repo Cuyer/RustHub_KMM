@@ -1,6 +1,5 @@
 package pl.cuyer.rusthub.presentation.features.auth.register
 
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
@@ -17,6 +16,7 @@ import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
+import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
@@ -111,7 +111,7 @@ class RegisterViewModel(
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
-                            Napier.i("Success")
+                            _uiEvent.send(UiEvent.Navigate(ServerList))
                         }
 
                         is Result.Error -> {

@@ -116,7 +116,12 @@ fun NavigationRoot() {
                         val state = viewModel.state.collectAsStateWithLifecycle()
 
                         LoginScreen(
-                            onNavigate = { destination -> backStack.add(destination) },
+                            onNavigate = { destination ->
+                                with(backStack) {
+                                    clear()
+                                    add(destination)
+                                }
+                            },
                             stateProvider = { state },
                             uiEvent = viewModel.uiEvent,
                             onAction = viewModel::onAction
@@ -127,7 +132,12 @@ fun NavigationRoot() {
                         val state = viewModel.state.collectAsStateWithLifecycle()
 
                         RegisterScreen(
-                            onNavigate = { destination -> backStack.add(destination) },
+                            onNavigate = { destination ->
+                                with(backStack) {
+                                    clear()
+                                    add(destination)
+                                }
+                            },
                             stateProvider = { state },
                             uiEvent = viewModel.uiEvent,
                             onAction = viewModel::onAction
