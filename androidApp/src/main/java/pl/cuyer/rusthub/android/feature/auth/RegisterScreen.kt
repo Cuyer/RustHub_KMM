@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import pl.cuyer.rusthub.android.designsystem.SecureTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -27,7 +28,6 @@ import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
@@ -134,11 +134,10 @@ private fun RegisterScreenCompact(
             modifier = Modifier.fillMaxWidth()
         )
 
-        OutlinedTextField(
+        SecureTextField(
             value = password,
             onValueChange = { onPasswordChange(it) },
             label = { Text("Password") },
-            visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -263,11 +262,10 @@ private fun RegisterScreenExpanded(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            OutlinedTextField(
+            SecureTextField(
                 value = password,
                 onValueChange = { onPasswordChange(it) },
                 label = { Text("Password") },
-                visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth()
             )
 
