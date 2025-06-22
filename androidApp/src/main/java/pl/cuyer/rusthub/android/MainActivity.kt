@@ -6,12 +6,14 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.graphics.toColorInt
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import org.koin.compose.KoinContext
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.presentation.ui.Colors
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         enableEdgeToEdge(
             navigationBarStyle = SystemBarStyle.auto(
                 lightScrim,

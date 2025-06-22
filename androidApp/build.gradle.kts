@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.androidx.compose.material3.adaptive.navigation3)
     implementation(libs.androidx.compose.material3.windowsizeclass)
     implementation(libs.androidx.lifecycle.process)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.compose.icons)
     implementation(libs.paging.compose)
     implementation(libs.kotlin.serialization)
