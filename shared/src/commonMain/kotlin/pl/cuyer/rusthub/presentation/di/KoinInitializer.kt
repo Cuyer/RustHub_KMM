@@ -34,6 +34,7 @@ import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
+import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
 import pl.cuyer.rusthub.domain.usecase.AuthAnonymouslyUseCase
@@ -78,6 +79,7 @@ val appModule = module {
     single { RegisterUserUseCase(get(), get()) }
     single { LoginUserUseCase(get(), get()) }
     single { AuthAnonymouslyUseCase(get(), get()) }
+    single { GetUserUseCase(get()) }
 }
 
 expect val platformModule: Module
