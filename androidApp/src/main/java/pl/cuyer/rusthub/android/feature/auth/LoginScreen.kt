@@ -42,7 +42,14 @@ fun LoginScreen(
             Text("Login")
         }
         Spacer(modifier = Modifier.height(spacing.medium))
-        TextButton(onClick = onBack) { Text("Back") }
+        TextButton(
+            onClick = onBack
+        ) {
+            Text(
+                text = "Back",
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
     }
 }
 

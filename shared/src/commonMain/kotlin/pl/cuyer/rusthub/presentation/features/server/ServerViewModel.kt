@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.presentation.features
+package pl.cuyer.rusthub.presentation.features.server
 
 import app.cash.paging.PagingData
 import app.cash.paging.cachedIn

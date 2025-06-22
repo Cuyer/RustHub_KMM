@@ -47,9 +47,9 @@ import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
+import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingAction
+import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
-import pl.cuyer.rusthub.presentation.onboarding.OnboardingAction
-import pl.cuyer.rusthub.presentation.onboarding.OnboardingState
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
@@ -96,7 +96,7 @@ private fun OnboardingScreenCompact(onAction: (OnboardingAction) -> Unit) {
 private fun OnboardingScreenExpanded(onAction: (OnboardingAction) -> Unit) {
     Row(
         modifier = Modifier
-            .fillMaxSize() // Ensure full screen height to allow vertical centering
+            .fillMaxSize()
             .padding(spacing.medium),
         horizontalArrangement = Arrangement.spacedBy(spacing.large),
         verticalAlignment = Alignment.CenterVertically
@@ -219,7 +219,10 @@ private fun ActionButtons(onAction: (OnboardingAction) -> Unit) {
         shape = RectangleShape,
         onClick = { onAction(OnboardingAction.OnContinueAsGuest) }
     ) {
-        Text("Continue as Guest")
+        Text(
+            text = "Continue as Guest",
+            color = MaterialTheme.colorScheme.onSurface,
+        )
     }
 }
 
@@ -232,13 +235,13 @@ private fun FeatureItem(icon: ImageVector, title: String, description: String) {
     ) {
         Box(
             modifier = Modifier
-                .size(40.dp), // fixed space for all icons
+                .size(40.dp),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = title,
-                modifier = Modifier.size(24.dp) // standard icon size
+                modifier = Modifier.size(24.dp)
             )
         }
 

@@ -56,8 +56,8 @@ import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
 import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.displayName
-import pl.cuyer.rusthub.presentation.features.ServerDetailsAction
-import pl.cuyer.rusthub.presentation.features.ServerDetailsState
+import pl.cuyer.rusthub.presentation.features.server.ServerDetailsAction
+import pl.cuyer.rusthub.presentation.features.server.ServerDetailsState
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 

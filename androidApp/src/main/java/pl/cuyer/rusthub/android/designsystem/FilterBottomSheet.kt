@@ -51,8 +51,8 @@ import kotlinx.serialization.json.Json
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
-import pl.cuyer.rusthub.presentation.features.ServerAction
-import pl.cuyer.rusthub.presentation.features.ServerState
+import pl.cuyer.rusthub.presentation.features.server.ServerAction
+import pl.cuyer.rusthub.presentation.features.server.ServerState
 import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.presentation.model.toDomain
 
@@ -160,7 +160,10 @@ fun FilterBottomSheet(
                                     .fillMaxWidth()
                                     .padding(vertical = spacing.small, horizontal = spacing.large)
                             ) {
-                                Text("Reset Filters")
+                                Text(
+                                    text = "Reset Filters",
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                )
                             }
                         }
                     }

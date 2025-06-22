@@ -5,7 +5,6 @@ import io.github.aakira.napier.Napier
 import kotlinx.serialization.json.Json
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.bind
@@ -33,8 +32,6 @@ import pl.cuyer.rusthub.domain.usecase.GetSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
-import pl.cuyer.rusthub.presentation.features.ServerDetailsViewModel
-import pl.cuyer.rusthub.presentation.features.ServerViewModel
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 
 val appModule = module {

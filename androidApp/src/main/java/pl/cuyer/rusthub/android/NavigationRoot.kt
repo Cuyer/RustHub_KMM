@@ -32,20 +32,21 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
-import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
-import pl.cuyer.rusthub.android.feature.server.ServerScreen
-import pl.cuyer.rusthub.android.feature.onboarding.OnboardingScreen
 import pl.cuyer.rusthub.android.feature.auth.LoginScreen
 import pl.cuyer.rusthub.android.feature.auth.RegisterScreen
+import pl.cuyer.rusthub.android.feature.onboarding.OnboardingScreen
+import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
+import pl.cuyer.rusthub.android.feature.server.ServerScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
-import pl.cuyer.rusthub.presentation.features.ServerDetailsViewModel
-import pl.cuyer.rusthub.presentation.features.ServerViewModel
-import pl.cuyer.rusthub.presentation.onboarding.OnboardingViewModel
+import pl.cuyer.rusthub.presentation.features.auth.RegisterViewModel
+import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
+import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
+import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
+import pl.cuyer.rusthub.presentation.navigation.Login
+import pl.cuyer.rusthub.presentation.navigation.Onboarding
+import pl.cuyer.rusthub.presentation.navigation.Register
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
-import pl.cuyer.rusthub.presentation.navigation.Onboarding
-import pl.cuyer.rusthub.presentation.navigation.Login
-import pl.cuyer.rusthub.presentation.navigation.Register
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 
@@ -118,10 +119,15 @@ fun NavigationRoot() {
                         )
                     }
                     entry<Register> {
+                        val viewModel = koinViewModel<RegisterViewModel>()
+                        val state = viewModel.state.collectAsStateWithLifecycle()
+
                         RegisterScreen(
                             onNavigate = { destination -> backStack.add(destination) },
-                            uiEvent = flowOf(),
-                            onBack = { backStack.removeLastOrNull() }
+                            stateProvider = { state },
+                            uiEvent = viewModel.uiEvent,
+                            onBack = { backStack.removeLastOrNull() },
+                            onAction = viewModel::onAction
                         )
                     }
                     entry<ServerList>(

@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.presentation.features
+package pl.cuyer.rusthub.presentation.features.server
 
 import pl.cuyer.rusthub.domain.model.ServerQuery
 

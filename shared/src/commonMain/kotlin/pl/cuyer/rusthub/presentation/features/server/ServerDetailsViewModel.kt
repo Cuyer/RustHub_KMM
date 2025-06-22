@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.presentation.features
+package pl.cuyer.rusthub.presentation.features.server
 
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers

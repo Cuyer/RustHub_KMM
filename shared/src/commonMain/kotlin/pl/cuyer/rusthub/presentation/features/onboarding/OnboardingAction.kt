@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.presentation.onboarding
+package pl.cuyer.rusthub.presentation.features.onboarding
 
 sealed interface OnboardingAction {
     data object OnLoginClick : OnboardingAction

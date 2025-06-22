@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.presentation.onboarding
+package pl.cuyer.rusthub.presentation.features.onboarding
 
 import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.channels.Channel
