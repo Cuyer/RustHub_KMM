@@ -109,7 +109,16 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                             stateProvider = { state },
                             onAction = viewModel::onAction,
                             uiEvent = viewModel.uiEvent,
-                            onNavigate = { destination -> backStack.add(destination) }
+                            onNavigate = { destination ->
+                                with(backStack) {
+                                    if (destination is ServerList) {
+                                        clear()
+                                        add(destination)
+                                    } else {
+                                        add(destination)
+                                    }
+                                }
+                            },
                         )
                     }
                     entry<Login> {
