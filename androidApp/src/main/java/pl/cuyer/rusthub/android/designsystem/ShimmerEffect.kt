@@ -28,9 +28,9 @@ fun Modifier.shimmer(): Modifier = composed {
 
     val brush = Brush.linearGradient(
         colors = listOf(
-            MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f),
-            MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.7f),
-            MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f)
+            MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.5f),
+            MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.7f),
+            MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.5f)
         ),
         start = Offset.Zero,
         end = Offset(x = translateAnim.value, y = translateAnim.value)

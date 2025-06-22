@@ -126,7 +126,6 @@ fun NavigationRoot() {
                             onNavigate = { destination -> backStack.add(destination) },
                             stateProvider = { state },
                             uiEvent = viewModel.uiEvent,
-                            onBack = { backStack.removeLastOrNull() },
                             onAction = viewModel::onAction
                         )
                     }

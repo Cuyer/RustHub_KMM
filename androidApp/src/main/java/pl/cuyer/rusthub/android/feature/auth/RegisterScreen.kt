@@ -11,9 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -23,14 +24,16 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import pl.cuyer.rusthub.android.designsystem.AppButton
-import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
+import pl.cuyer.rusthub.android.designsystem.AppButton
+import pl.cuyer.rusthub.android.designsystem.AppSecureTextField
+import pl.cuyer.rusthub.android.designsystem.AppTextField
 import pl.cuyer.rusthub.android.designsystem.SignProviderButton
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
@@ -44,7 +47,6 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 fun RegisterScreen(
     onNavigate: (NavKey) -> Unit,
     uiEvent: Flow<UiEvent>,
-    onBack: () -> Unit,
     stateProvider: () -> State<RegisterState>,
     onAction: (RegisterAction) -> Unit,
 ) {
@@ -53,57 +55,53 @@ fun RegisterScreen(
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
 
+    val passwordState = rememberTextFieldState()
+    val emailState = rememberTextFieldState()
+    val usernameState = rememberTextFieldState()
+
     val context = LocalContext.current
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
 
     if (isTabletMode) {
         RegisterScreenExpanded(
-            onBack = onBack,
-            onRegister = { username, password ->
+            onRegister = {
                 onAction(
                     RegisterAction.OnRegister(
-                        email = "",
-                        password = password,
-                        username = username
+                        email = emailState.text.toString(),
+                        password = passwordState.text.toString(),
+                        username = usernameState.text.toString()
                     )
                 )
             },
-            username = state.value.username,
-            password = state.value.password,
-            onPasswordChange = { onAction(RegisterAction.OnUpdatePassword(it)) },
-            onUsernameChange = { onAction(RegisterAction.OnUpdateUsername(it)) }
+            usernameState = usernameState,
+            passwordState = passwordState,
+            emailState = emailState,
         )
     } else {
         RegisterScreenCompact(
-            onBack = onBack,
-            onRegister = { username, password ->
+            onRegister = {
                 onAction(
                     RegisterAction.OnRegister(
-                        email = "",
-                        password = password,
-                        username = username
+                        email = emailState.text.toString(),
+                        password = passwordState.text.toString(),
+                        username = usernameState.text.toString()
                     )
                 )
             },
-            username = state.value.username,
-            password = state.value.password,
-            onPasswordChange = { onAction(RegisterAction.OnUpdatePassword(it)) },
-            onUsernameChange = { onAction(RegisterAction.OnUpdateUsername(it)) }
+            usernameState = usernameState,
+            passwordState = passwordState,
+            emailState = emailState,
         )
     }
 }
 
 @Composable
 private fun RegisterScreenCompact(
-    username: String = "",
-    password: String = "",
-    email: String = "",
-    onPasswordChange: (String) -> Unit = {},
-    onUsernameChange: (String) -> Unit = {},
-    onEmailChange: (String) -> Unit = {},
-    onBack: () -> Unit,
-    onRegister: (username: String, password: String) -> Unit
+    usernameState: TextFieldState,
+    passwordState: TextFieldState,
+    emailState: TextFieldState,
+    onRegister: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -120,30 +118,35 @@ private fun RegisterScreenCompact(
 
         Text(text = "Create your RustHub account", style = MaterialTheme.typography.headlineMedium)
 
-        OutlinedTextField(
-            value = username,
-            onValueChange = { onUsernameChange(it) },
-            label = { Text("Username") },
-            modifier = Modifier.fillMaxWidth()
+        AppTextField(
+            modifier = Modifier.fillMaxWidth(),
+            textFieldState = { usernameState },
+            labelText = "Username",
+            placeholderText = "Enter your username",
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Next,
         )
 
-        OutlinedTextField(
-            value = email,
-            onValueChange = { onEmailChange(it) },
-            label = { Text("E-mail") },
-            modifier = Modifier.fillMaxWidth()
+        AppTextField(
+            modifier = Modifier.fillMaxWidth(),
+            textFieldState = { emailState },
+            labelText = "E-mail",
+            placeholderText = "Enter your e-mail",
+            keyboardType = KeyboardType.Email,
+            imeAction = ImeAction.Next,
         )
 
-        OutlinedTextField(
-            value = password,
-            onValueChange = { onPasswordChange(it) },
-            label = { Text("Password") },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
+        AppSecureTextField(
+            textFieldState = { passwordState },
+            labelText = "Password",
+            placeholderText = "Enter password",
+            onSubmit = onRegister,
+            modifier = Modifier.fillMaxWidth(),
+            imeAction = if (usernameState.text.isNotBlank() && emailState.text.isNotBlank()) ImeAction.Send else ImeAction.Done
         )
 
         AppButton(
-            onClick = { onRegister(username, password) },
+            onClick = onRegister,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Register")
@@ -194,27 +197,15 @@ private fun RegisterScreenCompact(
         ) {
 
         }
-
-        AppTextButton(
-            onClick = onBack
-        ) {
-            Text(
-                text = "Back"
-            )
-        }
     }
 }
 
 @Composable
 private fun RegisterScreenExpanded(
-    username: String = "",
-    password: String = "",
-    email: String = "",
-    onPasswordChange: (String) -> Unit = {},
-    onUsernameChange: (String) -> Unit = {},
-    onEmailChange: (String) -> Unit = {},
-    onBack: () -> Unit,
-    onRegister: (username: String, password: String) -> Unit
+    usernameState: TextFieldState,
+    passwordState: TextFieldState,
+    emailState: TextFieldState,
+    onRegister: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -249,30 +240,36 @@ private fun RegisterScreenExpanded(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(spacing.medium, Alignment.CenterVertically)
         ) {
-            OutlinedTextField(
-                value = username,
-                onValueChange = { onUsernameChange(it) },
-                label = { Text("Username") },
-                modifier = Modifier.fillMaxWidth()
+
+            AppTextField(
+                modifier = Modifier.fillMaxWidth(),
+                textFieldState = { usernameState },
+                labelText = "Username",
+                placeholderText = "Enter your username",
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next,
             )
 
-            OutlinedTextField(
-                value = email,
-                onValueChange = { onEmailChange(it) },
-                label = { Text("E-mail") },
-                modifier = Modifier.fillMaxWidth()
+            AppTextField(
+                modifier = Modifier.fillMaxWidth(),
+                textFieldState = { emailState },
+                labelText = "E-mail",
+                placeholderText = "Enter your e-mail",
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next,
             )
 
-            OutlinedTextField(
-                value = password,
-                onValueChange = { onPasswordChange(it) },
-                label = { Text("Password") },
-                visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth()
+            AppSecureTextField(
+                modifier = Modifier.fillMaxWidth(),
+                textFieldState = { passwordState },
+                labelText = "Password",
+                placeholderText = "Enter password",
+                onSubmit = { },
+                imeAction = if (usernameState.text.isNotBlank() && emailState.text.isNotBlank()) ImeAction.Send else ImeAction.Done
             )
 
             AppButton(
-                onClick = { onRegister(username, password) },
+                onClick = onRegister,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Register")
@@ -322,14 +319,6 @@ private fun RegisterScreenExpanded(
                 tint = if (isSystemInDarkTheme()) Color.Black else Color.White
             ) {
 
-            }
-
-            AppTextButton(
-                onClick = onBack
-            ) {
-                Text(
-                    text = "Back",
-                )
             }
         }
     }

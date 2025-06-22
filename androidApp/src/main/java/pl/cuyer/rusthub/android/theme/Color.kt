@@ -51,7 +51,6 @@ import pl.cuyer.rusthub.presentation.ui.Colors.SECONDARY_LIGHT
 import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_BRIGHT_DARK
 import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_BRIGHT_LIGHT
 import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_CONTAINER_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_CONTAINER_HIGHEST_DARK
 import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_CONTAINER_HIGHEST_LIGHT
 import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_CONTAINER_HIGH_DARK
 import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_CONTAINER_HIGH_LIGHT
@@ -143,7 +142,7 @@ val surfaceContainerLowestDark = Color(SURFACE_CONTAINER_LOWEST_DARK)
 val surfaceContainerLowDark = Color(SURFACE_CONTAINER_LOW_DARK)
 val surfaceContainerDark = Color(SURFACE_CONTAINER_DARK)
 val surfaceContainerHighDark = Color(SURFACE_CONTAINER_HIGH_DARK)
-val surfaceContainerHighestDark = Color(SURFACE_CONTAINER_HIGHEST_DARK)
+val surfaceContainerHighestDark = Color(SURFACE_CONTAINER_HIGH_DARK)
 
 
 
