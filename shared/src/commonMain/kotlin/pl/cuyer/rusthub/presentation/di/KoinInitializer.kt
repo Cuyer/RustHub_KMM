@@ -27,6 +27,7 @@ import pl.cuyer.rusthub.domain.repository.filtersOptions.FiltersOptionsRepositor
 import pl.cuyer.rusthub.domain.repository.search.SearchQueryDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
+import pl.cuyer.rusthub.domain.usecase.AuthAnonymouslyUseCase
 import pl.cuyer.rusthub.domain.usecase.ClearFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetFiltersOptionsUseCase
@@ -35,15 +36,15 @@ import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
-import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
-import pl.cuyer.rusthub.domain.usecase.AuthAnonymouslyUseCase
+import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
+import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.util.validator.EmailValidator
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
-import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 
 val appModule = module {
     single<SnackbarController> { SnackbarController }
@@ -80,6 +81,7 @@ val appModule = module {
     single { LoginUserUseCase(get(), get()) }
     single { AuthAnonymouslyUseCase(get(), get()) }
     single { GetUserUseCase(get()) }
+    single { LogoutUserUseCase(get()) }
 }
 
 expect val platformModule: Module
