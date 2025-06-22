@@ -2,6 +2,8 @@ package pl.cuyer.rusthub.android.feature.auth
 
 import android.app.Activity
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,7 +24,7 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,7 +40,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppSecureTextField
-import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import pl.cuyer.rusthub.android.designsystem.AppTextField
 import pl.cuyer.rusthub.android.designsystem.SignProviderButton
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
@@ -56,8 +57,7 @@ fun LoginScreen(
     onNavigate: (NavKey) -> Unit,
     uiEvent: Flow<UiEvent>,
     stateProvider: () -> State<LoginState>,
-    onAction: (LoginAction) -> Unit,
-    onBack: () -> Unit
+    onAction: (LoginAction) -> Unit
 ) {
     val state = stateProvider()
 
@@ -69,9 +69,18 @@ fun LoginScreen(
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
     val focusManager = LocalFocusManager.current
+    val interactionSource = remember { MutableInteractionSource() }
 
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = {
+                    focusManager.clearFocus()
+                }
+            ),
         contentAlignment = Alignment.Center
     ) {
         if (isTabletMode) {
@@ -81,8 +90,7 @@ fun LoginScreen(
                     focusManager.clearFocus()
                     onAction(LoginAction.OnLogin)
                 },
-                onAction = onAction,
-                onBack = onBack
+                onAction = onAction
             )
         } else {
             LoginScreenCompact(
@@ -91,8 +99,7 @@ fun LoginScreen(
                     focusManager.clearFocus()
                     onAction(LoginAction.OnLogin)
                 },
-                onAction = onAction,
-                onBack = onBack
+                onAction = onAction
             )
         }
 
@@ -106,8 +113,7 @@ fun LoginScreen(
 private fun LoginScreenCompact(
     state: LoginState,
     onLogin: () -> Unit,
-    onAction: (LoginAction) -> Unit,
-    onBack: () -> Unit
+    onAction: (LoginAction) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -192,12 +198,6 @@ private fun LoginScreenCompact(
             contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
             tint = if (isSystemInDarkTheme()) Color.Black else Color.White
         ) {}
-
-        AppTextButton(
-            onClick = onBack
-        ) {
-            Text(text = "Back")
-        }
     }
 }
 
@@ -205,8 +205,7 @@ private fun LoginScreenCompact(
 private fun LoginScreenExpanded(
     state: LoginState,
     onLogin: () -> Unit,
-    onAction: (LoginAction) -> Unit,
-    onBack: () -> Unit
+    onAction: (LoginAction) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -309,12 +308,6 @@ private fun LoginScreenExpanded(
                 contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
                 tint = if (isSystemInDarkTheme()) Color.Black else Color.White
             ) {}
-
-            AppTextButton(
-                onClick = onBack
-            ) {
-                Text(text = "Back")
-            }
         }
     }
 }
@@ -327,8 +320,7 @@ private fun LoginPrev() {
             onNavigate = {},
             uiEvent = MutableStateFlow(UiEvent.Navigate(ServerList)),
             stateProvider = { androidx.compose.runtime.mutableStateOf(LoginState()) },
-            onAction = {},
-            onBack = {}
+            onAction = {}
         )
     }
 }

@@ -28,7 +28,6 @@ import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import app.cash.paging.compose.collectAsLazyPagingItems
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -38,6 +37,7 @@ import pl.cuyer.rusthub.android.feature.onboarding.OnboardingScreen
 import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
+import pl.cuyer.rusthub.presentation.features.auth.LoginViewModel
 import pl.cuyer.rusthub.presentation.features.auth.register.RegisterViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
@@ -119,8 +119,7 @@ fun NavigationRoot() {
                             onNavigate = { destination -> backStack.add(destination) },
                             stateProvider = { state },
                             uiEvent = viewModel.uiEvent,
-                            onAction = viewModel::onAction,
-                            onBack = { backStack.removeLastOrNull() }
+                            onAction = viewModel::onAction
                         )
                     }
                     entry<Register> {
