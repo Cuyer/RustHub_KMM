@@ -68,8 +68,8 @@ import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 fun NavigationRoot(startDestination: NavKey = Onboarding) {
     val snackbarHostState = remember { SnackbarHostState() }
     val snackbarController = SnackbarController
-        navigationItems = {
-
+        navigationSuiteItems = {
+        layoutType = NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(WindowAdaptiveInfoDefault)
     ObserveAsEvents(flow = snackbarController.events, snackbarHostState) { event ->
         scope.launch {
             snackbarHostState.currentSnackbarData?.dismiss()
