@@ -39,6 +39,7 @@ import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.presentation.features.auth.RegisterViewModel
+import pl.cuyer.rusthub.presentation.features.auth.LoginViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
@@ -112,9 +113,14 @@ fun NavigationRoot() {
                         )
                     }
                     entry<Login> {
+                        val viewModel = koinViewModel<LoginViewModel>()
+                        val state = viewModel.state.collectAsStateWithLifecycle()
+
                         LoginScreen(
                             onNavigate = { destination -> backStack.add(destination) },
-                            uiEvent = flowOf(),
+                            stateProvider = { state },
+                            uiEvent = viewModel.uiEvent,
+                            onAction = viewModel::onAction,
                             onBack = { backStack.removeLastOrNull() }
                         )
                     }
