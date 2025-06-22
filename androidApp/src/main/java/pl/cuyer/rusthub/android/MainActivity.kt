@@ -10,6 +10,12 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.runtime.mutableStateOf
 import androidx.navigation3.runtime.NavKey
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.compose.KoinContext
+import pl.cuyer.rusthub.android.theme.RustHubTheme
+import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
+import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.getKoin
@@ -21,9 +27,11 @@ import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.ui.Colors
 
 class MainActivity : ComponentActivity() {
+    private val startupViewModel: StartupViewModel by viewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         var keepSplash = true
         val startDestination = mutableStateOf<NavKey>(Onboarding)
+        val isLoading = mutableStateOf(true)
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition { keepSplash }
 
@@ -37,6 +45,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         lifecycleScope.launch {
+            startupViewModel.state.collect { state ->
+                startDestination.value = state.startDestination
+                keepSplash = state.isLoading
+                isLoading.value = state.isLoading
+            }
             val user = getKoin().get<GetUserUseCase>().invoke().firstOrNull()
             startDestination.value = if (user != null) ServerList else Onboarding
             keepSplash = false
@@ -46,7 +59,9 @@ class MainActivity : ComponentActivity() {
             KoinContext(
                 content = {
                     RustHubTheme {
-                        NavigationRoot(startDestination = startDestination.value)
+                        if (!isLoading.value) {
+                            NavigationRoot(startDestination = startDestination.value)
+                        }
                     }
                 }
             )
