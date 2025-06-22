@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -32,7 +31,7 @@ import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
 @Composable
 fun AppTextField(
     modifier: Modifier = Modifier,
-    textFieldState: () -> TextFieldState,
+    value: String,
     labelText: String,
     placeholderText: String,
     keyboardType: KeyboardType,
@@ -40,7 +39,10 @@ fun AppTextField(
     suffix: @Composable (() -> Unit)? = null,
     imeAction: ImeAction,
     requestFocus: Boolean = false,
-    onSubmit: () -> Unit = { }
+    onSubmit: () -> Unit = { },
+    onValueChange: (String) -> Unit = {},
+    isError: Boolean = false,
+    errorText: String? = null
 ) {
 
     val interactionSource = remember {
@@ -58,10 +60,8 @@ fun AppTextField(
     OutlinedTextField(
         modifier = if (requestFocus) modifier
             .focusRequester(focusRequester) else modifier,
-        value = textFieldState().text.toString(),
-        onValueChange = { newValue ->
-            textFieldState().edit { replace(0, length, newValue) }
-        },
+        value = value,
+        onValueChange = onValueChange,
         singleLine = true,
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.None,
@@ -95,7 +95,11 @@ fun AppTextField(
         interactionSource = interactionSource,
         visualTransformation = VisualTransformation.None,
         colors = OutlinedTextFieldDefaults.colors(),
-        suffix = suffix
+        suffix = suffix,
+        isError = isError,
+        supportingText = if (isError && errorText != null) {
+            { Text(errorText) }
+        } else null
     )
 }
 
@@ -113,7 +117,8 @@ private fun AppTextFieldPreview() {
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next,
                 requestFocus = false,
-                textFieldState = { TextFieldState() }
+                value = "",
+                onValueChange = {}
             )
         }
     }

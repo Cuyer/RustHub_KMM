@@ -14,5 +14,13 @@ actual val platformModule: Module = module {
     single { HttpClientFactory(get()).create() }
     single { ClipboardHandler() }
     factory { OnboardingViewModel() }
-    factory { RegisterViewModel() }
+    factory {
+        RegisterViewModel(
+            registerUserUseCase = get(),
+            snackbarController = get(),
+            emailValidator = get(),
+            passwordValidator = get(),
+            usernameValidator = get()
+        )
+    }
 }

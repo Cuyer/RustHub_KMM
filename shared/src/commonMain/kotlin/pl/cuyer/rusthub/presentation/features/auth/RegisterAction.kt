@@ -1,6 +1,9 @@
 package pl.cuyer.rusthub.presentation.features.auth
 
 sealed interface RegisterAction {
-    data class OnRegister(val email: String, val password: String, val username: String) :
-        RegisterAction
+    data object OnRegister : RegisterAction
+
+    data class OnEmailChange(val email: String) : RegisterAction
+    data class OnPasswordChange(val password: String) : RegisterAction
+    data class OnUsernameChange(val username: String) : RegisterAction
 }

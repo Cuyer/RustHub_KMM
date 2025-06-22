@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -56,9 +54,6 @@ fun RegisterScreen(
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
 
-    val passwordState = rememberTextFieldState()
-    val emailState = rememberTextFieldState()
-    val usernameState = rememberTextFieldState()
 
     val context = LocalContext.current
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
@@ -69,43 +64,28 @@ fun RegisterScreen(
         RegisterScreenExpanded(
             onRegister = {
                 focusManager.clearFocus()
-                onAction(
-                    RegisterAction.OnRegister(
-                        email = emailState.text.toString(),
-                        password = passwordState.text.toString(),
-                        username = usernameState.text.toString()
-                    )
-                )
+                onAction(RegisterAction.OnRegister)
             },
-            usernameState = usernameState,
-            passwordState = passwordState,
-            emailState = emailState,
+            state = state.value,
+            onAction = onAction
         )
     } else {
         RegisterScreenCompact(
             onRegister = {
                 focusManager.clearFocus()
-                onAction(
-                    RegisterAction.OnRegister(
-                        email = emailState.text.toString(),
-                        password = passwordState.text.toString(),
-                        username = usernameState.text.toString()
-                    )
-                )
+                onAction(RegisterAction.OnRegister)
             },
-            usernameState = usernameState,
-            passwordState = passwordState,
-            emailState = emailState,
+            state = state.value,
+            onAction = onAction
         )
     }
 }
 
 @Composable
 private fun RegisterScreenCompact(
-    usernameState: TextFieldState,
-    passwordState: TextFieldState,
-    emailState: TextFieldState,
-    onRegister: () -> Unit
+    state: RegisterState,
+    onRegister: () -> Unit,
+    onAction: (RegisterAction) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -124,29 +104,38 @@ private fun RegisterScreenCompact(
 
         AppTextField(
             modifier = Modifier.fillMaxWidth(),
-            textFieldState = { usernameState },
+            value = state.username,
             labelText = "Username",
             placeholderText = "Enter your username",
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Next,
+            onValueChange = { onAction(RegisterAction.OnUsernameChange(it)) },
+            isError = state.usernameError != null,
+            errorText = state.usernameError
         )
 
         AppTextField(
             modifier = Modifier.fillMaxWidth(),
-            textFieldState = { emailState },
+            value = state.email,
             labelText = "E-mail",
             placeholderText = "Enter your e-mail",
             keyboardType = KeyboardType.Email,
             imeAction = ImeAction.Next,
+            onValueChange = { onAction(RegisterAction.OnEmailChange(it)) },
+            isError = state.emailError != null,
+            errorText = state.emailError
         )
 
         AppSecureTextField(
-            textFieldState = { passwordState },
+            value = state.password,
             labelText = "Password",
             placeholderText = "Enter password",
             onSubmit = onRegister,
             modifier = Modifier.fillMaxWidth(),
-            imeAction = if (usernameState.text.isNotBlank() && emailState.text.isNotBlank()) ImeAction.Send else ImeAction.Done
+            imeAction = if (state.username.isNotBlank() && state.email.isNotBlank()) ImeAction.Send else ImeAction.Done,
+            onValueChange = { onAction(RegisterAction.OnPasswordChange(it)) },
+            isError = state.passwordError != null,
+            errorText = state.passwordError
         )
 
         AppButton(
@@ -206,10 +195,9 @@ private fun RegisterScreenCompact(
 
 @Composable
 private fun RegisterScreenExpanded(
-    usernameState: TextFieldState,
-    passwordState: TextFieldState,
-    emailState: TextFieldState,
-    onRegister: () -> Unit
+    state: RegisterState,
+    onRegister: () -> Unit,
+    onAction: (RegisterAction) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -247,29 +235,38 @@ private fun RegisterScreenExpanded(
 
             AppTextField(
                 modifier = Modifier.fillMaxWidth(),
-                textFieldState = { usernameState },
+                value = state.username,
                 labelText = "Username",
                 placeholderText = "Enter your username",
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next,
+                onValueChange = { onAction(RegisterAction.OnUsernameChange(it)) },
+                isError = state.usernameError != null,
+                errorText = state.usernameError
             )
 
             AppTextField(
                 modifier = Modifier.fillMaxWidth(),
-                textFieldState = { emailState },
+                value = state.email,
                 labelText = "E-mail",
                 placeholderText = "Enter your e-mail",
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next,
+                onValueChange = { onAction(RegisterAction.OnEmailChange(it)) },
+                isError = state.emailError != null,
+                errorText = state.emailError
             )
 
             AppSecureTextField(
                 modifier = Modifier.fillMaxWidth(),
-                textFieldState = { passwordState },
+                value = state.password,
                 labelText = "Password",
                 placeholderText = "Enter password",
                 onSubmit = { },
-                imeAction = if (usernameState.text.isNotBlank() && emailState.text.isNotBlank()) ImeAction.Send else ImeAction.Done
+                imeAction = if (state.username.isNotBlank() && state.email.isNotBlank()) ImeAction.Send else ImeAction.Done,
+                onValueChange = { onAction(RegisterAction.OnPasswordChange(it)) },
+                isError = state.passwordError != null,
+                errorText = state.passwordError
             )
 
             AppButton(

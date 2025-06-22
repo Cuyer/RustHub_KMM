@@ -4,7 +4,6 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -33,11 +32,14 @@ import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
 @Composable
 fun AppSecureTextField(
     modifier: Modifier = Modifier,
-    textFieldState: () -> TextFieldState,
+    value: String,
     labelText: String,
     placeholderText: String,
     onSubmit: () -> Unit,
-    imeAction: ImeAction
+    imeAction: ImeAction,
+    onValueChange: (String) -> Unit = {},
+    isError: Boolean = false,
+    errorText: String? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -53,10 +55,8 @@ fun AppSecureTextField(
 
     OutlinedTextField(
         modifier = modifier.focusRequester(focusRequester),
-        value = textFieldState().text.toString(),
-        onValueChange = { newValue ->
-            textFieldState().edit { replace(0, length, newValue) }
-        },
+        value = value,
+        onValueChange = onValueChange,
         readOnly = false,
         singleLine = true,
         keyboardOptions = KeyboardOptions(
@@ -74,7 +74,7 @@ fun AppSecureTextField(
             }
         ),
         trailingIcon = {
-            Crossfade(targetState = textFieldState().text.isNotEmpty()) { hasText ->
+            Crossfade(targetState = value.isNotEmpty()) { hasText ->
                 if (hasText) {
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
                         Crossfade(
@@ -90,7 +90,7 @@ fun AppSecureTextField(
                 }
             }
         },
-        isError = false,
+        isError = isError,
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         label = {
             Text(
@@ -103,6 +103,9 @@ fun AppSecureTextField(
             )
         },
         interactionSource = interactionSource,
-        colors = OutlinedTextFieldDefaults.colors()
+        colors = OutlinedTextFieldDefaults.colors(),
+        supportingText = if (isError && errorText != null) {
+            { Text(errorText) }
+        } else null
     )
 }
