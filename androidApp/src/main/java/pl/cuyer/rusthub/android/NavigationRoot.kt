@@ -112,9 +112,14 @@ fun NavigationRoot() {
                         )
                     }
                     entry<Login> {
+                        val viewModel = koinViewModel<LoginViewModel>()
+                        val state = viewModel.state.collectAsStateWithLifecycle()
+
                         LoginScreen(
                             onNavigate = { destination -> backStack.add(destination) },
-                            uiEvent = flowOf(),
+                            stateProvider = { state },
+                            uiEvent = viewModel.uiEvent,
+                            onAction = viewModel::onAction,
                             onBack = { backStack.removeLastOrNull() }
                         )
                     }

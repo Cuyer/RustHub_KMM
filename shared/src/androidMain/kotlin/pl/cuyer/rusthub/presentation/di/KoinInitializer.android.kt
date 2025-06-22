@@ -7,6 +7,8 @@ import org.koin.dsl.module
 import pl.cuyer.rusthub.data.local.DatabaseDriverFactory
 import pl.cuyer.rusthub.data.network.HttpClientFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
+import pl.cuyer.rusthub.presentation.features.auth.RegisterViewModel
+import pl.cuyer.rusthub.presentation.features.auth.LoginViewModel
 import pl.cuyer.rusthub.presentation.features.auth.register.RegisterViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
@@ -19,6 +21,14 @@ actual val platformModule: Module = module {
     single { ClipboardHandler(get()) }
     viewModel {
         OnboardingViewModel()
+    }
+    viewModel {
+        LoginViewModel(
+            loginUserUseCase = get(),
+            snackbarController = get(),
+            passwordValidator = get(),
+            usernameValidator = get()
+        )
     }
     viewModel {
         RegisterViewModel(
