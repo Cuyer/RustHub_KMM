@@ -10,6 +10,7 @@ import database.FiltersWipeScheduleEntity
 import database.RemoteKeyEntity
 import database.SearchQueryEntity
 import database.ServerEntity
+import database.UserEntity
 import kotlinx.datetime.Instant
 import pl.cuyer.rusthub.data.local.model.DifficultyEntity
 import pl.cuyer.rusthub.data.local.model.FlagEntity
@@ -30,6 +31,7 @@ import pl.cuyer.rusthub.domain.model.SearchQuery
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.model.ServerStatus
+import pl.cuyer.rusthub.domain.model.User
 import pl.cuyer.rusthub.domain.model.WipeSchedule
 import pl.cuyer.rusthub.domain.model.WipeType
 
@@ -161,4 +163,6 @@ fun FiltersWipeScheduleEntity?.toDomain(): WipeSchedule? =
     this?.let { WipeSchedule.valueOf(it.label) }
 
 fun SearchQueryEntity.toDomain(): SearchQuery = SearchQuery(id, query, Instant.parse(timestamp))
+
+fun UserEntity.toUser(): User = User(email, username, access_token, refresh_token)
 

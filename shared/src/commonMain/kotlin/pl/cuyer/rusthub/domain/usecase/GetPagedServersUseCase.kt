@@ -16,7 +16,7 @@ class GetPagedServersUseCase(
     private val dataSource: ServerDataSource,
     private val api: ServerRepository,
     private val filters: FiltersDataSource,
-    private val remoteKeys: RemoteKeyDataSource
+    private val remoteKeys: RemoteKeyDataSource,
 ) {
     @OptIn(ExperimentalPagingApi::class)
     operator fun invoke(searchQuery: String?): Flow<PagingData<ServerEntity>> {

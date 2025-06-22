@@ -460,3 +460,29 @@ DELETE FROM searchQueryEntity;
 
 deleteSearchQueryByQuery:
 DELETE FROM searchQueryEntity WHERE query = :query;
+
+CREATE TABLE userEntity (
+  id TEXT NOT NULL PRIMARY KEY,
+  email         TEXT   NOT NULL,
+  username      TEXT   NOT NULL,
+  access_token  TEXT   NOT NULL,
+  refresh_token TEXT   NOT NULL
+);
+
+insertUser:
+INSERT INTO userEntity (
+id, email, username, access_token, refresh_token
+) VALUES (
+  :id, :email, :username, :accessToken, :refreshToken
+)
+ON CONFLICT(id) DO UPDATE SET
+  email = excluded.email,
+  username = excluded.username,
+  access_token  = excluded.access_token,
+  refresh_token = excluded.refresh_token;
+
+deleteUser:
+DELETE FROM userEntity;
+
+getUser:
+SELECT * FROM userEntity LIMIT 1;

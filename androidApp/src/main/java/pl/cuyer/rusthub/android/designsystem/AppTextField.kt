@@ -64,7 +64,7 @@ fun AppTextField(
         },
         singleLine = true,
         keyboardOptions = KeyboardOptions(
-            capitalization = if (keyboardType == KeyboardType.Email) KeyboardCapitalization.None else KeyboardCapitalization.Sentences,
+            capitalization = KeyboardCapitalization.None,
             keyboardType = keyboardType,
             imeAction = imeAction
         ),

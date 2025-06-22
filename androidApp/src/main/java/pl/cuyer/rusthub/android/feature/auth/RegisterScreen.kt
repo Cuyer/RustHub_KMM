@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -62,10 +63,12 @@ fun RegisterScreen(
     val context = LocalContext.current
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
+    val focusManager = LocalFocusManager.current
 
     if (isTabletMode) {
         RegisterScreenExpanded(
             onRegister = {
+                focusManager.clearFocus()
                 onAction(
                     RegisterAction.OnRegister(
                         email = emailState.text.toString(),
@@ -81,6 +84,7 @@ fun RegisterScreen(
     } else {
         RegisterScreenCompact(
             onRegister = {
+                focusManager.clearFocus()
                 onAction(
                     RegisterAction.OnRegister(
                         email = emailState.text.toString(),

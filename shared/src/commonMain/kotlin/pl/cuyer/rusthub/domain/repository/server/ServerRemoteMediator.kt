@@ -7,6 +7,7 @@ import androidx.paging.RemoteMediator
 import database.ServerEntity
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.Clock
 import pl.cuyer.rusthub.common.Constants.DEFAULT_KEY
 import pl.cuyer.rusthub.common.Result
@@ -24,6 +25,14 @@ class ServerRemoteMediator(
     private val searchQuery: String?
 ) : RemoteMediator<Int, ServerEntity>() {
     private val keyId = DEFAULT_KEY
+
+    override suspend fun initialize(): InitializeAction {
+        val current = filters.getFilters().firstOrNull()
+        if (current == null) {
+            filters.upsertFilters(ServerQuery())
+        }
+        return InitializeAction.LAUNCH_INITIAL_REFRESH
+    }
 
     override suspend fun load(
         loadType: LoadType,

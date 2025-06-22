@@ -9,11 +9,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
+import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.common.Result
-import kotlin.coroutines.cancellation.CancellationException
+import pl.cuyer.rusthub.data.network.model.ErrorResponse
 import kotlin.coroutines.coroutineContext
 
-abstract class BaseApiResponse {
+abstract class BaseApiResponse(
+    val json: Json
+) {
 
     inline fun <reified T> safeApiCall(crossinline apiCall: suspend () -> HttpResponse): Flow<Result<T>> =
         flow {
@@ -24,8 +27,8 @@ abstract class BaseApiResponse {
                 val data: T = response.body()
                 emit(success(data))
             } else {
-                val errorResponse = response.bodyAsText()
-                emit(Result.Error(Exception(errorResponse)))
+                val errorResponse = json.decodeFromString<ErrorResponse>(response.bodyAsText())
+                emit(Result.Error(Exception(errorResponse.message)))
             }
         }.onStart {
             emit(loading())

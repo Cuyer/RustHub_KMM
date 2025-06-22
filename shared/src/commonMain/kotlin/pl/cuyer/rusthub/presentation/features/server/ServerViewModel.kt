@@ -142,20 +142,27 @@ class ServerViewModel(
             is ServerAction.OnSearch -> handleSearch(query = action.query)
             is ServerAction.OnClearFilters -> clearFilters()
             is ServerAction.OnClearSearchQuery -> clearSearchQuery()
-            is ServerAction.DeleteSearchQueries -> deleteSearchQueriesUseCase()
-            is ServerAction.DeleteSearchQueryByQuery -> deleteSearchQueriesUseCase(action.query)
+            is ServerAction.DeleteSearchQueries -> coroutineScope.launch {
+                deleteSearchQueriesUseCase()
+            }
+
+            is ServerAction.DeleteSearchQueryByQuery -> coroutineScope.launch {
+                deleteSearchQueriesUseCase(action.query)
+            }
         }
     }
 
     private fun handleSearch(query: String) {
-        saveSearchQueryUseCase(
-            SearchQuery(
-                query = query,
-                timestamp = System.now(),
-                id = null
+        coroutineScope.launch {
+            saveSearchQueryUseCase(
+                SearchQuery(
+                    query = query,
+                    timestamp = System.now(),
+                    id = null
+                )
             )
-        )
-        queryFlow.update { query }
+            queryFlow.update { query }
+        }
     }
 
     private fun clearSearchQuery() {
@@ -187,11 +194,15 @@ class ServerViewModel(
     }
 
     private fun onSaveFilters(filters: ServerQuery) {
-        saveFiltersUseCase(filters)
+        coroutineScope.launch {
+            saveFiltersUseCase(filters)
+        }
     }
 
     private fun clearFilters() {
-        clearFiltersUseCase()
+        coroutineScope.launch {
+            clearFiltersUseCase()
+        }
     }
 
     private fun navigateToServer(id: Long, name: String) {

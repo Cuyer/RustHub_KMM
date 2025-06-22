@@ -5,6 +5,6 @@ import pl.cuyer.rusthub.domain.model.ServerQuery
 
 interface FiltersDataSource {
     fun getFilters(): Flow<ServerQuery?>
-    fun upsertFilters(filters: ServerQuery)
-    fun clearFilters()
+    suspend fun upsertFilters(filters: ServerQuery)
+    suspend fun clearFilters()
 }

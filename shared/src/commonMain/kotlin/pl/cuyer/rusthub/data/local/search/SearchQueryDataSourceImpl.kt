@@ -2,11 +2,11 @@ package pl.cuyer.rusthub.data.local.search
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import pl.cuyer.rusthub.data.local.Queries
 import pl.cuyer.rusthub.data.local.mapper.toDomain
 import pl.cuyer.rusthub.database.RustHubDatabase
@@ -22,25 +22,30 @@ class SearchQueryDataSourceImpl(
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { list ->
-                Napier.d("getQueries: $list")
                 list.map {
                     it.toDomain()
                 }
             }
     }
 
-    override fun upsertQuery(query: SearchQuery) {
-        queries.upsertSearchQuery(
-            query = query.query,
-            timestamp = query.timestamp.toString()
-        )
+    override suspend fun upsertQuery(query: SearchQuery) {
+        withContext(Dispatchers.IO) {
+            queries.upsertSearchQuery(
+                query = query.query,
+                timestamp = query.timestamp.toString()
+            )
+        }
     }
 
-    override fun clearQueries() {
-        queries.clearSearchQueries()
+    override suspend fun clearQueries() {
+        withContext(Dispatchers.IO) {
+            queries.clearSearchQueries()
+        }
     }
 
-    override fun deleteByQuery(query: String) {
-        queries.deleteSearchQueryByQuery(query)
+    override suspend fun deleteByQuery(query: String) {
+        withContext(Dispatchers.IO) {
+            queries.deleteSearchQueryByQuery(query)
+        }
     }
 }

@@ -21,7 +21,10 @@ actual val platformModule: Module = module {
         OnboardingViewModel()
     }
     viewModel {
-        RegisterViewModel()
+        RegisterViewModel(
+            get(),
+            get()
+        )
     }
     viewModel {
         ServerViewModel(

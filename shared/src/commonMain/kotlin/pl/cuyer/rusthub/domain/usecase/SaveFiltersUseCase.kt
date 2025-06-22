@@ -8,7 +8,7 @@ class SaveFiltersUseCase(
     private val dataSource: FiltersDataSource
 ) {
     @OptIn(ExperimentalPagingApi::class)
-    operator fun invoke(filters: ServerQuery) {
+    suspend operator fun invoke(filters: ServerQuery) {
         return dataSource.upsertFilters(filters)
     }
 }

@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.Flow
 import pl.cuyer.rusthub.domain.model.ServerInfo
 
 interface ServerDataSource {
-    fun upsertServers(servers: List<ServerInfo>)
+    suspend fun upsertServers(servers: List<ServerInfo>)
     fun getServersPagingSource(searchQuery: String?): PagingSource<Int, ServerEntity>
     fun getServerById(serverId: Long): Flow<ServerInfo?>
-    fun deleteServers()
+    suspend fun deleteServers()
 }

@@ -9,14 +9,18 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import pl.cuyer.rusthub.data.local.auth.AuthDataSourceImpl
 import pl.cuyer.rusthub.data.local.filter.FiltersDataSourceImpl
 import pl.cuyer.rusthub.data.local.filtersOptions.FiltersOptionsDataSourceImpl
 import pl.cuyer.rusthub.data.local.remotekey.RemoteKeyDataSourceImpl
 import pl.cuyer.rusthub.data.local.search.SearchQueryDataSourceImpl
 import pl.cuyer.rusthub.data.local.server.ServerDataSourceImpl
+import pl.cuyer.rusthub.data.network.auth.AuthRepositoryImpl
 import pl.cuyer.rusthub.data.network.filtersOptions.FiltersOptionsClientImpl
 import pl.cuyer.rusthub.data.network.server.ServerClientImpl
 import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
+import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
+import pl.cuyer.rusthub.domain.repository.auth.AuthRepository
 import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
 import pl.cuyer.rusthub.domain.repository.filtersOptions.FiltersOptionsDataSource
 import pl.cuyer.rusthub.domain.repository.filtersOptions.FiltersOptionsRepository
@@ -30,6 +34,7 @@ import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
+import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
@@ -51,6 +56,8 @@ val appModule = module {
     single { GetPagedServersUseCase(get(), get(), get(), get()) }
     singleOf(::FiltersOptionsClientImpl) bind FiltersOptionsRepository::class
     singleOf(::FiltersOptionsDataSourceImpl) bind FiltersOptionsDataSource::class
+    singleOf(::AuthRepositoryImpl) bind AuthRepository::class
+    singleOf(::AuthDataSourceImpl) bind AuthDataSource::class
     single { GetPagedServersUseCase(get(), get(), get(), get()) }
     single { GetFiltersUseCase(get()) }
     single { SaveFiltersUseCase(get()) }
@@ -60,6 +67,7 @@ val appModule = module {
     single { GetSearchQueriesUseCase(get()) }
     single { DeleteSearchQueriesUseCase(get()) }
     single { GetServerDetailsUseCase(get()) }
+    single { RegisterUserUseCase(get(), get()) }
 }
 
 expect val platformModule: Module
