@@ -26,7 +26,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExpandedFullScreenSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -52,6 +51,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.presentation.model.SearchQueryUi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
@@ -211,7 +211,7 @@ fun RustSearchBarTopAppBar(
                             .padding(spacing.medium),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Button(
+                        AppButton(
                             onClick = {
                                 onDelete("")
                                 coroutineScope.launch {

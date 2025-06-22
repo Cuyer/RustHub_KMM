@@ -20,11 +20,9 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -33,7 +31,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
+import pl.cuyer.rusthub.android.designsystem.AppButton
+import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -199,29 +198,25 @@ private fun FeatureList() {
 
 @Composable
 private fun ActionButtons(onAction: (OnboardingAction) -> Unit) {
-    Button(
+    AppButton(
         onClick = { onAction(OnboardingAction.OnLoginClick) },
-        shape = RectangleShape,
         modifier = Modifier.fillMaxWidth()
     ) {
         Text("Log In")
     }
 
-    Button(
+    AppButton(
         onClick = { onAction(OnboardingAction.OnRegisterClick) },
-        shape = RectangleShape,
         modifier = Modifier.fillMaxWidth()
     ) {
         Text("Register")
     }
 
-    TextButton(
-        shape = RectangleShape,
+    AppTextButton(
         onClick = { onAction(OnboardingAction.OnContinueAsGuest) }
     ) {
         Text(
             text = "Continue as Guest",
-            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }

@@ -12,11 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -25,7 +23,8 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
+import pl.cuyer.rusthub.android.designsystem.AppButton
+import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -143,10 +142,9 @@ private fun RegisterScreenCompact(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Button(
+        AppButton(
             onClick = { onRegister(username, password) },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RectangleShape
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text("Register")
         }
@@ -197,12 +195,10 @@ private fun RegisterScreenCompact(
 
         }
 
-        TextButton(
-            onClick = onBack,
-            shape = RectangleShape
+        AppTextButton(
+            onClick = onBack
         ) {
             Text(
-                color = MaterialTheme.colorScheme.onSurface,
                 text = "Back"
             )
         }
@@ -275,10 +271,9 @@ private fun RegisterScreenExpanded(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Button(
+            AppButton(
                 onClick = { onRegister(username, password) },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RectangleShape
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Register")
             }
@@ -329,13 +324,11 @@ private fun RegisterScreenExpanded(
 
             }
 
-            TextButton(
+            AppTextButton(
                 onClick = onBack
-            )
-            {
+            ) {
                 Text(
                     text = "Back",
-                    color = MaterialTheme.colorScheme.onSurface,
                 )
             }
         }
