@@ -118,18 +118,10 @@ class ServerDetailsViewModel(
                 }
                 .collectLatest { result ->
                     when (result) {
-                        is Result.Success -> {
-                            _state.update {
-                                it.copy(
-                                    isSyncing = false,
-                                    details = it.details?.copy(isFavorite = !add)
-                                )
-                            }
-                            serverDetailsJob = observeServerDetails(id)
-                        }
-                        is Result.Error -> {
-                            showErrorSnackbar(result.exception.message ?: "Unknown error")
-                        }
+                        is Result.Success -> serverDetailsJob?.start()
+                        is Result.Error -> showErrorSnackbar(
+                            result.exception.message ?: "Unknown error"
+                        )
                         Result.Loading -> {}
                     }
                 }
