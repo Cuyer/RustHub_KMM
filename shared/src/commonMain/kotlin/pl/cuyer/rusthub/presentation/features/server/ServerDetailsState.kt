@@ -6,5 +6,6 @@ data class ServerDetailsState(
     val details: ServerInfoUi? = null,
     val isLoading: Boolean = false,
     val serverId: Long? = null,
-    val serverName: String? = null
+    val serverName: String? = null,
+    val isSyncing: Boolean = false
 )

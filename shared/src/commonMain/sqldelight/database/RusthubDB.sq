@@ -130,7 +130,8 @@ INSERT INTO serverEntity (
     is_premium,
     map_url,
     header_image,
-    monuments
+    monuments,
+    favourite
 ) VALUES (
     :id,
     :name,
@@ -165,7 +166,8 @@ INSERT INTO serverEntity (
     CASE WHEN :isPremium THEN 1 ELSE 0 END,
     :mapUrl,
     :headerImage,
-    :monuments
+    :monuments,
+    CASE WHEN :favourite THEN 1 ELSE 0 END
 ) ON CONFLICT(id) DO UPDATE SET
     name           = excluded.name,
     wipe           = excluded.wipe,
@@ -199,13 +201,17 @@ INSERT INTO serverEntity (
     website        = excluded.website,
     is_premium     = excluded.is_premium,
     map_url        = excluded.map_url,
-    header_image   = excluded.header_image;
+    header_image   = excluded.header_image,
+    favourite      = excluded.favourite;
 
 clearServers:
 DELETE FROM serverEntity;
 
 getServerById:
 SELECT * FROM serverEntity WHERE id == :id;
+
+updateFavourite:
+UPDATE serverEntity SET favourite = CASE WHEN :favourite THEN 1 ELSE 0 END WHERE id = :id;
 
 
 CREATE TABLE filtersEntity (
@@ -460,6 +466,25 @@ DELETE FROM searchQueryEntity;
 
 deleteSearchQueryByQuery:
 DELETE FROM searchQueryEntity WHERE query = :query;
+
+CREATE TABLE favouriteSyncEntity (
+    server_id INTEGER NOT NULL PRIMARY KEY,
+    action INTEGER NOT NULL,
+    sync_state TEXT NOT NULL
+);
+
+upsertFavouriteSync:
+INSERT INTO favouriteSyncEntity (server_id, action, sync_state)
+VALUES (:server_id, :action, :sync_state)
+ON CONFLICT(server_id) DO UPDATE SET
+    action = excluded.action,
+    sync_state = excluded.sync_state;
+
+getPendingFavouriteSync:
+SELECT * FROM favouriteSyncEntity WHERE sync_state = 'PENDING';
+
+deleteFavouriteSync:
+DELETE FROM favouriteSyncEntity WHERE server_id = :server_id;
 
 CREATE TABLE userEntity (
   id TEXT NOT NULL PRIMARY KEY,

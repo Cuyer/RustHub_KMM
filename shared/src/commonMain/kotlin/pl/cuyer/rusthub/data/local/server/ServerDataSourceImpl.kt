@@ -62,7 +62,8 @@ class ServerDataSourceImpl(
                         isPremium = info.isPremium == true,
                         monuments = info.monuments?.toLong(),
                         mapUrl = info.mapUrl,
-                        headerImage = info.headerImage
+                        headerImage = info.headerImage,
+                        favourite = info.isFavorite == true
                     )
                 }
             }
@@ -99,6 +100,12 @@ class ServerDataSourceImpl(
     override suspend fun deleteServers() {
         withContext(Dispatchers.IO) {
             queries.clearServers()
+        }
+    }
+
+    override suspend fun updateFavourite(serverId: Long, favourite: Boolean) {
+        withContext(Dispatchers.IO) {
+            queries.updateFavourite(id = serverId, favourite = favourite)
         }
     }
 }

@@ -45,6 +45,7 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.android)
             implementation(libs.androidx.navigation)
+            implementation(libs.androidx.work.runtime)
             implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {

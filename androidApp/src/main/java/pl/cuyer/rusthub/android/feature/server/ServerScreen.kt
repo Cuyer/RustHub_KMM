@@ -182,7 +182,9 @@ fun ServerScreen(
                                         onClick = {
                                             onAction(
                                                 ServerAction.OnServerClick(
-                                                    item.id ?: Long.MAX_VALUE, item.name ?: ""
+                                                    item.id ?: Long.MAX_VALUE,
+                                                    item.name ?: "",
+                                                    item.isFavorite == true
                                                 )
                                             )
                                         }
