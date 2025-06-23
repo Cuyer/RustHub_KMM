@@ -26,4 +26,15 @@ This repository hosts a Kotlin Multiplatform Mobile (KMM) project. The Android a
 - `shared/` – Common Kotlin code with expect/actual sources for each platform.
 - `gradle/libs.versions.toml` – Central place for dependency versions.
 
+## ViewModel & Flow Conventions
+
+- Derive all view models from `BaseViewModel` to gain access to `coroutineScope`.
+- Expose screen state using a dedicated data class wrapped in a `MutableStateFlow`.
+- Convert the mutable flow to an immutable `state` with `stateIn` and
+  `SharingStarted.WhileSubscribed(5_000L)`.
+- One-off events (navigation, snackbars) should use a `Channel` and `receiveAsFlow()`.
+- When executing use cases, apply `.onStart { ... }` to set loading flags and
+  `.onCompletion { ... }` to clear them.
+- Handle errors with `.catch { e -> ... }` and collect using `collectLatest` when appropriate.
+
 Keep these conventions in mind when modifying or adding code.
