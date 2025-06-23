@@ -50,6 +50,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import pl.cuyer.rusthub.android.designsystem.ServerDetail
 import pl.cuyer.rusthub.android.designsystem.ServerWebsite
+import pl.cuyer.rusthub.android.designsystem.SubscriptionDialog
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.domain.model.Flag
@@ -71,6 +72,7 @@ fun ServerDetailsScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val lazyListState = rememberLazyListState()
+    val state = stateProvider().value
 
     Scaffold(
         modifier = Modifier
@@ -79,19 +81,19 @@ fun ServerDetailsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = stateProvider().value.serverName ?: "",
+                        text = state.serverName ?: "",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
                 actions = {
-                    if (stateProvider().value.isSyncing) {
+                    if (state.isSyncing) {
                         CircularProgressIndicator(modifier = Modifier.size(24.dp))
                     } else {
                         IconButton(onClick = { onAction(ServerDetailsAction.OnToggleFavourite) }) {
-                            val fav = stateProvider().value.details?.isFavorite == true
-                            val icon = if (fav) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder
+                            val icon =
+                                if (state.details?.isFavorite == true) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder
                             Icon(icon, contentDescription = null)
                         }
                     }
@@ -100,15 +102,20 @@ fun ServerDetailsScreen(
             )
         }
     ) { innerPadding ->
-        AnimatedContent(targetState = stateProvider().value.details != null) { detailsReady ->
+        AnimatedContent(targetState = state.details != null) { detailsReady ->
             if (detailsReady) {
+                SubscriptionDialog(
+                    showDialog = state.showSubscriptionDialog,
+                    onConfirm = { onAction(ServerDetailsAction.OnSubscribe) },
+                    onDismiss = { onAction(ServerDetailsAction.OnDismissSubscriptionDialog) }
+                )
                 LazyColumn(
                     state = lazyListState,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    stateProvider().value.details?.let {
+                    state.details?.let {
                         item {
                             Text(
                                 modifier = Modifier.padding(spacing.medium),
