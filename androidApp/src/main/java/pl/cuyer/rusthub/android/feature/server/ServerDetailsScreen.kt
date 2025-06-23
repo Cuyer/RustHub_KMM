@@ -14,6 +14,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -25,12 +28,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -92,7 +89,7 @@ fun ServerDetailsScreen(
                     if (stateProvider().value.isSyncing) {
                         CircularProgressIndicator(modifier = Modifier.size(24.dp))
                     } else {
-                        IconButton(onClick = { onAction(ServerDetailsAction.ToggleFavourite) }) {
+                        IconButton(onClick = { onAction(ServerDetailsAction.OnToggleFavourite) }) {
                             val fav = stateProvider().value.details?.isFavorite == true
                             val icon = if (fav) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder
                             Icon(icon, contentDescription = null)
@@ -500,7 +497,8 @@ private fun ServerDetailsPrev() {
                     UiEvent.Navigate(
                         ServerDetails(
                             id = 1,
-                            name = "Repulsion"
+                            name = "Repulsion",
+                            isFavourite = true
                         )
                     )
                 )

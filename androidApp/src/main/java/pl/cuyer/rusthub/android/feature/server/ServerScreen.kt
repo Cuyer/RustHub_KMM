@@ -316,7 +316,8 @@ private fun ServerScreenPreview() {
                     UiEvent.Navigate(
                         ServerDetails(
                             id = 1,
-                            name = "Repulsion"
+                            name = "Repulsion",
+                            isFavourite = true
                         )
                     )
                 ),

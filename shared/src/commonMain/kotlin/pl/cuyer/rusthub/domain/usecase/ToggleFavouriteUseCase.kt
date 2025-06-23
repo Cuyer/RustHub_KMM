@@ -18,23 +18,27 @@ class ToggleFavouriteUseCase(
     private val scheduler: SyncScheduler
 ) {
     operator fun invoke(serverId: Long, add: Boolean): Flow<Result<Unit>> = channelFlow {
-        repository.run { if (add) addFavourite(serverId) else removeFavourite(serverId) }
-            .collectLatest { result ->
-                when (result) {
-                    is Result.Success -> {
-                        serverDataSource.updateFavourite(serverId, add)
-                        syncDataSource.deleteOperation(serverId)
-                        send(Result.Success(Unit))
-                    }
-                    is Result.Error -> {
-                        syncDataSource.upsertOperation(
-                            FavouriteSyncOperation(serverId, add, SyncState.PENDING)
-                        )
-                        scheduler.schedule()
-                        send(Result.Error(result.exception))
-                    }
-                    Result.Loading -> send(Result.Loading)
+        val flow =
+            if (add) repository.addFavourite(serverId) else repository.removeFavourite(serverId)
+
+        flow.collectLatest { result ->
+            when (result) {
+                is Result.Success -> {
+                    serverDataSource.updateFavourite(serverId, add)
+                    syncDataSource.deleteOperation(serverId)
+                    send(Result.Success(Unit))
                 }
+
+                is Result.Error -> {
+                    syncDataSource.upsertOperation(
+                        FavouriteSyncOperation(serverId, add, SyncState.PENDING)
+                    )
+                    scheduler.schedule()
+                    send(Result.Error(result.exception))
+                }
+
+                Result.Loading -> send(Result.Loading)
             }
+        }
     }
 }

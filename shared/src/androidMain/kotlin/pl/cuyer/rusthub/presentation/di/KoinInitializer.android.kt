@@ -10,9 +10,9 @@ import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.presentation.features.auth.LoginViewModel
 import pl.cuyer.rusthub.presentation.features.auth.register.RegisterViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
-import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
+import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.SyncScheduler
 
@@ -68,7 +68,8 @@ actual val platformModule: Module = module {
             serverName = serverName,
             serverId = serverId,
             clipboardHandler = get(),
-            snackbarController = get()
+            snackbarController = get(),
+            isFavourite = favourite
         )
     }
 }
