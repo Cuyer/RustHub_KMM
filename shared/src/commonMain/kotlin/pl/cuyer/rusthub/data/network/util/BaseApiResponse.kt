@@ -22,6 +22,7 @@ import pl.cuyer.rusthub.domain.exception.InvalidRefreshTokenException
 import pl.cuyer.rusthub.domain.exception.NetworkUnavailableException
 import pl.cuyer.rusthub.domain.exception.ServersQueryException
 import pl.cuyer.rusthub.domain.exception.TimeoutException
+import pl.cuyer.rusthub.domain.exception.ServersQueryException
 import pl.cuyer.rusthub.domain.exception.UserAlreadyExistsException
 import kotlin.coroutines.coroutineContext
 
@@ -64,7 +65,7 @@ abstract class BaseApiResponse(
             else -> Exception(errorResponse.message)
         }
     }
-
+    
     private fun parseConnectivityException(throwable: Throwable): Throwable {
         return when (throwable) {
             is IOException -> NetworkUnavailableException(throwable.message ?: "Network unavailable")

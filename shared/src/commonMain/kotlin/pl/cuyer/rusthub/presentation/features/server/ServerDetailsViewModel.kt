@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
+import pl.cuyer.rusthub.domain.exception.FavoriteLimitException
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.presentation.model.toUi
@@ -77,6 +78,8 @@ class ServerDetailsViewModel(
         when (action) {
             is ServerDetailsAction.OnSaveToClipboard -> saveIpToClipboard(action.ipAddress)
             ServerDetailsAction.OnToggleFavourite -> toggleFavourite()
+            ServerDetailsAction.OnDismissSubscriptionDialog -> showSubscriptionDialog(false)
+            ServerDetailsAction.OnSubscribe -> showSubscriptionDialog(false)
         }
     }
 
@@ -119,12 +122,21 @@ class ServerDetailsViewModel(
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> serverDetailsJob?.start()
-                        is Result.Error -> showErrorSnackbar(
-                            result.exception.message ?: "Unknown error"
-                        )
+                        is Result.Error -> when (result.exception) {
+                            is FavoriteLimitException -> showSubscriptionDialog(true)
+                            else -> showErrorSnackbar(result.exception.message ?: "Unknown error")
+                        }
                         Result.Loading -> {}
                     }
                 }
+        }
+    }
+
+    private fun showSubscriptionDialog(show: Boolean) {
+        _state.update {
+            it.copy(
+                showSubscriptionDialog = show
+            )
         }
     }
 
