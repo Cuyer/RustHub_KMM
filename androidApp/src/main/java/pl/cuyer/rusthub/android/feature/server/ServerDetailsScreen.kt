@@ -497,8 +497,7 @@ private fun ServerDetailsPrev() {
                     UiEvent.Navigate(
                         ServerDetails(
                             id = 1,
-                            name = "Repulsion",
-                            isFavourite = true
+                            name = "Repulsion"
                         )
                     )
                 )

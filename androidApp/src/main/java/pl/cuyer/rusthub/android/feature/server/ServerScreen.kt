@@ -183,8 +183,7 @@ fun ServerScreen(
                                             onAction(
                                                 ServerAction.OnServerClick(
                                                     item.id ?: Long.MAX_VALUE,
-                                                    item.name ?: "",
-                                                    item.isFavorite == true
+                                                    item.name ?: ""
                                                 )
                                             )
                                         }
@@ -316,8 +315,7 @@ private fun ServerScreenPreview() {
                     UiEvent.Navigate(
                         ServerDetails(
                             id = 1,
-                            name = "Repulsion",
-                            isFavourite = true
+                            name = "Repulsion"
                         )
                     )
                 ),

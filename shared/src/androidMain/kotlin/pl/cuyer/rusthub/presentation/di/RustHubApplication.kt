@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.presentation.di
 
 import android.app.Application
 import androidx.work.Configuration
+import androidx.work.WorkManager
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import pl.cuyer.rusthub.domain.repository.favourite.FavouriteSyncDataSource
@@ -21,19 +22,18 @@ class RustHubApplication : Application(), Configuration.Provider {
             androidContext(this@RustHubApplication)
             modules(appModule, platformModule)
         }
+        WorkManager.initialize(this, workManagerConfiguration)
     }
 
     override val workManagerConfiguration: Configuration
-        get() {
-            return Configuration.Builder()
-                .setWorkerFactory(
-                    FavouriteWorkerFactory(
-                        repository = repository,
-                        syncDataSource = syncDataSource,
-                        serverDataSource = serverDataSource
-                    )
+        get() = Configuration.Builder()
+            .setWorkerFactory(
+                FavouriteWorkerFactory(
+                    repository = repository,
+                    syncDataSource = syncDataSource,
+                    serverDataSource = serverDataSource
                 )
-                .build()
-        }
+            )
+            .build()
 
 }

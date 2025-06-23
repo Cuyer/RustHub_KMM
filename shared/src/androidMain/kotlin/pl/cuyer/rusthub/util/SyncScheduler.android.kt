@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.util
 
 import android.content.Context
 import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
@@ -18,6 +19,12 @@ actual class SyncScheduler(
                     .build()
             )
             .build()
-        WorkManager.getInstance(context).enqueue(request)
+        WorkManager
+            .getInstance(context)
+            .enqueueUniqueWork(
+                "FavouriteSyncWorker",
+                ExistingWorkPolicy.REPLACE,
+                request
+            )
     }
 }

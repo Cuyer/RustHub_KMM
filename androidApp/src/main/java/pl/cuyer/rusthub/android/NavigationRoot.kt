@@ -164,7 +164,7 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                         }
                         entry<ServerDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
                             val viewModel: ServerDetailsViewModel =
-                                koinViewModel { parametersOf(key.id, key.name, key.isFavourite) }
+                                koinViewModel { parametersOf(key.id, key.name) }
                             val state = viewModel.state.collectAsStateWithLifecycle()
                             ServerDetailsScreen(
                                 stateProvider = { state },

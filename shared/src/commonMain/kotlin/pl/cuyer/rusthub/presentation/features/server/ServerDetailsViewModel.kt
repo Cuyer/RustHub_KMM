@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.presentation.features.server
 
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -8,7 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -23,7 +23,6 @@ import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
-import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.presentation.model.toUi
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.Duration
@@ -37,8 +36,7 @@ class ServerDetailsViewModel(
     private val getServerDetailsUseCase: GetServerDetailsUseCase,
     private val toggleFavouriteUseCase: ToggleFavouriteUseCase,
     private val serverName: String?,
-    private val serverId: Long?,
-    private val isFavourite: Boolean
+    private val serverId: Long?
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -51,7 +49,7 @@ class ServerDetailsViewModel(
                     isLoading = true,
                     serverId = serverId,
                     serverName = serverName,
-                    details = it.details ?: ServerInfoUi(isFavorite = isFavourite)
+                    details = it.details
                 )
             }
             serverId?.let {
@@ -63,6 +61,14 @@ class ServerDetailsViewModel(
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = ServerDetailsState()
         )
+
+    init {
+        coroutineScope.launch {
+            state.collectLatest {
+                Napier.d("State: $it")
+            }
+        }
+    }
 
     private var toggleJob: Job? = null
 
@@ -97,8 +103,7 @@ class ServerDetailsViewModel(
                 .onStart {
                     _state.update {
                         it.copy(
-                            isSyncing = true,
-                            details = it.details?.copy(isFavorite = add)
+                            isSyncing = true
                         )
                     }
                 }
@@ -106,14 +111,18 @@ class ServerDetailsViewModel(
                 .onCompletion {
                     _state.update {
                         it.copy(
-                            isSyncing = false,
-                            details = it.details?.copy(isFavorite = !add)
+                            isSyncing = false
                         )
                     }
                 }
                 .collectLatest { result ->
                 when (result) {
-                    is Result.Success -> Unit
+                    is Result.Success -> _state.update {
+                        it.copy(
+                            isSyncing = false,
+                            details = it.details?.copy(isFavorite = !add)
+                        )
+                    }
                     is Result.Error -> {
                         showErrorSnackbar(result.exception.message ?: "Unknown error")
                     }
@@ -133,7 +142,6 @@ class ServerDetailsViewModel(
     private fun observeServerDetails(serverId: Long) {
         getServerDetailsUseCase.invoke(serverId)
             .map { it?.toUi() }
-            .distinctUntilChanged()
             .onEach { mappedDetails ->
                 _state.update {
                     it.copy(

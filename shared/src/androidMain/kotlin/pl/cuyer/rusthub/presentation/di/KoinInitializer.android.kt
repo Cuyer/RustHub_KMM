@@ -61,15 +61,14 @@ actual val platformModule: Module = module {
             deleteSearchQueriesUseCase = get()
         )
     }
-    viewModel { (serverId: Long, serverName: String?, favourite: Boolean) ->
+    viewModel { (serverId: Long, serverName: String?) ->
         ServerDetailsViewModel(
             getServerDetailsUseCase = get(),
             toggleFavouriteUseCase = get(),
             serverName = serverName,
             serverId = serverId,
             clipboardHandler = get(),
-            snackbarController = get(),
-            isFavourite = favourite
+            snackbarController = get()
         )
     }
 }
