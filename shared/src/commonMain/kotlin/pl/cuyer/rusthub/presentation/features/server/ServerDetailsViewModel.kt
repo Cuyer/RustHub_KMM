@@ -53,7 +53,7 @@ class ServerDetailsViewModel(
                 )
             }
             serverId?.let {
-                observeServerDetails(it)
+                serverDetailsJob = observeServerDetails(it)
             }
         }
         .stateIn(
@@ -71,6 +71,7 @@ class ServerDetailsViewModel(
     }
 
     private var toggleJob: Job? = null
+    private var serverDetailsJob: Job? = null
 
     fun onAction(action: ServerDetailsAction) {
         when (action) {
@@ -116,19 +117,22 @@ class ServerDetailsViewModel(
                     }
                 }
                 .collectLatest { result ->
-                when (result) {
-                    is Result.Success -> _state.update {
-                        it.copy(
-                            isSyncing = false,
-                            details = it.details?.copy(isFavorite = !add)
-                        )
+                    when (result) {
+                        is Result.Success -> {
+                            _state.update {
+                                it.copy(
+                                    isSyncing = false,
+                                    details = it.details?.copy(isFavorite = !add)
+                                )
+                            }
+                            serverDetailsJob = observeServerDetails(id)
+                        }
+                        is Result.Error -> {
+                            showErrorSnackbar(result.exception.message ?: "Unknown error")
+                        }
+                        Result.Loading -> {}
                     }
-                    is Result.Error -> {
-                        showErrorSnackbar(result.exception.message ?: "Unknown error")
-                    }
-                    Result.Loading -> {}
                 }
-            }
         }
     }
 
@@ -139,8 +143,8 @@ class ServerDetailsViewModel(
     }
 
 
-    private fun observeServerDetails(serverId: Long) {
-        getServerDetailsUseCase.invoke(serverId)
+    private fun observeServerDetails(serverId: Long): Job {
+        return getServerDetailsUseCase.invoke(serverId)
             .map { it?.toUi() }
             .onEach { mappedDetails ->
                 _state.update {
