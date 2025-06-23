@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.presentation.features.server
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.io.IOException
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.exception.FavoriteLimitException
@@ -121,9 +123,18 @@ class ServerDetailsViewModel(
                 }
                 .collectLatest { result ->
                     when (result) {
-                        is Result.Success -> serverDetailsJob?.start()
+                        is Result.Success -> {
+                            serverDetailsJob?.start()
+                            snackbarController.sendEvent(
+                                event = SnackbarEvent(
+                                    message = if (add) "Added ${state.value.serverId} to favourites" else "Removed ${state.value.serverId} from favourites",
+                                    duration = Duration.SHORT
+                                )
+                            )
+                        }
                         is Result.Error -> when (result.exception) {
                             is FavoriteLimitException -> showSubscriptionDialog(true)
+                            is IOException, is TimeoutCancellationException -> showErrorSnackbar("Network error occurred, we will try to sync later")
                             else -> showErrorSnackbar(result.exception.message ?: "Unknown error")
                         }
                         Result.Loading -> {}

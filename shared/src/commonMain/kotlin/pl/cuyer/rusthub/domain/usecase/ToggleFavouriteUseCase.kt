@@ -1,8 +1,10 @@
 package pl.cuyer.rusthub.domain.usecase
 
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.io.IOException
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.FavouriteSyncOperation
 import pl.cuyer.rusthub.domain.model.SyncState
@@ -30,11 +32,17 @@ class ToggleFavouriteUseCase(
                 }
 
                 is Result.Error -> {
-                    syncDataSource.upsertOperation(
-                        FavouriteSyncOperation(serverId, add, SyncState.PENDING)
-                    )
-                    scheduler.schedule()
-                    send(Result.Error(result.exception))
+                    when (result.exception) {
+                        is IOException, is TimeoutCancellationException -> {
+                            syncDataSource.upsertOperation(
+                                FavouriteSyncOperation(serverId, add, SyncState.PENDING)
+                            )
+                            scheduler.schedule()
+                            send(Result.Error(result.exception))
+                        }
+
+                        else -> send(Result.Error(result.exception))
+                    }
                 }
 
                 Result.Loading -> send(Result.Loading)
