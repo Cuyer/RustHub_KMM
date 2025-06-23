@@ -135,7 +135,7 @@ class ServerViewModel(
 
     fun onAction(action: ServerAction) {
         when (action) {
-            is ServerAction.OnServerClick -> navigateToServer(action.id, action.name)
+            is ServerAction.OnServerClick -> navigateToServer(action.id, action.name, action.isFavourite)
             is ServerAction.OnLongServerClick -> saveIpToClipboard(action.ipAddress)
             is ServerAction.OnChangeLoadingState -> _state.update { it.copy(isLoading = action.isLoading) }
             is ServerAction.OnSaveFilters -> onSaveFilters(action.filters)
@@ -205,9 +205,9 @@ class ServerViewModel(
         }
     }
 
-    private fun navigateToServer(id: Long, name: String) {
+    private fun navigateToServer(id: Long, name: String, favourite: Boolean) {
         coroutineScope.launch {
-            _uiEvent.send(UiEvent.Navigate(ServerDetails(id, name)))
+            _uiEvent.send(UiEvent.Navigate(ServerDetails(id, name, favourite)))
         }
     }
 

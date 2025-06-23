@@ -112,7 +112,8 @@ fun ServerEntity.toServerInfo(): ServerInfo {
         website = website,
         isPremium = is_premium == 1L,
         mapUrl = map_url,
-        headerImage = header_image
+        headerImage = header_image,
+        isFavorite = favourite == 1L
     )
 }
 

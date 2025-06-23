@@ -15,8 +15,10 @@ import pl.cuyer.rusthub.data.local.filtersOptions.FiltersOptionsDataSourceImpl
 import pl.cuyer.rusthub.data.local.remotekey.RemoteKeyDataSourceImpl
 import pl.cuyer.rusthub.data.local.search.SearchQueryDataSourceImpl
 import pl.cuyer.rusthub.data.local.server.ServerDataSourceImpl
+import pl.cuyer.rusthub.data.local.favourite.FavouriteSyncDataSourceImpl
 import pl.cuyer.rusthub.data.network.auth.AuthRepositoryImpl
 import pl.cuyer.rusthub.data.network.filtersOptions.FiltersOptionsClientImpl
+import pl.cuyer.rusthub.data.network.favourite.FavouriteClientImpl
 import pl.cuyer.rusthub.data.network.server.ServerClientImpl
 import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
@@ -27,6 +29,8 @@ import pl.cuyer.rusthub.domain.repository.filtersOptions.FiltersOptionsRepositor
 import pl.cuyer.rusthub.domain.repository.search.SearchQueryDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
+import pl.cuyer.rusthub.domain.repository.favourite.FavouriteSyncDataSource
+import pl.cuyer.rusthub.domain.repository.favourite.network.FavouriteRepository
 import pl.cuyer.rusthub.domain.usecase.AuthAnonymouslyUseCase
 import pl.cuyer.rusthub.domain.usecase.ClearFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteSearchQueriesUseCase
@@ -38,6 +42,7 @@ import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
+import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
@@ -56,7 +61,9 @@ val appModule = module {
         }
     }
     singleOf(::ServerClientImpl) bind ServerRepository::class
+    singleOf(::FavouriteClientImpl) bind FavouriteRepository::class
     singleOf(::ServerDataSourceImpl) bind ServerDataSource::class
+    singleOf(::FavouriteSyncDataSourceImpl) bind FavouriteSyncDataSource::class
     singleOf(::FiltersDataSourceImpl) bind FiltersDataSource::class
     singleOf(::SearchQueryDataSourceImpl) bind SearchQueryDataSource::class
     singleOf(::RemoteKeyDataSourceImpl) bind RemoteKeyDataSource::class
@@ -82,6 +89,7 @@ val appModule = module {
     single { AuthAnonymouslyUseCase(get(), get()) }
     single { GetUserUseCase(get()) }
     single { LogoutUserUseCase(get()) }
+    single { ToggleFavouriteUseCase(get(), get(), get(), get()) }
 }
 
 expect val platformModule: Module

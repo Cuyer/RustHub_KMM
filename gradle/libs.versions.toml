@@ -28,6 +28,7 @@ material3-adaptive = "1.2.0-alpha07"
 material3-adaptive-navigation-suite = "1.4.0-alpha16"
 material3-adaptive-navigation3 = "1.0.0-SNAPSHOT"
 lifecycleRuntimeKtx = "2.9.1"
+work = "2.9.0"
 serialization = "1.8.1"
 coil = "3.2.0"
 
@@ -112,6 +113,7 @@ moko-resources-generator = { module = "dev.icerock.moko:resources-generator", ve
 moko-resources = { module = "dev.icerock.moko:resources", version.ref = "moko-resources" }
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleRuntimeKtx"}
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splash-screen" }
+androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

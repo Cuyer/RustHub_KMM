@@ -17,7 +17,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
+import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
+import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.presentation.model.toUi
+import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
@@ -28,8 +31,10 @@ class ServerDetailsViewModel(
     private val clipboardHandler: ClipboardHandler,
     private val snackbarController: SnackbarController,
     private val getServerDetailsUseCase: GetServerDetailsUseCase,
+    private val toggleFavouriteUseCase: ToggleFavouriteUseCase,
     private val serverName: String?,
-    private val serverId: Long?
+    private val serverId: Long?,
+    private val isFavourite: Boolean
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -41,7 +46,8 @@ class ServerDetailsViewModel(
                 it.copy(
                     isLoading = true,
                     serverId = serverId,
-                    serverName = serverName
+                    serverName = serverName,
+                    details = it.details ?: ServerInfoUi(isFavorite = isFavourite)
                 )
             }
             serverId?.let {
@@ -57,6 +63,7 @@ class ServerDetailsViewModel(
     fun onAction(action: ServerDetailsAction) {
         when (action) {
             is ServerDetailsAction.OnSaveToClipboard -> saveIpToClipboard(action.ipAddress)
+            ServerDetailsAction.ToggleFavourite -> toggleFavourite()
         }
     }
 
@@ -69,6 +76,24 @@ class ServerDetailsViewModel(
                     duration = Duration.SHORT
                 )
             )
+        }
+    }
+
+    private fun toggleFavourite() {
+        val id = state.value.serverId ?: return
+        val add = !(state.value.details?.isFavorite ?: false)
+        _state.update { it.copy(isSyncing = true, details = it.details?.copy(isFavorite = add)) }
+        coroutineScope.launch {
+            toggleFavouriteUseCase(id, add).collect { result ->
+                when (result) {
+                    is Result.Success -> _state.update { it.copy(isSyncing = false) }
+                    is Result.Error -> {
+                        _state.update { it.copy(isSyncing = false, details = it.details?.copy(isFavorite = !add)) }
+                        snackbarController.sendEvent(SnackbarEvent("Failed to sync favourite"))
+                    }
+                    Result.Loading -> {}
+                }
+            }
         }
     }
 

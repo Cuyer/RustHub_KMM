@@ -60,5 +60,7 @@ data class ServerInfoDto(
     @SerialName("map_url")
     val mapUrl: String? = null,
     @SerialName("header_image")
-    val headerImage: String? = null
+    val headerImage: String? = null,
+    @SerialName("is_favorite")
+    val isFavorite: Boolean? = null
 )

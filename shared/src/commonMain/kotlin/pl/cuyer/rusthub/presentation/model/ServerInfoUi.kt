@@ -46,5 +46,6 @@ data class ServerInfoUi(
     val website: String? = null,
     val isPremium: Boolean? = null,
     val mapUrl: String? = null,
-    val headerImage: String? = null
+    val headerImage: String? = null,
+    val isFavorite: Boolean? = null
 )
