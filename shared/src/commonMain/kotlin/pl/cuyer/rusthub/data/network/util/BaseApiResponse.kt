@@ -12,6 +12,13 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.data.network.model.ErrorResponse
+import pl.cuyer.rusthub.domain.exception.AnonymousUpgradeException
+import pl.cuyer.rusthub.domain.exception.FavoriteLimitException
+import pl.cuyer.rusthub.domain.exception.FiltersOptionsException
+import pl.cuyer.rusthub.domain.exception.InvalidCredentialsException
+import pl.cuyer.rusthub.domain.exception.InvalidRefreshTokenException
+import pl.cuyer.rusthub.domain.exception.ServersQueryException
+import pl.cuyer.rusthub.domain.exception.UserAlreadyExistsException
 import kotlin.coroutines.coroutineContext
 
 abstract class BaseApiResponse(
@@ -28,7 +35,7 @@ abstract class BaseApiResponse(
                 emit(success(data))
             } else {
                 val errorResponse = json.decodeFromString<ErrorResponse>(response.bodyAsText())
-                emit(Result.Error(Exception(errorResponse.message)))
+                emit(Result.Error(parseException(errorResponse)))
             }
         }.onStart {
             emit(loading())
@@ -40,4 +47,17 @@ abstract class BaseApiResponse(
     fun <T> success(success: T): Result.Success<T> = Result.Success(success)
     fun <T> error(exception: Throwable): Result<T> =
         Result.Error(exception = exception)
+
+    private fun parseException(errorResponse: ErrorResponse): Throwable {
+        return when (errorResponse.exception) {
+            UserAlreadyExistsException::class.simpleName -> UserAlreadyExistsException(errorResponse.message)
+            InvalidCredentialsException::class.simpleName -> InvalidCredentialsException(errorResponse.message)
+            InvalidRefreshTokenException::class.simpleName -> InvalidRefreshTokenException(errorResponse.message)
+            AnonymousUpgradeException::class.simpleName -> AnonymousUpgradeException(errorResponse.message)
+            ServersQueryException::class.simpleName -> ServersQueryException(errorResponse.message)
+            FiltersOptionsException::class.simpleName -> FiltersOptionsException(errorResponse.message)
+            FavoriteLimitException::class.simpleName -> FavoriteLimitException(errorResponse.message)
+            else -> Exception(errorResponse.message)
+        }
+    }
 }
