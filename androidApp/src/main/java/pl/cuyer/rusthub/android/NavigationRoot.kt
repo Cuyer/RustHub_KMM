@@ -23,6 +23,7 @@ import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneSt
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItem
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -87,6 +88,13 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
     val backStack = rememberNavBackStack(startDestination)
     val listDetailStrategy = rememberListDetailSceneStrategy<Any>()
     val logoutUseCase = koinInject<LogoutUserUseCase>()
+
+    LaunchedEffect(startDestination) {
+        if (backStack.firstOrNull() != startDestination) {
+            backStack.clear()
+            backStack.add(startDestination)
+        }
+    }
 
     @Composable
     fun AppScaffold(modifier: Modifier = Modifier) {

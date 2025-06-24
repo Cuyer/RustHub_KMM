@@ -63,6 +63,6 @@ data class ServerInfoDto(
     val headerImage: String? = null,
     @SerialName("is_favorite")
     val isFavorite: Boolean? = null,
-    @SerialName("rust_next_wipe")
+    @SerialName("next_wipe")
     val nextWipe: Instant? = null
 )
