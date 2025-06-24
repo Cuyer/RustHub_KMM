@@ -99,7 +99,6 @@ fun FilterBottomSheet(
         )
         HorizontalDivider()
         AnimatedContent(
-            contentAlignment = Alignment.Center,
             targetState = stateProvider().value.isLoadingFilters,
             transitionSpec = { defaultFadeTransition() }
         ) { loading ->

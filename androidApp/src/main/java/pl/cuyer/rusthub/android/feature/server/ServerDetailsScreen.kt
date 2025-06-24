@@ -1,8 +1,8 @@
 package pl.cuyer.rusthub.android.feature.server
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -51,7 +50,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import pl.cuyer.rusthub.android.designsystem.ServerDetail
 import pl.cuyer.rusthub.android.designsystem.ServerWebsite
 import pl.cuyer.rusthub.android.designsystem.SubscriptionDialog
-import pl.cuyer.rusthub.android.designsystem.defaultFadeTransition
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.domain.model.Flag
@@ -89,26 +87,25 @@ fun ServerDetailsScreen(
                     )
                 },
                 actions = {
-                    if (state.isSyncing) {
-                        CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                    } else {
-                        IconButton(onClick = { onAction(ServerDetailsAction.OnToggleFavourite) }) {
-                            val icon =
-                                if (state.details?.isFavorite == true) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder
-                            Icon(icon, contentDescription = null)
-                        }
+                    IconButton(onClick = { onAction(ServerDetailsAction.OnToggleFavourite) }) {
+                        val icon =
+                            if (state.details?.isFavorite == true) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder
+                        Icon(icon, contentDescription = null)
                     }
                 },
                 scrollBehavior = scrollBehavior
             )
         }
     ) { innerPadding ->
-        AnimatedContent(
-            contentAlignment = Alignment.Center,
-            targetState = state.details != null,
-            transitionSpec = { defaultFadeTransition() }
-        ) { detailsReady ->
-            if (detailsReady) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            if (state.isSyncing || state.details == null) {
+                LoadingIndicator()
+            }
+            if (state.details != null) {
                 SubscriptionDialog(
                     showDialog = state.showSubscriptionDialog,
                     onConfirm = { onAction(ServerDetailsAction.OnSubscribe) },
@@ -382,8 +379,6 @@ fun ServerDetailsScreen(
                         }
                     }
                 }
-            } else {
-                LoadingIndicator()
             }
         }
     }

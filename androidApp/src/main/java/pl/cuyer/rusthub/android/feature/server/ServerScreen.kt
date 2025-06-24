@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.android.feature.server
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -22,7 +23,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
@@ -56,8 +56,10 @@ import app.cash.paging.compose.itemContentType
 import app.cash.paging.compose.itemKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock.System
 import kotlinx.datetime.Instant
@@ -114,26 +116,26 @@ fun ServerScreen(
     }
 
     LaunchedEffect(pagedList) {
-        snapshotFlow { pagedList.loadState.source }
+        snapshotFlow { pagedList.loadState }
+            .map { it.refresh }
             .distinctUntilChanged()
-            .collect { loadState ->
-                when (loadState.refresh) {
-                    is LoadState.Loading -> onAction(ServerAction.OnChangeIsRefreshingState(isRefreshing = true))
+            .collectLatest { refreshState ->
+                when (refreshState) {
+                    is LoadState.Loading -> {
+                        Log.d("serverscreen", "ServerScreen: Loading")
+                        onAction(ServerAction.OnChangeIsRefreshingState(true))
+                    }
 
-                    is LoadState.NotLoading -> onAction(ServerAction.OnChangeIsRefreshingState(isRefreshing = false))
+                    is LoadState.NotLoading -> {
+                        Log.d("serverscreen", "ServerScreen: Not Loading")
+                        onAction(ServerAction.OnChangeIsRefreshingState(false))
+                    }
 
-                    is LoadState.Error -> onAction(ServerAction.OnError("Error occurred during fetching servers"))
-                }
-
-                when (loadState.append) {
-                    is LoadState.Loading -> onAction(ServerAction.OnChangeLoadMoreState(isLoadingMore = true))
-
-                    is LoadState.NotLoading -> onAction(ServerAction.OnChangeLoadMoreState(isLoadingMore = false))
-
-                    is LoadState.Error -> onAction(ServerAction.OnError("Error occurred during fetching servers"))
+                    is LoadState.Error -> onAction(ServerAction.OnError("Error during refresh"))
                 }
             }
     }
+
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     Scaffold(
@@ -172,7 +174,6 @@ fun ServerScreen(
                 .padding(innerPadding)
         ) {
             AnimatedContent(
-                contentAlignment = Alignment.Center,
                 targetState = state.value.isRefreshing,
                 transitionSpec = { defaultFadeTransition() }
             ) { initialIsLoading ->
@@ -228,11 +229,6 @@ fun ServerScreen(
                                     details = details,
                                     isOnline = item.serverStatus == ServerStatus.ONLINE
                                 )
-                            }
-                        }
-                        if (stateProvider().value.loadingMore) {
-                            item {
-                                LoadingIndicator()
                             }
                         }
                     }

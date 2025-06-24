@@ -34,8 +34,13 @@ class ToggleFavouriteUseCase(
                 is Result.Error -> {
                     when (result.exception) {
                         is NetworkUnavailableException, is TimeoutException -> {
+                            serverDataSource.updateFavourite(serverId, add)
                             syncDataSource.upsertOperation(
-                                FavouriteSyncOperation(serverId, add, SyncState.PENDING)
+                                FavouriteSyncOperation(
+                                    serverId,
+                                    add,
+                                    SyncState.PENDING
+                                )
                             )
                             scheduler.schedule(serverId)
                             send(Result.Success(Unit))

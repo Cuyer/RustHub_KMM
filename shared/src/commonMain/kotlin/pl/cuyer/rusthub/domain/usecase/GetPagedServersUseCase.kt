@@ -23,8 +23,7 @@ class GetPagedServersUseCase(
         return Pager(
             config = PagingConfig(
                 pageSize = 40,
-                initialLoadSize = 40,
-                enablePlaceholders = false
+                enablePlaceholders = true
             ),
             remoteMediator = ServerRemoteMediator(
                 dataSource,
