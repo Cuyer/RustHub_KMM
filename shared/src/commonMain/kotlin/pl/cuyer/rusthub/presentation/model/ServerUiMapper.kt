@@ -39,6 +39,7 @@ fun ServerInfo.toUi(): ServerInfoUi {
         monuments = monuments,
         averageFps = averageFps,
         lastWipe = wipe?.let { formatLastWipe(it) },
+        nextWipe = nextWipe?.let { formatNextWipe(it) },
         pve = pve,
         website = website,
         isPremium = isPremium,
@@ -62,4 +63,20 @@ fun formatLastWipe(wipeInstant: Instant): String {
     }
 
     return "$formattedDate ($timeAgo)"
+}
+
+fun formatNextWipe(wipeInstant: Instant): String {
+    val now = Clock.System.now()
+    val duration = wipeInstant - now
+    val localDateTime = wipeInstant.toLocalDateTime(TimeZone.currentSystemDefault())
+    val formattedDate = formatLocalDateTime(localDateTime)
+
+    val inTime = when {
+        duration.inWholeDays >= 1 -> "in ${duration.inWholeDays} days"
+        duration.inWholeHours >= 1 -> "in ${duration.inWholeHours} hours"
+        duration.inWholeMinutes >= 0 -> "in ${duration.inWholeMinutes} minutes"
+        else -> "soon"
+    }
+
+    return "$formattedDate ($inTime)"
 }

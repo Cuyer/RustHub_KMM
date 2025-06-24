@@ -62,7 +62,7 @@ class ServerDetailsViewModel(
             is ServerDetailsAction.OnSaveToClipboard -> saveIpToClipboard(action.ipAddress)
             ServerDetailsAction.OnToggleFavourite -> toggleFavourite()
             ServerDetailsAction.OnDismissSubscriptionDialog -> showSubscriptionDialog(false)
-            ServerDetailsAction.OnSubscribe -> showSubscriptionDialog(false)
+            ServerDetailsAction.OnSubscribe -> handleSubscribeAction()
         }
     }
 
@@ -132,6 +132,22 @@ class ServerDetailsViewModel(
             it.copy(
                 showSubscriptionDialog = show
             )
+        }
+    }
+
+    private fun handleSubscribeAction() {
+        if (state.value.showSubscriptionDialog) {
+            coroutineScope.launch {
+                snackbarController.sendEvent(
+                    SnackbarEvent(
+                        message = "Subscribed to notifications",
+                        duration = Duration.SHORT
+                    )
+                )
+            }
+            showSubscriptionDialog(false)
+        } else {
+            showSubscriptionDialog(true)
         }
     }
 

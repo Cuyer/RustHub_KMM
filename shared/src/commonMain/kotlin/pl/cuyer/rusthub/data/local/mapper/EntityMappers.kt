@@ -113,7 +113,8 @@ fun ServerEntity.toServerInfo(): ServerInfo {
         isPremium = is_premium == 1L,
         mapUrl = map_url,
         headerImage = header_image,
-        isFavorite = favourite == 1L
+        isFavorite = favourite == 1L,
+        nextWipe = rust_next_wipe?.let { Instant.parse(it) }
     )
 }
 
