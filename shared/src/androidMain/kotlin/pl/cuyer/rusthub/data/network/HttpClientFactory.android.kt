@@ -63,7 +63,10 @@ actual class HttpClientFactory actual constructor(
                                 refreshToken = newTokens.refreshToken
                             )
                             BearerTokens(newTokens.accessToken, newTokens.refreshToken)
-                        } else null
+                        } else {
+                            authDataSource.deleteUser()
+                            null
+                        }
                     }
                     sendWithoutRequest { request ->
                         !request.url.encodedPath.startsWith("/auth")

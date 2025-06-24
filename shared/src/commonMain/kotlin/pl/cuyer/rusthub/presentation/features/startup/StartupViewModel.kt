@@ -1,11 +1,10 @@
 package pl.cuyer.rusthub.presentation.features.startup
 
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -41,36 +40,32 @@ class StartupViewModel(
                 updateLoadingState(true)
             }
             .onEach { user ->
+                Napier.i("User: $user")
                 updateStartDestination(user)
                 updateLoadingState(false)
             }
-            .catch { e -> showErrorSnackbar("Error occurred during fetching data about the user.") }
+            .catch {
+                showErrorSnackbar("Error occurred during fetching data about the user.")
+                updateLoadingState(false)
+            }
             .launchIn(coroutineScope)
     }
 
     private fun updateLoadingState(loading: Boolean) {
-        _state.update {
-            it.copy(
-                isLoading = loading
-            )
-        }
+        _state.update { it.copy(isLoading = loading) }
     }
 
     private fun updateStartDestination(user: User?) {
         _state.update {
             it.copy(
-                startDestination = if (user != null) ServerList else Onboarding,
+                startDestination = if (user != null) ServerList else Onboarding
             )
         }
     }
 
     private fun showErrorSnackbar(message: String) {
         coroutineScope.launch {
-            snackbarController.sendEvent(
-                event = SnackbarEvent(
-                    message = message
-                )
-            )
+            snackbarController.sendEvent(SnackbarEvent(message = message))
         }
     }
 }
