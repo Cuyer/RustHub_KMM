@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.presentation.features.auth
+package pl.cuyer.rusthub.presentation.features.auth.login
 
 /** Actions from the login screen */
 sealed interface LoginAction {

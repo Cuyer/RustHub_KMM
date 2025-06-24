@@ -1,8 +1,10 @@
 package pl.cuyer.rusthub.presentation.features.onboarding
 
 import androidx.navigation3.runtime.NavKey
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -37,6 +39,8 @@ class OnboardingViewModel(
         initialValue = OnboardingState()
     )
 
+    var authAnonymouslyJob: Job? = null
+
     fun onAction(action: OnboardingAction) {
         when (action) {
             OnboardingAction.OnLoginClick -> navigate(Login)
@@ -46,15 +50,17 @@ class OnboardingViewModel(
     }
 
     private fun continueAsGuest() {
-        coroutineScope.launch {
+        authAnonymouslyJob?.cancel()
+        authAnonymouslyJob = coroutineScope.launch {
             authAnonymouslyUseCase()
                 .onStart { updateLoading(true) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
                 .onCompletion { updateLoading(false) }
+                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
                 .collectLatest { result ->
+                    ensureActive()
                     when (result) {
                         is Result.Success -> navigate(ServerList)
-                        is Result.Error -> showErrorSnackbar(result.exception.message ?: "Unknown error")
+                        is Result.Error -> showErrorSnackbar("Error occurred during creating guest account.")
                         else -> Unit
                     }
                 }

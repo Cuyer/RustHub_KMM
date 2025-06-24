@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.presentation.features.auth.register
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
+import pl.cuyer.rusthub.domain.exception.UserAlreadyExistsException
 import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
@@ -46,26 +48,39 @@ class RegisterViewModel(
     fun onAction(action: RegisterAction) {
         when (action) {
             RegisterAction.OnRegister -> register()
-            is RegisterAction.OnEmailChange -> _state.update {
-                it.copy(
-                    email = action.email,
-                    emailError = null
-                )
-            }
+            is RegisterAction.OnEmailChange -> updateEmail(action.email)
 
-            is RegisterAction.OnPasswordChange -> _state.update {
-                it.copy(
-                    password = action.password,
-                    passwordError = null
-                )
-            }
+            is RegisterAction.OnPasswordChange -> updatePassword(action.password)
 
-            is RegisterAction.OnUsernameChange -> _state.update {
-                it.copy(
-                    username = action.username,
-                    usernameError = null
-                )
-            }
+            is RegisterAction.OnUsernameChange -> updateUsername(action.username)
+
+        }
+    }
+
+    private fun updateEmail(email: String) {
+        _state.update {
+            it.copy(
+                email = email,
+                emailError = null
+            )
+        }
+    }
+
+    private fun updatePassword(password: String) {
+        _state.update {
+            it.copy(
+                password = password,
+                passwordError = null
+            )
+        }
+    }
+
+    private fun updateUsername(username: String) {
+        _state.update {
+            it.copy(
+                username = username,
+                usernameError = null
+            )
         }
     }
 
@@ -99,23 +114,17 @@ class RegisterViewModel(
             }
 
             registerUserUseCase(email, password, username)
-                .onStart {
-                    updateLoading(true)
-                }
-                .catch { e ->
-                    showErrorSnackbar(e.message ?: "Unknown error")
-                }
-                .onCompletion {
-                    updateLoading(false)
-                }
+                .onStart { updateLoading(true) }
+                .onCompletion { updateLoading(false) }
+                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
                 .collectLatest { result ->
+                    ensureActive()
                     when (result) {
-                        is Result.Success -> {
-                            _uiEvent.send(UiEvent.Navigate(ServerList))
-                        }
+                        is Result.Success -> _uiEvent.send(UiEvent.Navigate(ServerList))
 
-                        is Result.Error -> {
-                            showErrorSnackbar(result.exception.message ?: "Unknown error")
+                        is Result.Error ->  when(result.exception) {
+                            is UserAlreadyExistsException -> showErrorSnackbar("User already exists.")
+                            else -> showErrorSnackbar("Error occurred during creating user account")
                         }
 
                         else -> Unit

@@ -46,8 +46,8 @@ import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
-import pl.cuyer.rusthub.presentation.features.auth.LoginAction
-import pl.cuyer.rusthub.presentation.features.auth.LoginState
+import pl.cuyer.rusthub.presentation.features.auth.login.LoginAction
+import pl.cuyer.rusthub.presentation.features.auth.login.LoginState
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 

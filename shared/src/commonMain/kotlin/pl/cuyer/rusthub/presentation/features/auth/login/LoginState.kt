@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.presentation.features.auth
+package pl.cuyer.rusthub.presentation.features.auth.login
 
 /** State for the login screen */
 data class LoginState(

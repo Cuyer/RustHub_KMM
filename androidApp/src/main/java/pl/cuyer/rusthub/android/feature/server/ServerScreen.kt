@@ -153,7 +153,8 @@ fun ServerScreen(
                 onClearSearchQuery = {
                     onAction(ServerAction.OnClearSearchQuery)
                 },
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                isLoadingSearchHistory = state.value.isLoadingSearchHistory
             )
         },
         modifier = Modifier

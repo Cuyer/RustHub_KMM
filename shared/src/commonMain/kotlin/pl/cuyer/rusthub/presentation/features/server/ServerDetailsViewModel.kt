@@ -25,8 +25,10 @@ import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.exception.FavoriteLimitException
 import pl.cuyer.rusthub.domain.exception.NetworkUnavailableException
 import pl.cuyer.rusthub.domain.exception.TimeoutException
+import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
+import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.presentation.model.toUi
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.Duration
@@ -48,16 +50,8 @@ class ServerDetailsViewModel(
     private val _state = MutableStateFlow(ServerDetailsState())
     val state = _state
         .onStart {
-            _state.update {
-                it.copy(
-                    serverId = serverId,
-                    serverName = serverName,
-                    details = it.details
-                )
-            }
-            serverId?.let {
-                serverDetailsJob = observeServerDetails(it)
-            }
+            assignInitialData()
+            assignInitialServerDetailsJob()
         }
         .stateIn(
             scope = coroutineScope,
@@ -74,6 +68,22 @@ class ServerDetailsViewModel(
             ServerDetailsAction.OnToggleFavourite -> toggleFavourite()
             ServerDetailsAction.OnDismissSubscriptionDialog -> showSubscriptionDialog(false)
             ServerDetailsAction.OnSubscribe -> showSubscriptionDialog(false)
+        }
+    }
+
+    private fun assignInitialData() {
+        _state.update {
+            it.copy(
+                serverId = serverId,
+                serverName = serverName,
+                details = it.details
+            )
+        }
+    }
+
+    private fun assignInitialServerDetailsJob() {
+        serverId?.let {
+            serverDetailsJob = observeServerDetails(it)
         }
     }
 
@@ -145,25 +155,28 @@ class ServerDetailsViewModel(
 
     private fun observeServerDetails(serverId: Long): Job {
         serverDetailsJob?.cancel()
-        return getServerDetailsUseCase.invoke(serverId)
-            .onStart { changeIsLoading(true) }
+        return getServerDetailsUseCase(serverId)
             .map { it?.toUi() }
+            .flowOn(Dispatchers.Default)
             .onEach { mappedDetails ->
-                _state.update {
-                    it.copy(
-                        details = mappedDetails,
-                    )
-                }
-            }
-            .onCompletion {
+                updateDetails(mappedDetails)
                 changeIsLoading(false)
             }
+            .onStart { changeIsLoading(true) }
             .catch { e ->
                 showErrorSnackbar("Error occured when fetching data about the server")
             }
-            .flowOn(Dispatchers.Default)
             .launchIn(coroutineScope)
     }
+
+    private fun updateDetails(details: ServerInfoUi?) {
+        _state.update {
+            it.copy(
+                details = details,
+            )
+        }
+    }
+
 
     private fun changeIsSyncing(syncing: Boolean) {
         _state.update {

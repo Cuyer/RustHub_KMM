@@ -6,6 +6,7 @@ import androidx.work.WorkerParameters
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.collectLatest
 import pl.cuyer.rusthub.domain.exception.FavoriteLimitException
 import pl.cuyer.rusthub.domain.repository.favourite.FavouriteSyncDataSource
@@ -49,7 +50,7 @@ class FavouriteSyncWorker(
                             }
                         }
 
-                        DomainResult.Loading -> Unit
+                        else -> Unit
                     }
                 }
                 success

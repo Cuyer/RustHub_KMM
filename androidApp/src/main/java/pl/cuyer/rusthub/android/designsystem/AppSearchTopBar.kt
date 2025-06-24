@@ -34,6 +34,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
@@ -75,7 +76,8 @@ fun RustSearchBarTopAppBar(
     searchQueryUi: List<SearchQueryUi>,
     onDelete: (String) -> Unit,
     onClearSearchQuery: () -> Unit,
-    scrollBehavior: SearchBarScrollBehavior
+    scrollBehavior: SearchBarScrollBehavior,
+    isLoadingSearchHistory: Boolean,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -237,14 +239,22 @@ fun RustSearchBarTopAppBar(
             state = searchBarState,
             inputField = inputField
         ) {
-            suggestions()
+            if (isLoadingSearchHistory) {
+                LoadingIndicator()
+            } else {
+                suggestions()
+            }
         }
     } else {
         ExpandedDockedSearchBar(
             state = searchBarState,
             inputField = inputField
         ) {
-            suggestions()
+            if (isLoadingSearchHistory) {
+                LoadingIndicator()
+            } else {
+                suggestions()
+            }
         }
     }
 }
@@ -264,7 +274,8 @@ private fun AppSearchTopBarPreview() {
                     searchQueryUi = emptyList(),
                     onDelete = {},
                     onClearSearchQuery = {},
-                    scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
+                    scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior(),
+                    isLoadingSearchHistory = false
                 )
             }
         ) { Box(Modifier

@@ -1,8 +1,9 @@
-package pl.cuyer.rusthub.presentation.features.auth
+package pl.cuyer.rusthub.presentation.features.auth.login
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -15,6 +16,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
+import pl.cuyer.rusthub.domain.exception.InvalidCredentialsException
+import pl.cuyer.rusthub.domain.exception.UserAlreadyExistsException
 import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
@@ -44,18 +47,26 @@ class LoginViewModel(
     fun onAction(action: LoginAction) {
         when (action) {
             LoginAction.OnLogin -> login()
-            is LoginAction.OnPasswordChange -> _state.update {
-                it.copy(
-                    password = action.password,
-                    passwordError = null
-                )
-            }
-            is LoginAction.OnUsernameChange -> _state.update {
-                it.copy(
-                    username = action.username,
-                    usernameError = null
-                )
-            }
+            is LoginAction.OnPasswordChange -> updatePassword(action.password)
+            is LoginAction.OnUsernameChange -> updateUsername(action.username)
+        }
+    }
+
+    private fun updatePassword(password: String) {
+        _state.update {
+            it.copy(
+                password = password,
+                passwordError = null
+            )
+        }
+    }
+
+    private fun updateUsername(username: String) {
+        _state.update {
+            it.copy(
+                username = username,
+                usernameError = null
+            )
         }
     }
 
@@ -87,16 +98,18 @@ class LoginViewModel(
 
             loginUserUseCase(username, password)
                 .onStart { updateLoading(true) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
                 .onCompletion { updateLoading(false) }
+                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
                 .collectLatest { result ->
+                    ensureActive()
                     when (result) {
-                        is Result.Success -> {
-                            _uiEvent.send(UiEvent.Navigate(ServerList))
-                        }
+                        is Result.Success -> _uiEvent.send(UiEvent.Navigate(ServerList))
 
-                        is Result.Error -> {
-                            showErrorSnackbar(result.exception.message ?: "Unknown error")
+                        is Result.Error -> when(result.exception) {
+                            is InvalidCredentialsException -> {
+                                showErrorSnackbar("Provided credentials are incorrect.")
+                            }
+                            else -> showErrorSnackbar("Error occurred during logging into the account")
                         }
 
                         else -> Unit

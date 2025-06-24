@@ -38,6 +38,8 @@ import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
+import pl.cuyer.rusthub.presentation.model.FilterUi
+import pl.cuyer.rusthub.presentation.model.SearchQueryUi
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.presentation.model.toUi
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
@@ -92,22 +94,26 @@ class ServerViewModel(
 
     private fun observeSearchQueries() {
         getSearchQueriesUseCase()
-            .onStart { updateIsLoadingSearchHistory(true) }
             .distinctUntilChanged()
             .map { searchQuery ->
                 searchQuery.map { it.toUi() }
             }
-            .onEach { mappedQuery ->
-                _state.update {
-                    it.copy(
-                        searchQuery = mappedQuery
-                    )
-                }
-            }
-            .onCompletion { updateIsLoadingSearchHistory(false) }
-            .catch { e -> sendSnackbarEvent("Error occurred during fetching search history.") }
             .flowOn(Dispatchers.Default)
+            .onEach { mappedQuery ->
+                updateSearchQuery(mappedQuery)
+                updateIsLoadingSearchHistory(false)
+            }
+            .onStart { updateIsLoadingSearchHistory(true) }
+            .catch { e -> sendSnackbarEvent("Error occurred during fetching search history.") }
             .launchIn(coroutineScope)
+    }
+
+    private fun updateSearchQuery(mappedQuery: List<SearchQueryUi>) {
+        _state.update {
+            it.copy(
+                searchQuery = mappedQuery
+            )
+        }
     }
 
 
@@ -127,18 +133,22 @@ class ServerViewModel(
                 ranking = filtersOptions?.maxRanking ?: 0
             )
         }.distinctUntilChanged()
+            .flowOn(Dispatchers.Default)
             .onStart { updateIsLoadingFilters(true) }
             .onEach { mappedFilters ->
-                _state.update {
-                    it.copy(
-                        filters = mappedFilters
-                    )
-                }
+                updateFilters(mappedFilters)
+                updateIsLoadingFilters(false)
             }
-            .onCompletion { updateIsLoadingFilters(false) }
             .catch { e -> sendSnackbarEvent("Error occurred during fetching filters.") }
-            .flowOn(Dispatchers.Default)
             .launchIn(coroutineScope)
+    }
+
+    private fun updateFilters(mappedFilters: FilterUi) {
+        _state.update {
+            it.copy(
+                filters = mappedFilters
+            )
+        }
     }
 
     fun onAction(action: ServerAction) {
@@ -150,10 +160,28 @@ class ServerViewModel(
             is ServerAction.OnSearch -> handleSearch(query = action.query)
             is ServerAction.OnClearFilters -> clearFilters()
             is ServerAction.OnClearSearchQuery -> clearSearchQuery()
-            is ServerAction.DeleteSearchQueries -> coroutineScope.launch { deleteSearchQueriesUseCase() }
-            is ServerAction.DeleteSearchQueryByQuery -> coroutineScope.launch { deleteSearchQueriesUseCase(action.query) }
+            is ServerAction.DeleteSearchQueries -> deleteSearchQueries(null)
+            is ServerAction.DeleteSearchQueryByQuery -> deleteSearchQueries(action.query)
             is ServerAction.OnError -> sendSnackbarEvent(action.message)
             is ServerAction.OnChangeLoadMoreState -> updateLoadingMore(action.isLoadingMore)
+        }
+    }
+
+    private fun deleteSearchQueries(query: String?) {
+        coroutineScope.launch {
+            runCatching {
+                query?.let {
+                    deleteSearchQueriesUseCase(query)
+                } ?: run {
+                    deleteSearchQueriesUseCase()
+                }
+            }.onFailure { e ->
+                query?.let {
+                    sendSnackbarEvent("Error occurred during deleting search query")
+                } ?: run {
+                    sendSnackbarEvent("Error occurred during deleting search queries")
+                }
+            }
         }
     }
 

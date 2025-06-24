@@ -28,11 +28,9 @@ class AuthAnonymouslyUseCase(
                     }
                 }
 
-                is Result.Error -> {
-                    send(Result.Error(result.exception))
-                }
+                is Result.Error -> send(Result.Error(result.exception))
 
-                is Result.Loading -> send(Result.Loading)
+                else -> Unit
             }
         }
     }
