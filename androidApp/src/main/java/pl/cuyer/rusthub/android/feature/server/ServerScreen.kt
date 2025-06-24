@@ -1,7 +1,5 @@
 package pl.cuyer.rusthub.android.feature.server
 
-import android.util.Log
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -19,6 +17,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
@@ -32,7 +31,6 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -42,24 +40,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
-import androidx.paging.LoadState
 import app.cash.paging.PagingData
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
-import app.cash.paging.compose.itemContentType
-import app.cash.paging.compose.itemKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock.System
 import kotlinx.datetime.Instant
@@ -67,11 +59,13 @@ import pl.cuyer.rusthub.android.designsystem.FilterBottomSheet
 import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.designsystem.ServerListItem
 import pl.cuyer.rusthub.android.designsystem.ServerListItemShimmer
-import pl.cuyer.rusthub.android.designsystem.defaultFadeTransition
 import pl.cuyer.rusthub.android.model.Label
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.android.util.HandlePagingItems
+import pl.cuyer.rusthub.domain.exception.NetworkUnavailableException
+import pl.cuyer.rusthub.domain.exception.TimeoutException
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
 import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.WipeType
@@ -115,28 +109,6 @@ fun ServerScreen(
         }
     }
 
-    LaunchedEffect(pagedList) {
-        snapshotFlow { pagedList.loadState }
-            .map { it.refresh }
-            .distinctUntilChanged()
-            .collectLatest { refreshState ->
-                when (refreshState) {
-                    is LoadState.Loading -> {
-                        Log.d("serverscreen", "ServerScreen: Loading")
-                        onAction(ServerAction.OnChangeIsRefreshingState(true))
-                    }
-
-                    is LoadState.NotLoading -> {
-                        Log.d("serverscreen", "ServerScreen: Not Loading")
-                        onAction(ServerAction.OnChangeIsRefreshingState(false))
-                    }
-
-                    is LoadState.Error -> onAction(ServerAction.OnError("Error during refresh"))
-                }
-            }
-    }
-
-
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     Scaffold(
         topBar = {
@@ -173,11 +145,8 @@ fun ServerScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            AnimatedContent(
-                targetState = state.value.isRefreshing,
-                transitionSpec = { defaultFadeTransition() }
-            ) { initialIsLoading ->
-                if (initialIsLoading) {
+            HandlePagingItems(pagedList) {
+                onRefresh {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(spacing.medium)
                     ) {
@@ -191,45 +160,54 @@ fun ServerScreen(
                             )
                         }
                     }
-                } else {
+                }
+                onError { error ->
+                    when (error) {
+                        is NetworkUnavailableException, is TimeoutException -> Unit
+                        else -> onAction(ServerAction.OnError(error.message ?: "Unknown Error"))
+                    }
+                }
+                onSuccess { items ->
                     LazyColumn(
                         state = lazyListState,
-                        verticalArrangement = Arrangement.spacedBy(spacing.medium)
+                        verticalArrangement = Arrangement.spacedBy(spacing.medium),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        items(
-                            count = pagedList.itemCount,
-                            key = pagedList.itemKey { it.id ?: UUID.randomUUID() },
-                            contentType = pagedList.itemContentType()
-                        ) { index ->
-                            pagedList[index]?.let { item ->
-                                val labels by rememberUpdatedState(createLabels(item))
-                                val details by rememberUpdatedState(createDetails(item))
-                                val interactionSource = remember { MutableInteractionSource() }
-                                ServerListItem(
-                                    modifier = Modifier
-                                        .animateItem()
-                                        .padding(horizontal = spacing.xmedium)
-                                        .combinedClickable(
-                                            interactionSource = interactionSource,
-                                            onLongClick = {
-                                                onAction(ServerAction.OnLongServerClick(item.serverIp))
-                                            },
-                                            onClick = {
-                                                onAction(
-                                                    ServerAction.OnServerClick(
-                                                        item.id ?: Long.MAX_VALUE,
-                                                        item.name ?: ""
-                                                    )
+                        onPagingItems(key = { it.id ?: UUID.randomUUID() }) { item ->
+                            val interactionSource = remember { MutableInteractionSource() }
+                            val labels by rememberUpdatedState(createLabels(item))
+                            val details by rememberUpdatedState(createDetails(item))
+                            ServerListItem(
+                                modifier = Modifier
+                                    .animateItem()
+                                    .padding(horizontal = spacing.xmedium)
+                                    .combinedClickable(
+                                        interactionSource = interactionSource,
+                                        onLongClick = {
+                                            onAction(ServerAction.OnLongServerClick(item.serverIp))
+                                        },
+                                        onClick = {
+                                            onAction(
+                                                ServerAction.OnServerClick(
+                                                    item.id ?: Long.MAX_VALUE,
+                                                    item.name ?: ""
                                                 )
-                                            }
-                                        ),
-                                    serverName = item.name.orEmpty(),
-                                    flag = item.serverFlag.toDrawable(),
-                                    labels = labels,
-                                    details = details,
-                                    isOnline = item.serverStatus == ServerStatus.ONLINE
-                                )
-                            }
+                                            )
+                                        }
+                                    ),
+                                serverName = item.name.orEmpty(),
+                                flag = item.serverFlag.toDrawable(),
+                                labels = labels,
+                                details = details,
+                                isOnline = item.serverStatus == ServerStatus.ONLINE
+                            )
+                        }
+                        onAppendItem {
+                            CircularProgressIndicator(
+                                Modifier
+                                    .animateItem()
+                                    .padding(6.dp)
+                            )
                         }
                     }
                 }

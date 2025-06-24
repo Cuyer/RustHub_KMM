@@ -315,6 +315,7 @@ fun ServerDetailsScreen(
                         )
                     }
                     item {
+                        HorizontalDivider()
                         Text(
                             modifier = Modifier.padding(spacing.medium),
                             style = MaterialTheme.typography.titleLarge,
