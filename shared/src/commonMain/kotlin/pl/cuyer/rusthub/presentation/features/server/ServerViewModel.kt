@@ -10,12 +10,14 @@ import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -68,7 +70,6 @@ class ServerViewModel(
     private val _state = MutableStateFlow(ServerState())
     val state = _state
         .onStart {
-            _state.update { it.copy(isLoading = true) }
             observeFilters()
             observeSearchQueries()
         }
@@ -87,19 +88,24 @@ class ServerViewModel(
                 }
                 .flowOn(Dispatchers.Default)
                 .cachedIn(coroutineScope)
-        }
+        }.catch { e -> sendSnackbarEvent("Error occurred during fetching servers.") }
 
     private fun observeSearchQueries() {
-        getSearchQueriesUseCase.invoke()
+        getSearchQueriesUseCase()
+            .onStart { updateIsLoadingSearchHistory(true) }
+            .distinctUntilChanged()
             .map { searchQuery ->
                 searchQuery.map { it.toUi() }
-            }.onEach { mappedQuery ->
+            }
+            .onEach { mappedQuery ->
                 _state.update {
                     it.copy(
                         searchQuery = mappedQuery
                     )
                 }
             }
+            .onCompletion { updateIsLoadingSearchHistory(false) }
+            .catch { e -> sendSnackbarEvent("Error occurred during fetching search history.") }
             .flowOn(Dispatchers.Default)
             .launchIn(coroutineScope)
     }
@@ -121,14 +127,16 @@ class ServerViewModel(
                 ranking = filtersOptions?.maxRanking ?: 0
             )
         }.distinctUntilChanged()
+            .onStart { updateIsLoadingFilters(true) }
             .onEach { mappedFilters ->
                 _state.update {
                     it.copy(
-                        filters = mappedFilters,
-                        isLoading = false
+                        filters = mappedFilters
                     )
                 }
             }
+            .onCompletion { updateIsLoadingFilters(false) }
+            .catch { e -> sendSnackbarEvent("Error occurred during fetching filters.") }
             .flowOn(Dispatchers.Default)
             .launchIn(coroutineScope)
     }
@@ -137,31 +145,33 @@ class ServerViewModel(
         when (action) {
             is ServerAction.OnServerClick -> navigateToServer(action.id, action.name)
             is ServerAction.OnLongServerClick -> saveIpToClipboard(action.ipAddress)
-            is ServerAction.OnChangeLoadingState -> _state.update { it.copy(isLoading = action.isLoading) }
+            is ServerAction.OnChangeIsRefreshingState -> updateIsRefreshing(action.isRefreshing)
             is ServerAction.OnSaveFilters -> onSaveFilters(action.filters)
             is ServerAction.OnSearch -> handleSearch(query = action.query)
             is ServerAction.OnClearFilters -> clearFilters()
             is ServerAction.OnClearSearchQuery -> clearSearchQuery()
-            is ServerAction.DeleteSearchQueries -> coroutineScope.launch {
-                deleteSearchQueriesUseCase()
-            }
-
-            is ServerAction.DeleteSearchQueryByQuery -> coroutineScope.launch {
-                deleteSearchQueriesUseCase(action.query)
-            }
+            is ServerAction.DeleteSearchQueries -> coroutineScope.launch { deleteSearchQueriesUseCase() }
+            is ServerAction.DeleteSearchQueryByQuery -> coroutineScope.launch { deleteSearchQueriesUseCase(action.query) }
+            is ServerAction.OnError -> sendSnackbarEvent(action.message)
+            is ServerAction.OnChangeLoadMoreState -> updateLoadingMore(action.isLoadingMore)
         }
     }
 
     private fun handleSearch(query: String) {
         coroutineScope.launch {
-            saveSearchQueryUseCase(
-                SearchQuery(
-                    query = query,
-                    timestamp = System.now(),
-                    id = null
+            runCatching {
+                saveSearchQueryUseCase(
+                    SearchQuery(
+                        query = query,
+                        timestamp = System.now(),
+                        id = null
+                    )
                 )
-            )
-            queryFlow.update { query }
+            }.onFailure {
+                sendSnackbarEvent("Error occurred during saving searched phrase.")
+            }.onSuccess {
+                queryFlow.update { query }
+            }
         }
     }
 
@@ -195,27 +205,27 @@ class ServerViewModel(
 
     private fun onSaveFilters(filters: ServerQuery) {
         coroutineScope.launch {
-            saveFiltersUseCase(filters)
+            runCatching {
+                saveFiltersUseCase(filters)
+            }.onFailure {
+                sendSnackbarEvent("Error occurred during saving filters.")
+            }
         }
     }
 
     private fun clearFilters() {
         coroutineScope.launch {
-            clearFiltersUseCase()
+            runCatching {
+                clearFiltersUseCase()
+            }.onFailure {
+                sendSnackbarEvent("Error occurred during clearing filters.")
+            }
         }
     }
 
     private fun navigateToServer(id: Long, name: String) {
         coroutineScope.launch {
             _uiEvent.send(UiEvent.Navigate(ServerDetails(id, name)))
-        }
-    }
-
-    private fun handleError(e: Throwable) {
-        e.message?.let {
-            sendSnackbarEvent(
-                message = it
-            )
         }
     }
 
@@ -234,5 +244,29 @@ class ServerViewModel(
                 )
             )
         }
+    }
+
+    private fun updateIsLoadingFilters(loading: Boolean) {
+        _state.update {
+            it.copy(
+                isLoadingFilters = loading
+            )
+        }
+    }
+
+    private fun updateIsLoadingSearchHistory(loading: Boolean) {
+        _state.update {
+            it.copy(
+                isLoadingSearchHistory = loading
+            )
+        }
+    }
+
+    private fun updateIsRefreshing(isRefreshing: Boolean) {
+        _state.update { it.copy(isRefreshing = isRefreshing) }
+    }
+
+    private fun updateLoadingMore(loading: Boolean) {
+        _state.update { it.copy(loadingMore = loading) }
     }
 }

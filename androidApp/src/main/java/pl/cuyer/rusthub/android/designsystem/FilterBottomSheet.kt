@@ -100,7 +100,7 @@ fun FilterBottomSheet(
                 .padding(start = spacing.medium, end = spacing.medium, bottom = spacing.medium)
         )
         HorizontalDivider()
-        AnimatedContent(stateProvider().value.isLoading) { loading ->
+        AnimatedContent(stateProvider().value.isLoadingFilters) { loading ->
             if (loading) {
                 Box(
                     modifier = Modifier

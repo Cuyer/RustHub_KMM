@@ -19,8 +19,10 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
@@ -30,6 +32,7 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -39,11 +42,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation3.runtime.NavKey
+import androidx.paging.LoadState
 import app.cash.paging.PagingData
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
@@ -51,6 +56,7 @@ import app.cash.paging.compose.itemContentType
 import app.cash.paging.compose.itemKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock.System
@@ -74,7 +80,7 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import java.util.Locale
 import java.util.UUID
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ServerScreen(
     onNavigate: (NavKey) -> Unit,
@@ -104,6 +110,28 @@ fun ServerScreen(
         derivedStateOf {
             lazyListState.firstVisibleItemIndex == 0 && lazyListState.firstVisibleItemScrollOffset == 0
         }
+    }
+
+    LaunchedEffect(pagedList) {
+        snapshotFlow { pagedList.loadState.source }
+            .distinctUntilChanged()
+            .collect { loadState ->
+                when (loadState.refresh) {
+                    is LoadState.Loading -> onAction(ServerAction.OnChangeIsRefreshingState(isRefreshing = true))
+
+                    is LoadState.NotLoading -> onAction(ServerAction.OnChangeIsRefreshingState(isRefreshing = false))
+
+                    is LoadState.Error -> onAction(ServerAction.OnError("Error occurred during fetching servers"))
+                }
+
+                when (loadState.append) {
+                    is LoadState.Loading -> onAction(ServerAction.OnChangeLoadMoreState(isLoadingMore = true))
+
+                    is LoadState.NotLoading -> onAction(ServerAction.OnChangeLoadMoreState(isLoadingMore = false))
+
+                    is LoadState.Error -> onAction(ServerAction.OnError("Error occurred during fetching servers"))
+                }
+            }
     }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -141,110 +169,115 @@ fun ServerScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            AnimatedContent(state.value.isLoading) { isLoading ->
-                if (isLoading) {
+            AnimatedContent(state.value.isRefreshing) { initialIsLoading ->
+                if (initialIsLoading) {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(spacing.medium)
                     ) {
-                    items(
-                        count = 6
-                    ) {
-                        ServerListItemShimmer(
-                            modifier = Modifier
-                                .animateItem()
-                                .padding(horizontal = spacing.xmedium)
-                        )
-                    }
-                }
-            } else {
-                LazyColumn(
-                    state = lazyListState,
-                    verticalArrangement = Arrangement.spacedBy(spacing.medium)
-                ) {
-                    items(
-                        count = pagedList.itemCount,
-                        key = pagedList.itemKey { it.id ?: UUID.randomUUID() },
-                        contentType = pagedList.itemContentType()
-                    ) { index ->
-                        pagedList[index]?.let { item ->
-                            val labels by rememberUpdatedState(createLabels(item))
-                            val details by rememberUpdatedState(createDetails(item))
-                            val interactionSource = remember { MutableInteractionSource() }
-                            ServerListItem(
+                        items(
+                            count = 6
+                        ) {
+                            ServerListItemShimmer(
                                 modifier = Modifier
                                     .animateItem()
                                     .padding(horizontal = spacing.xmedium)
-                                    .combinedClickable(
-                                        interactionSource = interactionSource,
-                                        onLongClick = {
-                                            onAction(ServerAction.OnLongServerClick(item.serverIp))
-                                        },
-                                        onClick = {
-                                            onAction(
-                                                ServerAction.OnServerClick(
-                                                    item.id ?: Long.MAX_VALUE,
-                                                    item.name ?: ""
-                                                )
-                                            )
-                                        }
-                                    ),
-                                serverName = item.name.orEmpty(),
-                                flag = item.serverFlag.toDrawable(),
-                                labels = labels,
-                                details = details,
-                                isOnline = item.serverStatus == ServerStatus.ONLINE
                             )
+                        }
+                    }
+                } else {
+                    LazyColumn(
+                        state = lazyListState,
+                        verticalArrangement = Arrangement.spacedBy(spacing.medium)
+                    ) {
+                        items(
+                            count = pagedList.itemCount,
+                            key = pagedList.itemKey { it.id ?: UUID.randomUUID() },
+                            contentType = pagedList.itemContentType()
+                        ) { index ->
+                            pagedList[index]?.let { item ->
+                                val labels by rememberUpdatedState(createLabels(item))
+                                val details by rememberUpdatedState(createDetails(item))
+                                val interactionSource = remember { MutableInteractionSource() }
+                                ServerListItem(
+                                    modifier = Modifier
+                                        .animateItem()
+                                        .padding(horizontal = spacing.xmedium)
+                                        .combinedClickable(
+                                            interactionSource = interactionSource,
+                                            onLongClick = {
+                                                onAction(ServerAction.OnLongServerClick(item.serverIp))
+                                            },
+                                            onClick = {
+                                                onAction(
+                                                    ServerAction.OnServerClick(
+                                                        item.id ?: Long.MAX_VALUE,
+                                                        item.name ?: ""
+                                                    )
+                                                )
+                                            }
+                                        ),
+                                    serverName = item.name.orEmpty(),
+                                    flag = item.serverFlag.toDrawable(),
+                                    labels = labels,
+                                    details = details,
+                                    isOnline = item.serverStatus == ServerStatus.ONLINE
+                                )
+                            }
+                        }
+                        if (stateProvider().value.loadingMore) {
+                            item {
+                                LoadingIndicator()
+                            }
                         }
                     }
                 }
             }
-        }
-        if (showSheet) {
-            FilterBottomSheet(
-                stateProvider = { state },
-                sheetState = sheetState,
-                onDismiss = {
-                    showSheet = false
-                },
-                onDismissAndRefresh = {
-                    showSheet = false
-                    pagedList.refresh()
-                },
-                onAction = onAction
-            )
-        }
-        AnimatedVisibility(
-            visible = !isAtTop,
-            enter = slideInVertically(
-                initialOffsetY = { it },
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioLowBouncy,
-                    stiffness = Spring.StiffnessVeryLow
+            if (showSheet) {
+                FilterBottomSheet(
+                    stateProvider = { state },
+                    sheetState = sheetState,
+                    onDismiss = {
+                        showSheet = false
+                    },
+                    onDismissAndRefresh = {
+                        showSheet = false
+                        pagedList.refresh()
+                    },
+                    onAction = onAction
                 )
-            ) + scaleIn(
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioLowBouncy,
-                    stiffness = Spring.StiffnessLow
-                )
-            ),
-            exit = slideOutVertically(
-                targetOffsetY = { it },
-                animationSpec = tween(durationMillis = 150)
-            ),
-            modifier = Modifier
-                .padding(spacing.medium)
-                .align(Alignment.BottomEnd)
-        ) {
-            FloatingActionButton(
-                onClick = {
-                    coroutineScope.launch {
-                        lazyListState.animateScrollToItem(0)
-                    }
-                }
-            ) {
-                Icon(Icons.Default.ArrowUpward, contentDescription = "Scroll to top")
             }
-        }
+            AnimatedVisibility(
+                visible = !isAtTop,
+                enter = slideInVertically(
+                    initialOffsetY = { it },
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioLowBouncy,
+                        stiffness = Spring.StiffnessVeryLow
+                    )
+                ) + scaleIn(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioLowBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
+                ),
+                exit = slideOutVertically(
+                    targetOffsetY = { it },
+                    animationSpec = tween(durationMillis = 150)
+                ),
+                modifier = Modifier
+                    .padding(spacing.medium)
+                    .align(Alignment.BottomEnd)
+            ) {
+                FloatingActionButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            lazyListState.animateScrollToItem(0)
+                        }
+                    }
+                ) {
+                    Icon(Icons.Default.ArrowUpward, contentDescription = "Scroll to top")
+                }
+            }
         }
     }
 }
@@ -308,7 +341,7 @@ private fun ServerScreenPreview() {
             color = MaterialTheme.colorScheme.background
         ) {
             ServerScreen(
-                stateProvider = { mutableStateOf(ServerState(isLoading = false)) },
+                stateProvider = { mutableStateOf(ServerState(isRefreshing = false)) },
                 onAction = {},
                 onNavigate = {},
                 uiEvent = MutableStateFlow(

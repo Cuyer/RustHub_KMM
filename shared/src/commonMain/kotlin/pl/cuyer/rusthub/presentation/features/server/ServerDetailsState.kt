@@ -4,7 +4,7 @@ import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 
 data class ServerDetailsState(
     val details: ServerInfoUi? = null,
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val serverId: Long? = null,
     val serverName: String? = null,
     val isSyncing: Boolean = false,

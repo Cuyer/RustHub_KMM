@@ -105,7 +105,7 @@ class ServerDetailsViewModel(
                 .onCompletion {
                     changeIsSyncing(false)
                 }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catch { e -> showErrorSnackbar("Error occurred when trying to ${if (add) "add" else "remove"} server from favourites") }
                 .collectLatest { result ->
                     ensureActive()
                     when (result) {
@@ -120,7 +120,7 @@ class ServerDetailsViewModel(
                         }
                         is Result.Error -> when (result.exception) {
                             is FavoriteLimitException -> showSubscriptionDialog(true)
-                            else -> showErrorSnackbar(result.exception.message ?: "Unknown error")
+                            else -> showErrorSnackbar("Error occurred when trying to ${if (add) "add" else "remove"} server from favourites")
                         }
                         Result.Loading -> Unit
                     }
