@@ -2,7 +2,6 @@ package pl.cuyer.rusthub.android.feature.server
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +19,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -97,285 +95,276 @@ fun ServerDetailsScreen(
             )
         }
     ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            if (state.isSyncing || state.details == null) {
-                LoadingIndicator()
-            }
-            if (state.details != null) {
-                SubscriptionDialog(
-                    showDialog = state.showSubscriptionDialog,
-                    onConfirm = { onAction(ServerDetailsAction.OnSubscribe) },
-                    onDismiss = { onAction(ServerDetailsAction.OnDismissSubscriptionDialog) }
-                )
-                LazyColumn(
-                    state = lazyListState,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                ) {
-                    state.details?.let {
-                        item {
-                            Text(
-                                modifier = Modifier.padding(spacing.medium),
-                                style = MaterialTheme.typography.titleLarge,
-                                text = "General info"
-                            )
+        if (state.details != null) {
+            SubscriptionDialog(
+                showDialog = state.showSubscriptionDialog,
+                onConfirm = { onAction(ServerDetailsAction.OnSubscribe) },
+                onDismiss = { onAction(ServerDetailsAction.OnDismissSubscriptionDialog) }
+            )
+            LazyColumn(
+                state = lazyListState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+                state.details?.let {
+                    item {
+                        Text(
+                            modifier = Modifier.padding(spacing.medium),
+                            style = MaterialTheme.typography.titleLarge,
+                            text = "General info"
+                        )
 
-                            it.headerImage?.let {
-                                AsyncImage(
-                                    modifier =
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = spacing.medium),
-                                    model = it,
-                                    contentDescription = null,
-                                )
-                            }
-
-                            it.ranking?.let {
-                                ServerDetail(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    label = "Ranking",
-                                    value = it.toInt()
-                                )
-                            }
-                            it.serverStatus?.let {
-                                ServerDetail(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    label = "Status",
-                                    value = it.name,
-                                    valueColor = if (it == ServerStatus.ONLINE) Color(0xFF00C853) else Color(
-                                        0xFFF44336
-                                    )
-                                )
-                            }
-                            it.serverIp?.let {
-                                Row(
-                                    modifier = Modifier.padding(horizontal = spacing.medium),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                ) {
-                                    Text(
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        text = "IP: "
-                                    )
-                                    Text(
-                                        style = MaterialTheme.typography.bodyLarge.copy(
-                                            color = MaterialTheme.colorScheme.primary
-                                        ),
-                                        text = it
-                                    )
-                                    Spacer(modifier = Modifier.width(spacing.small))
-                                    IconButton(
-                                        onClick = {
-                                            onAction(
-                                                ServerDetailsAction.OnSaveToClipboard(
-                                                    it
-                                                )
-                                            )
-                                        }
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.ContentCopy,
-                                            contentDescription = "Icon to copy IP address"
-                                        )
-                                    }
-                                }
-                            }
-                            it.serverFlag?.let {
-                                Row(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(spacing.small)
-                                ) {
-                                    Text(
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        text = "Country:"
-                                    )
-                                    Flag.fromDisplayName(it.displayName)?.let { flag ->
-                                        Image(
-                                            painter = painterResource(flag.toDrawable()),
-                                            contentDescription = null,
-                                            modifier = Modifier
-                                                .size(26.dp)
-                                        )
-                                    }
-                                }
-                            }
-
-                            it.averageFps?.let {
-                                ServerDetail(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    label = "Average FPS",
-                                    value = it.toString()
-                                )
-                            }
-
-                            it.lastWipe?.let {
-                                ServerDetail(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    label = "Last wipe",
-                                    value = it
-                                )
-                            }
-
-                            it.pve?.let {
-                                ServerDetail(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    label = "PVE",
-                                    value = if (it) "True" else "False"
-                                )
-                            }
-
-                            it.website?.let { url ->
-                                ServerWebsite(
-                                    website = url,
-                                    spacing = spacing,
-                                    urlColor = Color(0xFF1E88E5)
-                                )
-                            }
-
-                            it.isOfficial?.let {
-                                ServerDetail(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    label = "Official",
-                                    value = if (it) "True" else "False"
-                                )
-                            }
-
-                            it.isPremium?.let {
-                                ServerDetail(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    label = "Premium",
-                                    value = if (it) "True" else "False"
-                                )
-                            }
-                        }
-
-                        item {
-                            Text(
-                                modifier = Modifier.padding(spacing.medium),
-                                style = MaterialTheme.typography.titleLarge,
-                                text = "Settings"
-                            )
-
-                            it.maxGroup?.let {
-                                ServerDetail(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    label = "Group limit",
-                                    value = if (it == 999999L) "None" else it.toString()
-                                )
-                            }
-
-                            it.blueprints?.let {
-                                ServerDetail(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    label = "Blueprints",
-                                    value = if (it) "Enabled" else "Disabled"
-                                )
-                            }
-
-                            it.kits?.let {
-                                ServerDetail(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    label = "Kits",
-                                    value = if (it) "Yes" else "No kits"
-                                )
-                            }
-
-                            it.decay?.let {
-                                ServerDetail(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    label = "Decay",
-                                    value = it * 100L
-                                )
-                            }
-
-                            it.upkeep?.let {
-                                ServerDetail(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    label = "Upkeep",
-                                    value = it * 100L
-                                )
-                            }
-
-                            it.rates?.let {
-                                ServerDetail(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    label = "Rates",
-                                    value = it
-                                )
-                            }
-                        }
-                        item {
-                            Text(
-                                modifier = Modifier.padding(spacing.medium),
-                                style = MaterialTheme.typography.titleLarge,
-                                text = "Description"
-                            )
-                            HtmlStyledText(
-                                modifier = Modifier.padding(spacing.medium),
-                                html = it.description ?: ""
+                        it.headerImage?.let {
+                            AsyncImage(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = spacing.medium),
+                                model = it,
+                                contentDescription = null,
                             )
                         }
-                        item {
-                            Text(
-                                modifier = Modifier.padding(spacing.medium),
-                                style = MaterialTheme.typography.titleLarge,
-                                text = "Map information"
-                            )
-                            it.seed?.let {
-                                ServerDetail(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    label = "Seed",
-                                    value = it.toString()
-                                )
-                            }
-                            it.mapSize?.let {
-                                ServerDetail(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    label = "Map size",
-                                    value = it
-                                )
-                            }
-                            it.mapName?.let {
-                                ServerDetail(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    label = "Map name",
-                                    value = it.displayName
-                                )
-                            }
-                            it.monuments?.let {
-                                ServerDetail(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    label = "Monuments",
-                                    value = it
-                                )
-                            }
-                            it.mapUrl?.let {
-                                ServerWebsite(
-                                    label = "Additional information available at",
-                                    website = it,
-                                    alias = "RustMaps",
-                                    spacing = spacing,
-                                    urlColor = Color(0xFF1E88E5)
-                                )
-                            }
 
-                            it.mapImage?.let {
-                                AsyncImage(
-                                    modifier = Modifier.padding(
-                                        start = spacing.medium,
-                                        end = spacing.medium,
-                                        bottom = spacing.medium
+                        it.ranking?.let {
+                            ServerDetail(
+                                modifier = Modifier.padding(spacing.medium),
+                                label = "Ranking",
+                                value = it.toInt()
+                            )
+                        }
+                        it.serverStatus?.let {
+                            ServerDetail(
+                                modifier = Modifier.padding(spacing.medium),
+                                label = "Status",
+                                value = it.name,
+                                valueColor = if (it == ServerStatus.ONLINE) Color(0xFF00C853) else Color(
+                                    0xFFF44336
+                                )
+                            )
+                        }
+                        it.serverIp?.let {
+                            Row(
+                                modifier = Modifier.padding(horizontal = spacing.medium),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    text = "IP: "
+                                )
+                                Text(
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        color = MaterialTheme.colorScheme.primary
                                     ),
-                                    model = it,
-                                    contentDescription = "Rust map image"
+                                    text = it
                                 )
+                                Spacer(modifier = Modifier.width(spacing.small))
+                                IconButton(
+                                    onClick = {
+                                        onAction(
+                                            ServerDetailsAction.OnSaveToClipboard(
+                                                it
+                                            )
+                                        )
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.ContentCopy,
+                                        contentDescription = "Icon to copy IP address"
+                                    )
+                                }
                             }
+                        }
+                        it.serverFlag?.let {
+                            Row(
+                                modifier = Modifier.padding(spacing.medium),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(spacing.small)
+                            ) {
+                                Text(
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    text = "Country:"
+                                )
+                                Flag.fromDisplayName(it.displayName)?.let { flag ->
+                                    Image(
+                                        painter = painterResource(flag.toDrawable()),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(26.dp)
+                                    )
+                                }
+                            }
+                        }
+
+                        it.averageFps?.let {
+                            ServerDetail(
+                                modifier = Modifier.padding(spacing.medium),
+                                label = "Average FPS",
+                                value = it.toString()
+                            )
+                        }
+
+                        it.lastWipe?.let {
+                            ServerDetail(
+                                modifier = Modifier.padding(spacing.medium),
+                                label = "Last wipe",
+                                value = it
+                            )
+                        }
+
+                        it.pve?.let {
+                            ServerDetail(
+                                modifier = Modifier.padding(spacing.medium),
+                                label = "PVE",
+                                value = if (it) "True" else "False"
+                            )
+                        }
+
+                        it.website?.let { url ->
+                            ServerWebsite(
+                                website = url,
+                                spacing = spacing,
+                                urlColor = Color(0xFF1E88E5)
+                            )
+                        }
+
+                        it.isOfficial?.let {
+                            ServerDetail(
+                                modifier = Modifier.padding(spacing.medium),
+                                label = "Official",
+                                value = if (it) "True" else "False"
+                            )
+                        }
+
+                        it.isPremium?.let {
+                            ServerDetail(
+                                modifier = Modifier.padding(spacing.medium),
+                                label = "Premium",
+                                value = if (it) "True" else "False"
+                            )
+                        }
+                    }
+
+                    item {
+                        Text(
+                            modifier = Modifier.padding(spacing.medium),
+                            style = MaterialTheme.typography.titleLarge,
+                            text = "Settings"
+                        )
+
+                        it.maxGroup?.let {
+                            ServerDetail(
+                                modifier = Modifier.padding(spacing.medium),
+                                label = "Group limit",
+                                value = if (it == 999999L) "None" else it.toString()
+                            )
+                        }
+
+                        it.blueprints?.let {
+                            ServerDetail(
+                                modifier = Modifier.padding(spacing.medium),
+                                label = "Blueprints",
+                                value = if (it) "Enabled" else "Disabled"
+                            )
+                        }
+
+                        it.kits?.let {
+                            ServerDetail(
+                                modifier = Modifier.padding(spacing.medium),
+                                label = "Kits",
+                                value = if (it) "Yes" else "No kits"
+                            )
+                        }
+
+                        it.decay?.let {
+                            ServerDetail(
+                                modifier = Modifier.padding(spacing.medium),
+                                label = "Decay",
+                                value = it * 100L
+                            )
+                        }
+
+                        it.upkeep?.let {
+                            ServerDetail(
+                                modifier = Modifier.padding(spacing.medium),
+                                label = "Upkeep",
+                                value = it * 100L
+                            )
+                        }
+
+                        it.rates?.let {
+                            ServerDetail(
+                                modifier = Modifier.padding(spacing.medium),
+                                label = "Rates",
+                                value = it
+                            )
+                        }
+                    }
+                    item {
+                        Text(
+                            modifier = Modifier.padding(spacing.medium),
+                            style = MaterialTheme.typography.titleLarge,
+                            text = "Description"
+                        )
+                        HtmlStyledText(
+                            modifier = Modifier.padding(spacing.medium),
+                            html = it.description ?: ""
+                        )
+                    }
+                    item {
+                        Text(
+                            modifier = Modifier.padding(spacing.medium),
+                            style = MaterialTheme.typography.titleLarge,
+                            text = "Map information"
+                        )
+                        it.seed?.let {
+                            ServerDetail(
+                                modifier = Modifier.padding(spacing.medium),
+                                label = "Seed",
+                                value = it.toString()
+                            )
+                        }
+                        it.mapSize?.let {
+                            ServerDetail(
+                                modifier = Modifier.padding(spacing.medium),
+                                label = "Map size",
+                                value = it
+                            )
+                        }
+                        it.mapName?.let {
+                            ServerDetail(
+                                modifier = Modifier.padding(spacing.medium),
+                                label = "Map name",
+                                value = it.displayName
+                            )
+                        }
+                        it.monuments?.let {
+                            ServerDetail(
+                                modifier = Modifier.padding(spacing.medium),
+                                label = "Monuments",
+                                value = it
+                            )
+                        }
+                        it.mapUrl?.let {
+                            ServerWebsite(
+                                label = "Additional information available at",
+                                website = it,
+                                alias = "RustMaps",
+                                spacing = spacing,
+                                urlColor = Color(0xFF1E88E5)
+                            )
+                        }
+
+                        it.mapImage?.let {
+                            AsyncImage(
+                                modifier = Modifier.padding(
+                                    start = spacing.medium,
+                                    end = spacing.medium,
+                                    bottom = spacing.medium
+                                ),
+                                model = it,
+                                contentDescription = "Rust map image"
+                            )
                         }
                     }
                 }

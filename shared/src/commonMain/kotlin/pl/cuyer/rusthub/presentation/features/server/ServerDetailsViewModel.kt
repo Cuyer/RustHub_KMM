@@ -1,6 +1,5 @@
 package pl.cuyer.rusthub.presentation.features.server
 
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -13,7 +12,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -23,9 +21,6 @@ import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.exception.FavoriteLimitException
-import pl.cuyer.rusthub.domain.exception.NetworkUnavailableException
-import pl.cuyer.rusthub.domain.exception.TimeoutException
-import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
@@ -109,12 +104,6 @@ class ServerDetailsViewModel(
 
         toggleJob = coroutineScope.launch {
             toggleFavouriteUseCase(id, add)
-                .onStart {
-                    changeIsSyncing(true)
-                }
-                .onCompletion {
-                    changeIsSyncing(false)
-                }
                 .catch { e -> showErrorSnackbar("Error occurred when trying to ${if (add) "add" else "remove"} server from favourites") }
                 .collectLatest { result ->
                     ensureActive()
@@ -173,15 +162,6 @@ class ServerDetailsViewModel(
         _state.update {
             it.copy(
                 details = details,
-            )
-        }
-    }
-
-
-    private fun changeIsSyncing(syncing: Boolean) {
-        _state.update {
-            it.copy(
-                isSyncing = syncing
             )
         }
     }
