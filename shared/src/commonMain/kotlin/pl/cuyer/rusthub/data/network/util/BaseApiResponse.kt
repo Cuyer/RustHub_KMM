@@ -3,7 +3,6 @@ package pl.cuyer.rusthub.data.network.util
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.ensureActive
@@ -39,13 +38,8 @@ abstract class BaseApiResponse(
                 val data: T = response.body()
                 emit(success(data))
             } else {
-                val errorBody = response.bodyAsText()
-                if (errorBody.isBlank()) {
-                    emit(Result.Error(parseBlankException(response.status)))
-                } else {
-                    val errorResponse = json.decodeFromString<ErrorResponse>(response.bodyAsText())
-                    emit(Result.Error(parseException(errorResponse)))
-                }
+                val errorResponse = json.decodeFromString<ErrorResponse>(response.bodyAsText())
+                emit(Result.Error(parseException(errorResponse)))
             }
         }.onStart {
             emit(loading())
@@ -58,35 +52,35 @@ abstract class BaseApiResponse(
     fun <T> error(exception: Throwable): Result<T> =
         Result.Error(exception = exception)
 
-    fun parseBlankException(code: HttpStatusCode): Throwable = when (code) {
-        HttpStatusCode.BadRequest ->
-            HttpStatusCode.Unauthorized
-
-        ->
-            HttpStatusCode.Forbidden
-
-        ->
-            HttpStatusCode.NotFound
-
-        ->
-            HttpStatusCode.Conflict
-
-        ->
-            HttpStatusCode.TooManyRequests
-
-        ->
-        else -> Exception("HTTP ${code.value}: ${code.description}")
-    }
-
     fun parseException(errorResponse: ErrorResponse): Throwable {
-        return when (errorResponse.exception) {
-            UserAlreadyExistsException::class.simpleName -> UserAlreadyExistsException(errorResponse.message)
-            InvalidCredentialsException::class.simpleName -> InvalidCredentialsException(errorResponse.message)
-            InvalidRefreshTokenException::class.simpleName -> InvalidRefreshTokenException(errorResponse.message)
-            AnonymousUpgradeException::class.simpleName -> AnonymousUpgradeException(errorResponse.message)
-            ServersQueryException::class.simpleName -> ServersQueryException(errorResponse.message)
-            FiltersOptionsException::class.simpleName -> FiltersOptionsException(errorResponse.message)
-            FavoriteLimitException::class.simpleName -> FavoriteLimitException(errorResponse.message)
+        return when (errorResponse.cause) {
+            UserAlreadyExistsException::class.simpleName -> UserAlreadyExistsException(
+                errorResponse.message ?: "User already exists"
+            )
+
+            InvalidCredentialsException::class.simpleName -> InvalidCredentialsException(
+                errorResponse.message ?: "Invalid credentials"
+            )
+
+            InvalidRefreshTokenException::class.simpleName -> InvalidRefreshTokenException(
+                errorResponse.message ?: "Invalid refresh token"
+            )
+
+            AnonymousUpgradeException::class.simpleName -> AnonymousUpgradeException(
+                errorResponse.message ?: "Anonymous upgrade required"
+            )
+
+            ServersQueryException::class.simpleName -> ServersQueryException(
+                errorResponse.message ?: "Servers query error"
+            )
+
+            FiltersOptionsException::class.simpleName -> FiltersOptionsException(
+                errorResponse.message ?: "Filters options error"
+            )
+
+            FavoriteLimitException::class.simpleName -> FavoriteLimitException(
+                errorResponse.message ?: "Favorite limit error"
+            )
             else -> Exception(errorResponse.message)
         }
     }
