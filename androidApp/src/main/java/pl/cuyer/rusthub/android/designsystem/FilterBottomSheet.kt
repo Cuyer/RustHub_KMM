@@ -48,8 +48,6 @@ import kotlinx.serialization.json.Json
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
-import pl.cuyer.rusthub.android.designsystem.AppButton
-import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.features.server.ServerState
 import pl.cuyer.rusthub.presentation.model.FilterUi
@@ -100,7 +98,11 @@ fun FilterBottomSheet(
                 .padding(start = spacing.medium, end = spacing.medium, bottom = spacing.medium)
         )
         HorizontalDivider()
-        AnimatedContent(stateProvider().value.isLoadingFilters) { loading ->
+        AnimatedContent(
+            contentAlignment = Alignment.Center,
+            targetState = stateProvider().value.isLoadingFilters,
+            transitionSpec = { defaultFadeTransition() }
+        ) { loading ->
             if (loading) {
                 Box(
                     modifier = Modifier
@@ -148,7 +150,7 @@ fun FilterBottomSheet(
                             ) {
                                 Text("Apply Filters")
                             }
-                            AppTextButton(
+                            AppOutlinedButton(
                                 onClick = {
                                     onAction(ServerAction.OnClearFilters)
                                     onDismissAndRefresh()

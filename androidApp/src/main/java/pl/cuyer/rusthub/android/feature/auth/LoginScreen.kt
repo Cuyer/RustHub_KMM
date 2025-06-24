@@ -102,10 +102,6 @@ fun LoginScreen(
                 onAction = onAction
             )
         }
-
-        if (state.value.isLoading) {
-            LoadingIndicator()
-        }
     }
 }
 
@@ -155,6 +151,7 @@ private fun LoginScreenCompact(
         )
 
         AppButton(
+            isLoading = state.isLoading,
             onClick = onLogin,
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -265,6 +262,7 @@ private fun LoginScreenExpanded(
             )
 
             AppButton(
+                isLoading = state.isLoading,
                 onClick = onLogin,
                 modifier = Modifier.fillMaxWidth()
             ) {

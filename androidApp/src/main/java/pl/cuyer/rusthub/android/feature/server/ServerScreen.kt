@@ -65,6 +65,7 @@ import pl.cuyer.rusthub.android.designsystem.FilterBottomSheet
 import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.designsystem.ServerListItem
 import pl.cuyer.rusthub.android.designsystem.ServerListItemShimmer
+import pl.cuyer.rusthub.android.designsystem.defaultFadeTransition
 import pl.cuyer.rusthub.android.model.Label
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
@@ -170,7 +171,11 @@ fun ServerScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            AnimatedContent(state.value.isRefreshing) { initialIsLoading ->
+            AnimatedContent(
+                contentAlignment = Alignment.Center,
+                targetState = state.value.isRefreshing,
+                transitionSpec = { defaultFadeTransition() }
+            ) { initialIsLoading ->
                 if (initialIsLoading) {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(spacing.medium)

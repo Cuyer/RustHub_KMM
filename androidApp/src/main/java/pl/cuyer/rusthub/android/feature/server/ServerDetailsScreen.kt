@@ -51,6 +51,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import pl.cuyer.rusthub.android.designsystem.ServerDetail
 import pl.cuyer.rusthub.android.designsystem.ServerWebsite
 import pl.cuyer.rusthub.android.designsystem.SubscriptionDialog
+import pl.cuyer.rusthub.android.designsystem.defaultFadeTransition
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.domain.model.Flag
@@ -102,7 +103,11 @@ fun ServerDetailsScreen(
             )
         }
     ) { innerPadding ->
-        AnimatedContent(targetState = state.details != null) { detailsReady ->
+        AnimatedContent(
+            contentAlignment = Alignment.Center,
+            targetState = state.details != null,
+            transitionSpec = { defaultFadeTransition() }
+        ) { detailsReady ->
             if (detailsReady) {
                 SubscriptionDialog(
                     showDialog = state.showSubscriptionDialog,

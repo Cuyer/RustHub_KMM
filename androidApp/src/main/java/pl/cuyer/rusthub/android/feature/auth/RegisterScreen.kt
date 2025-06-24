@@ -97,10 +97,6 @@ fun RegisterScreen(
                 onAction = onAction
             )
         }
-
-        if (state.value.isLoading) {
-            LoadingIndicator()
-        }
     }
 }
 
@@ -162,6 +158,7 @@ private fun RegisterScreenCompact(
         )
 
         AppButton(
+            isLoading = state.isLoading,
             onClick = onRegister,
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -293,6 +290,7 @@ private fun RegisterScreenExpanded(
             )
 
             AppButton(
+                isLoading = state.isLoading,
                 onClick = onRegister,
                 modifier = Modifier.fillMaxWidth()
             ) {

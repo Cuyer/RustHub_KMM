@@ -43,7 +43,7 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import pl.cuyer.rusthub.android.designsystem.AppButton
-import pl.cuyer.rusthub.android.designsystem.AppTextButton
+import pl.cuyer.rusthub.android.designsystem.AppOutlinedButton
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
@@ -72,19 +72,15 @@ fun OnboardingScreen(
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         if (isTabletMode) {
-            OnboardingScreenExpanded(onAction)
+            OnboardingScreenExpanded(onAction, state.value.isLoading)
         } else {
-            OnboardingScreenCompact(onAction)
-        }
-
-        if (state.value.isLoading) {
-            LoadingIndicator()
+            OnboardingScreenCompact(onAction, state.value.isLoading)
         }
     }
 }
 
 @Composable
-private fun OnboardingScreenCompact(onAction: (OnboardingAction) -> Unit) {
+private fun OnboardingScreenCompact(onAction: (OnboardingAction) -> Unit, isLoading: Boolean) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -95,12 +91,12 @@ private fun OnboardingScreenCompact(onAction: (OnboardingAction) -> Unit) {
     ) {
         HeaderSection()
         FeatureList()
-        ActionButtons(onAction)
+        ActionButtons(onAction, isLoading)
     }
 }
 
 @Composable
-private fun OnboardingScreenExpanded(onAction: (OnboardingAction) -> Unit) {
+private fun OnboardingScreenExpanded(onAction: (OnboardingAction) -> Unit, isLoading: Boolean) {
     Row(
         modifier = Modifier
             .fillMaxSize()
@@ -124,7 +120,7 @@ private fun OnboardingScreenExpanded(onAction: (OnboardingAction) -> Unit) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ActionButtons(onAction)
+            ActionButtons(onAction, isLoading)
         }
     }
 }
@@ -205,7 +201,7 @@ private fun FeatureList() {
 }
 
 @Composable
-private fun ActionButtons(onAction: (OnboardingAction) -> Unit) {
+private fun ActionButtons(onAction: (OnboardingAction) -> Unit, isLoading: Boolean) {
     AppButton(
         onClick = { onAction(OnboardingAction.OnLoginClick) },
         modifier = Modifier.fillMaxWidth()
@@ -220,8 +216,10 @@ private fun ActionButtons(onAction: (OnboardingAction) -> Unit) {
         Text("Register")
     }
 
-    AppTextButton(
-        onClick = { onAction(OnboardingAction.OnContinueAsGuest) }
+    AppOutlinedButton(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = { onAction(OnboardingAction.OnContinueAsGuest) },
+        isLoading = isLoading
     ) {
         Text(
             text = "Continue as Guest",
