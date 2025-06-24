@@ -11,7 +11,7 @@ import pl.cuyer.rusthub.work.FavouriteSyncWorker
 actual class SyncScheduler(
     private val context: Context
 ) {
-    actual fun schedule() {
+    actual fun schedule(serverId: Long) {
         val request = OneTimeWorkRequestBuilder<FavouriteSyncWorker>()
             .setConstraints(
                 Constraints.Builder()
@@ -22,7 +22,7 @@ actual class SyncScheduler(
         WorkManager
             .getInstance(context)
             .enqueueUniqueWork(
-                "FavouriteSyncWorker",
+                serverId.toString(),
                 ExistingWorkPolicy.REPLACE,
                 request
             )

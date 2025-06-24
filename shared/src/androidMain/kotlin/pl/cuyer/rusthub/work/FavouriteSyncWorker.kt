@@ -7,6 +7,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
+import pl.cuyer.rusthub.domain.exception.FavoriteLimitException
 import pl.cuyer.rusthub.domain.repository.favourite.FavouriteSyncDataSource
 import pl.cuyer.rusthub.domain.repository.favourite.network.FavouriteRepository
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
@@ -39,10 +40,16 @@ class FavouriteSyncWorker(
                         }
 
                         is DomainResult.Error -> {
-                            success = false
+                            when(result.exception) {
+                                is FavoriteLimitException -> {
+                                    syncDataSource.deleteOperation(operation.serverId)
+                                    success = true
+                                }
+                                else -> success = false
+                            }
                         }
 
-                        DomainResult.Loading -> {}
+                        DomainResult.Loading -> Unit
                     }
                 }
                 success

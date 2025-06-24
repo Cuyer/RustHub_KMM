@@ -7,7 +7,5 @@ data class FavouriteSyncOperation(
 )
 
 enum class SyncState {
-    PENDING,
-    SUCCESS,
-    ERROR
+    PENDING
 }

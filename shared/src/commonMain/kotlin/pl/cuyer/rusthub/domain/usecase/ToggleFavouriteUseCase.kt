@@ -37,7 +37,7 @@ class ToggleFavouriteUseCase(
                             syncDataSource.upsertOperation(
                                 FavouriteSyncOperation(serverId, add, SyncState.PENDING)
                             )
-                            scheduler.schedule()
+                            scheduler.schedule(serverId)
                             send(Result.Success(Unit))
                         }
 

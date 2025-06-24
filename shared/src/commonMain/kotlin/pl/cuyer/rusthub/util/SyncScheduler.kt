@@ -1,5 +1,5 @@
 package pl.cuyer.rusthub.util
 
 expect class SyncScheduler {
-    fun schedule()
+    fun schedule(serverId: Long)
 }

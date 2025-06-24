@@ -271,7 +271,7 @@ private fun FilterBottomSheetPreview() {
                         sheetState.hide()
                     }
                 },
-                stateProvider = { mutableStateOf(ServerState(isLoading = true)) },
+                stateProvider = { mutableStateOf(ServerState(loadingMore = true)) },
                 onAction = { },
                 onDismissAndRefresh = { }
             )
