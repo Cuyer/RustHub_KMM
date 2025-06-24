@@ -3,7 +3,6 @@ package pl.cuyer.rusthub.presentation.features.server
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,10 +19,11 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.io.IOException
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.exception.FavoriteLimitException
+import pl.cuyer.rusthub.domain.exception.NetworkUnavailableException
+import pl.cuyer.rusthub.domain.exception.TimeoutException
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.presentation.model.toUi
@@ -134,7 +134,9 @@ class ServerDetailsViewModel(
                         }
                         is Result.Error -> when (result.exception) {
                             is FavoriteLimitException -> showSubscriptionDialog(true)
-                            is IOException, is TimeoutCancellationException -> showErrorSnackbar("Network error occurred, we will try to sync later")
+                            is NetworkUnavailableException, is TimeoutException -> showErrorSnackbar(
+                                "Network error occurred, we will try to sync later"
+                            )
                             else -> showErrorSnackbar(result.exception.message ?: "Unknown error")
                         }
                         Result.Loading -> {}
