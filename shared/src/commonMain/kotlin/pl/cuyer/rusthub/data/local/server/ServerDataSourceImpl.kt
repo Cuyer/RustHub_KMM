@@ -105,7 +105,9 @@ class ServerDataSourceImpl(
 
     override suspend fun updateFavourite(serverId: Long, favourite: Boolean) {
         withContext(Dispatchers.IO) {
-            queries.updateFavourite(id = serverId, favourite = favourite)
+            runCatching {
+                queries.updateFavourite(id = serverId, favourite = favourite)
+            }
         }
     }
 }

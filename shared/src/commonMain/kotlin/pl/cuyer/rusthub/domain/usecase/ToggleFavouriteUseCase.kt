@@ -38,14 +38,14 @@ class ToggleFavouriteUseCase(
                                 FavouriteSyncOperation(serverId, add, SyncState.PENDING)
                             )
                             scheduler.schedule()
-                            send(Result.Error(result.exception))
+                            send(Result.Success(Unit))
                         }
 
                         else -> send(Result.Error(result.exception))
                     }
                 }
 
-                Result.Loading -> send(Result.Loading)
+                Result.Loading -> Unit
             }
         }
     }

@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -49,7 +50,6 @@ class ServerDetailsViewModel(
         .onStart {
             _state.update {
                 it.copy(
-                    isLoading = true,
                     serverId = serverId,
                     serverName = serverName,
                     details = it.details
@@ -64,14 +64,6 @@ class ServerDetailsViewModel(
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = ServerDetailsState()
         )
-
-    init {
-        coroutineScope.launch {
-            state.collectLatest {
-                Napier.d("State: $it")
-            }
-        }
-    }
 
     private var toggleJob: Job? = null
     private var serverDetailsJob: Job? = null
@@ -100,31 +92,25 @@ class ServerDetailsViewModel(
 
     private fun toggleFavourite() {
         val id = state.value.serverId ?: return
-        val add = state.value.details?.isFavorite != true
+        val details = state.value.details ?: return
+        val add = details.isFavorite != true
 
         toggleJob?.cancel()
 
         toggleJob = coroutineScope.launch {
             toggleFavouriteUseCase(id, add)
                 .onStart {
-                    _state.update {
-                        it.copy(
-                            isSyncing = true
-                        )
-                    }
+                    changeIsSyncing(true)
+                }
+                .onCompletion {
+                    changeIsSyncing(false)
                 }
                 .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
-                .onCompletion {
-                    _state.update {
-                        it.copy(
-                            isSyncing = false
-                        )
-                    }
-                }
                 .collectLatest { result ->
+                    ensureActive()
                     when (result) {
                         is Result.Success -> {
-                            serverDetailsJob?.start()
+                            serverDetailsJob = observeServerDetails(id)
                             snackbarController.sendEvent(
                                 event = SnackbarEvent(
                                     message = if (add) "Added ${state.value.serverId} to favourites" else "Removed ${state.value.serverId} from favourites",
@@ -134,12 +120,9 @@ class ServerDetailsViewModel(
                         }
                         is Result.Error -> when (result.exception) {
                             is FavoriteLimitException -> showSubscriptionDialog(true)
-                            is NetworkUnavailableException, is TimeoutException -> showErrorSnackbar(
-                                "Network error occurred, we will try to sync later"
-                            )
                             else -> showErrorSnackbar(result.exception.message ?: "Unknown error")
                         }
-                        Result.Loading -> {}
+                        Result.Loading -> Unit
                     }
                 }
         }
@@ -161,17 +144,40 @@ class ServerDetailsViewModel(
 
 
     private fun observeServerDetails(serverId: Long): Job {
+        serverDetailsJob?.cancel()
         return getServerDetailsUseCase.invoke(serverId)
+            .onStart { changeIsLoading(true) }
             .map { it?.toUi() }
             .onEach { mappedDetails ->
                 _state.update {
                     it.copy(
                         details = mappedDetails,
-                        isLoading = false
                     )
                 }
             }
+            .onCompletion {
+                changeIsLoading(false)
+            }
+            .catch { e ->
+                showErrorSnackbar("Error occured when fetching data about the server")
+            }
             .flowOn(Dispatchers.Default)
             .launchIn(coroutineScope)
+    }
+
+    private fun changeIsSyncing(syncing: Boolean) {
+        _state.update {
+            it.copy(
+                isSyncing = syncing
+            )
+        }
+    }
+
+    private fun changeIsLoading(loading: Boolean) {
+        _state.update {
+            it.copy(
+                isLoading = loading
+            )
+        }
     }
 }

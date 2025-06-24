@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.domain.repository.server
 import app.cash.paging.PagingSource
 import database.ServerEntity
 import kotlinx.coroutines.flow.Flow
+import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.ServerInfo
 
 interface ServerDataSource {
