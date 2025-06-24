@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -90,6 +91,9 @@ fun ServerDetailsScreen(
                         val icon =
                             if (state.details?.isFavorite == true) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder
                         Icon(icon, contentDescription = null)
+                    }
+                    IconButton(onClick = { onAction(ServerDetailsAction.OnSubscribe) }) {
+                        Icon(Icons.Filled.Notifications, contentDescription = null)
                     }
                 },
                 scrollBehavior = scrollBehavior
@@ -209,6 +213,14 @@ fun ServerDetailsScreen(
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
                                 label = "Last wipe",
+                                value = it
+                            )
+                        }
+
+                        it.nextWipe?.let {
+                            ServerDetail(
+                                modifier = Modifier.padding(spacing.medium),
+                                label = "Next wipe",
                                 value = it
                             )
                         }

@@ -42,7 +42,8 @@ fun ServerInfoDto.toDomain(): ServerInfo {
         isPremium = isPremium,
         mapUrl = mapUrl,
         headerImage = headerImage,
-        isFavorite = isFavorite
+        isFavorite = isFavorite,
+        nextWipe = nextWipe
     )
 }
 

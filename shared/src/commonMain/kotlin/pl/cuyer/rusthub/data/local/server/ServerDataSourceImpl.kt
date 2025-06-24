@@ -63,7 +63,8 @@ class ServerDataSourceImpl(
                         monuments = info.monuments?.toLong(),
                         mapUrl = info.mapUrl,
                         headerImage = info.headerImage,
-                        favourite = info.isFavorite == true
+                        favourite = info.isFavorite == true,
+                        nextWipe = info.nextWipe?.toString()
                     )
                 }
             }
