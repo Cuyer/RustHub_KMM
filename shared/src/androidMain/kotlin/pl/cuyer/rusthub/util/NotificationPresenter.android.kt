@@ -2,34 +2,74 @@ package pl.cuyer.rusthub.util
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
-import android.os.Build
+import android.content.Context.NOTIFICATION_SERVICE
+import android.content.Intent
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import pl.cuyer.rusthub.android.R
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.common.getImageByFileName
 
 actual class NotificationPresenter(private val context: Context) {
     actual fun show(title: String, body: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                context.getString(R.string.notification_channel_name),
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-            NotificationManagerCompat.from(context).createNotificationChannel(channel)
-        }
-
-        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle(title)
-            .setContentText(body)
-            .setAutoCancel(true)
-            .build()
-
-        NotificationManagerCompat.from(context).notify((title + body).hashCode(), notification)
+        buildOrderNotification(title, body)
     }
 
+    private fun buildOrderNotification(title: String, body: String) {
+        createNotificationChannel(NotificationManager.IMPORTANCE_DEFAULT)
+        rusthubNotificationManager().notify(
+            (title + body).hashCode(),
+            notificationBuilder(title, body).build()
+        )
+    }
+
+    private fun notificationBuilder(title: String, body: String): NotificationCompat.Builder {
+        return NotificationCompat.Builder(context, channelIdRusthub())
+            .setSmallIcon(getImageByFileName("rusthub_logo").drawableResId)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setContentIntent(createPendingIntent())
+            .setAutoCancel(true)
+    }
+
+    private fun createNotificationChannel(importance: Int) {
+        with(rusthubNotificationManager()) {
+            this.createNotificationChannel(
+                NotificationChannel(
+                    DEFAULT_CHANNEL_ID,
+                    channelIdRusthub(),
+                    importance
+                ).apply {
+                    description = channelDescription()
+                }
+            )
+        }
+    }
+
+    private fun channelDescription(): String = SharedRes.strings.notification_channel_description.getString(context)
+
+    private fun channelIdRusthub(): String = SharedRes.strings.notification_channel_name.getString(context)
+
+    private fun rusthubNotificationManager(): NotificationManager =
+        context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+    private fun createPendingIntent(): PendingIntent {
+        val intent = Intent().apply {
+            component = ComponentName(
+                PACKAGE_NAME,
+                MAIN_ACTIVITY
+            )
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+    }
+
+    //TODO można dodać nawigację po kliknięciu do serwera
+
     companion object {
-        const val CHANNEL_ID = "rusthub_fcm"
+        const val MAIN_ACTIVITY = "pl.cuyer.rusthub.MainActivity"
+        const val PACKAGE_NAME = "pl.cuyer.rusthub"
+        const val DEFAULT_CHANNEL_ID = "default_channel"
     }
 }
