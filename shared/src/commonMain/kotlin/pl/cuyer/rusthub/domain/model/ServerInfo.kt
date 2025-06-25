@@ -38,5 +38,6 @@ data class ServerInfo(
     val mapUrl: String? = null,
     val headerImage: String? = null,
     val isFavorite: Boolean? = null,
-    val nextWipe: Instant? = null
+    val nextWipe: Instant? = null,
+    val nextMapWipe: Instant? = null
 )
