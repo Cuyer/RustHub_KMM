@@ -8,28 +8,35 @@ import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.NotificationType
 
 actual class NotificationPresenter(private val context: Context) {
-    actual fun show(id: String, type: NotificationType) {
-        buildNotification(type)
+    actual fun show(name: String, type: NotificationType, timestamp: String) {
+        buildNotification(type, name, timestamp)
     }
 
-    private fun buildNotification(type: NotificationType) {
+    private fun buildNotification(type: NotificationType, name: String, timestamp: String) {
         createNotificationChannel(type, NotificationManager.IMPORTANCE_DEFAULT)
         rusthubNotificationManager().notify(
-            (type.name).hashCode(),
-            notificationBuilder(type).build()
+            (type.name + name + timestamp).hashCode(),
+            notificationBuilder(type, name, timestamp).build()
         )
     }
 
-    private fun notificationBuilder(type: NotificationType): NotificationCompat.Builder {
+    private fun notificationBuilder(
+        type: NotificationType,
+        name: String,
+        timestamp: String
+    ): NotificationCompat.Builder {
         return NotificationCompat.Builder(context, channelId(type))
             .setSmallIcon(getImageByFileName("rusthub_logo").drawableResId)
             .setContentTitle(createTitle(type))
-            .setContentText(createBody(type))
+            .setContentText(createBody(name, type, timestamp))
             .setContentIntent(createPendingIntent())
             .setAutoCancel(true)
     }
@@ -51,16 +58,28 @@ actual class NotificationPresenter(private val context: Context) {
         }
     }
 
-    private fun createBody(type: NotificationType): String = when (type) {
-        NotificationType.MapWipe -> context.getString(
-            SharedRes.strings.map_wipe_notification_body.resourceId,
-            type.name
-        )
+    private fun createBody(name: String, type: NotificationType, timestamp: String): String {
+        val localTime = parseAndFormatWipeTime(timestamp)
 
-        NotificationType.Wipe -> context.getString(
-            SharedRes.strings.wipe_notification_body.resourceId,
-            type.name
-        )
+        return when (type) {
+            NotificationType.MapWipe -> context.getString(
+                SharedRes.strings.map_wipe_notification_body.resourceId,
+                name,
+                localTime
+            )
+
+            NotificationType.Wipe -> context.getString(
+                SharedRes.strings.wipe_notification_body.resourceId,
+                name,
+                localTime
+            )
+        }
+    }
+
+    fun parseAndFormatWipeTime(wipeTimeString: String): String {
+        val instant = Instant.parse(wipeTimeString)
+        val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+        return "%02d:%02d".format(localDateTime.hour, localDateTime.minute)
     }
 
     private fun createTitle(type: NotificationType): String = when (type) {
@@ -100,7 +119,7 @@ actual class NotificationPresenter(private val context: Context) {
     //TODO można dodać nawigację po kliknięciu do serwera
 
     companion object {
-        const val MAIN_ACTIVITY = "pl.cuyer.rusthub.MainActivity"
+        const val MAIN_ACTIVITY = "pl.cuyer.rusthub.android.MainActivity"
         const val PACKAGE_NAME = "pl.cuyer.rusthub.android"
     }
 }

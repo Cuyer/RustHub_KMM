@@ -10,8 +10,9 @@ class RustHubFirebaseMessagingService : FirebaseMessagingService() {
         val type = message.data["type"]?.let { value ->
             runCatching { NotificationType.valueOf(value) }.getOrNull()
         } ?: return
-        val id = message.data["id"] ?: return
-        NotificationPresenter(this).show(id, type)
+        val name = message.data["name"] ?: return
+        val timestamp = message.data["timestamp"] ?: return
+        NotificationPresenter(this).show(name, type, timestamp)
     }
 
     override fun onNewToken(token: String) {
