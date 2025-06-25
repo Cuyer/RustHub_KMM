@@ -23,6 +23,7 @@ activity-compose = "1.12.0-alpha03"
 compose-material3 = "1.4.0-alpha16"
 compose-bom = "2025.06.01"
 moko-resources = "0.24.5"
+moko-permissions = "0.19.1"
 paging = "3.3.0-alpha02-0.5.1"
 material3-adaptive = "1.2.0-alpha07"
 material3-adaptive-navigation-suite = "1.4.0-alpha16"
@@ -112,6 +113,9 @@ coil-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = 
 napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 moko-resources-generator = { module = "dev.icerock.moko:resources-generator", version.ref = "moko-resources" }
 moko-resources = { module = "dev.icerock.moko:resources", version.ref = "moko-resources" }
+moko-permissions = { module = "dev.icerock.moko:permissions", version.ref = "moko-permissions" }
+moko-permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "moko-permissions" }
+moko-permissions-notifications = { module = "dev.icerock.moko:permissions-notifications", version.ref = "moko-permissions" }
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleRuntimeKtx"}
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splash-screen" }
 androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }

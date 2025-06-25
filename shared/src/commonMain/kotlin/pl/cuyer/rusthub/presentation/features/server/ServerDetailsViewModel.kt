@@ -32,6 +32,10 @@ import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.ClipboardHandler
+import dev.icerock.moko.permissions.Permission
+import dev.icerock.moko.permissions.PermissionsController
+import dev.icerock.moko.permissions.DeniedException
+import dev.icerock.moko.permissions.DeniedAlwaysException
 
 class ServerDetailsViewModel(
     private val clipboardHandler: ClipboardHandler,
@@ -39,6 +43,7 @@ class ServerDetailsViewModel(
     private val getServerDetailsUseCase: GetServerDetailsUseCase,
     private val toggleFavouriteUseCase: ToggleFavouriteUseCase,
     private val toggleSubscriptionUseCase: ToggleSubscriptionUseCase,
+    private val permissionsController: PermissionsController,
     private val serverName: String?,
     private val serverId: Long?
 ) : BaseViewModel() {
@@ -66,6 +71,7 @@ class ServerDetailsViewModel(
             is ServerDetailsAction.OnSaveToClipboard -> saveIpToClipboard(action.ipAddress)
             ServerDetailsAction.OnToggleFavourite -> toggleFavourite()
             ServerDetailsAction.OnDismissSubscriptionDialog -> showSubscriptionDialog(false)
+            ServerDetailsAction.OnDismissNotificationInfo -> showNotificationInfo(false)
             ServerDetailsAction.OnSubscribe -> handleSubscribeAction()
         }
     }
@@ -173,8 +179,17 @@ class ServerDetailsViewModel(
         }
     }
 
+    private fun showNotificationInfo(show: Boolean) {
+        _state.update {
+            it.copy(
+                showNotificationInfo = show
+            )
+        }
+    }
+
     private fun handleSubscribeAction() {
         val subscribed = state.value.details?.isSubscribed == true
+        showNotificationInfo(false)
         if (state.value.showSubscriptionDialog) {
             coroutineScope.launch {
                 snackbarController.sendEvent(
@@ -185,8 +200,19 @@ class ServerDetailsViewModel(
                 )
             }
             showSubscriptionDialog(false)
-        } else {
+        } else if (subscribed) {
             toggleSubscription()
+        } else {
+            coroutineScope.launch {
+                try {
+                    permissionsController.providePermission(Permission.REMOTE_NOTIFICATION)
+                    toggleSubscription()
+                } catch (_: DeniedAlwaysException) {
+                    showNotificationInfo(true)
+                } catch (_: DeniedException) {
+                    showNotificationInfo(true)
+                }
+            }
         }
     }
 

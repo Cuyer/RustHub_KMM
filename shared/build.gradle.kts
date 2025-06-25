@@ -68,6 +68,8 @@ kotlin {
             implementation(libs.paging)
             implementation(libs.sqldelight.extensions.paging3)
             api(libs.moko.resources)
+            implementation(libs.moko.permissions)
+            implementation(libs.moko.permissions.notifications)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

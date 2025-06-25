@@ -5,4 +5,5 @@ sealed interface ServerDetailsAction {
     data object OnToggleFavourite : ServerDetailsAction
     data object OnSubscribe : ServerDetailsAction
     data object OnDismissSubscriptionDialog : ServerDetailsAction
+    data object OnDismissNotificationInfo : ServerDetailsAction
 }

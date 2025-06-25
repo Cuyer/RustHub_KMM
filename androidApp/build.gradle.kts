@@ -72,6 +72,8 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.compose.icons)
     implementation(libs.paging.compose)
+    implementation(libs.moko.permissions.compose)
+    implementation(libs.moko.permissions.notifications)
     implementation(libs.kotlin.serialization)
     implementation(project.dependencies.platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
