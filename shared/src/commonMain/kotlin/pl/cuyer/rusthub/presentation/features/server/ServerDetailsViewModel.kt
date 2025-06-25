@@ -1,5 +1,10 @@
 package pl.cuyer.rusthub.presentation.features.server
 
+import dev.icerock.moko.permissions.DeniedAlwaysException
+import dev.icerock.moko.permissions.DeniedException
+import dev.icerock.moko.permissions.Permission
+import dev.icerock.moko.permissions.PermissionsController
+import dev.icerock.moko.permissions.notifications.REMOTE_NOTIFICATION
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -32,10 +37,6 @@ import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.ClipboardHandler
-import dev.icerock.moko.permissions.Permission
-import dev.icerock.moko.permissions.PermissionsController
-import dev.icerock.moko.permissions.DeniedException
-import dev.icerock.moko.permissions.DeniedAlwaysException
 
 class ServerDetailsViewModel(
     private val clipboardHandler: ClipboardHandler,
@@ -188,30 +189,14 @@ class ServerDetailsViewModel(
     }
 
     private fun handleSubscribeAction() {
-        val subscribed = state.value.details?.isSubscribed == true
-        showNotificationInfo(false)
-        if (state.value.showSubscriptionDialog) {
-            coroutineScope.launch {
-                snackbarController.sendEvent(
-                    SnackbarEvent(
-                        message = "Subscribed to notifications",
-                        duration = Duration.SHORT
-                    )
-                )
-            }
-            showSubscriptionDialog(false)
-        } else if (subscribed) {
-            toggleSubscription()
-        } else {
-            coroutineScope.launch {
-                try {
-                    permissionsController.providePermission(Permission.REMOTE_NOTIFICATION)
-                    toggleSubscription()
-                } catch (_: DeniedAlwaysException) {
-                    showNotificationInfo(true)
-                } catch (_: DeniedException) {
-                    showNotificationInfo(true)
-                }
+        coroutineScope.launch {
+            try {
+                permissionsController.providePermission(Permission.REMOTE_NOTIFICATION)
+                toggleSubscription()
+            } catch (_: DeniedAlwaysException) {
+                permissionsController.openAppSettings()
+            } catch (_: DeniedException) {
+                showNotificationInfo(true)
             }
         }
     }

@@ -1,7 +1,6 @@
 package pl.cuyer.rusthub.android.designsystem
 
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 
@@ -21,12 +20,12 @@ fun NotificationInfoDialog(
             title = { Text(text = title) },
             text = { Text(text = message) },
             confirmButton = {
-                Button(onClick = onConfirm) {
+                AppButton(onClick = onConfirm) {
                     Text(confirmButtonText)
                 }
             },
             dismissButton = {
-                AppButton(onClick = onDismiss) {
+                AppTextButton(onClick = onDismiss) {
                     Text(dismissButtonText)
                 }
             }

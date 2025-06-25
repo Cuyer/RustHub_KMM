@@ -16,10 +16,16 @@ actual class NotificationPresenter(private val context: Context) {
     actual fun show(id: String, type: NotificationType) {
         val title = SharedRes.strings.app_name.getString(context)
         val body = when (type) {
-            NotificationType.MapWipe ->
-                SharedRes.strings.map_wipe_notification_body.getString(context, id)
-            NotificationType.Wipe ->
-                SharedRes.strings.wipe_notification_body.getString(context, id)
+            NotificationType.MapWipe -> context.getString(
+                SharedRes.strings.map_wipe_notification_body.resourceId,
+                id
+            )
+
+            NotificationType.Wipe -> context.getString(
+                SharedRes.strings.wipe_notification_body.resourceId,
+                id
+            )
+
         }
         buildNotification(title, body, type)
     }
@@ -44,11 +50,12 @@ actual class NotificationPresenter(private val context: Context) {
     private fun createNotificationChannel(type: NotificationType, importance: Int) {
         with(rusthubNotificationManager()) {
             val channelId = channelId(type)
+            val channelName = channelName(type)
             val description = channelDescription(type)
             this.createNotificationChannel(
                 NotificationChannel(
                     channelId,
-                    channelId,
+                    channelName,
                     importance
                 ).apply {
                     this.description = description
@@ -62,9 +69,14 @@ actual class NotificationPresenter(private val context: Context) {
         NotificationType.Wipe -> SharedRes.strings.wipe_notification_channel_description.getString(context)
     }
 
-    private fun channelId(type: NotificationType): String = when (type) {
+    private fun channelName(type: NotificationType): String = when (type) {
         NotificationType.MapWipe -> SharedRes.strings.map_wipe_notification_channel_name.getString(context)
         NotificationType.Wipe -> SharedRes.strings.wipe_notification_channel_name.getString(context)
+    }
+
+    private fun channelId(type: NotificationType): String = when (type) {
+        NotificationType.MapWipe -> NotificationType.MapWipe.name
+        NotificationType.Wipe -> NotificationType.Wipe.name
     }
 
     private fun rusthubNotificationManager(): NotificationManager =

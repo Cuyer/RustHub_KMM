@@ -14,6 +14,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -86,6 +87,25 @@ fun AppOutlinedButton(
         }
     }
 }
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun AppTextButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    colors: ButtonColors = ButtonDefaults.textButtonColors(),
+    content: @Composable RowScope.() -> Unit
+) {
+    TextButton(
+        onClick = onClick,
+        modifier = modifier,
+        shape = RectangleShape,
+        colors = colors
+    ) {
+        content()
+    }
+}
+
 
 @Preview(name = "AppButton — Idle & Loading", showBackground = true, widthDp = 200)
 @Composable
