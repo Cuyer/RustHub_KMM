@@ -16,6 +16,7 @@ import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
+import dev.icerock.moko.permissions.PermissionsController
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory(androidContext()).create() }
@@ -23,6 +24,7 @@ actual val platformModule: Module = module {
     single { ClipboardHandler(get()) }
     single { SyncScheduler(get()) }
     single { SubscriptionSyncScheduler(get()) }
+    single { PermissionsController(androidContext()) }
     viewModel {
         StartupViewModel(get(), get())
     }
@@ -68,6 +70,7 @@ actual val platformModule: Module = module {
             getServerDetailsUseCase = get(),
             toggleFavouriteUseCase = get(),
             toggleSubscriptionUseCase = get(),
+            permissionsController = get(),
             serverName = serverName,
             serverId = serverId,
             clipboardHandler = get(),
