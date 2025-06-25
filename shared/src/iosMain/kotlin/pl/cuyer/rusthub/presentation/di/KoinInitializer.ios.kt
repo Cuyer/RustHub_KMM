@@ -11,12 +11,14 @@ import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.SyncScheduler
+import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
     single { HttpClientFactory(get(), get()).create() }
     single { ClipboardHandler() }
     single { SyncScheduler() }
+    single { SubscriptionSyncScheduler() }
     factory { StartupViewModel(get()) }
     factory {
         OnboardingViewModel(

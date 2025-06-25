@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.NotificationsNone
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
@@ -93,7 +94,12 @@ fun ServerDetailsScreen(
                         Icon(icon, contentDescription = null)
                     }
                     IconButton(onClick = { onAction(ServerDetailsAction.OnSubscribe) }) {
-                        Icon(Icons.Filled.Notifications, contentDescription = null)
+                        val icon = if (state.details?.isSubscribed == true) {
+                            Icons.Filled.Notifications
+                        } else {
+                            Icons.Outlined.NotificationsNone
+                        }
+                        Icon(icon, contentDescription = null)
                     }
                 },
                 scrollBehavior = scrollBehavior

@@ -46,7 +46,8 @@ fun ServerInfo.toUi(): ServerInfoUi {
         isPremium = isPremium,
         mapUrl = mapUrl,
         headerImage = headerImage,
-        isFavorite = isFavorite
+        isFavorite = isFavorite,
+        isSubscribed = isSubscribed
     )
 
 }

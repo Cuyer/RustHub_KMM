@@ -43,6 +43,7 @@ fun ServerInfoDto.toDomain(): ServerInfo {
         mapUrl = mapUrl,
         headerImage = headerImage,
         isFavorite = isFavorite,
+        isSubscribed = isSubscribed,
         nextWipe = nextWipe,
         nextMapWipe = nextMapWipe
     )

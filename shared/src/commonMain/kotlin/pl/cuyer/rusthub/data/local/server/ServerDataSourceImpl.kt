@@ -64,6 +64,7 @@ class ServerDataSourceImpl(
                         mapUrl = info.mapUrl,
                         headerImage = info.headerImage,
                         favourite = info.isFavorite == true,
+                        subscribed = info.isSubscribed == true,
                         nextWipe = info.nextWipe?.toString(),
                         nextMapWipe = info.nextMapWipe?.toString()
                     )
@@ -109,6 +110,14 @@ class ServerDataSourceImpl(
         withContext(Dispatchers.IO) {
             runCatching {
                 queries.updateFavourite(id = serverId, favourite = favourite)
+            }
+        }
+    }
+
+    override suspend fun updateSubscription(serverId: Long, subscribed: Boolean) {
+        withContext(Dispatchers.IO) {
+            runCatching {
+                queries.updateSubscription(id = serverId, subscribed = subscribed)
             }
         }
     }

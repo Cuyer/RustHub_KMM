@@ -18,6 +18,7 @@ import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.data.network.model.ErrorResponse
 import pl.cuyer.rusthub.domain.exception.AnonymousUpgradeException
 import pl.cuyer.rusthub.domain.exception.FavoriteLimitException
+import pl.cuyer.rusthub.domain.exception.SubscriptionLimitException
 import pl.cuyer.rusthub.domain.exception.FiltersOptionsException
 import pl.cuyer.rusthub.domain.exception.ForbiddenException
 import pl.cuyer.rusthub.domain.exception.HttpStatusException
@@ -96,6 +97,9 @@ abstract class BaseApiResponse(
 
             FavoriteLimitException::class.simpleName -> FavoriteLimitException(
                 errorResponse.message ?: "Favorite limit error"
+            )
+            SubscriptionLimitException::class.simpleName -> SubscriptionLimitException(
+                errorResponse.message ?: "Subscription limit error"
             )
             else -> Exception(errorResponse.message)
         }
