@@ -10,22 +10,30 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.getImageByFileName
+import pl.cuyer.rusthub.domain.model.NotificationType
 
 actual class NotificationPresenter(private val context: Context) {
-    actual fun show(title: String, body: String) {
-        buildOrderNotification(title, body)
+    actual fun show(id: String, type: NotificationType) {
+        val title = SharedRes.strings.app_name.getString(context)
+        val body = when (type) {
+            NotificationType.MapWipe ->
+                SharedRes.strings.map_wipe_notification_body.getString(context, id)
+            NotificationType.Wipe ->
+                SharedRes.strings.wipe_notification_body.getString(context, id)
+        }
+        buildNotification(title, body, type)
     }
 
-    private fun buildOrderNotification(title: String, body: String) {
-        createNotificationChannel(NotificationManager.IMPORTANCE_DEFAULT)
+    private fun buildNotification(title: String, body: String, type: NotificationType) {
+        createNotificationChannel(type, NotificationManager.IMPORTANCE_DEFAULT)
         rusthubNotificationManager().notify(
-            (title + body).hashCode(),
-            notificationBuilder(title, body).build()
+            (title + body + type.name).hashCode(),
+            notificationBuilder(title, body, type).build()
         )
     }
 
-    private fun notificationBuilder(title: String, body: String): NotificationCompat.Builder {
-        return NotificationCompat.Builder(context, channelIdRusthub())
+    private fun notificationBuilder(title: String, body: String, type: NotificationType): NotificationCompat.Builder {
+        return NotificationCompat.Builder(context, channelId(type))
             .setSmallIcon(getImageByFileName("rusthub_logo").drawableResId)
             .setContentTitle(title)
             .setContentText(body)
@@ -33,23 +41,31 @@ actual class NotificationPresenter(private val context: Context) {
             .setAutoCancel(true)
     }
 
-    private fun createNotificationChannel(importance: Int) {
+    private fun createNotificationChannel(type: NotificationType, importance: Int) {
         with(rusthubNotificationManager()) {
+            val channelId = channelId(type)
+            val description = channelDescription(type)
             this.createNotificationChannel(
                 NotificationChannel(
-                    DEFAULT_CHANNEL_ID,
-                    channelIdRusthub(),
+                    channelId,
+                    channelId,
                     importance
                 ).apply {
-                    description = channelDescription()
+                    this.description = description
                 }
             )
         }
     }
 
-    private fun channelDescription(): String = SharedRes.strings.notification_channel_description.getString(context)
+    private fun channelDescription(type: NotificationType): String = when (type) {
+        NotificationType.MapWipe -> SharedRes.strings.map_wipe_notification_channel_description.getString(context)
+        NotificationType.Wipe -> SharedRes.strings.wipe_notification_channel_description.getString(context)
+    }
 
-    private fun channelIdRusthub(): String = SharedRes.strings.notification_channel_name.getString(context)
+    private fun channelId(type: NotificationType): String = when (type) {
+        NotificationType.MapWipe -> SharedRes.strings.map_wipe_notification_channel_name.getString(context)
+        NotificationType.Wipe -> SharedRes.strings.wipe_notification_channel_name.getString(context)
+    }
 
     private fun rusthubNotificationManager(): NotificationManager =
         context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -70,6 +86,5 @@ actual class NotificationPresenter(private val context: Context) {
     companion object {
         const val MAIN_ACTIVITY = "pl.cuyer.rusthub.MainActivity"
         const val PACKAGE_NAME = "pl.cuyer.rusthub"
-        const val DEFAULT_CHANNEL_ID = "default_channel"
     }
 }
