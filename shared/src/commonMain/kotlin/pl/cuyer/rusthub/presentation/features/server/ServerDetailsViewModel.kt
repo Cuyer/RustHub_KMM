@@ -21,8 +21,10 @@ import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.exception.FavoriteLimitException
+import pl.cuyer.rusthub.domain.exception.SubscriptionLimitException
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
+import pl.cuyer.rusthub.domain.usecase.ToggleSubscriptionUseCase
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.presentation.model.toUi
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
@@ -36,6 +38,7 @@ class ServerDetailsViewModel(
     private val snackbarController: SnackbarController,
     private val getServerDetailsUseCase: GetServerDetailsUseCase,
     private val toggleFavouriteUseCase: ToggleFavouriteUseCase,
+    private val toggleSubscriptionUseCase: ToggleSubscriptionUseCase,
     private val serverName: String?,
     private val serverId: Long?
 ) : BaseViewModel() {
@@ -55,6 +58,7 @@ class ServerDetailsViewModel(
         )
 
     private var toggleJob: Job? = null
+    private var subscriptionJob: Job? = null
     private var serverDetailsJob: Job? = null
 
     fun onAction(action: ServerDetailsAction) {
@@ -127,6 +131,40 @@ class ServerDetailsViewModel(
         }
     }
 
+    private fun toggleSubscription() {
+        val id = state.value.serverId ?: return
+        val details = state.value.details ?: return
+        val add = details.isSubscribed != true
+
+        subscriptionJob?.cancel()
+
+        subscriptionJob = coroutineScope.launch {
+            toggleSubscriptionUseCase(id, add)
+                .catch { e ->
+                    showErrorSnackbar("Error occurred when trying to ${if (add) "subscribe" else "unsubscribe"} from notifications")
+                }
+                .collectLatest { result ->
+                    ensureActive()
+                    when (result) {
+                        is Result.Success -> {
+                            serverDetailsJob = observeServerDetails(id)
+                            snackbarController.sendEvent(
+                                SnackbarEvent(
+                                    message = if (add) "Subscribed to notifications" else "Unsubscribed from notifications",
+                                    duration = Duration.SHORT
+                                )
+                            )
+                        }
+                        is Result.Error -> when (result.exception) {
+                            is SubscriptionLimitException -> showSubscriptionDialog(true)
+                            else -> showErrorSnackbar("Error occurred when trying to ${if (add) "subscribe" else "unsubscribe"} from notifications")
+                        }
+                        Result.Loading -> Unit
+                    }
+                }
+        }
+    }
+
     private fun showSubscriptionDialog(show: Boolean) {
         _state.update {
             it.copy(
@@ -147,7 +185,7 @@ class ServerDetailsViewModel(
             }
             showSubscriptionDialog(false)
         } else {
-            showSubscriptionDialog(true)
+            toggleSubscription()
         }
     }
 

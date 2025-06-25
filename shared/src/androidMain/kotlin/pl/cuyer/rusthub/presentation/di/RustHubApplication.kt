@@ -8,12 +8,16 @@ import org.koin.android.ext.koin.androidContext
 import pl.cuyer.rusthub.domain.repository.favourite.FavouriteSyncDataSource
 import pl.cuyer.rusthub.domain.repository.favourite.network.FavouriteRepository
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
+import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
+import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
 import pl.cuyer.rusthub.work.FavouriteWorkerFactory
 
 class RustHubApplication : Application(), Configuration.Provider {
 
     val repository by inject<FavouriteRepository>()
     val syncDataSource by inject<FavouriteSyncDataSource>()
+    val subscriptionRepository by inject<SubscriptionRepository>()
+    val subscriptionSyncDataSource by inject<SubscriptionSyncDataSource>()
     val serverDataSource by inject<ServerDataSource>()
 
     override fun onCreate() {
@@ -29,8 +33,10 @@ class RustHubApplication : Application(), Configuration.Provider {
         get() = Configuration.Builder()
             .setWorkerFactory(
                 FavouriteWorkerFactory(
-                    repository = repository,
-                    syncDataSource = syncDataSource,
+                    favouriteRepository = repository,
+                    favouriteSyncDataSource = syncDataSource,
+                    subscriptionRepository = subscriptionRepository,
+                    subscriptionSyncDataSource = subscriptionSyncDataSource,
                     serverDataSource = serverDataSource
                 )
             )

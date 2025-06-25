@@ -114,6 +114,7 @@ fun ServerEntity.toServerInfo(): ServerInfo {
         mapUrl = map_url,
         headerImage = header_image,
         isFavorite = favourite == 1L,
+        isSubscribed = subscribed == 1L,
         nextWipe = rust_next_wipe?.let { Instant.parse(it) },
         nextMapWipe = rust_next_map_wipe?.let { Instant.parse(it) }
     )

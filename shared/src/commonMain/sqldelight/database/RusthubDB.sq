@@ -47,7 +47,8 @@ CREATE TABLE serverEntity (
     header_image   TEXT,
     rust_next_wipe TEXT,
     rust_next_map_wipe TEXT,
-    favourite      INTEGER    NOT NULL DEFAULT 0
+    favourite      INTEGER    NOT NULL DEFAULT 0,
+    subscribed     INTEGER    NOT NULL DEFAULT 0
 );
 
 -- =============================================================================
@@ -135,7 +136,8 @@ INSERT INTO serverEntity (
     monuments,
     rust_next_wipe,
     rust_next_map_wipe,
-    favourite
+    favourite,
+    subscribed
 ) VALUES (
     :id,
     :name,
@@ -173,7 +175,8 @@ INSERT INTO serverEntity (
     :monuments,
     :nextWipe,
     :nextMapWipe,
-    CASE WHEN :favourite THEN 1 ELSE 0 END
+    CASE WHEN :favourite THEN 1 ELSE 0 END,
+    CASE WHEN :subscribed THEN 1 ELSE 0 END
 ) ON CONFLICT(id) DO UPDATE SET
     name           = excluded.name,
     wipe           = excluded.wipe,
@@ -210,7 +213,8 @@ INSERT INTO serverEntity (
     header_image   = excluded.header_image,
     rust_next_wipe = excluded.rust_next_wipe,
     rust_next_map_wipe = excluded.rust_next_map_wipe,
-    favourite      = excluded.favourite;
+    favourite      = excluded.favourite,
+    subscribed     = excluded.subscribed;
 
 clearServers:
 DELETE FROM serverEntity;
@@ -220,6 +224,9 @@ SELECT * FROM serverEntity WHERE id == :id;
 
 updateFavourite:
 UPDATE serverEntity SET favourite = CASE WHEN :favourite THEN 1 ELSE 0 END WHERE id = :id;
+
+updateSubscription:
+UPDATE serverEntity SET subscribed = CASE WHEN :subscribed THEN 1 ELSE 0 END WHERE id = :id;
 
 
 CREATE TABLE filtersEntity (
@@ -481,6 +488,12 @@ CREATE TABLE favouriteSyncEntity (
     sync_state TEXT NOT NULL
 );
 
+CREATE TABLE subscriptionSyncEntity (
+    server_id INTEGER NOT NULL PRIMARY KEY,
+    action INTEGER NOT NULL,
+    sync_state TEXT NOT NULL
+);
+
 upsertFavouriteSync:
 INSERT INTO favouriteSyncEntity (server_id, action, sync_state)
 VALUES (:server_id, :action, :sync_state)
@@ -493,6 +506,19 @@ SELECT * FROM favouriteSyncEntity WHERE sync_state = 'PENDING';
 
 deleteFavouriteSync:
 DELETE FROM favouriteSyncEntity WHERE server_id = :server_id;
+
+upsertSubscriptionSync:
+INSERT INTO subscriptionSyncEntity (server_id, action, sync_state)
+VALUES (:server_id, :action, :sync_state)
+ON CONFLICT(server_id) DO UPDATE SET
+    action = excluded.action,
+    sync_state = excluded.sync_state;
+
+getPendingSubscriptionSync:
+SELECT * FROM subscriptionSyncEntity WHERE sync_state = 'PENDING';
+
+deleteSubscriptionSync:
+DELETE FROM subscriptionSyncEntity WHERE server_id = :server_id;
 
 CREATE TABLE userEntity (
   id TEXT NOT NULL PRIMARY KEY,

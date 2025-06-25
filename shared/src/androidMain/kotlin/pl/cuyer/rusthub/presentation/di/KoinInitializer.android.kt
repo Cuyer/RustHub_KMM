@@ -15,12 +15,14 @@ import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.SyncScheduler
+import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory(androidContext()).create() }
     single { HttpClientFactory(get(), get()).create() }
     single { ClipboardHandler(get()) }
     single { SyncScheduler(get()) }
+    single { SubscriptionSyncScheduler(get()) }
     viewModel {
         StartupViewModel(get(), get())
     }
@@ -65,6 +67,7 @@ actual val platformModule: Module = module {
         ServerDetailsViewModel(
             getServerDetailsUseCase = get(),
             toggleFavouriteUseCase = get(),
+            toggleSubscriptionUseCase = get(),
             serverName = serverName,
             serverId = serverId,
             clipboardHandler = get(),
