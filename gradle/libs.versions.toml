@@ -4,7 +4,7 @@ android-compileSdk = "36"
 android-minSdk = "30"
 android-targetSdk = "36"
 androidx-appcompat = "1.7.1"
-kotlin = "2.2.0-RC3"
+kotlin = "2.2.0"
 koin = "4.0.2"
 ktor = "3.2.0"
 sql-delight-version = "2.1.0"
@@ -31,6 +31,7 @@ lifecycleRuntimeKtx = "2.9.1"
 work = "2.10.2"
 serialization = "1.8.1"
 coil = "3.2.0"
+performance-gradle = "1.4.2"
 
 [libraries]
 
@@ -73,8 +74,8 @@ sqldelight-extensions-paging3 = { group = "app.cash.sqldelight", name = "android
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
-firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
+firebase-performance = { module = "com.google.firebase:firebase-perf" }
 
 #KOTLIN
 kotlin-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
@@ -126,5 +127,6 @@ composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "k
 googleServices = { id = "com.google.gms.google-services", version.ref = "google-services" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics-gradle" }
+performance = { id = "com.google.firebase.firebase-perf", version.ref = "performance-gradle" }
 sqlDelightGradlePlugin = { id = "app.cash.sqldelight", version.ref = "sql-delight-version" }
 mokoMultiplatformResources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko-resources" }

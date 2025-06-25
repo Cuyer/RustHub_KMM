@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.googleServices)
+    alias(libs.plugins.crashlytics)
+    alias(libs.plugins.performance)
 }
 
 android {
@@ -74,6 +76,9 @@ dependencies {
     implementation(libs.paging.compose)
     implementation(libs.kotlin.serialization)
     implementation(project.dependencies.platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.messaging)
+    implementation(libs.firebase.performance)
     debugImplementation(libs.compose.ui.tooling)
 }
