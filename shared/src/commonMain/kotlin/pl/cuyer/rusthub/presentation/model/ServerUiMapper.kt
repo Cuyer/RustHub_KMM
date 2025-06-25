@@ -40,6 +40,7 @@ fun ServerInfo.toUi(): ServerInfoUi {
         averageFps = averageFps,
         lastWipe = wipe?.let { formatLastWipe(it) },
         nextWipe = nextWipe?.let { formatNextWipe(it) },
+        nextMapWipe = nextMapWipe?.let { formatNextWipe(it) },
         pve = pve,
         website = website,
         isPremium = isPremium,

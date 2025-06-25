@@ -64,7 +64,8 @@ class ServerDataSourceImpl(
                         mapUrl = info.mapUrl,
                         headerImage = info.headerImage,
                         favourite = info.isFavorite == true,
-                        nextWipe = info.nextWipe?.toString()
+                        nextWipe = info.nextWipe?.toString(),
+                        nextMapWipe = info.nextMapWipe?.toString()
                     )
                 }
             }
