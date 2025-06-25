@@ -16,6 +16,7 @@ import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
+import pl.cuyer.rusthub.util.TopicSubscriber
 import dev.icerock.moko.permissions.PermissionsController
 
 actual val platformModule: Module = module {
@@ -24,6 +25,7 @@ actual val platformModule: Module = module {
     single { ClipboardHandler(get()) }
     single { SyncScheduler(get()) }
     single { SubscriptionSyncScheduler(get()) }
+    single { TopicSubscriber() }
     single { PermissionsController(androidContext()) }
     viewModel {
         StartupViewModel(get(), get())

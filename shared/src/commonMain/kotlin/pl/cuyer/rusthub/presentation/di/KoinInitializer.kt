@@ -55,6 +55,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.util.validator.EmailValidator
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
+import pl.cuyer.rusthub.util.TopicSubscriber
 
 val appModule = module {
     single<SnackbarController> { SnackbarController }
@@ -97,7 +98,7 @@ val appModule = module {
     single { GetUserUseCase(get()) }
     single { LogoutUserUseCase(get()) }
     single { ToggleFavouriteUseCase(get(), get(), get(), get()) }
-    single { ToggleSubscriptionUseCase(get(), get(), get(), get()) }
+    single { ToggleSubscriptionUseCase(get(), get(), get(), get(), get()) }
 }
 
 expect val platformModule: Module

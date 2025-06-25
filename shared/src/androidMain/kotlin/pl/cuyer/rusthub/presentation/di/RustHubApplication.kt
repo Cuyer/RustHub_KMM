@@ -11,6 +11,7 @@ import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
 import pl.cuyer.rusthub.work.CustomWorkerFactory
+import pl.cuyer.rusthub.util.TopicSubscriber
 
 class RustHubApplication : Application(), Configuration.Provider {
 
@@ -19,6 +20,7 @@ class RustHubApplication : Application(), Configuration.Provider {
     val subscriptionRepository by inject<SubscriptionRepository>()
     val subscriptionSyncDataSource by inject<SubscriptionSyncDataSource>()
     val serverDataSource by inject<ServerDataSource>()
+    val topicSubscriber by inject<TopicSubscriber>()
 
     override fun onCreate() {
         super.onCreate()
@@ -37,7 +39,8 @@ class RustHubApplication : Application(), Configuration.Provider {
                     favouriteSyncDataSource = syncDataSource,
                     subscriptionRepository = subscriptionRepository,
                     subscriptionSyncDataSource = subscriptionSyncDataSource,
-                    serverDataSource = serverDataSource
+                    serverDataSource = serverDataSource,
+                    topicSubscriber = topicSubscriber
                 )
             )
             .build()
