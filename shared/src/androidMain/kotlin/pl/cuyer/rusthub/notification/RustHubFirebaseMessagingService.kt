@@ -3,11 +3,14 @@ package pl.cuyer.rusthub.notification
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import pl.cuyer.rusthub.util.NotificationPresenter
+import pl.cuyer.rusthub.domain.model.NotificationType
 
 class RustHubFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
-        val title = message.notification?.title ?: return
-        val body = message.notification?.body ?: return
-        NotificationPresenter(this).show(title, body)
+        val type = message.data["type"]?.let { value ->
+            runCatching { NotificationType.valueOf(value) }.getOrNull()
+        } ?: return
+        val id = message.data["id"] ?: return
+        NotificationPresenter(this).show(id, type)
     }
 }

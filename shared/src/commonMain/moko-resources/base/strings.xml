@@ -3,4 +3,10 @@
     <string name="app_name">RustHub</string>
     <string name="notification_channel_name">Notifications</string>
     <string name="notification_channel_description">General notifications in the application.</string>
+    <string name="map_wipe_notification_channel_name">Map wipe notifications</string>
+    <string name="map_wipe_notification_channel_description">Notifications about map wipes.</string>
+    <string name="wipe_notification_channel_name">Wipe notifications</string>
+    <string name="wipe_notification_channel_description">Notifications about server wipes.</string>
+    <string name="map_wipe_notification_body">Map wipe on server %1$s</string>
+    <string name="wipe_notification_body">Server %1$s has been wiped</string>
 </resources>
