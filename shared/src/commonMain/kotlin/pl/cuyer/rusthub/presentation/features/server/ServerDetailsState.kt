@@ -7,6 +7,5 @@ data class ServerDetailsState(
     val isLoading: Boolean = true,
     val serverId: Long? = null,
     val serverName: String? = null,
-    val showSubscriptionDialog: Boolean = false,
-    val showNotificationInfoDialog: Boolean = false
+    val showSubscriptionDialog: Boolean = false
 )
