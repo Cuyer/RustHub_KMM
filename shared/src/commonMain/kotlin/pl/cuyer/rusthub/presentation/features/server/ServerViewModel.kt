@@ -88,8 +88,8 @@ class ServerViewModel(
                     pagingData.map { it.toServerInfo().toUi() }
                 }
                 .flowOn(Dispatchers.Default)
-                .cachedIn(coroutineScope)
-        }.catch { e -> sendSnackbarEvent("Error occurred during fetching servers.") }
+        }.cachedIn(coroutineScope)
+        .catch { e -> sendSnackbarEvent("Error occurred during fetching servers.") }
 
     private fun observeSearchQueries() {
         getSearchQueriesUseCase()
