@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.googleServices)
 }
 
 android {
@@ -72,5 +73,7 @@ dependencies {
     implementation(libs.compose.icons)
     implementation(libs.paging.compose)
     implementation(libs.kotlin.serialization)
+    implementation(project.dependencies.platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
     debugImplementation(libs.compose.ui.tooling)
 }
