@@ -225,6 +225,14 @@ fun ServerDetailsScreen(
                             )
                         }
 
+                        it.nextMapWipe?.let {
+                            ServerDetail(
+                                modifier = Modifier.padding(spacing.medium),
+                                label = "Next map wipe",
+                                value = it
+                            )
+                        }
+
                         it.pve?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),

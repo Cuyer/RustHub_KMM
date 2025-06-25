@@ -43,6 +43,7 @@ data class ServerInfoUi(
     val averageFps: Long? = null,
     val lastWipe: String? = null,
     val nextWipe: String? = null,
+    val nextMapWipe: String? = null,
     val pve: Boolean? = null,
     val website: String? = null,
     val isPremium: Boolean? = null,

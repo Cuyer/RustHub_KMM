@@ -64,5 +64,7 @@ data class ServerInfoDto(
     @SerialName("is_favorite")
     val isFavorite: Boolean? = null,
     @SerialName("next_wipe")
-    val nextWipe: Instant? = null
+    val nextWipe: Instant? = null,
+    @SerialName("next_map_wipe")
+    val nextMapWipe: Instant? = null
 )
