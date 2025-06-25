@@ -14,35 +14,22 @@ import pl.cuyer.rusthub.domain.model.NotificationType
 
 actual class NotificationPresenter(private val context: Context) {
     actual fun show(id: String, type: NotificationType) {
-        val title = SharedRes.strings.app_name.getString(context)
-        val body = when (type) {
-            NotificationType.MapWipe -> context.getString(
-                SharedRes.strings.map_wipe_notification_body.resourceId,
-                id
-            )
-
-            NotificationType.Wipe -> context.getString(
-                SharedRes.strings.wipe_notification_body.resourceId,
-                id
-            )
-
-        }
-        buildNotification(title, body, type)
+        buildNotification(type)
     }
 
-    private fun buildNotification(title: String, body: String, type: NotificationType) {
+    private fun buildNotification(type: NotificationType) {
         createNotificationChannel(type, NotificationManager.IMPORTANCE_DEFAULT)
         rusthubNotificationManager().notify(
-            (title + body + type.name).hashCode(),
-            notificationBuilder(title, body, type).build()
+            (type.name).hashCode(),
+            notificationBuilder(type).build()
         )
     }
 
-    private fun notificationBuilder(title: String, body: String, type: NotificationType): NotificationCompat.Builder {
+    private fun notificationBuilder(type: NotificationType): NotificationCompat.Builder {
         return NotificationCompat.Builder(context, channelId(type))
             .setSmallIcon(getImageByFileName("rusthub_logo").drawableResId)
-            .setContentTitle(title)
-            .setContentText(body)
+            .setContentTitle(createTitle(type))
+            .setContentText(createBody(type))
             .setContentIntent(createPendingIntent())
             .setAutoCancel(true)
     }
@@ -62,6 +49,23 @@ actual class NotificationPresenter(private val context: Context) {
                 }
             )
         }
+    }
+
+    private fun createBody(type: NotificationType): String = when (type) {
+        NotificationType.MapWipe -> context.getString(
+            SharedRes.strings.map_wipe_notification_body.resourceId,
+            type.name
+        )
+
+        NotificationType.Wipe -> context.getString(
+            SharedRes.strings.wipe_notification_body.resourceId,
+            type.name
+        )
+    }
+
+    private fun createTitle(type: NotificationType): String = when (type) {
+        NotificationType.MapWipe -> SharedRes.strings.map_wipe_notification_title.getString(context)
+        NotificationType.Wipe -> SharedRes.strings.wipe_notification_title.getString(context)
     }
 
     private fun channelDescription(type: NotificationType): String = when (type) {
