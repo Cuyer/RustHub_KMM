@@ -97,6 +97,6 @@ actual class NotificationPresenter(private val context: Context) {
 
     companion object {
         const val MAIN_ACTIVITY = "pl.cuyer.rusthub.MainActivity"
-        const val PACKAGE_NAME = "pl.cuyer.rusthub"
+        const val PACKAGE_NAME = "pl.cuyer.rusthub.android"
     }
 }
