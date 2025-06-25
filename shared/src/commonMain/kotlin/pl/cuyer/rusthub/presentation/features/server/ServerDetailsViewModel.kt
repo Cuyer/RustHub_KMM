@@ -134,14 +134,14 @@ class ServerDetailsViewModel(
     private fun toggleSubscription() {
         val id = state.value.serverId ?: return
         val details = state.value.details ?: return
-        val add = details.isSubscribed != true
+        val subscribed = details.isSubscribed != true
 
         subscriptionJob?.cancel()
 
         subscriptionJob = coroutineScope.launch {
-            toggleSubscriptionUseCase(id, add)
+            toggleSubscriptionUseCase(id, subscribed)
                 .catch { e ->
-                    showErrorSnackbar("Error occurred when trying to ${if (add) "subscribe" else "unsubscribe"} from notifications")
+                    showErrorSnackbar("Error occurred when trying to ${if (subscribed) "subscribe" else "unsubscribe"} from notifications")
                 }
                 .collectLatest { result ->
                     ensureActive()
@@ -150,14 +150,14 @@ class ServerDetailsViewModel(
                             serverDetailsJob = observeServerDetails(id)
                             snackbarController.sendEvent(
                                 SnackbarEvent(
-                                    message = if (add) "Subscribed to notifications" else "Unsubscribed from notifications",
+                                    message = if (subscribed) "Subscribed to notifications" else "Unsubscribed from notifications",
                                     duration = Duration.SHORT
                                 )
                             )
                         }
                         is Result.Error -> when (result.exception) {
                             is SubscriptionLimitException -> showSubscriptionDialog(true)
-                            else -> showErrorSnackbar("Error occurred when trying to ${if (add) "subscribe" else "unsubscribe"} from notifications")
+                            else -> showErrorSnackbar("Error occurred when trying to ${if (subscribed) "subscribe" else "unsubscribe"} from notifications")
                         }
                         Result.Loading -> Unit
                     }

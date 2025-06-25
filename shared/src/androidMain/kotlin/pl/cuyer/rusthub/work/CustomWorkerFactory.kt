@@ -10,7 +10,7 @@ import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
 
-class FavouriteWorkerFactory(
+class CustomWorkerFactory(
     private val favouriteRepository: FavouriteRepository,
     private val favouriteSyncDataSource: FavouriteSyncDataSource,
     private val subscriptionRepository: SubscriptionRepository,

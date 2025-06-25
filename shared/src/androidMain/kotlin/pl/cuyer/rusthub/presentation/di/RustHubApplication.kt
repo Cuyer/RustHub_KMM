@@ -10,7 +10,7 @@ import pl.cuyer.rusthub.domain.repository.favourite.network.FavouriteRepository
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
-import pl.cuyer.rusthub.work.FavouriteWorkerFactory
+import pl.cuyer.rusthub.work.CustomWorkerFactory
 
 class RustHubApplication : Application(), Configuration.Provider {
 
@@ -32,7 +32,7 @@ class RustHubApplication : Application(), Configuration.Provider {
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
             .setWorkerFactory(
-                FavouriteWorkerFactory(
+                CustomWorkerFactory(
                     favouriteRepository = repository,
                     favouriteSyncDataSource = syncDataSource,
                     subscriptionRepository = subscriptionRepository,
