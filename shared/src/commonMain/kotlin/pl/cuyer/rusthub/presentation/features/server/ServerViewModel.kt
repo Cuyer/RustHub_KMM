@@ -43,6 +43,7 @@ import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
 import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.presentation.model.SearchQueryUi
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
+import pl.cuyer.rusthub.presentation.model.toDomain
 import pl.cuyer.rusthub.presentation.model.toUi
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
@@ -168,26 +169,18 @@ class ServerViewModel(
             is ServerAction.DeleteSearchQueryByQuery -> deleteSearchQueries(action.query)
             is ServerAction.OnError -> sendSnackbarEvent(action.message)
             is ServerAction.OnChangeLoadMoreState -> updateLoadingMore(action.isLoadingMore)
-            is ServerAction.OnFilterChange -> coroutineScope.launch {
-                updateFilter(action.filter)
-            }
+            is ServerAction.OnFilterChange -> updateFilter(action.filter)
         }
     }
 
     private fun deleteSearchQueries(query: String?) {
         coroutineScope.launch {
             runCatching {
-                query?.let {
-                    deleteSearchQueriesUseCase(query)
-                } ?: run {
-                    deleteSearchQueriesUseCase()
-                }
-            }.onFailure { e ->
-                query?.let {
-                    sendSnackbarEvent("Error occurred during deleting search query")
-                } ?: run {
-                    sendSnackbarEvent("Error occurred during deleting search queries")
-                }
+                if (query != null) deleteSearchQueriesUseCase(query)
+                else deleteSearchQueriesUseCase()
+            }.onFailure {
+                val msg = if (query != null) "Error deleting query" else "Error deleting queries"
+                sendSnackbarEvent(msg)
             }
         }
     }
@@ -305,8 +298,8 @@ class ServerViewModel(
         _state.update { it.copy(loadingMore = loading) }
     }
 
-    private suspend fun updateFilter(filter: ServerFilter) {
-        withContext(Dispatchers.Main.immediate) {
+    private fun updateFilter(filter: ServerFilter) {
+        coroutineScope.launch {
             runCatching {
                 val current = state.value.filters
                     ?.copy(filter = filter)
@@ -314,12 +307,6 @@ class ServerViewModel(
                     ?: getFiltersUseCase().first()?.copy(filter = filter)
                     ?: ServerQuery(filter = filter)
                 saveFiltersUseCase(current)
-                _state.update { state ->
-                    state.copy(
-                        filter = filter,
-                        filters = state.filters?.copy(filter = filter)
-                    )
-                }
             }.onFailure {
                 sendSnackbarEvent("Error occurred during saving filters.")
             }
