@@ -42,7 +42,8 @@ class FiltersDataSourceImpl(
                 wipe_schedule = filters.wipeSchedule.toEntity(),
                 is_official = if (filters.official == true) 1 else null,
                 modded = if (filters.modded == true) 1 else null,
-                sort_order = filters.order.toEntity()
+                sort_order = filters.order.toEntity(),
+                filter = filters.filter.toEntity()
             )
         }
     }

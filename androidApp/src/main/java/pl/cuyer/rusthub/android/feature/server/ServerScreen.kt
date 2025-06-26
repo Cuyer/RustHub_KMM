@@ -75,7 +75,7 @@ import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.WipeType
 import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.features.server.ServerState
-import pl.cuyer.rusthub.presentation.features.server.ServerFilter
+import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent

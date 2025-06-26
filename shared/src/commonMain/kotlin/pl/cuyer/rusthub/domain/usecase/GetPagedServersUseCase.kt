@@ -20,9 +20,7 @@ class GetPagedServersUseCase(
 ) {
     @OptIn(ExperimentalPagingApi::class)
     operator fun invoke(
-        searchQuery: String?,
-        favouritesOnly: Boolean,
-        subscribedOnly: Boolean
+        searchQuery: String?
     ): Flow<PagingData<ServerEntity>> {
         return Pager(
             config = PagingConfig(
@@ -34,15 +32,11 @@ class GetPagedServersUseCase(
                 api,
                 filters,
                 remoteKeys,
-                searchQuery,
-                favouritesOnly,
-                subscribedOnly
+                searchQuery
             ),
             pagingSourceFactory = {
                 dataSource.getServersPagingSource(
-                    searchQuery,
-                    favouritesOnly,
-                    subscribedOnly
+                    searchQuery
                 )
             }
         ).flow

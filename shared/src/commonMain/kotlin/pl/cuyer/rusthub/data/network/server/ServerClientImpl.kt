@@ -13,6 +13,7 @@ import pl.cuyer.rusthub.data.network.util.NetworkConstants
 import pl.cuyer.rusthub.data.network.util.appendNonNull
 import pl.cuyer.rusthub.domain.model.PagedServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
+import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
 
 class ServerClientImpl(
@@ -24,9 +25,7 @@ class ServerClientImpl(
         page: Int,
         size: Int,
         query: ServerQuery,
-        searchQuery: String?,
-        favouritesOnly: Boolean,
-        subscribedOnly: Boolean
+        searchQuery: String?
     ): Flow<Result<PagedServerInfo>> {
         return safeApiCall<PagedServerInfoDto> {
             httpClient.get(NetworkConstants.BASE_URL + "servers") {
@@ -46,8 +45,8 @@ class ServerClientImpl(
                     if (!searchQuery.isNullOrBlank()) parameters.append("name", searchQuery)
                     if (query.official == true) parameters.append("official", true.toString())
                     if (query.modded == true) parameters.append("modded", true.toString())
-                    if (favouritesOnly) parameters.append("favorites", true.toString())
-                    if (subscribedOnly) parameters.append("subscribed", true.toString())
+                    if (query.filter == ServerFilter.FAVORITES) parameters.append("favorites", true.toString())
+                    if (query.filter == ServerFilter.SUBSCRIBED) parameters.append("subscribed", true.toString())
                 }
             }
         }.map { result ->

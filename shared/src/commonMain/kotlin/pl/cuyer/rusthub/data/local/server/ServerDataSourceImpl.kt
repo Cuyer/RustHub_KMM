@@ -74,16 +74,12 @@ class ServerDataSourceImpl(
     }
 
     override fun getServersPagingSource(
-        searchQuery: String?,
-        favouritesOnly: Boolean,
-        subscribedOnly: Boolean
+        searchQuery: String?
     ): PagingSource<Int, ServerEntity> {
         val pagingSource: PagingSource<Int, ServerEntity> = QueryPagingSource(
             countQuery = queries.countPagedServersFiltered(
                 id = DEFAULT_KEY,
-                name = searchQuery ?: "",
-                favourites = favouritesOnly,
-                subscribed = subscribedOnly
+                name = searchQuery ?: ""
             ),
             transacter = queries,
             context = Dispatchers.IO,
@@ -91,8 +87,6 @@ class ServerDataSourceImpl(
                 queries.findServersPagedFiltered(
                     id = DEFAULT_KEY,
                     name = searchQuery ?: "",
-                    favourites = favouritesOnly,
-                    subscribed = subscribedOnly,
                     limit = limit,
                     offset = offset
                 )

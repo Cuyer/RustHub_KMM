@@ -6,6 +6,7 @@ import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity;
 import pl.cuyer.rusthub.data.local.model.OrderEntity;
 import pl.cuyer.rusthub.data.local.model.ServerStatusEntity;
 import pl.cuyer.rusthub.data.local.model.WipeTypeEntity;
+import pl.cuyer.rusthub.data.local.model.ServerFilterEntity;
 
 -- =============================================================================
 -- Table Definition
@@ -70,8 +71,8 @@ WHERE
   AND (fe.difficulty IS NULL OR se.difficulty = fe.difficulty)
   AND (fe.wipe_schedule IS NULL OR se.wipe_schedule = fe.wipe_schedule)
   AND (fe.is_official IS NULL OR se.is_official = fe.is_official)
-  AND (:favourites == 0 OR se.favourite = 1)
-  AND (:subscribed == 0 OR se.subscribed = 1)
+  AND (fe.filter != 'FAVORITES' OR se.favourite = 1)
+  AND (fe.filter != 'SUBSCRIBED' OR se.subscribed = 1)
   AND (se.name LIKE '%' || :name || '%' COLLATE NOCASE)
 ORDER BY
   CASE WHEN fe.sort_order = 'WIPE' THEN se.wipe END DESC,
@@ -95,8 +96,8 @@ WHERE
   AND (fe.difficulty IS NULL OR se.difficulty = fe.difficulty)
   AND (fe.wipe_schedule IS NULL OR se.wipe_schedule = fe.wipe_schedule)
   AND (fe.is_official IS NULL OR se.is_official = fe.is_official)
-  AND (:favourites == 0 OR se.favourite = 1)
-  AND (:subscribed == 0 OR se.subscribed = 1)
+  AND (fe.filter != 'FAVORITES' OR se.favourite = 1)
+  AND (fe.filter != 'SUBSCRIBED' OR se.subscribed = 1)
   AND (se.name LIKE '%' || :name || '%' COLLATE NOCASE);
 
 -- =============================================================================
@@ -247,6 +248,7 @@ CREATE TABLE filtersEntity (
     difficulty     TEXT       AS DifficultyEntity,          -- nullable
     wipe_schedule  TEXT       AS WipeScheduleEntity,
     is_official    INTEGER,
+    filter         TEXT       AS ServerFilterEntity,
     sort_order     TEXT       AS OrderEntity
 );
 
@@ -264,6 +266,7 @@ INSERT INTO filtersEntity (
     wipe_schedule,
     modded,
     is_official,
+    filter,
     sort_order
 ) VALUES (
         :id,
@@ -275,10 +278,11 @@ INSERT INTO filtersEntity (
         :region,
         :group_limit,
         :difficulty,
-        :wipe_schedule,
-        :modded,
-        :is_official,
-        :sort_order
+    :wipe_schedule,
+    :modded,
+    :is_official,
+    :filter,
+    :sort_order
 ) ON CONFLICT(id) DO UPDATE SET
     id = excluded.id,
     wipe = excluded.wipe,
@@ -292,6 +296,7 @@ INSERT INTO filtersEntity (
     wipe_schedule = excluded.wipe_schedule,
     modded = excluded.modded,
     is_official = excluded.is_official,
+    filter = excluded.filter,
     sort_order = excluded.sort_order;
 
 clearFilters:

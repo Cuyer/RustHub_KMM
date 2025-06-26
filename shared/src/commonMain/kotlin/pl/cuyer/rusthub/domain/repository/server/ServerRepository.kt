@@ -10,8 +10,6 @@ interface ServerRepository {
         page: Int,
         size: Int,
         query: ServerQuery,
-        searchQuery: String?,
-        favouritesOnly: Boolean,
-        subscribedOnly: Boolean
+        searchQuery: String?
     ): Flow<Result<PagedServerInfo>>
 }

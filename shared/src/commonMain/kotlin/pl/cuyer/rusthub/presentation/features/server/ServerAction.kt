@@ -1,7 +1,7 @@
 package pl.cuyer.rusthub.presentation.features.server
 
 import pl.cuyer.rusthub.domain.model.ServerQuery
-import pl.cuyer.rusthub.presentation.features.server.ServerFilter
+import pl.cuyer.rusthub.domain.model.ServerFilter
 
 sealed interface ServerAction {
     data class OnServerClick(val id: Long, val name: String) : ServerAction
