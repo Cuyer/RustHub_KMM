@@ -36,6 +36,10 @@ actual class DatabaseDriverFactory(
                 wipe_scheduleAdapter = EnumColumnAdapter(),
                 sort_orderAdapter = EnumColumnAdapter()
             ),
+            settingsEntityAdapter = database.SettingsEntity.Adapter(
+                themeAdapter = EnumColumnAdapter(),
+                languageAdapter = EnumColumnAdapter()
+            )
         )
     }
 }

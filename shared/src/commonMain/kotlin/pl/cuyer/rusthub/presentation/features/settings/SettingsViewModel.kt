@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
+import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.Settings
+import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.usecase.GetSettingsUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
@@ -48,12 +50,12 @@ class SettingsViewModel(
         }
     }
 
-    private fun updateTheme(theme: pl.cuyer.rusthub.domain.model.Theme) {
+    private fun updateTheme(theme: Theme) {
         _state.update { it.copy(theme = theme) }
         save()
     }
 
-    private fun updateLanguage(language: pl.cuyer.rusthub.domain.model.Language) {
+    private fun updateLanguage(language: Language) {
         _state.update { it.copy(language = language) }
         save()
     }
