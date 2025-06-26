@@ -45,8 +45,7 @@ class ServerClientImpl(
                     if (!searchQuery.isNullOrBlank()) parameters.append("name", searchQuery)
                     if (query.official == true) parameters.append("official", true.toString())
                     if (query.modded == true) parameters.append("modded", true.toString())
-                    if (query.filter == ServerFilter.FAVORITES) parameters.append("favorites", true.toString())
-                    if (query.filter == ServerFilter.SUBSCRIBED) parameters.append("subscribed", true.toString())
+                    appendNonNull("filter" to query.filter)
                 }
             }
         }.map { result ->

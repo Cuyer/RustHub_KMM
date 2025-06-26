@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock.System
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.data.local.mapper.toServerInfo
@@ -69,7 +70,6 @@ class ServerViewModel(
     val uiEvent = _uiEvent.receiveAsFlow()
 
     private val queryFlow = MutableStateFlow("")
-    private val filterFlow = MutableStateFlow(ServerFilter.ALL)
 
     private val _state = MutableStateFlow(ServerState())
     val state = _state
@@ -85,14 +85,14 @@ class ServerViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val paging: Flow<PagingData<ServerInfoUi>> =
-        combine(queryFlow, filterFlow) { query, _ -> query }
+        queryFlow
             .flatMapLatest { query ->
-                getPagedServersUseCase(
-                    searchQuery = query
-                ).map { pagingData ->
-                    pagingData.map { it.toServerInfo().toUi() }
-                }.flowOn(Dispatchers.Default)
-            }.cachedIn(coroutineScope)
+            getPagedServersUseCase(
+                searchQuery = query
+            ).map { pagingData ->
+                pagingData.map { it.toServerInfo().toUi() }
+            }.flowOn(Dispatchers.Default)
+        }.cachedIn(coroutineScope)
             .catch { e -> sendSnackbarEvent("Error occurred during fetching servers.") }
 
     private fun observeSearchQueries() {
@@ -125,25 +125,22 @@ class ServerViewModel(
             getFiltersOptions.invoke(),
             getFiltersUseCase.invoke()
         ) { filtersOptions, filters ->
-            filtersOptions to filters
+            updateFilter(filters?.filter ?: ServerFilter.ALL)
+            filters.toUi(
+                maps = filtersOptions?.maps?.map { it.displayName } ?: emptyList(),
+                flags = filtersOptions?.flags?.map { it.displayName } ?: emptyList(),
+                regions = filtersOptions?.regions?.map { it.displayName } ?: emptyList(),
+                difficulties = filtersOptions?.difficulty?.map { it.displayName } ?: emptyList(),
+                schedules = filtersOptions?.wipeSchedules?.map { it.displayName } ?: emptyList(),
+                playerCount = filtersOptions?.maxPlayerCount ?: 0,
+                groupLimit = filtersOptions?.maxGroupLimit ?: 0,
+                ranking = filtersOptions?.maxRanking ?: 0
+            )
         }.distinctUntilChanged()
             .flowOn(Dispatchers.Default)
             .onStart { updateIsLoadingFilters(true) }
-            .onEach { (filtersOptions, filters) ->
-                val mapped = filters.toUi(
-                    maps = filtersOptions?.maps?.map { it.displayName } ?: emptyList(),
-                    flags = filtersOptions?.flags?.map { it.displayName } ?: emptyList(),
-                    regions = filtersOptions?.regions?.map { it.displayName } ?: emptyList(),
-                    difficulties = filtersOptions?.difficulty?.map { it.displayName } ?: emptyList(),
-                    schedules = filtersOptions?.wipeSchedules?.map { it.displayName } ?: emptyList(),
-                    playerCount = filtersOptions?.maxPlayerCount ?: 0,
-                    groupLimit = filtersOptions?.maxGroupLimit ?: 0,
-                    ranking = filtersOptions?.maxRanking ?: 0
-                )
-                updateFilters(mapped)
-                val filterValue = filters?.filter ?: ServerFilter.ALL
-                filterFlow.update { filterValue }
-                _state.update { it.copy(filter = filterValue) }
+            .onEach { mappedFilters ->
+                updateFilters(mappedFilters)
                 updateIsLoadingFilters(false)
             }
             .catch { e -> sendSnackbarEvent("Error occurred during fetching filters.") }
@@ -171,7 +168,9 @@ class ServerViewModel(
             is ServerAction.DeleteSearchQueryByQuery -> deleteSearchQueries(action.query)
             is ServerAction.OnError -> sendSnackbarEvent(action.message)
             is ServerAction.OnChangeLoadMoreState -> updateLoadingMore(action.isLoadingMore)
-            is ServerAction.OnFilterChange -> updateFilter(action.filter)
+            is ServerAction.OnFilterChange -> coroutineScope.launch {
+                updateFilter(action.filter)
+            }
         }
     }
 
@@ -306,10 +305,8 @@ class ServerViewModel(
         _state.update { it.copy(loadingMore = loading) }
     }
 
-    private fun updateFilter(filter: ServerFilter) {
-        filterFlow.update { filter }
-        _state.update { it.copy(filter = filter) }
-        coroutineScope.launch {
+    private suspend fun updateFilter(filter: ServerFilter) {
+        withContext(Dispatchers.Main.immediate) {
             runCatching {
                 val current = getFiltersUseCase().first() ?: ServerQuery()
                 saveFiltersUseCase(current.copy(filter = filter))

@@ -1,13 +1,14 @@
 import pl.cuyer.rusthub.data.local.model.DifficultyEntity;
 import pl.cuyer.rusthub.data.local.model.FlagEntity;
-import pl.cuyer.rusthub.data.local.model.MapsEntity;
-import pl.cuyer.rusthub.data.local.model.RegionEntity;
-import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity;
-import pl.cuyer.rusthub.data.local.model.OrderEntity;
-import pl.cuyer.rusthub.data.local.model.ServerStatusEntity;
-import pl.cuyer.rusthub.data.local.model.WipeTypeEntity;
-import pl.cuyer.rusthub.data.local.model.ThemeEntity;
 import pl.cuyer.rusthub.data.local.model.LanguageEntity;
+import pl.cuyer.rusthub.data.local.model.MapsEntity;
+import pl.cuyer.rusthub.data.local.model.OrderEntity;
+import pl.cuyer.rusthub.data.local.model.RegionEntity;
+import pl.cuyer.rusthub.data.local.model.ServerFilterEntity;
+import pl.cuyer.rusthub.data.local.model.ServerStatusEntity;
+import pl.cuyer.rusthub.data.local.model.ThemeEntity;
+import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity;
+import pl.cuyer.rusthub.data.local.model.WipeTypeEntity;
 
 -- =============================================================================
 -- Table Definition
@@ -559,8 +560,8 @@ SELECT * FROM userEntity LIMIT 1;
 
 CREATE TABLE settingsEntity (
     id TEXT NOT NULL PRIMARY KEY,
-    theme TEXT AS ThemeEntity NOT NULL,
-    language TEXT AS LanguageEntity NOT NULL
+    theme TEXT AS ThemeEntity,
+    language TEXT AS LanguageEntity
 );
 
 upsertSettings:
