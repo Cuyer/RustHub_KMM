@@ -70,6 +70,8 @@ WHERE
   AND (fe.difficulty IS NULL OR se.difficulty = fe.difficulty)
   AND (fe.wipe_schedule IS NULL OR se.wipe_schedule = fe.wipe_schedule)
   AND (fe.is_official IS NULL OR se.is_official = fe.is_official)
+  AND (:favourites == 0 OR se.favourite = 1)
+  AND (:subscribed == 0 OR se.subscribed = 1)
   AND (se.name LIKE '%' || :name || '%' COLLATE NOCASE)
 ORDER BY
   CASE WHEN fe.sort_order = 'WIPE' THEN se.wipe END DESC,
@@ -93,6 +95,8 @@ WHERE
   AND (fe.difficulty IS NULL OR se.difficulty = fe.difficulty)
   AND (fe.wipe_schedule IS NULL OR se.wipe_schedule = fe.wipe_schedule)
   AND (fe.is_official IS NULL OR se.is_official = fe.is_official)
+  AND (:favourites == 0 OR se.favourite = 1)
+  AND (:subscribed == 0 OR se.subscribed = 1)
   AND (se.name LIKE '%' || :name || '%' COLLATE NOCASE);
 
 -- =============================================================================
@@ -218,6 +222,7 @@ INSERT INTO serverEntity (
 
 clearServers:
 DELETE FROM serverEntity;
+
 
 getServerById:
 SELECT * FROM serverEntity WHERE id == :id;
