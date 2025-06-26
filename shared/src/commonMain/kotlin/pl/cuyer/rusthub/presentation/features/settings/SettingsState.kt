@@ -5,5 +5,6 @@ import pl.cuyer.rusthub.domain.model.Theme
 
 data class SettingsState(
     val theme: Theme = Theme.SYSTEM,
-    val language: Language = Language.ENGLISH
+    val language: Language = Language.ENGLISH,
+    val username: String? = null
 )

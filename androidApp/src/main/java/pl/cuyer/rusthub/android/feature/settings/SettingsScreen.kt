@@ -122,6 +122,7 @@ private fun SettingsScreenCompact(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
+        GreetingSection(state.username)
         PreferencesSection(state, onAction)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
         AccountSection(onAction)
@@ -146,6 +147,7 @@ private fun SettingsScreenExpanded(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(spacing.medium)
         ) {
+            GreetingSection(state.username)
             PreferencesSection(state, onAction)
             HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
             AccountSection(onAction)
@@ -302,6 +304,17 @@ private fun OtherSection() {
         text = "App version: 1.0",
         textAlign = TextAlign.Center
     )
+}
+
+@Composable
+private fun GreetingSection(username: String?) {
+    if (username != null) {
+        Text(
+            text = "Hello $username!",
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = spacing.medium)
+        )
+    }
 }
 
 @Preview

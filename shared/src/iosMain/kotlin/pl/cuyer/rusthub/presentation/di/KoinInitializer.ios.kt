@@ -50,7 +50,8 @@ actual val platformModule: Module = module {
         SettingsViewModel(
             getSettingsUseCase = get(),
             saveSettingsUseCase = get(),
-            logoutUserUseCase = get()
+            logoutUserUseCase = get(),
+            getUserUseCase = get()
         )
     }
 }
