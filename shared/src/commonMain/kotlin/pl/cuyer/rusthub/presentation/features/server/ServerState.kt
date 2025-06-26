@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.presentation.features.server
 
 import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.presentation.model.SearchQueryUi
+import pl.cuyer.rusthub.presentation.features.server.ServerFilter
 
 data class ServerState(
     val isRefreshing: Boolean = true,
@@ -9,5 +10,6 @@ data class ServerState(
     val searchQuery: List<SearchQueryUi> = emptyList(),
     val isLoadingSearchHistory: Boolean = true,
     val isLoadingFilters: Boolean = true,
-    val loadingMore: Boolean = false
+    val loadingMore: Boolean = false,
+    val filter: ServerFilter = ServerFilter.ALL
 )

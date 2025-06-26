@@ -9,7 +9,9 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,7 +25,9 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -71,6 +75,7 @@ import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.WipeType
 import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.features.server.ServerState
+import pl.cuyer.rusthub.presentation.features.server.ServerFilter
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
@@ -145,11 +150,17 @@ fun ServerScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            HandlePagingItems(pagedList) {
-                onRefresh {
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(spacing.medium)
-                    ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                ServerFilterChips(
+                    selected = state.value.filter,
+                    onSelectedChange = { onAction(ServerAction.OnFilterChange(it)) },
+                    modifier = Modifier.padding(horizontal = spacing.medium, vertical = spacing.small)
+                )
+                HandlePagingItems(pagedList) {
+                    onRefresh {
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(spacing.medium)
+                        ) {
                         items(
                             count = 6
                         ) {
@@ -259,6 +270,35 @@ fun ServerScreen(
                 }
             }
         }
+    }
+}
+
+
+@Composable
+private fun ServerFilterChips(
+    selected: ServerFilter,
+    onSelectedChange: (ServerFilter) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    FlowRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(spacing.small)
+    ) {
+        FilterChip(
+            selected = selected == ServerFilter.ALL,
+            onClick = { onSelectedChange(ServerFilter.ALL) },
+            label = { Text("All") }
+        )
+        FilterChip(
+            selected = selected == ServerFilter.FAVORITES,
+            onClick = { onSelectedChange(ServerFilter.FAVORITES) },
+            label = { Text("Favorites") }
+        )
+        FilterChip(
+            selected = selected == ServerFilter.SUBSCRIBED,
+            onClick = { onSelectedChange(ServerFilter.SUBSCRIBED) },
+            label = { Text("Subscribed") }
+        )
     }
 }
 

@@ -28,6 +28,7 @@ import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.data.local.mapper.toServerInfo
 import pl.cuyer.rusthub.domain.model.SearchQuery
 import pl.cuyer.rusthub.domain.model.ServerQuery
+import pl.cuyer.rusthub.presentation.features.server.ServerFilter
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.domain.usecase.ClearFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteSearchQueriesUseCase
@@ -67,6 +68,7 @@ class ServerViewModel(
     val uiEvent = _uiEvent.receiveAsFlow()
 
     private val queryFlow = MutableStateFlow("")
+    private val filterFlow = MutableStateFlow(ServerFilter.ALL)
 
     private val _state = MutableStateFlow(ServerState())
     val state = _state
@@ -81,15 +83,18 @@ class ServerViewModel(
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val paging: Flow<PagingData<ServerInfoUi>> = queryFlow
-        .flatMapLatest { query ->
-            getPagedServersUseCase(query)
-                .map { pagingData ->
+    val paging: Flow<PagingData<ServerInfoUi>> =
+        combine(queryFlow, filterFlow) { query, filter -> query to filter }
+            .flatMapLatest { (query, filter) ->
+                getPagedServersUseCase(
+                    searchQuery = query,
+                    favouritesOnly = filter == ServerFilter.FAVORITES,
+                    subscribedOnly = filter == ServerFilter.SUBSCRIBED
+                ).map { pagingData ->
                     pagingData.map { it.toServerInfo().toUi() }
-                }
-                .flowOn(Dispatchers.Default)
-        }.cachedIn(coroutineScope)
-        .catch { e -> sendSnackbarEvent("Error occurred during fetching servers.") }
+                }.flowOn(Dispatchers.Default)
+            }.cachedIn(coroutineScope)
+            .catch { e -> sendSnackbarEvent("Error occurred during fetching servers.") }
 
     private fun observeSearchQueries() {
         getSearchQueriesUseCase()
@@ -163,6 +168,7 @@ class ServerViewModel(
             is ServerAction.DeleteSearchQueryByQuery -> deleteSearchQueries(action.query)
             is ServerAction.OnError -> sendSnackbarEvent(action.message)
             is ServerAction.OnChangeLoadMoreState -> updateLoadingMore(action.isLoadingMore)
+            is ServerAction.OnFilterChange -> updateFilter(action.filter)
         }
     }
 
@@ -295,5 +301,10 @@ class ServerViewModel(
 
     private fun updateLoadingMore(loading: Boolean) {
         _state.update { it.copy(loadingMore = loading) }
+    }
+
+    private fun updateFilter(filter: ServerFilter) {
+        filterFlow.update { filter }
+        _state.update { it.copy(filter = filter) }
     }
 }

@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.presentation.features.server
 
 import pl.cuyer.rusthub.domain.model.ServerQuery
+import pl.cuyer.rusthub.presentation.features.server.ServerFilter
 
 sealed interface ServerAction {
     data class OnServerClick(val id: Long, val name: String) : ServerAction
@@ -14,4 +15,5 @@ sealed interface ServerAction {
     data object OnClearSearchQuery : ServerAction
     data class OnError(val message: String): ServerAction
     data class OnChangeLoadMoreState(val isLoadingMore: Boolean): ServerAction
+    data class OnFilterChange(val filter: ServerFilter): ServerAction
 }
