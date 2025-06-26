@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -43,18 +43,20 @@ import pl.cuyer.rusthub.android.feature.auth.RegisterScreen
 import pl.cuyer.rusthub.android.feature.onboarding.OnboardingScreen
 import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
+import pl.cuyer.rusthub.android.feature.settings.SettingsScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
-import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 import pl.cuyer.rusthub.presentation.features.auth.login.LoginViewModel
 import pl.cuyer.rusthub.presentation.features.auth.register.RegisterViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
+import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.navigation.Login
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.Register
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
+import pl.cuyer.rusthub.presentation.navigation.Settings
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 
@@ -87,7 +89,6 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
 
     val backStack = rememberNavBackStack(startDestination)
     val listDetailStrategy = rememberListDetailSceneStrategy<Any>()
-    val logoutUseCase = koinInject<LogoutUserUseCase>()
 
     LaunchedEffect(startDestination) {
         if (backStack.firstOrNull() != startDestination) {
@@ -182,6 +183,16 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                                 onNavigate = { dest -> backStack.add(dest) }
                             )
                         }
+                        entry<Settings> {
+                            val viewModel = koinViewModel<SettingsViewModel>()
+                            val state = viewModel.state.collectAsStateWithLifecycle()
+                            SettingsScreen(
+                                stateProvider = { state },
+                                uiEvent = viewModel.uiEvent,
+                                onAction = viewModel::onAction,
+                                onNavigate = { dest -> backStack.add(dest) }
+                            )
+                        }
                     },
                     sceneStrategy = listDetailStrategy
                 )
@@ -190,7 +201,7 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
     }
 
     val current = backStack.lastOrNull()
-    val showNav = current is ServerList || current is ServerDetails
+    val showNav = current is ServerList || current is ServerDetails || current is Settings
 
     if (showNav) {
         NavigationSuiteScaffold(
@@ -210,21 +221,14 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                     label = { Text("Servers") }
                 )
                 NavigationSuiteItem(
-                    selected = false,
+                    selected = current is Settings,
                     onClick = {
-                        scope.launch {
-                            logoutUseCase()
-                            backStack.clear()
-                            backStack.add(Onboarding)
+                        if (backStack.lastOrNull() !is Settings) {
+                            backStack.add(Settings)
                         }
                     },
-                    icon = {
-                        Icon(
-                            Icons.AutoMirrored.Filled.Logout,
-                            contentDescription = "Log out"
-                        )
-                    },
-                    label = { Text("Log out") }
+                    icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
+                    label = { Text("Settings") }
                 )
             },
             content = {

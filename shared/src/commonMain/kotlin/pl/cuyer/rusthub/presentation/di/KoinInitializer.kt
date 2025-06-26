@@ -17,6 +17,7 @@ import pl.cuyer.rusthub.data.local.search.SearchQueryDataSourceImpl
 import pl.cuyer.rusthub.data.local.server.ServerDataSourceImpl
 import pl.cuyer.rusthub.data.local.favourite.FavouriteSyncDataSourceImpl
 import pl.cuyer.rusthub.data.local.subscription.SubscriptionSyncDataSourceImpl
+import pl.cuyer.rusthub.data.local.settings.SettingsDataSourceImpl
 import pl.cuyer.rusthub.data.network.auth.AuthRepositoryImpl
 import pl.cuyer.rusthub.data.network.filtersOptions.FiltersOptionsClientImpl
 import pl.cuyer.rusthub.data.network.favourite.FavouriteClientImpl
@@ -35,6 +36,7 @@ import pl.cuyer.rusthub.domain.repository.favourite.FavouriteSyncDataSource
 import pl.cuyer.rusthub.domain.repository.favourite.network.FavouriteRepository
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
+import pl.cuyer.rusthub.domain.repository.settings.SettingsDataSource
 import pl.cuyer.rusthub.domain.usecase.AuthAnonymouslyUseCase
 import pl.cuyer.rusthub.domain.usecase.ClearFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteSearchQueriesUseCase
@@ -46,6 +48,8 @@ import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
+import pl.cuyer.rusthub.domain.usecase.GetSettingsUseCase
+import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleSubscriptionUseCase
 import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
@@ -75,6 +79,7 @@ val appModule = module {
     singleOf(::FiltersDataSourceImpl) bind FiltersDataSource::class
     singleOf(::SearchQueryDataSourceImpl) bind SearchQueryDataSource::class
     singleOf(::RemoteKeyDataSourceImpl) bind RemoteKeyDataSource::class
+    singleOf(::SettingsDataSourceImpl) bind SettingsDataSource::class
     single { GetPagedServersUseCase(get(), get(), get(), get()) }
     singleOf(::FiltersOptionsClientImpl) bind FiltersOptionsRepository::class
     singleOf(::FiltersOptionsDataSourceImpl) bind FiltersOptionsDataSource::class
@@ -97,6 +102,8 @@ val appModule = module {
     single { AuthAnonymouslyUseCase(get(), get()) }
     single { GetUserUseCase(get()) }
     single { LogoutUserUseCase(get()) }
+    single { GetSettingsUseCase(get()) }
+    single { SaveSettingsUseCase(get()) }
     single { ToggleFavouriteUseCase(get(), get(), get(), get()) }
     single { ToggleSubscriptionUseCase(get(), get(), get(), get(), get()) }
 }

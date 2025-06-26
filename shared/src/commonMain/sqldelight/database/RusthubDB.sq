@@ -6,6 +6,8 @@ import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity;
 import pl.cuyer.rusthub.data.local.model.OrderEntity;
 import pl.cuyer.rusthub.data.local.model.ServerStatusEntity;
 import pl.cuyer.rusthub.data.local.model.WipeTypeEntity;
+import pl.cuyer.rusthub.data.local.model.ThemeEntity;
+import pl.cuyer.rusthub.data.local.model.LanguageEntity;
 
 -- =============================================================================
 -- Table Definition
@@ -550,3 +552,19 @@ DELETE FROM userEntity;
 
 getUser:
 SELECT * FROM userEntity LIMIT 1;
+
+CREATE TABLE settingsEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    theme TEXT AS ThemeEntity NOT NULL,
+    language TEXT AS LanguageEntity NOT NULL
+);
+
+upsertSettings:
+INSERT INTO settingsEntity (id, theme, language)
+VALUES (:id, :theme, :language)
+ON CONFLICT(id) DO UPDATE SET
+    theme = excluded.theme,
+    language = excluded.language;
+
+getSettings:
+SELECT * FROM settingsEntity WHERE id = ?;
