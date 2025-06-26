@@ -1,5 +1,7 @@
 package pl.cuyer.rusthub.android.feature.server
 
+import android.app.Activity
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -12,9 +14,10 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -29,13 +32,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSearchBarState
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -49,6 +54,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
@@ -84,7 +90,10 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import java.util.Locale
 import java.util.UUID
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class,
+    ExperimentalMaterial3WindowSizeClassApi::class
+)
 @Composable
 fun ServerScreen(
     onNavigate: (NavKey) -> Unit,
@@ -116,10 +125,19 @@ fun ServerScreen(
         }
     }
 
+    val context: Context = LocalContext.current
+
+    val windowSizeClass = calculateWindowSizeClass(context as Activity)
+
+    val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
+
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     Scaffold(
         topBar = {
-            Column {
+            Column(
+                modifier = with(scrollBehavior)
+                { Modifier.searchBarScrollBehavior() }
+            ) {
                 RustSearchBarTopAppBar(
                     searchBarState = searchBarState,
                     textFieldState = textFieldState,
@@ -136,22 +154,21 @@ fun ServerScreen(
                     onClearSearchQuery = {
                         onAction(ServerAction.OnClearSearchQuery)
                     },
-                    scrollBehavior = scrollBehavior,
                     isLoadingSearchHistory = state.value.isLoadingSearchHistory
                 )
                 ServerFilterChips(
                     selected = state.value.filter,
-                    onSelectedChange = { onAction(ServerAction.OnFilterChange(it)) },
+                    onSelectedChange = {
+                        onAction(ServerAction.OnFilterChange(it))
+                        pagedList.refresh()
+                    },
                     modifier = Modifier
-                        .padding(horizontal = spacing.medium)
+                        .navigationBarsPadding()
+                        .padding(horizontal = spacing.xmedium)
                         .then(
-                            if (searchBarState.currentValue == SearchBarValue.Expanded) {
-                                Modifier
-                                    .statusBarsPadding()
-                            } else {
-                                Modifier
-                            }
+                            if (isTabletMode) Modifier.displayCutoutPadding() else Modifier
                         )
+
                 )
             }
         },
