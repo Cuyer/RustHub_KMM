@@ -2,13 +2,13 @@ package pl.cuyer.rusthub.domain.model
 
 enum class ServerFilter {
     ALL,
-    FAVORITES,
+    FAVOURITES,
     SUBSCRIBED;
 }
 
 val ServerFilter.displayName: String
     get() = when(this) {
         ServerFilter.ALL -> "All"
-        ServerFilter.FAVORITES -> "Favorites"
+        ServerFilter.FAVOURITES -> "Favourites"
         ServerFilter.SUBSCRIBED -> "Subscribed"
     }
