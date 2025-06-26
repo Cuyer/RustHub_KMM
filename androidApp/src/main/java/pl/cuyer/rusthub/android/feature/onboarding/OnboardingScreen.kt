@@ -17,12 +17,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -197,6 +198,16 @@ private fun FeatureList() {
         Icons.Default.FilterList,
         "Smart Filters",
         "Narrow your search using advanced filtering options."
+    )
+    FeatureItem(
+        Icons.Default.Notifications,
+        "Notifications",
+        "Receive notifications about map and full wipes."
+    )
+    FeatureItem(
+        Icons.Default.Favorite,
+        "Favourites",
+        "Add servers to your favourites to easily access them."
     )
 }
 

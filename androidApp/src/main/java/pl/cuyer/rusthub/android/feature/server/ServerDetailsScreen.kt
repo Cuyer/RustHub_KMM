@@ -30,7 +30,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,15 +46,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import coil3.compose.AsyncImage
+import dev.icerock.moko.permissions.PermissionsController
+import dev.icerock.moko.permissions.compose.BindEffect
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.koin.compose.koinInject
+import pl.cuyer.rusthub.android.designsystem.NotificationInfoDialog
 import pl.cuyer.rusthub.android.designsystem.ServerDetail
 import pl.cuyer.rusthub.android.designsystem.ServerWebsite
 import pl.cuyer.rusthub.android.designsystem.SubscriptionDialog
-import pl.cuyer.rusthub.android.designsystem.NotificationInfoDialog
-import dev.icerock.moko.permissions.PermissionsController
-import dev.icerock.moko.permissions.compose.BindEffect
-import org.koin.compose.koinInject
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.domain.model.Flag
@@ -289,7 +288,7 @@ fun ServerDetailsScreen(
                     }
 
                     item {
-                        HorizontalDivider()
+                        HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
                         Text(
                             modifier = Modifier.padding(spacing.medium),
                             style = MaterialTheme.typography.titleLarge,
@@ -345,7 +344,7 @@ fun ServerDetailsScreen(
                         }
                     }
                     item {
-                        HorizontalDivider()
+                        HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
                         Text(
                             modifier = Modifier.padding(spacing.medium),
                             style = MaterialTheme.typography.titleLarge,
@@ -357,7 +356,7 @@ fun ServerDetailsScreen(
                         )
                     }
                     item {
-                        HorizontalDivider()
+                        HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
                         Text(
                             modifier = Modifier.padding(spacing.medium),
                             style = MaterialTheme.typography.titleLarge,

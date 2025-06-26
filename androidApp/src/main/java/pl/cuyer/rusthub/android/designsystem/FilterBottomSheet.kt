@@ -97,7 +97,7 @@ fun FilterBottomSheet(
             modifier = Modifier
                 .padding(start = spacing.medium, end = spacing.medium, bottom = spacing.medium)
         )
-        HorizontalDivider()
+        HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
         AnimatedContent(
             targetState = stateProvider().value.isLoadingFilters,
             transitionSpec = { defaultFadeTransition() }
