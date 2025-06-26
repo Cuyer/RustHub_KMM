@@ -15,13 +15,15 @@ import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.usecase.GetSettingsUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
+import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 
 class SettingsViewModel(
     private val getSettingsUseCase: GetSettingsUseCase,
     private val saveSettingsUseCase: SaveSettingsUseCase,
-    private val logoutUserUseCase: LogoutUserUseCase
+    private val logoutUserUseCase: LogoutUserUseCase,
+    private val getUserUseCase: GetUserUseCase
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -38,6 +40,11 @@ class SettingsViewModel(
         coroutineScope.launch {
             getSettingsUseCase().collect { settings ->
                 settings?.let { updateFromSettings(it) }
+            }
+        }
+        coroutineScope.launch {
+            getUserUseCase().collect { user ->
+                _state.update { it.copy(username = user?.username) }
             }
         }
     }
