@@ -150,17 +150,21 @@ fun ServerScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                ServerFilterChips(
-                    selected = state.value.filter,
-                    onSelectedChange = { onAction(ServerAction.OnFilterChange(it)) },
-                    modifier = Modifier.padding(horizontal = spacing.medium, vertical = spacing.small)
+
+            //TODO ustawić to prawidłowo
+            ServerFilterChips(
+                selected = state.value.filter,
+                onSelectedChange = { onAction(ServerAction.OnFilterChange(it)) },
+                modifier = Modifier.padding(
+                    horizontal = spacing.medium,
+                    vertical = spacing.small
                 )
-                HandlePagingItems(pagedList) {
-                    onRefresh {
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(spacing.medium)
-                        ) {
+            )
+            HandlePagingItems(pagedList) {
+                onRefresh {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(spacing.medium)
+                    ) {
                         items(
                             count = 6
                         ) {
@@ -272,7 +276,6 @@ fun ServerScreen(
         }
     }
 }
-
 
 @Composable
 private fun ServerFilterChips(

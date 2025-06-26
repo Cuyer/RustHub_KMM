@@ -1,14 +1,17 @@
 package pl.cuyer.rusthub.android.feature.settings
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +26,8 @@ import pl.cuyer.rusthub.android.designsystem.AppExposedDropdownMenu
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.domain.model.Theme
+import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.features.settings.SettingsAction
 import pl.cuyer.rusthub.presentation.features.settings.SettingsState
@@ -53,9 +58,9 @@ fun SettingsScreen(
         )
         AppExposedDropdownMenu(
             label = "Theme",
-            options = pl.cuyer.rusthub.domain.model.Theme.entries.map { it.displayName },
-            selectedValue = pl.cuyer.rusthub.domain.model.Theme.entries.indexOf(state.value.theme),
-            onSelectionChanged = { onAction(SettingsAction.OnThemeChange(pl.cuyer.rusthub.domain.model.Theme.entries[it])) }
+            options = Theme.entries.map { it.displayName },
+            selectedValue = Theme.entries.indexOf(state.value.theme),
+            onSelectionChanged = { onAction(SettingsAction.OnThemeChange(Theme.entries[it])) }
         )
         AppExposedDropdownMenu(
             label = "Language",
@@ -72,8 +77,16 @@ fun SettingsScreen(
         AppButton(
             modifier = Modifier.fillMaxWidth(),
             onClick = { onAction(SettingsAction.OnLogout) },
-            icon = Icons.Default.Logout
-        ) { Text("Log out") }
+        ) {
+            Row {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.Logout,
+                    contentDescription = "Log out",
+                    modifier = Modifier.padding(end = spacing.small)
+                )
+                Text("Log out")
+            }
+        }
     }
 }
 
