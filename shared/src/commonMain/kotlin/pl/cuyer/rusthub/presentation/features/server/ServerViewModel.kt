@@ -125,7 +125,6 @@ class ServerViewModel(
             getFiltersOptions.invoke(),
             getFiltersUseCase.invoke()
         ) { filtersOptions, filters ->
-            updateFilter(filters?.filter ?: ServerFilter.ALL)
             filters.toUi(
                 maps = filtersOptions?.maps?.map { it.displayName } ?: emptyList(),
                 flags = filtersOptions?.flags?.map { it.displayName } ?: emptyList(),
@@ -150,7 +149,8 @@ class ServerViewModel(
     private fun updateFilters(mappedFilters: FilterUi) {
         _state.update {
             it.copy(
-                filters = mappedFilters
+                filters = mappedFilters,
+                filter = mappedFilters.filter
             )
         }
     }
@@ -308,8 +308,18 @@ class ServerViewModel(
     private suspend fun updateFilter(filter: ServerFilter) {
         withContext(Dispatchers.Main.immediate) {
             runCatching {
-                val current = getFiltersUseCase().first() ?: ServerQuery()
-                saveFiltersUseCase(current.copy(filter = filter))
+                val current = state.value.filters
+                    ?.copy(filter = filter)
+                    ?.toDomain()
+                    ?: getFiltersUseCase().first()?.copy(filter = filter)
+                    ?: ServerQuery(filter = filter)
+                saveFiltersUseCase(current)
+                _state.update { state ->
+                    state.copy(
+                        filter = filter,
+                        filters = state.filters?.copy(filter = filter)
+                    )
+                }
             }.onFailure {
                 sendSnackbarEvent("Error occurred during saving filters.")
             }
