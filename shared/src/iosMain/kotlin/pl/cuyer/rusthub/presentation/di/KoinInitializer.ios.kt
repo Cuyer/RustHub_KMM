@@ -9,6 +9,7 @@ import pl.cuyer.rusthub.presentation.features.auth.login.LoginViewModel
 import pl.cuyer.rusthub.presentation.features.auth.register.RegisterViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
+import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
@@ -43,6 +44,13 @@ actual val platformModule: Module = module {
             emailValidator = get(),
             passwordValidator = get(),
             usernameValidator = get()
+        )
+    }
+    factory {
+        SettingsViewModel(
+            getSettingsUseCase = get(),
+            saveSettingsUseCase = get(),
+            logoutUserUseCase = get()
         )
     }
 }
