@@ -11,6 +11,7 @@ import database.RemoteKeyEntity
 import database.SearchQueryEntity
 import database.ServerEntity
 import database.UserEntity
+import database.SettingsEntity
 import kotlinx.datetime.Instant
 import pl.cuyer.rusthub.data.local.model.DifficultyEntity
 import pl.cuyer.rusthub.data.local.model.FlagEntity
@@ -21,6 +22,8 @@ import pl.cuyer.rusthub.data.local.model.ServerStatusEntity
 import pl.cuyer.rusthub.data.local.model.ServerFilterEntity
 import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity
 import pl.cuyer.rusthub.data.local.model.WipeTypeEntity
+import pl.cuyer.rusthub.data.local.model.LanguageEntity
+import pl.cuyer.rusthub.data.local.model.ThemeEntity
 import pl.cuyer.rusthub.domain.model.Difficulty
 import pl.cuyer.rusthub.domain.model.FiltersOptions
 import pl.cuyer.rusthub.domain.model.Flag
@@ -36,6 +39,9 @@ import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.User
 import pl.cuyer.rusthub.domain.model.WipeSchedule
 import pl.cuyer.rusthub.domain.model.WipeType
+import pl.cuyer.rusthub.domain.model.Language
+import pl.cuyer.rusthub.domain.model.Settings
+import pl.cuyer.rusthub.domain.model.Theme
 
 fun DifficultyEntity?.toDomain(): Difficulty? = this?.let { Difficulty.valueOf(it.name) }
 fun Difficulty?.toEntity(): DifficultyEntity? = this?.let { DifficultyEntity.valueOf(it.name) }
@@ -176,3 +182,16 @@ fun SearchQueryEntity.toDomain(): SearchQuery = SearchQuery(id, query, Instant.p
 
 fun UserEntity.toUser(): User = User(email, username, access_token, refresh_token)
 
+
+
+
+fun ThemeEntity?.toDomain(): Theme? = this?.let { Theme.valueOf(it.name) }
+fun Theme?.toEntity(): ThemeEntity? = this?.let { ThemeEntity.valueOf(it.name) }
+
+fun LanguageEntity?.toDomain(): Language? = this?.let { Language.valueOf(it.name) }
+fun Language?.toEntity(): LanguageEntity? = this?.let { LanguageEntity.valueOf(it.name) }
+
+fun SettingsEntity.toSettings(): Settings = Settings(
+    theme = theme.toDomain() ?: Theme.SYSTEM,
+    language = language.toDomain() ?: Language.ENGLISH
+)

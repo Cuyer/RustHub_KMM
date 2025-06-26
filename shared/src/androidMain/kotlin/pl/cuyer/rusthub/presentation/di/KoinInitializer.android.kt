@@ -12,6 +12,7 @@ import pl.cuyer.rusthub.presentation.features.auth.register.RegisterViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
+import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.SyncScheduler
@@ -65,6 +66,13 @@ actual val platformModule: Module = module {
             saveSearchQueryUseCase = get(),
             getSearchQueriesUseCase = get(),
             deleteSearchQueriesUseCase = get()
+        )
+    }
+    viewModel {
+        SettingsViewModel(
+            getSettingsUseCase = get(),
+            saveSettingsUseCase = get(),
+            logoutUserUseCase = get()
         )
     }
     viewModel { (serverId: Long, serverName: String?) ->

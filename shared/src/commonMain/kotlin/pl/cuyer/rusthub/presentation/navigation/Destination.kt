@@ -16,6 +16,9 @@ data object Register : NavKey
 data object ServerList : NavKey
 
 @Serializable
+data object Settings : NavKey
+
+@Serializable
 data class ServerDetails(
     val id: Long,
     val name: String
