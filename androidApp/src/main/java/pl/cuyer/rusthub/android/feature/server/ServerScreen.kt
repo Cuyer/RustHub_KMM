@@ -9,11 +9,12 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -22,14 +23,15 @@ import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -71,11 +73,11 @@ import pl.cuyer.rusthub.android.util.HandlePagingItems
 import pl.cuyer.rusthub.domain.exception.NetworkUnavailableException
 import pl.cuyer.rusthub.domain.exception.TimeoutException
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
+import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.WipeType
 import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.features.server.ServerState
-import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
@@ -117,25 +119,41 @@ fun ServerScreen(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     Scaffold(
         topBar = {
-            RustSearchBarTopAppBar(
-                searchBarState = searchBarState,
-                textFieldState = textFieldState,
-                onSearchTriggered = {
-                    onAction(ServerAction.OnSearch(textFieldState.text.toString()))
-                },
-                onOpenFilters = { showSheet = true },
-                searchQueryUi = state.value.searchQuery,
-                onDelete = {
-                    if (it.isBlank()) onAction(ServerAction.DeleteSearchQueries) else onAction(
-                        ServerAction.DeleteSearchQueryByQuery(it)
-                    )
-                },
-                onClearSearchQuery = {
-                    onAction(ServerAction.OnClearSearchQuery)
-                },
-                scrollBehavior = scrollBehavior,
-                isLoadingSearchHistory = state.value.isLoadingSearchHistory
-            )
+            Column {
+                RustSearchBarTopAppBar(
+                    searchBarState = searchBarState,
+                    textFieldState = textFieldState,
+                    onSearchTriggered = {
+                        onAction(ServerAction.OnSearch(textFieldState.text.toString()))
+                    },
+                    onOpenFilters = { showSheet = true },
+                    searchQueryUi = state.value.searchQuery,
+                    onDelete = {
+                        if (it.isBlank()) onAction(ServerAction.DeleteSearchQueries) else onAction(
+                            ServerAction.DeleteSearchQueryByQuery(it)
+                        )
+                    },
+                    onClearSearchQuery = {
+                        onAction(ServerAction.OnClearSearchQuery)
+                    },
+                    scrollBehavior = scrollBehavior,
+                    isLoadingSearchHistory = state.value.isLoadingSearchHistory
+                )
+                ServerFilterChips(
+                    selected = state.value.filter,
+                    onSelectedChange = { onAction(ServerAction.OnFilterChange(it)) },
+                    modifier = Modifier
+                        .padding(horizontal = spacing.medium)
+                        .then(
+                            if (searchBarState.currentValue == SearchBarValue.Expanded) {
+                                Modifier
+                                    .statusBarsPadding()
+                            } else {
+                                Modifier
+                            }
+                        )
+                )
+            }
         },
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection)
@@ -150,16 +168,6 @@ fun ServerScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-
-            //TODO ustawić to prawidłowo
-            ServerFilterChips(
-                selected = state.value.filter,
-                onSelectedChange = { onAction(ServerAction.OnFilterChange(it)) },
-                modifier = Modifier.padding(
-                    horizontal = spacing.medium,
-                    vertical = spacing.small
-                )
-            )
             HandlePagingItems(pagedList) {
                 onRefresh {
                     LazyColumn(
