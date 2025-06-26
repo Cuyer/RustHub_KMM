@@ -292,6 +292,7 @@ fun ServerScreen(
                     onClick = {
                         coroutineScope.launch {
                             lazyListState.animateScrollToItem(0)
+                            scrollBehavior.scrollOffset = 1f
                         }
                     }
                 ) {
