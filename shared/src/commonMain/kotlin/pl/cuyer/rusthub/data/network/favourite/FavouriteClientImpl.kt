@@ -17,7 +17,7 @@ class FavouriteClientImpl(
 ) : FavouriteRepository, BaseApiResponse(json) {
     override fun addFavourite(id: Long): Flow<Result<Unit>> {
         return safeApiCall<Unit> {
-            httpClient.post(NetworkConstants.BASE_URL + "favorites/$id")
+            httpClient.post(NetworkConstants.BASE_URL + "favourites/$id")
         }.map { result ->
             when (result) {
                 is Result.Success -> Result.Success(Unit)
@@ -29,7 +29,7 @@ class FavouriteClientImpl(
 
     override fun removeFavourite(id: Long): Flow<Result<Unit>> {
         return safeApiCall<Unit> {
-            httpClient.delete(NetworkConstants.BASE_URL + "favorites/$id")
+            httpClient.delete(NetworkConstants.BASE_URL + "favourites/$id")
         }.map { result ->
             when (result) {
                 is Result.Success -> Result.Success(Unit)

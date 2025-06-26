@@ -73,7 +73,7 @@ WHERE
   AND (fe.difficulty IS NULL OR se.difficulty = fe.difficulty)
   AND (fe.wipe_schedule IS NULL OR se.wipe_schedule = fe.wipe_schedule)
   AND (fe.is_official IS NULL OR se.is_official = fe.is_official)
-  AND (fe.filter != 'FAVORITES' OR se.favourite = 1)
+  AND (fe.filter != 'FAVOURITES' OR se.favourite = 1)
   AND (fe.filter != 'SUBSCRIBED' OR se.subscribed = 1)
   AND (se.name LIKE '%' || :name || '%' COLLATE NOCASE)
 ORDER BY
@@ -98,7 +98,7 @@ WHERE
   AND (fe.difficulty IS NULL OR se.difficulty = fe.difficulty)
   AND (fe.wipe_schedule IS NULL OR se.wipe_schedule = fe.wipe_schedule)
   AND (fe.is_official IS NULL OR se.is_official = fe.is_official)
-  AND (fe.filter != 'FAVORITES' OR se.favourite = 1)
+  AND (fe.filter != 'FAVOURITES' OR se.favourite = 1)
   AND (fe.filter != 'SUBSCRIBED' OR se.subscribed = 1)
   AND (se.name LIKE '%' || :name || '%' COLLATE NOCASE);
 

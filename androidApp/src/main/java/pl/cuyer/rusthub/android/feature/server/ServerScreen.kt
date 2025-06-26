@@ -318,9 +318,9 @@ private fun ServerFilterChips(
             label = { Text("All") }
         )
         FilterChip(
-            selected = selected == ServerFilter.FAVORITES,
-            onClick = { onSelectedChange(ServerFilter.FAVORITES) },
-            label = { Text("Favorites") }
+            selected = selected == ServerFilter.FAVOURITES,
+            onClick = { onSelectedChange(ServerFilter.FAVOURITES) },
+            label = { Text("Favourites") }
         )
         FilterChip(
             selected = selected == ServerFilter.SUBSCRIBED,
