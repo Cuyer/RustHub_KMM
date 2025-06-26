@@ -9,9 +9,7 @@ import pl.cuyer.rusthub.domain.model.ServerInfo
 interface ServerDataSource {
     suspend fun upsertServers(servers: List<ServerInfo>)
     fun getServersPagingSource(
-        searchQuery: String?,
-        favouritesOnly: Boolean,
-        subscribedOnly: Boolean
+        searchQuery: String?
     ): PagingSource<Int, ServerEntity>
     fun getServerById(serverId: Long): Flow<ServerInfo?>
     suspend fun deleteServers()

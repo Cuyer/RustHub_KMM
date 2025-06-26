@@ -23,9 +23,7 @@ class ServerRemoteMediator(
     private val api: ServerRepository,
     private val filters: FiltersDataSource,
     private val remoteKeys: RemoteKeyDataSource,
-    private val searchQuery: String?,
-    private val favouritesOnly: Boolean,
-    private val subscribedOnly: Boolean
+    private val searchQuery: String?
 ) : RemoteMediator<Int, ServerEntity>() {
     private val keyId = DEFAULT_KEY
 
@@ -56,9 +54,7 @@ class ServerRemoteMediator(
                 page,
                 state.config.pageSize,
                 query,
-                searchQuery,
-                favouritesOnly,
-                subscribedOnly
+                searchQuery
             )
                 .first { it !is Result.Loading }) {
                 is Result.Error -> {

@@ -2,7 +2,7 @@ package pl.cuyer.rusthub.presentation.features.server
 
 import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.presentation.model.SearchQueryUi
-import pl.cuyer.rusthub.presentation.features.server.ServerFilter
+import pl.cuyer.rusthub.domain.model.ServerFilter
 
 data class ServerState(
     val isRefreshing: Boolean = true,

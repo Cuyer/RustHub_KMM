@@ -19,6 +19,7 @@ import pl.cuyer.rusthub.data.local.model.MapsEntity
 import pl.cuyer.rusthub.data.local.model.OrderEntity
 import pl.cuyer.rusthub.data.local.model.RegionEntity
 import pl.cuyer.rusthub.data.local.model.ServerStatusEntity
+import pl.cuyer.rusthub.data.local.model.ServerFilterEntity
 import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity
 import pl.cuyer.rusthub.data.local.model.WipeTypeEntity
 import pl.cuyer.rusthub.data.local.model.LanguageEntity
@@ -33,6 +34,7 @@ import pl.cuyer.rusthub.domain.model.RemoteKey
 import pl.cuyer.rusthub.domain.model.SearchQuery
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
+import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.User
 import pl.cuyer.rusthub.domain.model.WipeSchedule
@@ -63,6 +65,9 @@ fun ServerStatusEntity?.toDomain(): ServerStatus? = this?.let { ServerStatus.val
 fun ServerStatus?.toEntity(): ServerStatusEntity? =
     this?.let { ServerStatusEntity.valueOf(it.name) }
 
+fun ServerFilterEntity?.toDomain(): ServerFilter? = this?.let { ServerFilter.valueOf(it.name) }
+fun ServerFilter?.toEntity(): ServerFilterEntity? = this?.let { ServerFilterEntity.valueOf(it.name) }
+
 fun WipeTypeEntity?.toDomain(): WipeType? = this?.let { WipeType.valueOf(it.name) }
 fun WipeType?.toEntity(): WipeTypeEntity? = this?.let { WipeTypeEntity.valueOf(it.name) }
 
@@ -79,7 +84,8 @@ fun FiltersEntity.toServerQuery(): ServerQuery {
         wipeSchedule = wipe_schedule.toDomain(),
         official = is_official == 1L,
         order = sort_order.toDomain() ?: Order.WIPE,
-        map = map_name.toDomain()
+        map = map_name.toDomain(),
+        filter = filter.toDomain() ?: ServerFilter.ALL
     )
 }
 
