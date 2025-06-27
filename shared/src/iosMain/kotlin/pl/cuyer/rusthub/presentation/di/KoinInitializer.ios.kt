@@ -14,6 +14,7 @@ import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.TopicSubscriber
+import pl.cuyer.rusthub.util.StoreNavigator
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
@@ -22,6 +23,7 @@ actual val platformModule: Module = module {
     single { SyncScheduler() }
     single { SubscriptionSyncScheduler() }
     single { TopicSubscriber() }
+    single { StoreNavigator() }
     factory { StartupViewModel(get()) }
     factory {
         OnboardingViewModel(
