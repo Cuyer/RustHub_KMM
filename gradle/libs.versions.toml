@@ -9,6 +9,7 @@ koin = "4.0.2"
 ktor = "3.2.0"
 sql-delight-version = "2.1.0"
 coroutines-core = "1.10.2"
+coroutines-play-services = "1.10.2"
 datetime = "0.6.2"
 napier = "2.7.1"
 splash-screen = "1.2.0-beta02"
@@ -81,6 +82,7 @@ firebase-performance = { module = "com.google.firebase:firebase-perf" }
 #KOTLIN
 kotlin-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
 kotlin-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines-core" }
+kotlin-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "coroutines-play-services" }
 kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 
 #ADAPTIVE LAYOUT

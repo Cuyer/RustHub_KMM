@@ -60,7 +60,10 @@ import pl.cuyer.rusthub.presentation.settings.SettingsController
 import pl.cuyer.rusthub.util.validator.EmailValidator
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
-import pl.cuyer.rusthub.util.TopicSubscriber
+import pl.cuyer.rusthub.util.MessagingTokenManager
+import pl.cuyer.rusthub.util.MessagingTokenScheduler
+import pl.cuyer.rusthub.domain.repository.notification.MessagingTokenRepository
+import pl.cuyer.rusthub.data.network.notification.MessagingTokenClientImpl
 
 val appModule = module {
     single<SnackbarController> { SnackbarController }
@@ -81,6 +84,8 @@ val appModule = module {
     singleOf(::SearchQueryDataSourceImpl) bind SearchQueryDataSource::class
     singleOf(::RemoteKeyDataSourceImpl) bind RemoteKeyDataSource::class
     singleOf(::SettingsDataSourceImpl) bind SettingsDataSource::class
+    singleOf(::MessagingTokenClientImpl) bind MessagingTokenRepository::class
+    single { MessagingTokenManager(get(), get()) }
     single { GetPagedServersUseCase(get(), get(), get(), get()) }
     singleOf(::FiltersOptionsClientImpl) bind FiltersOptionsRepository::class
     singleOf(::FiltersOptionsDataSourceImpl) bind FiltersOptionsDataSource::class
@@ -98,16 +103,16 @@ val appModule = module {
     single { GetSearchQueriesUseCase(get()) }
     single { DeleteSearchQueriesUseCase(get()) }
     single { GetServerDetailsUseCase(get()) }
-    single { RegisterUserUseCase(get(), get()) }
-    single { LoginUserUseCase(get(), get()) }
-    single { AuthAnonymouslyUseCase(get(), get()) }
+    single { RegisterUserUseCase(get(), get(), get()) }
+    single { LoginUserUseCase(get(), get(), get()) }
+    single { AuthAnonymouslyUseCase(get(), get(), get()) }
     single { GetUserUseCase(get()) }
-    single { LogoutUserUseCase(get()) }
+    single { LogoutUserUseCase(get(), get()) }
     single { GetSettingsUseCase(get()) }
     single { SaveSettingsUseCase(get()) }
     single { SettingsController(get()) }
     single { ToggleFavouriteUseCase(get(), get(), get(), get()) }
-    single { ToggleSubscriptionUseCase(get(), get(), get(), get(), get()) }
+    single { ToggleSubscriptionUseCase(get(), get(), get(), get()) }
 }
 
 expect val platformModule: Module

@@ -12,14 +12,12 @@ import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSourc
 import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
-import pl.cuyer.rusthub.util.TopicSubscriber
 
 class ToggleSubscriptionUseCase(
     private val serverDataSource: ServerDataSource,
     private val repository: SubscriptionRepository,
     private val syncDataSource: SubscriptionSyncDataSource,
-    private val scheduler: SubscriptionSyncScheduler,
-    private val topicSubscriber: TopicSubscriber
+    private val scheduler: SubscriptionSyncScheduler
 ) {
     operator fun invoke(serverId: Long, add: Boolean): Flow<Result<Unit>> = channelFlow {
         val flow = if (add) repository.addSubscription(serverId) else repository.removeSubscription(serverId)
@@ -29,8 +27,6 @@ class ToggleSubscriptionUseCase(
                 is Result.Success -> {
                     serverDataSource.updateSubscription(serverId, add)
                     syncDataSource.deleteOperation(serverId)
-                    if (add) topicSubscriber.subscribe(serverId.toString())
-                    else topicSubscriber.unsubscribe(serverId.toString())
                     send(Result.Success(Unit))
                 }
                 is Result.Error -> {
@@ -45,8 +41,6 @@ class ToggleSubscriptionUseCase(
                                 )
                             )
                             scheduler.schedule(serverId)
-                            if (add) topicSubscriber.subscribe(serverId.toString())
-                            else topicSubscriber.unsubscribe(serverId.toString())
                             send(Result.Success(Unit))
                         }
                         else -> send(Result.Error(result.exception))

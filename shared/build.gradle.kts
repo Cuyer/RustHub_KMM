@@ -49,6 +49,7 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.messaging)
+            implementation(libs.kotlin.coroutines.play.services)
         }
         commonMain.dependencies {
             implementation(project.dependencies.platform(libs.koin.bom))
