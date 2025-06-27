@@ -64,6 +64,9 @@ class SettingsViewModel(
             is SettingsAction.OnLanguageChange -> updateLanguage(action.language)
             SettingsAction.OnNotificationsClick -> permissionsController.openAppSettings()
             SettingsAction.OnLogout -> logout()
+            SettingsAction.OnSubscriptionClick -> showSubscriptionDialog(true)
+            SettingsAction.OnDismissSubscriptionDialog -> showSubscriptionDialog(false)
+            SettingsAction.OnSubscribe -> showSubscriptionDialog(false)
             SettingsAction.OnPrivacyPolicy -> openPrivacyPolicy()
         }
     }
@@ -113,6 +116,12 @@ class SettingsViewModel(
         }
     }
 
+    private fun showSubscriptionDialog(show: Boolean) {
+        _state.update {
+            it.copy(
+                showSubscriptionDialog = show
+            )
+    
     private fun openPrivacyPolicy() {
         coroutineScope.launch {
             _uiEvent.send(UiEvent.Navigate(PrivacyPolicy))
