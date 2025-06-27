@@ -107,7 +107,7 @@ val appModule = module {
     single { LoginUserUseCase(get(), get(), get()) }
     single { AuthAnonymouslyUseCase(get(), get(), get()) }
     single { GetUserUseCase(get()) }
-    single { LogoutUserUseCase(get(), get()) }
+    single { LogoutUserUseCase(get(), get(), get()) }
     single { GetSettingsUseCase(get()) }
     single { SaveSettingsUseCase(get()) }
     single { SettingsController(get()) }
