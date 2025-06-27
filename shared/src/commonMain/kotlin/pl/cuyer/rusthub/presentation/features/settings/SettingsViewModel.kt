@@ -60,6 +60,9 @@ class SettingsViewModel(
             is SettingsAction.OnThemeChange -> updateTheme(action.theme)
             is SettingsAction.OnLanguageChange -> updateLanguage(action.language)
             SettingsAction.OnLogout -> logout()
+            SettingsAction.OnSubscriptionClick -> showSubscriptionDialog(true)
+            SettingsAction.OnDismissSubscriptionDialog -> showSubscriptionDialog(false)
+            SettingsAction.OnSubscribe -> showSubscriptionDialog(false)
         }
     }
 
@@ -105,6 +108,14 @@ class SettingsViewModel(
         coroutineScope.launch {
             logoutUserUseCase()
             _uiEvent.send(UiEvent.Navigate(Onboarding))
+        }
+    }
+
+    private fun showSubscriptionDialog(show: Boolean) {
+        _state.update {
+            it.copy(
+                showSubscriptionDialog = show
+            )
         }
     }
 }
