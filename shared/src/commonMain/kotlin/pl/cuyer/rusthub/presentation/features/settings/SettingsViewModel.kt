@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.presentation.features.settings
 
+import dev.icerock.moko.permissions.PermissionsController
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
@@ -22,11 +23,10 @@ import pl.cuyer.rusthub.domain.usecase.GetSettingsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
-import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
+import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
-import dev.icerock.moko.permissions.PermissionsController
 
 class SettingsViewModel(
     private val getSettingsUseCase: GetSettingsUseCase,
@@ -129,6 +129,8 @@ class SettingsViewModel(
             it.copy(
                 showSubscriptionDialog = show
             )
+        }
+    }
     
     private fun openPrivacyPolicy() {
         coroutineScope.launch {

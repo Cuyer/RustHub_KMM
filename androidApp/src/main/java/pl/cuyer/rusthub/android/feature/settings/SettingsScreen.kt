@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.koin.compose.koinInject
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppExposedDropdownMenu
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
@@ -43,7 +44,6 @@ import pl.cuyer.rusthub.android.designsystem.SubscriptionDialog
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
-import org.koin.compose.koinInject
 import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.model.displayName
@@ -277,10 +277,9 @@ private fun AccountSection(onAction: (SettingsAction) -> Unit) {
 }
 
 @Composable
-private fun OtherSection() {
-    val storeNavigator = koinInject<StoreNavigator>()
-    
+
 private fun OtherSection(onAction: (SettingsAction) -> Unit) {
+    val storeNavigator = koinInject<StoreNavigator>()
     Text(
         text = "Other",
         style = MaterialTheme.typography.titleLarge,
