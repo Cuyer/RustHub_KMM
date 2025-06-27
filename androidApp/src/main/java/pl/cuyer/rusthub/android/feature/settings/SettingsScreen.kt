@@ -133,7 +133,7 @@ private fun SettingsScreenCompact(
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
         AccountSection(onAction)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
-        OtherSection()
+        OtherSection(onAction)
     }
 }
 
@@ -166,7 +166,7 @@ private fun SettingsScreenExpanded(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(spacing.medium)
         ) {
-            OtherSection()
+            OtherSection(onAction)
         }
     }
 }
@@ -269,7 +269,7 @@ private fun AccountSection(onAction: (SettingsAction) -> Unit) {
 }
 
 @Composable
-private fun OtherSection() {
+private fun OtherSection(onAction: (SettingsAction) -> Unit) {
     Text(
         text = "Other",
         style = MaterialTheme.typography.titleLarge,
@@ -277,7 +277,7 @@ private fun OtherSection() {
     )
 
     AppTextButton(
-        onClick = { }
+        onClick = { onAction(SettingsAction.OnPrivacyPolicy) }
     ) {
         Row(
             modifier = Modifier

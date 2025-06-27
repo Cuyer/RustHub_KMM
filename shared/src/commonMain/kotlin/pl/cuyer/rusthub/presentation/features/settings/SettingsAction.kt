@@ -8,4 +8,5 @@ sealed interface SettingsAction {
     data class OnLanguageChange(val language: Language) : SettingsAction
     data object OnNotificationsClick : SettingsAction
     data object OnLogout : SettingsAction
+    data object OnPrivacyPolicy : SettingsAction
 }
