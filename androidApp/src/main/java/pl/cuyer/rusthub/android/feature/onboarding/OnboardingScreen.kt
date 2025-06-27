@@ -48,6 +48,7 @@ import pl.cuyer.rusthub.android.designsystem.AppOutlinedButton
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingAction
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingState
@@ -274,7 +275,7 @@ private fun FeatureItem(icon: ImageVector, title: String, description: String) {
 @Preview(device = "spec:parent=pixel_5,orientation=landscape")
 @Composable
 private fun OnboardingPrev() {
-    RustHubTheme {
+    RustHubTheme(theme = Theme.SYSTEM) {
         OnboardingScreen(
             onNavigate = {},
             stateProvider = { mutableStateOf(OnboardingState()) },

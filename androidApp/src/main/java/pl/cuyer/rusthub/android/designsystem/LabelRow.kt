@@ -11,6 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import pl.cuyer.rusthub.android.model.Label
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.domain.model.Theme
 
 @Composable
 fun LabelRow(
@@ -34,7 +35,7 @@ fun LabelRow(
 @Preview
 @Composable
 private fun LabelRowPreview() {
-    RustHubTheme {
+    RustHubTheme(theme = Theme.SYSTEM) {
         LabelRow(
             labels = listOf(
                 Label(

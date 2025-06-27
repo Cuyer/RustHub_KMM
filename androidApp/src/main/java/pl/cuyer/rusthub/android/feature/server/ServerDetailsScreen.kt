@@ -59,6 +59,7 @@ import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
+import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsAction
@@ -525,7 +526,7 @@ fun parseHtmlToAnnotatedString(html: String): AnnotatedString {
 @Preview
 @Composable
 private fun ServerDetailsPrev() {
-    RustHubTheme {
+    RustHubTheme(theme = Theme.SYSTEM) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

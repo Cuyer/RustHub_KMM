@@ -26,6 +26,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pl.cuyer.rusthub.android.theme.RustHubTheme
+import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
 
 @Composable
@@ -106,7 +107,7 @@ fun AppTextField(
 @Composable
 @Preview
 private fun AppTextFieldPreview() {
-    RustHubTheme(darkTheme = false) {
+    RustHubTheme(theme = Theme.LIGHT) {
         Column(modifier = Modifier.fillMaxSize()) {
             AppTextField(
                 modifier = Modifier

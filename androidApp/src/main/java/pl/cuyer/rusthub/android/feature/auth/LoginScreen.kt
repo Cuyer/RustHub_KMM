@@ -45,6 +45,7 @@ import pl.cuyer.rusthub.android.designsystem.SignProviderButton
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.presentation.features.auth.login.LoginAction
 import pl.cuyer.rusthub.presentation.features.auth.login.LoginState
@@ -313,7 +314,7 @@ private fun LoginScreenExpanded(
 @Preview
 @Composable
 private fun LoginPrev() {
-    RustHubTheme {
+    RustHubTheme(theme = Theme.SYSTEM) {
         LoginScreen(
             onNavigate = {},
             uiEvent = MutableStateFlow(UiEvent.Navigate(ServerList)),

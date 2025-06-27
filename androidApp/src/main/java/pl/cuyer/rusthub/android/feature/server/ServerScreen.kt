@@ -76,6 +76,7 @@ import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.HandlePagingItems
+import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.exception.NetworkUnavailableException
 import pl.cuyer.rusthub.domain.exception.TimeoutException
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
@@ -384,7 +385,7 @@ private fun createLabels(item: ServerInfoUi): List<Label> {
 @Preview
 @Composable
 private fun ServerScreenPreview() {
-    RustHubTheme {
+    RustHubTheme(theme = Theme.SYSTEM) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

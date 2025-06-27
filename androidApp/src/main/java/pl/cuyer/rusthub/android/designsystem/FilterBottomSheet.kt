@@ -48,6 +48,7 @@ import kotlinx.serialization.json.Json
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.features.server.ServerState
 import pl.cuyer.rusthub.presentation.model.FilterUi
@@ -259,7 +260,7 @@ private fun FilterBottomSheetPreview() {
     val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
 
-    RustHubTheme {
+    RustHubTheme(theme = Theme.SYSTEM) {
         Surface(
             modifier = Modifier
                 .fillMaxSize(),

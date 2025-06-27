@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.common.getImageByFileName
+import pl.cuyer.rusthub.domain.model.Theme
 
 @Composable
 fun SignProviderButton(
@@ -65,7 +66,7 @@ fun SignProviderButton(
 @Preview(showBackground = true)
 @Composable
 private fun GoogleSignInButtonPreview() {
-    RustHubTheme {
+    RustHubTheme(theme = Theme.SYSTEM) {
         SignProviderButton(
             onClick = {},
             image = getImageByFileName("ic_google").drawableResId,

@@ -59,6 +59,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.model.SearchQueryUi
 
 
@@ -261,7 +262,7 @@ fun RustSearchBarTopAppBar(
 @Preview(device = "spec:parent=pixel_5,orientation=portrait")
 @Composable
 private fun AppSearchTopBarPreview() {
-    RustHubTheme {
+    RustHubTheme(theme = Theme.SYSTEM) {
         Scaffold(
             topBar = {
                 RustSearchBarTopAppBar(

@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pl.cuyer.rusthub.android.theme.RustHubTheme
+import pl.cuyer.rusthub.domain.model.Theme
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -111,7 +112,7 @@ fun AppTextButton(
 @Composable
 @OptIn(ExperimentalAnimationApi::class)
 fun PreviewAppButton() {
-    RustHubTheme {
+    RustHubTheme(theme = Theme.SYSTEM) {
         Column(
             modifier = Modifier
                 .padding(16.dp)
@@ -138,7 +139,7 @@ fun PreviewAppButton() {
 @Composable
 @OptIn(ExperimentalAnimationApi::class)
 fun PreviewAppOutlinedButton() {
-    RustHubTheme {
+    RustHubTheme(theme = Theme.SYSTEM) {
         Column(
             modifier = Modifier
                 .padding(16.dp)

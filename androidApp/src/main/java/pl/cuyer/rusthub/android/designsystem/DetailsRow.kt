@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import pl.cuyer.rusthub.android.theme.RustHubTheme
+import pl.cuyer.rusthub.domain.model.Theme
 
 @Composable
 fun DetailsRow(details: Map<String, String>) {
@@ -45,7 +46,7 @@ fun DetailsRow(details: Map<String, String>) {
 @Preview
 @Composable
 private fun DetailsRowPreview() {
-    RustHubTheme {
+    RustHubTheme(theme = Theme.SYSTEM) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
