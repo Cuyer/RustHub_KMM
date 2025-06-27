@@ -73,7 +73,8 @@ actual val platformModule: Module = module {
             getSettingsUseCase = get(),
             saveSettingsUseCase = get(),
             logoutUserUseCase = get(),
-            getUserUseCase = get()
+            getUserUseCase = get(),
+            permissionsController = get()
         )
     }
     viewModel { (serverId: Long, serverName: String?) ->

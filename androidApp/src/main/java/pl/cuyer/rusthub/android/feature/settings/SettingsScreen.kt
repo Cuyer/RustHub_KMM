@@ -195,7 +195,7 @@ private fun PreferencesSection(
         onSelectionChanged = { onAction(SettingsAction.OnLanguageChange(Language.entries[it])) }
     )
     AppTextButton(
-        onClick = {}
+        onClick = { onAction(SettingsAction.OnNotificationsClick) }
     ) {
         Row(
             modifier = Modifier
