@@ -19,6 +19,9 @@ data object ServerList : NavKey
 data object Settings : NavKey
 
 @Serializable
+data object ChangePassword : NavKey
+
+@Serializable
 data class ServerDetails(
     val id: Long,
     val name: String

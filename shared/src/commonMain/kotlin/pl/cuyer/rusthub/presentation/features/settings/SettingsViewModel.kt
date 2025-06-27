@@ -23,6 +23,7 @@ import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
+import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 
 class SettingsViewModel(
@@ -59,6 +60,7 @@ class SettingsViewModel(
         when (action) {
             is SettingsAction.OnThemeChange -> updateTheme(action.theme)
             is SettingsAction.OnLanguageChange -> updateLanguage(action.language)
+            SettingsAction.OnChangePasswordClick -> navigateChangePassword()
             SettingsAction.OnLogout -> logout()
         }
     }
@@ -71,6 +73,12 @@ class SettingsViewModel(
     private fun updateLanguage(language: Language) {
         _state.update { it.copy(language = language) }
         save()
+    }
+
+    private fun navigateChangePassword() {
+        coroutineScope.launch {
+            _uiEvent.send(UiEvent.Navigate(ChangePassword))
+        }
     }
 
     private fun observeSettings() {
