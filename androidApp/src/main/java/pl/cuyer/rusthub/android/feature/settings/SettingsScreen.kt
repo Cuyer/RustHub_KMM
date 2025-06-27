@@ -227,7 +227,7 @@ private fun AccountSection(onAction: (SettingsAction) -> Unit) {
     )
 
     AppTextButton(
-        onClick = { }
+        onClick = { onAction(SettingsAction.OnChangePasswordClick) }
     ) {
         Row(
             modifier = Modifier
