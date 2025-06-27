@@ -15,6 +15,7 @@ import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.TopicSubscriber
 import pl.cuyer.rusthub.util.StoreNavigator
+import dev.icerock.moko.permissions.PermissionsController
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
@@ -24,6 +25,7 @@ actual val platformModule: Module = module {
     single { SubscriptionSyncScheduler() }
     single { TopicSubscriber() }
     single { StoreNavigator() }
+    single { PermissionsController() }
     factory { StartupViewModel(get()) }
     factory {
         OnboardingViewModel(
@@ -53,7 +55,8 @@ actual val platformModule: Module = module {
             getSettingsUseCase = get(),
             saveSettingsUseCase = get(),
             logoutUserUseCase = get(),
-            getUserUseCase = get()
+            getUserUseCase = get(),
+            permissionsController = get()
         )
     }
 }
