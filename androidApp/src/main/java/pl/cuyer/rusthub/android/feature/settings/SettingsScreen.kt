@@ -320,7 +320,7 @@ private fun GreetingSection(username: String?) {
 @Preview
 @Composable
 private fun SettingsPreview() {
-    RustHubTheme {
+    RustHubTheme(theme = Theme.SYSTEM) {
         SettingsScreen(
             onNavigate = {},
             uiEvent = MutableStateFlow(UiEvent.Navigate(Onboarding)),

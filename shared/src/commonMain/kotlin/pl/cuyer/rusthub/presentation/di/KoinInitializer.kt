@@ -56,6 +56,7 @@ import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
+import pl.cuyer.rusthub.presentation.settings.SettingsController
 import pl.cuyer.rusthub.util.validator.EmailValidator
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
@@ -104,6 +105,7 @@ val appModule = module {
     single { LogoutUserUseCase(get()) }
     single { GetSettingsUseCase(get()) }
     single { SaveSettingsUseCase(get()) }
+    single { SettingsController(get()) }
     single { ToggleFavouriteUseCase(get(), get(), get(), get()) }
     single { ToggleSubscriptionUseCase(get(), get(), get(), get(), get()) }
 }
