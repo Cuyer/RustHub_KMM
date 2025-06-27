@@ -95,7 +95,9 @@ fun SettingsScreen(
                     .fillMaxSize()
                     .padding(innerPadding)
                     .padding(spacing.medium),
-                state = state.value,
+                theme = state.value.theme,
+                language = state.value.language,
+                username = state.value.username,
                 onAction = onAction
             )
         } else {
@@ -105,7 +107,9 @@ fun SettingsScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(innerPadding)
                     .padding(spacing.medium),
-                state = state.value,
+                theme = state.value.theme,
+                language = state.value.language,
+                username = state.value.username,
                 onAction = onAction
             )
         }
@@ -115,15 +119,17 @@ fun SettingsScreen(
 @Composable
 private fun SettingsScreenCompact(
     modifier: Modifier = Modifier,
-    state: SettingsState,
+    username: String?,
+    theme: Theme,
+    language: Language,
     onAction: (SettingsAction) -> Unit
 ) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
-        GreetingSection(state.username)
-        PreferencesSection(state, onAction)
+        GreetingSection(username)
+        PreferencesSection(theme, language, onAction)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
         AccountSection(onAction)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
@@ -134,7 +140,9 @@ private fun SettingsScreenCompact(
 @Composable
 private fun SettingsScreenExpanded(
     modifier: Modifier = Modifier,
-    state: SettingsState,
+    username: String?,
+    theme: Theme,
+    language: Language,
     onAction: (SettingsAction) -> Unit
 ) {
     Row(
@@ -147,8 +155,8 @@ private fun SettingsScreenExpanded(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(spacing.medium)
         ) {
-            GreetingSection(state.username)
-            PreferencesSection(state, onAction)
+            GreetingSection(username)
+            PreferencesSection(theme, language, onAction)
             HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
             AccountSection(onAction)
         }
@@ -164,7 +172,11 @@ private fun SettingsScreenExpanded(
 }
 
 @Composable
-private fun PreferencesSection(state: SettingsState, onAction: (SettingsAction) -> Unit) {
+private fun PreferencesSection(
+    theme: Theme,
+    language: Language,
+    onAction: (SettingsAction) -> Unit
+) {
     Text(
         text = "Preferences",
         style = MaterialTheme.typography.titleLarge,
@@ -173,13 +185,13 @@ private fun PreferencesSection(state: SettingsState, onAction: (SettingsAction) 
     AppExposedDropdownMenu(
         label = "Theme",
         options = Theme.entries.map { it.displayName },
-        selectedValue = Theme.entries.indexOf(state.theme),
+        selectedValue = Theme.entries.indexOf(theme),
         onSelectionChanged = { onAction(SettingsAction.OnThemeChange(Theme.entries[it])) }
     )
     AppExposedDropdownMenu(
         label = "Language",
         options = Language.entries.map { it.displayName },
-        selectedValue = Language.entries.indexOf(state.language),
+        selectedValue = Language.entries.indexOf(language),
         onSelectionChanged = { onAction(SettingsAction.OnLanguageChange(Language.entries[it])) }
     )
     AppTextButton(
@@ -311,6 +323,8 @@ private fun GreetingSection(username: String?) {
     if (username != null) {
         Text(
             text = "Hello $username!",
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(bottom = spacing.medium)
         )

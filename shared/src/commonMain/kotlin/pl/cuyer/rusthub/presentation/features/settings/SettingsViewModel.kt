@@ -1,9 +1,14 @@
 package pl.cuyer.rusthub.presentation.features.settings
 
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -12,10 +17,11 @@ import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.Settings
 import pl.cuyer.rusthub.domain.model.Theme
+import pl.cuyer.rusthub.domain.model.User
 import pl.cuyer.rusthub.domain.usecase.GetSettingsUseCase
-import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
-import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
+import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
+import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 
@@ -30,7 +36,12 @@ class SettingsViewModel(
     val uiEvent = _uiEvent.receiveAsFlow()
 
     private val _state = MutableStateFlow(SettingsState())
-    val state = _state.stateIn(
+    val state = _state
+        .onStart {
+            observeSettings()
+            observeUser()
+        }
+        .stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000L),
         initialValue = SettingsState()
@@ -38,13 +49,8 @@ class SettingsViewModel(
 
     init {
         coroutineScope.launch {
-            getSettingsUseCase().collect { settings ->
-                settings?.let { updateFromSettings(it) }
-            }
-        }
-        coroutineScope.launch {
-            getUserUseCase().collect { user ->
-                _state.update { it.copy(username = user?.username) }
+            state.collectLatest {
+                Napier.d("SettingsViewModel $it")
             }
         }
     }
@@ -67,12 +73,31 @@ class SettingsViewModel(
         save()
     }
 
+    private fun observeSettings() {
+        getSettingsUseCase()
+            .onEach { settings ->
+                settings?.let { updateFromSettings(it) }
+            }.launchIn(coroutineScope)
+    }
+
+    private fun observeUser() {
+        getUserUseCase()
+            .onEach { user ->
+                updateUser(user)
+            }.launchIn(coroutineScope)
+    }
+
+    private fun updateUser(user: User?) {
+        _state.update { it.copy(username = user?.username) }
+    }
+
     private fun save() {
-        val settings = Settings(_state.value.theme, _state.value.language)
+        val settings = Settings(state.value.theme, state.value.language)
         coroutineScope.launch { saveSettingsUseCase(settings) }
     }
 
     private fun updateFromSettings(settings: Settings) {
+        Napier.d("Update from settings $settings")
         _state.update { it.copy(theme = settings.theme, language = settings.language) }
     }
 

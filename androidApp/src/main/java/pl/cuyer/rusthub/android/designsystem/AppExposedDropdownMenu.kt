@@ -39,6 +39,10 @@ fun AppExposedDropdownMenu(
     val textFieldState = rememberTextFieldState(options.getOrElse(selectedValue ?: -1) { "" })
     val focusManager = LocalFocusManager.current
 
+    LaunchedEffect(selectedValue) {
+        textFieldState.setTextAndPlaceCursorAtEnd(options.getOrElse(selectedValue ?: -1) { "" })
+    }
+
     LaunchedEffect(expanded) {
         if (!expanded) {
             focusManager.clearFocus()
