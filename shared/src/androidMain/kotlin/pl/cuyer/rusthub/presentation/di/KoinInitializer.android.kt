@@ -18,6 +18,7 @@ import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.TopicSubscriber
+import pl.cuyer.rusthub.util.StoreNavigator
 import dev.icerock.moko.permissions.PermissionsController
 
 actual val platformModule: Module = module {
@@ -27,6 +28,7 @@ actual val platformModule: Module = module {
     single { SyncScheduler(get()) }
     single { SubscriptionSyncScheduler(get()) }
     single { TopicSubscriber() }
+    single { StoreNavigator(androidContext()) }
     single { PermissionsController(androidContext()) }
     viewModel {
         StartupViewModel(get(), get())
