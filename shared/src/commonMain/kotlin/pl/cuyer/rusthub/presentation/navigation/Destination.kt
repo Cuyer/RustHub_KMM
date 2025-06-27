@@ -26,3 +26,6 @@ data class ServerDetails(
     val id: Long,
     val name: String
 ) : NavKey
+
+@Serializable
+data object PrivacyPolicy : NavKey

@@ -39,6 +39,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppExposedDropdownMenu
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
+import pl.cuyer.rusthub.android.designsystem.SubscriptionDialog
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
@@ -89,6 +90,11 @@ fun SettingsScreen(
             )
         }
     ) { innerPadding ->
+        SubscriptionDialog(
+            showDialog = state.value.showSubscriptionDialog,
+            onConfirm = { onAction(SettingsAction.OnSubscribe) },
+            onDismiss = { onAction(SettingsAction.OnDismissSubscriptionDialog) }
+        )
         if (isTabletMode) {
             SettingsScreenExpanded(
                 modifier = Modifier
@@ -133,7 +139,7 @@ private fun SettingsScreenCompact(
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
         AccountSection(onAction)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
-        OtherSection()
+        OtherSection(onAction)
     }
 }
 
@@ -166,7 +172,7 @@ private fun SettingsScreenExpanded(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(spacing.medium)
         ) {
-            OtherSection()
+            OtherSection(onAction)
         }
     }
 }
@@ -195,7 +201,7 @@ private fun PreferencesSection(
         onSelectionChanged = { onAction(SettingsAction.OnLanguageChange(Language.entries[it])) }
     )
     AppTextButton(
-        onClick = {}
+        onClick = { onAction(SettingsAction.OnNotificationsClick) }
     ) {
         Row(
             modifier = Modifier
@@ -238,7 +244,7 @@ private fun AccountSection(onAction: (SettingsAction) -> Unit) {
     }
 
     AppTextButton(
-        onClick = { }
+        onClick = { onAction(SettingsAction.OnSubscriptionClick) }
     ) {
         Row(
             modifier = Modifier
@@ -269,7 +275,7 @@ private fun AccountSection(onAction: (SettingsAction) -> Unit) {
 }
 
 @Composable
-private fun OtherSection() {
+private fun OtherSection(onAction: (SettingsAction) -> Unit) {
     Text(
         text = "Other",
         style = MaterialTheme.typography.titleLarge,
@@ -277,7 +283,7 @@ private fun OtherSection() {
     )
 
     AppTextButton(
-        onClick = { }
+        onClick = { onAction(SettingsAction.OnPrivacyPolicy) }
     ) {
         Row(
             modifier = Modifier

@@ -45,6 +45,7 @@ import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
 import pl.cuyer.rusthub.android.feature.settings.SettingsScreen
 import pl.cuyer.rusthub.android.feature.settings.ChangePasswordScreen
+import pl.cuyer.rusthub.android.feature.settings.PrivacyPolicyScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.presentation.features.auth.login.LoginViewModel
 import pl.cuyer.rusthub.presentation.features.auth.register.RegisterViewModel
@@ -59,6 +60,8 @@ import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.Settings
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
+import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
+import pl.cuyer.rusthub.common.Constants
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 
@@ -197,6 +200,12 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                         }
                         entry<ChangePassword> {
                             ChangePasswordScreen(onNavigateUp = { backStack.removeLastOrNull() })
+                            
+                        entry<PrivacyPolicy> {
+                            PrivacyPolicyScreen(
+                                url = Constants.PRIVACY_POLICY_URL,
+                                onNavigateUp = { backStack.removeLastOrNull() }
+                            )
                         }
                     },
                     sceneStrategy = listDetailStrategy

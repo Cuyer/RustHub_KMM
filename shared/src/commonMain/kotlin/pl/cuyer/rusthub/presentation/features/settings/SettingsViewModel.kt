@@ -24,13 +24,16 @@ import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
+import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import dev.icerock.moko.permissions.PermissionsController
 
 class SettingsViewModel(
     private val getSettingsUseCase: GetSettingsUseCase,
     private val saveSettingsUseCase: SaveSettingsUseCase,
     private val logoutUserUseCase: LogoutUserUseCase,
-    private val getUserUseCase: GetUserUseCase
+    private val getUserUseCase: GetUserUseCase,
+    private val permissionsController: PermissionsController
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -61,7 +64,12 @@ class SettingsViewModel(
             is SettingsAction.OnThemeChange -> updateTheme(action.theme)
             is SettingsAction.OnLanguageChange -> updateLanguage(action.language)
             SettingsAction.OnChangePasswordClick -> navigateChangePassword()
+            SettingsAction.OnNotificationsClick -> permissionsController.openAppSettings()
             SettingsAction.OnLogout -> logout()
+            SettingsAction.OnSubscriptionClick -> showSubscriptionDialog(true)
+            SettingsAction.OnDismissSubscriptionDialog -> showSubscriptionDialog(false)
+            SettingsAction.OnSubscribe -> showSubscriptionDialog(false)
+            SettingsAction.OnPrivacyPolicy -> openPrivacyPolicy()
         }
     }
 
@@ -113,6 +121,18 @@ class SettingsViewModel(
         coroutineScope.launch {
             logoutUserUseCase()
             _uiEvent.send(UiEvent.Navigate(Onboarding))
+        }
+    }
+
+    private fun showSubscriptionDialog(show: Boolean) {
+        _state.update {
+            it.copy(
+                showSubscriptionDialog = show
+            )
+    
+    private fun openPrivacyPolicy() {
+        coroutineScope.launch {
+            _uiEvent.send(UiEvent.Navigate(PrivacyPolicy))
         }
     }
 }

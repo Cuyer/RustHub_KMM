@@ -7,5 +7,10 @@ sealed interface SettingsAction {
     data class OnThemeChange(val theme: Theme) : SettingsAction
     data class OnLanguageChange(val language: Language) : SettingsAction
     data object OnChangePasswordClick : SettingsAction
+    data object OnNotificationsClick : SettingsAction
     data object OnLogout : SettingsAction
+    data object OnSubscriptionClick : SettingsAction
+    data object OnDismissSubscriptionDialog : SettingsAction
+    data object OnSubscribe : SettingsAction
+    data object OnPrivacyPolicy : SettingsAction
 }
