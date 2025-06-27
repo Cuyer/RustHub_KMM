@@ -26,7 +26,7 @@ class LoginUserUseCase(
                         dataSource.insertUser(
                             accessToken = accessToken,
                             refreshToken = refreshToken,
-                            username = username,
+                            username = this.username,
                             email = email
                         )
                         tokenManager.currentToken()

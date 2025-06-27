@@ -194,7 +194,12 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                                 stateProvider = { state },
                                 uiEvent = viewModel.uiEvent,
                                 onAction = viewModel::onAction,
-                                onNavigate = { dest -> backStack.add(dest) }
+                                onNavigate = { dest ->
+                                    if (dest is Onboarding) {
+                                        backStack.clear()
+                                    }
+                                    backStack.add(dest)
+                                }
                             )
                         }
                         entry<ChangePassword> {

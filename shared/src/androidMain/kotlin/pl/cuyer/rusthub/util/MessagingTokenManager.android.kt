@@ -5,7 +5,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.datetime.Clock
 import pl.cuyer.rusthub.domain.repository.notification.MessagingTokenRepository
 
-actual class MessagingTokenManager(
+actual class MessagingTokenManager actual constructor(
     private val repository: MessagingTokenRepository,
     private val scheduler: MessagingTokenScheduler
 ) {
