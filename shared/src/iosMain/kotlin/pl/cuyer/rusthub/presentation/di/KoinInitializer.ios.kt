@@ -13,8 +13,8 @@ import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
-import pl.cuyer.rusthub.util.TopicSubscriber
 import pl.cuyer.rusthub.util.StoreNavigator
+import pl.cuyer.rusthub.util.MessagingTokenScheduler
 import dev.icerock.moko.permissions.PermissionsController
 
 actual val platformModule: Module = module {
@@ -23,7 +23,7 @@ actual val platformModule: Module = module {
     single { ClipboardHandler() }
     single { SyncScheduler() }
     single { SubscriptionSyncScheduler() }
-    single { TopicSubscriber() }
+    single { MessagingTokenScheduler() }
     single { StoreNavigator() }
     single { PermissionsController() }
     factory { StartupViewModel(get()) }

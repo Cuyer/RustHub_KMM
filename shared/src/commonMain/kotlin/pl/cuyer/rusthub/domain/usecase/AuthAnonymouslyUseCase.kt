@@ -7,10 +7,12 @@ import kotlinx.coroutines.flow.collectLatest
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.repository.auth.AuthRepository
+import pl.cuyer.rusthub.util.MessagingTokenManager
 
 class AuthAnonymouslyUseCase(
     private val client: AuthRepository,
     private val dataSource: AuthDataSource,
+    private val tokenManager: MessagingTokenManager,
 ) {
     @OptIn(ExperimentalPagingApi::class)
     operator fun invoke(): Flow<Result<Unit>> = channelFlow {
@@ -24,6 +26,7 @@ class AuthAnonymouslyUseCase(
                             accessToken = accessToken,
                             refreshToken = null
                         )
+                        tokenManager.currentToken()
                         send(Result.Success(Unit))
                     }
                 }

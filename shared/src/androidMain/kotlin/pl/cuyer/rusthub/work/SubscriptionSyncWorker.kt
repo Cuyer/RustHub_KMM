@@ -12,7 +12,6 @@ import pl.cuyer.rusthub.domain.exception.SubscriptionLimitException
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
-import pl.cuyer.rusthub.util.TopicSubscriber
 import pl.cuyer.rusthub.common.Result as DomainResult
 
 class SubscriptionSyncWorker(
@@ -20,8 +19,7 @@ class SubscriptionSyncWorker(
     params: WorkerParameters,
     private val repository: SubscriptionRepository,
     private val syncDataSource: SubscriptionSyncDataSource,
-    private val serverDataSource: ServerDataSource,
-    private val topicSubscriber: TopicSubscriber
+    private val serverDataSource: ServerDataSource
 ) : CoroutineWorker(appContext, params) {
 
     override suspend fun doWork(): Result = coroutineScope {
@@ -39,8 +37,6 @@ class SubscriptionSyncWorker(
                         is DomainResult.Success -> {
                             serverDataSource.updateSubscription(operation.serverId, operation.isAdd)
                             syncDataSource.deleteOperation(operation.serverId)
-                            if (operation.isAdd) topicSubscriber.subscribe(operation.serverId.toString())
-                            else topicSubscriber.unsubscribe(operation.serverId.toString())
                             success = true
                         }
                         is DomainResult.Error -> {
