@@ -44,6 +44,7 @@ import pl.cuyer.rusthub.android.feature.onboarding.OnboardingScreen
 import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
 import pl.cuyer.rusthub.android.feature.settings.SettingsScreen
+import pl.cuyer.rusthub.android.feature.settings.PrivacyPolicyScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.presentation.features.auth.login.LoginViewModel
 import pl.cuyer.rusthub.presentation.features.auth.register.RegisterViewModel
@@ -57,6 +58,8 @@ import pl.cuyer.rusthub.presentation.navigation.Register
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.Settings
+import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
+import pl.cuyer.rusthub.common.Constants
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 
@@ -191,6 +194,12 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                                 uiEvent = viewModel.uiEvent,
                                 onAction = viewModel::onAction,
                                 onNavigate = { dest -> backStack.add(dest) }
+                            )
+                        }
+                        entry<PrivacyPolicy> {
+                            PrivacyPolicyScreen(
+                                url = Constants.PRIVACY_POLICY_URL,
+                                onNavigateUp = { backStack.removeLastOrNull() }
                             )
                         }
                     },

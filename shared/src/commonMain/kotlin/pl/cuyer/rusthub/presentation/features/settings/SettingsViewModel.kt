@@ -23,6 +23,7 @@ import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
+import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 
 class SettingsViewModel(
@@ -60,6 +61,7 @@ class SettingsViewModel(
             is SettingsAction.OnThemeChange -> updateTheme(action.theme)
             is SettingsAction.OnLanguageChange -> updateLanguage(action.language)
             SettingsAction.OnLogout -> logout()
+            SettingsAction.OnPrivacyPolicy -> openPrivacyPolicy()
         }
     }
 
@@ -105,6 +107,12 @@ class SettingsViewModel(
         coroutineScope.launch {
             logoutUserUseCase()
             _uiEvent.send(UiEvent.Navigate(Onboarding))
+        }
+    }
+
+    private fun openPrivacyPolicy() {
+        coroutineScope.launch {
+            _uiEvent.send(UiEvent.Navigate(PrivacyPolicy))
         }
     }
 }
