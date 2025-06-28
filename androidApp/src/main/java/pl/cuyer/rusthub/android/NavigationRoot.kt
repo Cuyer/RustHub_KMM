@@ -28,11 +28,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entry
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -114,6 +117,11 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                         .padding(contentPadding)
                         .consumeWindowInsets(contentPadding),
                     backStack = backStack,
+                    entryDecorators = listOf(
+                        rememberSceneSetupNavEntryDecorator(),
+                        rememberSavedStateNavEntryDecorator(),
+                        rememberViewModelStoreNavEntryDecorator()
+                    ),
                     onBack = { keysToRemove ->
                         repeat(keysToRemove) { backStack.removeLastOrNull() }
                     },
