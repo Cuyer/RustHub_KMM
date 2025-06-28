@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 
 actual class MessagingTokenScheduler(private val context: Context) {
     actual fun schedule() {
-        val request = PeriodicWorkRequestBuilder<TokenRefreshWorker>(30, TimeUnit.DAYS)
+        val request = PeriodicWorkRequestBuilder<TokenRefreshWorker>(15, TimeUnit.MINUTES)
             .setConstraints(
                 Constraints.Builder()
                     .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -19,7 +19,7 @@ actual class MessagingTokenScheduler(private val context: Context) {
             )
             .build()
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            "token_refresh",
+            TokenRefreshWorker.WORK_NAME,
             ExistingPeriodicWorkPolicy.KEEP,
             request
         )

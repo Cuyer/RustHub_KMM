@@ -6,7 +6,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -51,14 +50,6 @@ class SettingsViewModel(
         initialValue = SettingsState()
     )
 
-    init {
-        coroutineScope.launch {
-            state.collectLatest {
-                Napier.d("SettingsViewModel $it")
-            }
-        }
-    }
-
     fun onAction(action: SettingsAction) {
         when (action) {
             is SettingsAction.OnThemeChange -> updateTheme(action.theme)
@@ -97,10 +88,7 @@ class SettingsViewModel(
     }
 
     private fun observeUser() {
-        getUserUseCase()
-            .onEach { user ->
-                updateUser(user)
-            }.launchIn(coroutineScope)
+
     }
 
     private fun updateUser(user: User?) {

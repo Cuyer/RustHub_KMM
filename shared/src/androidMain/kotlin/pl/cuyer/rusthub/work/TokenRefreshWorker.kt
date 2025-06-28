@@ -10,6 +10,10 @@ class TokenRefreshWorker(
     params: WorkerParameters,
     private val tokenManager: MessagingTokenManager
 ) : CoroutineWorker(appContext, params) {
+    companion object {
+        const val WORK_NAME = "token_refresh"
+    }
+
     override suspend fun doWork(): Result {
         tokenManager.currentToken()
         return Result.success()
