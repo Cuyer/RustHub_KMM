@@ -25,7 +25,7 @@ class RustHubFirebaseMessagingService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         CoroutineScope(Dispatchers.Default).launch {
-            tokenManager.currentToken()
+            tokenManager.registerToken(token)
         }
     }
 }

@@ -10,6 +10,10 @@ actual class MessagingTokenManager actual constructor(
     private val repository: MessagingTokenRepository,
     private val scheduler: MessagingTokenScheduler
 ) {
+    actual suspend fun registerToken(token: String) {
+        repository.registerToken(token, Clock.System.now())
+        scheduler.schedule()
+    }
     /**
      * Returns the current FCM token and ensures the refresh worker is scheduled.
      *

@@ -7,6 +7,7 @@ expect class MessagingTokenManager(
     repository: MessagingTokenRepository,
     scheduler: MessagingTokenScheduler
 ) {
+    suspend fun registerToken(token: String)
     suspend fun currentToken(): String?
     suspend fun deleteToken()
 }
