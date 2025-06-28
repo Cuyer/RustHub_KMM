@@ -11,6 +11,7 @@ import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
 import pl.cuyer.rusthub.util.MessagingTokenManager
+import pl.cuyer.rusthub.util.NotificationPresenter
 import pl.cuyer.rusthub.work.CustomWorkerFactory
 
 class RustHubApplication : Application(), Configuration.Provider {
@@ -28,6 +29,7 @@ class RustHubApplication : Application(), Configuration.Provider {
             androidContext(this@RustHubApplication)
             modules(appModule, platformModule)
         }
+        NotificationPresenter.registerChannels(this)
         WorkManager.initialize(this, workManagerConfiguration)
     }
 

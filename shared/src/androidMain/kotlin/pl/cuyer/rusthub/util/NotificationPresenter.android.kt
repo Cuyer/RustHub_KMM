@@ -21,7 +21,6 @@ actual class NotificationPresenter(private val context: Context) {
     }
 
     private fun buildNotification(type: NotificationType, name: String, timestamp: String) {
-        createNotificationChannel(type, NotificationManager.IMPORTANCE_DEFAULT)
         rusthubNotificationManager().notify(
             (type.name + name + timestamp).hashCode(),
             notificationBuilder(type, name, timestamp).build()
@@ -41,7 +40,7 @@ actual class NotificationPresenter(private val context: Context) {
             .setAutoCancel(true)
     }
 
-    private fun createNotificationChannel(type: NotificationType, importance: Int) {
+    fun createNotificationChannel(type: NotificationType, importance: Int) {
         with(rusthubNotificationManager()) {
             val channelId = channelId(type)
             val channelName = channelName(type)
@@ -121,5 +120,12 @@ actual class NotificationPresenter(private val context: Context) {
     companion object {
         const val MAIN_ACTIVITY = "pl.cuyer.rusthub.android.MainActivity"
         const val PACKAGE_NAME = "pl.cuyer.rusthub.android"
+
+        fun registerChannels(context: Context) {
+            val presenter = NotificationPresenter(context)
+            NotificationType.values().forEach { type ->
+                presenter.createNotificationChannel(type, NotificationManager.IMPORTANCE_DEFAULT)
+            }
+        }
     }
 }
