@@ -15,6 +15,8 @@ class TokenRefreshWorker(
     }
 
     override suspend fun doWork(): Result {
+        // This will fetch the token and schedule the refresh worker if needed.
+        // Scheduling is idempotent so the worker won't reset its period on each run.
         tokenManager.currentToken()
         return Result.success()
     }
