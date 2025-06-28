@@ -1,8 +1,6 @@
 package pl.cuyer.rusthub.domain.repository.notification
 
-import kotlinx.datetime.Instant
-
 interface MessagingTokenRepository {
-    suspend fun registerToken(token: String, timestamp: Instant)
+    suspend fun registerToken(token: String)
     suspend fun deleteToken(token: String)
 }

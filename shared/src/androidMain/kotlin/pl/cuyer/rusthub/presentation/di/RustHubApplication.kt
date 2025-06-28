@@ -29,7 +29,7 @@ class RustHubApplication : Application(), Configuration.Provider {
             androidContext(this@RustHubApplication)
             modules(appModule, platformModule)
         }
-        NotificationPresenter.registerChannels(this)
+        NotificationPresenter(this).createDefaultChannels()
         WorkManager.initialize(this, workManagerConfiguration)
     }
 

@@ -4,7 +4,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.delete
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import kotlinx.datetime.Instant
 import pl.cuyer.rusthub.data.network.notification.model.FcmTokenRequest
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
 import pl.cuyer.rusthub.domain.repository.notification.MessagingTokenRepository
@@ -12,10 +11,10 @@ import pl.cuyer.rusthub.domain.repository.notification.MessagingTokenRepository
 class MessagingTokenClientImpl(
     private val httpClient: HttpClient
 ) : MessagingTokenRepository {
-    override suspend fun registerToken(token: String, timestamp: Instant) {
+    override suspend fun registerToken(token: String) {
         runCatching {
             httpClient.post(NetworkConstants.BASE_URL + "fcm/token") {
-                setBody(FcmTokenRequest(token, timestamp))
+                setBody(FcmTokenRequest(token))
             }
         }
     }

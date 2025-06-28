@@ -3,7 +3,6 @@ package pl.cuyer.rusthub.util
 import com.google.firebase.messaging.FirebaseMessaging
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.tasks.await
-import kotlinx.datetime.Clock
 import pl.cuyer.rusthub.domain.repository.notification.MessagingTokenRepository
 
 actual class MessagingTokenManager actual constructor(
@@ -11,7 +10,7 @@ actual class MessagingTokenManager actual constructor(
     private val scheduler: MessagingTokenScheduler
 ) {
     actual suspend fun registerToken(token: String) {
-        repository.registerToken(token, Clock.System.now())
+        repository.registerToken(token)
         scheduler.schedule()
     }
     /**
@@ -23,7 +22,7 @@ actual class MessagingTokenManager actual constructor(
     actual suspend fun currentToken(): String? {
         return try {
             val token = FirebaseMessaging.getInstance().token.await()
-            repository.registerToken(token, Clock.System.now())
+            repository.registerToken(token)
             scheduler.schedule()
             token
         } catch (e: Exception) {

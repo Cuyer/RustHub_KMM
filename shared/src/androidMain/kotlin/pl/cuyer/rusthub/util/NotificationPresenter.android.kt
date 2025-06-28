@@ -20,6 +20,28 @@ actual class NotificationPresenter(private val context: Context) {
         buildNotification(type, name, timestamp)
     }
 
+    fun createDefaultChannels() {
+        createDefaultChannel()
+        NotificationType.entries.forEach { type ->
+            createNotificationChannel(type, NotificationManager.IMPORTANCE_DEFAULT)
+        }
+    }
+
+    private fun createDefaultChannel() {
+        with(rusthubNotificationManager()) {
+            this.createNotificationChannel(
+                NotificationChannel(
+                    DEFAULT_CHANNEL_ID,
+                    SharedRes.strings.notification_channel_name.getString(context),
+                    NotificationManager.IMPORTANCE_DEFAULT
+                ).apply {
+                    description =
+                        SharedRes.strings.notification_channel_description.getString(context)
+                }
+            )
+        }
+    }
+
     private fun buildNotification(type: NotificationType, name: String, timestamp: String) {
         rusthubNotificationManager().notify(
             (type.name + name + timestamp).hashCode(),
@@ -40,7 +62,8 @@ actual class NotificationPresenter(private val context: Context) {
             .setAutoCancel(true)
     }
 
-    fun createNotificationChannel(type: NotificationType, importance: Int) {
+
+    private fun createNotificationChannel(type: NotificationType, importance: Int) {
         with(rusthubNotificationManager()) {
             val channelId = channelId(type)
             val channelName = channelName(type)
@@ -120,12 +143,6 @@ actual class NotificationPresenter(private val context: Context) {
     companion object {
         const val MAIN_ACTIVITY = "pl.cuyer.rusthub.android.MainActivity"
         const val PACKAGE_NAME = "pl.cuyer.rusthub.android"
-
-        fun registerChannels(context: Context) {
-            val presenter = NotificationPresenter(context)
-            NotificationType.values().forEach { type ->
-                presenter.createNotificationChannel(type, NotificationManager.IMPORTANCE_DEFAULT)
-            }
-        }
+        const val DEFAULT_CHANNEL_ID = "notification_channel_name"
     }
 }
