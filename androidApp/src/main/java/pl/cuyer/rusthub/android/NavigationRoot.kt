@@ -177,9 +177,7 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                                 onAction = viewModel::onAction,
                                 pagedList = paging,
                                 onNavigate = { dest ->
-                                    if (dest is ServerDetails && backStack.lastOrNull() is ServerDetails) {
-                                        backStack[backStack.lastIndex] = dest
-                                    } else backStack.add(dest)
+                                    backStack.add(dest)
                                 }
                             )
                         }
