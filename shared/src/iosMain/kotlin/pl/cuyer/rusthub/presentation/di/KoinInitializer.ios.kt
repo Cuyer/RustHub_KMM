@@ -10,11 +10,14 @@ import pl.cuyer.rusthub.presentation.features.auth.register.RegisterViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
+import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
+import pl.cuyer.rusthub.util.LogoutScheduler
+import pl.cuyer.rusthub.util.DeleteAccountScheduler
 import dev.icerock.moko.permissions.PermissionsController
 
 actual val platformModule: Module = module {
@@ -24,6 +27,8 @@ actual val platformModule: Module = module {
     single { SyncScheduler() }
     single { SubscriptionSyncScheduler() }
     single { MessagingTokenScheduler() }
+    single { LogoutScheduler() }
+    single { DeleteAccountScheduler() }
     single { StoreNavigator() }
     single { PermissionsController() }
     factory { StartupViewModel(get()) }
@@ -57,6 +62,14 @@ actual val platformModule: Module = module {
             logoutUserUseCase = get(),
             getUserUseCase = get(),
             permissionsController = get()
+        )
+    }
+    factory {
+        DeleteAccountViewModel(
+            deleteAccountUseCase = get(),
+            snackbarController = get(),
+            passwordValidator = get(),
+            usernameValidator = get()
         )
     }
 }

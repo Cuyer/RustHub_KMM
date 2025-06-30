@@ -25,6 +25,7 @@ import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
+import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 
 class SettingsViewModel(
@@ -61,6 +62,7 @@ class SettingsViewModel(
             SettingsAction.OnDismissSubscriptionDialog -> showSubscriptionDialog(false)
             SettingsAction.OnSubscribe -> showSubscriptionDialog(false)
             SettingsAction.OnPrivacyPolicy -> openPrivacyPolicy()
+            SettingsAction.OnDeleteAccount -> navigateDeleteAccount()
         }
     }
 
@@ -109,6 +111,12 @@ class SettingsViewModel(
         coroutineScope.launch {
             logoutUserUseCase()
             _uiEvent.send(UiEvent.Navigate(Onboarding))
+        }
+    }
+
+    private fun navigateDeleteAccount() {
+        coroutineScope.launch {
+            _uiEvent.send(UiEvent.Navigate(DeleteAccount))
         }
     }
 

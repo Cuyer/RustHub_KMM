@@ -1,14 +1,14 @@
 package pl.cuyer.rusthub.domain.usecase
 
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
-import pl.cuyer.rusthub.util.MessagingTokenManager
+import pl.cuyer.rusthub.util.LogoutScheduler
 
 class LogoutUserUseCase(
     private val dataSource: AuthDataSource,
-    private val tokenManager: MessagingTokenManager
+    private val scheduler: LogoutScheduler
 ) {
     suspend operator fun invoke() {
-        tokenManager.deleteToken()
         dataSource.deleteUser()
+        scheduler.schedule()
     }
 }
