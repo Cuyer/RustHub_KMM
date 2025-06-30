@@ -5,11 +5,16 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
+import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.usecase.DeleteAccountUseCase
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
@@ -71,14 +76,25 @@ class DeleteAccountViewModel(
                 )
                 return@launch
             }
-            updateLoading(true)
             deleteAccountUseCase(username, password)
-            updateLoading(false)
-            _uiEvent.send(UiEvent.Navigate(Onboarding))
+                .onStart { updateLoading(true) }
+                .onCompletion { updateLoading(false) }
+                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .collectLatest { result ->
+                    when (result) {
+                        is Result.Success -> _uiEvent.send(UiEvent.Navigate(Onboarding))
+                        is Result.Error -> showErrorSnackbar(result.exception.message ?: "Unable to delete account")
+                        else -> Unit
+                    }
+                }
         }
     }
 
     private fun updateLoading(isLoading: Boolean) {
         _state.update { it.copy(isLoading = isLoading) }
+    }
+
+    private suspend fun showErrorSnackbar(message: String) {
+        snackbarController.sendEvent(SnackbarEvent(message = message))
     }
 }

@@ -21,7 +21,6 @@ import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
 import pl.cuyer.rusthub.util.LogoutScheduler
-import pl.cuyer.rusthub.util.DeleteAccountScheduler
 import dev.icerock.moko.permissions.PermissionsController
 
 actual val platformModule: Module = module {
@@ -32,7 +31,6 @@ actual val platformModule: Module = module {
     single { SubscriptionSyncScheduler(get()) }
     single { MessagingTokenScheduler(get()) }
     single { LogoutScheduler(androidContext()) }
-    single { DeleteAccountScheduler(androidContext()) }
     single { StoreNavigator(androidContext()) }
     single { PermissionsController(androidContext()) }
     viewModel {
