@@ -537,20 +537,22 @@ CREATE TABLE userEntity (
   email         TEXT,
   username      TEXT   NOT NULL,
   access_token  TEXT   NOT NULL,
-  refresh_token TEXT
+  refresh_token TEXT,
+  provider TEXT NOT NULL DEFAULT 'LOCAL'
 );
 
 insertUser:
 INSERT INTO userEntity (
-id, email, username, access_token, refresh_token
+id, email, username, access_token, refresh_token, provider
 ) VALUES (
-  :id, :email, :username, :accessToken, :refreshToken
+  :id, :email, :username, :accessToken, :refreshToken, :provider
 )
 ON CONFLICT(id) DO UPDATE SET
   email = excluded.email,
   username = excluded.username,
   access_token  = excluded.access_token,
-  refresh_token = excluded.refresh_token;
+  refresh_token = excluded.refresh_token,
+  provider = excluded.provider;
 
 deleteUser:
 DELETE FROM userEntity;

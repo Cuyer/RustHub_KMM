@@ -19,6 +19,7 @@ import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.StoreNavigator
+import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
 import pl.cuyer.rusthub.util.LogoutScheduler
 import dev.icerock.moko.permissions.PermissionsController
@@ -32,6 +33,7 @@ actual val platformModule: Module = module {
     single { MessagingTokenScheduler(get()) }
     single { LogoutScheduler(androidContext()) }
     single { StoreNavigator(androidContext()) }
+    single { GoogleAuthClient(androidContext()) }
     single { PermissionsController(androidContext()) }
     viewModel {
         StartupViewModel(get(), get())
@@ -45,6 +47,9 @@ actual val platformModule: Module = module {
     viewModel {
         LoginViewModel(
             loginUserUseCase = get(),
+            loginWithGoogleUseCase = get(),
+            getGoogleClientIdUseCase = get(),
+            googleAuthClient = get(),
             snackbarController = get(),
             passwordValidator = get(),
             usernameValidator = get()
@@ -79,7 +84,8 @@ actual val platformModule: Module = module {
             saveSettingsUseCase = get(),
             logoutUserUseCase = get(),
             getUserUseCase = get(),
-            permissionsController = get()
+            permissionsController = get(),
+            googleAuthClient = get()
         )
     }
     viewModel {

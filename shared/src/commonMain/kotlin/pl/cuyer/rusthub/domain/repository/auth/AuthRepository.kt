@@ -11,6 +11,7 @@ interface AuthRepository {
     fun refresh(refreshToken: String): Flow<Result<TokenPair>>
     fun upgrade(email: String, username: String, password: String): Flow<Result<TokenPair>>
     fun authAnonymously(): Flow<Result<AccessToken>>
+    fun loginWithGoogle(token: String): Flow<Result<TokenPair>>
     fun logout(): Flow<Result<Unit>>
     fun deleteAccount(username: String, password: String): Flow<Result<Unit>>
 }

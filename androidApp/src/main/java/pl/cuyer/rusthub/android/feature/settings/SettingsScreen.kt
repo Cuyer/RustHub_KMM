@@ -262,17 +262,11 @@ private fun AccountSection(onAction: (SettingsAction) -> Unit) {
         }
     }
 
-    AppButton(
+    AppTextButton(
         modifier = Modifier.fillMaxWidth(),
-        colors = ButtonDefaults.elevatedButtonColors().copy(
-            containerColor = MaterialTheme.colorScheme.error,
-            contentColor = MaterialTheme.colorScheme.onError
-        ),
-        onClick = { onAction(SettingsAction.OnDeleteAccount) },
+        onClick = { onAction(SettingsAction.OnDeleteAccount) }
     ) {
-        Text(
-            text = "Delete account"
-        )
+        Text("Delete account", color = MaterialTheme.colorScheme.error)
     }
 }
 

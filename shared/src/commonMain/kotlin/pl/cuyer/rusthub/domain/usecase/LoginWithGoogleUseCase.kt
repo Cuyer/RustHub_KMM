@@ -9,32 +9,30 @@ import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.repository.auth.AuthRepository
 import pl.cuyer.rusthub.util.MessagingTokenManager
 
-class AuthAnonymouslyUseCase(
+class LoginWithGoogleUseCase(
     private val client: AuthRepository,
     private val dataSource: AuthDataSource,
     private val tokenManager: MessagingTokenManager,
 ) {
     @OptIn(ExperimentalPagingApi::class)
-    operator fun invoke(): Flow<Result<Unit>> = channelFlow {
-        client.authAnonymously().collectLatest { result ->
+    operator fun invoke(token: String): Flow<Result<Unit>> = channelFlow {
+        client.loginWithGoogle(token).collectLatest { result ->
             when (result) {
                 is Result.Success -> {
                     with(result.data) {
                         dataSource.insertUser(
-                            email = null,
+                            email = email,
                             username = username,
                             accessToken = accessToken,
-                            refreshToken = null,
+                            refreshToken = refreshToken,
                             provider = provider
                         )
                         tokenManager.currentToken()
                         send(Result.Success(Unit))
                     }
                 }
-
                 is Result.Error -> send(Result.Error(result.exception))
-
-                else -> Unit
+                is Result.Loading -> send(Result.Loading)
             }
         }
     }

@@ -50,6 +50,7 @@ import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetSettingsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
+import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
@@ -61,6 +62,9 @@ import pl.cuyer.rusthub.domain.usecase.ToggleSubscriptionUseCase
 import pl.cuyer.rusthub.presentation.settings.SettingsController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.util.MessagingTokenManager
+import pl.cuyer.rusthub.domain.repository.config.ConfigRepository
+import pl.cuyer.rusthub.data.network.config.ConfigRepositoryImpl
+import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
 import pl.cuyer.rusthub.util.validator.EmailValidator
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
@@ -91,6 +95,7 @@ val appModule = module {
     singleOf(::FiltersOptionsDataSourceImpl) bind FiltersOptionsDataSource::class
     singleOf(::AuthRepositoryImpl) bind AuthRepository::class
     singleOf(::AuthDataSourceImpl) bind AuthDataSource::class
+    singleOf(::ConfigRepositoryImpl) bind ConfigRepository::class
     single { EmailValidator }
     single { PasswordValidator }
     single { UsernameValidator }
@@ -105,6 +110,8 @@ val appModule = module {
     single { GetServerDetailsUseCase(get()) }
     single { RegisterUserUseCase(get(), get(), get()) }
     single { LoginUserUseCase(get(), get(), get()) }
+    single { LoginWithGoogleUseCase(get(), get(), get()) }
+    single { GetGoogleClientIdUseCase(get()) }
     single { AuthAnonymouslyUseCase(get(), get(), get()) }
     single { GetUserUseCase(get()) }
     single { LogoutUserUseCase(get(), get()) }

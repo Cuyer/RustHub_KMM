@@ -39,6 +39,7 @@ import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.User
 import pl.cuyer.rusthub.domain.model.WipeSchedule
 import pl.cuyer.rusthub.domain.model.WipeType
+import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.Settings
 import pl.cuyer.rusthub.domain.model.Theme
@@ -180,7 +181,13 @@ fun FiltersWipeScheduleEntity?.toDomain(): WipeSchedule? =
 
 fun SearchQueryEntity.toDomain(): SearchQuery = SearchQuery(id, query, Instant.parse(timestamp))
 
-fun UserEntity.toUser(): User = User(email, username, access_token, refresh_token)
+fun UserEntity.toUser(): User = User(
+    email,
+    username,
+    access_token,
+    refresh_token,
+    AuthProvider.valueOf(provider)
+)
 
 
 

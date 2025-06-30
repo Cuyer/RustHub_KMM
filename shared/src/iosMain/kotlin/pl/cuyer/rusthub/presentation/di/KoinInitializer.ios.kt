@@ -7,6 +7,7 @@ import pl.cuyer.rusthub.data.network.HttpClientFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.presentation.features.auth.login.LoginViewModel
 import pl.cuyer.rusthub.presentation.features.auth.register.RegisterViewModel
+import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
@@ -15,6 +16,7 @@ import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.StoreNavigator
+import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
 import pl.cuyer.rusthub.util.LogoutScheduler
 import dev.icerock.moko.permissions.PermissionsController
@@ -28,6 +30,7 @@ actual val platformModule: Module = module {
     single { MessagingTokenScheduler() }
     single { LogoutScheduler() }
     single { StoreNavigator() }
+    single { GoogleAuthClient() }
     single { PermissionsController() }
     factory { StartupViewModel(get()) }
     factory {
@@ -39,6 +42,9 @@ actual val platformModule: Module = module {
     factory {
         LoginViewModel(
             loginUserUseCase = get(),
+            loginWithGoogleUseCase = get(),
+            getGoogleClientIdUseCase = get(),
+            googleAuthClient = get(),
             snackbarController = get(),
             passwordValidator = get(),
             usernameValidator = get()
@@ -59,7 +65,8 @@ actual val platformModule: Module = module {
             saveSettingsUseCase = get(),
             logoutUserUseCase = get(),
             getUserUseCase = get(),
-            permissionsController = get()
+            permissionsController = get(),
+            googleAuthClient = get()
         )
     }
     factory {

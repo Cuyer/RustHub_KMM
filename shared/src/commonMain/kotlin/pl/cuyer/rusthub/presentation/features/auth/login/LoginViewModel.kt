@@ -19,15 +19,21 @@ import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.exception.InvalidCredentialsException
 import pl.cuyer.rusthub.domain.exception.UserAlreadyExistsException
 import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
+import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
+import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
 
 class LoginViewModel(
     private val loginUserUseCase: LoginUserUseCase,
+    private val loginWithGoogleUseCase: LoginWithGoogleUseCase,
+    private val getGoogleClientIdUseCase: GetGoogleClientIdUseCase,
+    private val googleAuthClient: GoogleAuthClient,
     private val snackbarController: SnackbarController,
     private val passwordValidator: PasswordValidator,
     private val usernameValidator: UsernameValidator,
@@ -43,12 +49,54 @@ class LoginViewModel(
     )
 
     var loginJob: Job? = null
+    var googleJob: Job? = null
 
     fun onAction(action: LoginAction) {
         when (action) {
             LoginAction.OnLogin -> login()
             is LoginAction.OnPasswordChange -> updatePassword(action.password)
             is LoginAction.OnUsernameChange -> updateUsername(action.username)
+            LoginAction.OnGoogleLogin -> startGoogleLogin()
+        }
+    }
+
+    private fun startGoogleLogin() {
+        googleJob?.cancel()
+        googleJob = coroutineScope.launch {
+            getGoogleClientIdUseCase()
+                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .collectLatest { result ->
+                    when (result) {
+                        is Result.Success -> {
+                            val token = googleAuthClient.getIdToken(result.data)
+                            if (token != null) {
+                                loginWithGoogleToken(token)
+                            } else {
+                                showErrorSnackbar("Google sign in failed")
+                            }
+                        }
+                        is Result.Error -> showErrorSnackbar(result.exception.message ?: "Unable to get client id")
+                        else -> Unit
+                    }
+                }
+        }
+    }
+
+    private fun loginWithGoogleToken(token: String) {
+        googleJob?.cancel()
+        googleJob = coroutineScope.launch {
+            loginWithGoogleUseCase(token)
+                .onStart { updateLoading(true) }
+                .onCompletion { updateLoading(false) }
+                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .collectLatest { result ->
+                    ensureActive()
+                    when (result) {
+                        is Result.Success -> _uiEvent.send(UiEvent.Navigate(ServerList))
+                        is Result.Error -> showErrorSnackbar("Error occurred during Google sign in")
+                        else -> Unit
+                    }
+                }
         }
     }
 

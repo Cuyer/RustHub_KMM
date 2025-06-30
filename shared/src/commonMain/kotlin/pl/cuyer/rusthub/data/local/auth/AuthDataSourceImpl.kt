@@ -12,6 +12,7 @@ import pl.cuyer.rusthub.data.local.Queries
 import pl.cuyer.rusthub.data.local.mapper.toUser
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.User
+import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 
 class AuthDataSourceImpl(
@@ -22,7 +23,8 @@ class AuthDataSourceImpl(
         email: String?,
         username: String,
         accessToken: String,
-        refreshToken: String?
+        refreshToken: String?,
+        provider: AuthProvider,
     ) {
         withContext(Dispatchers.IO) {
             queries.insertUser(
@@ -30,7 +32,8 @@ class AuthDataSourceImpl(
                 email = email,
                 username = username,
                 accessToken = accessToken,
-                refreshToken = refreshToken
+                refreshToken = refreshToken,
+                provider = provider.name
             )
         }
     }
