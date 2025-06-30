@@ -23,6 +23,7 @@ import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.data.network.auth.model.RefreshRequest
 import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
+import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import java.util.Locale
 
@@ -58,7 +59,8 @@ actual class HttpClientFactory actual constructor(
                                 email = newTokens.email,
                                 username = newTokens.username,
                                 accessToken = newTokens.accessToken,
-                                refreshToken = newTokens.refreshToken
+                                refreshToken = newTokens.refreshToken,
+                                provider = AuthProvider.valueOf(newTokens.provider)
                             )
                             BearerTokens(newTokens.accessToken, newTokens.refreshToken)
                         } else {

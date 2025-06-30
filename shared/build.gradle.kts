@@ -49,6 +49,9 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.messaging)
+            implementation(libs.google.auth)
+            implementation(libs.androidx.credentials)
+            implementation(libs.google.identity)
             implementation(libs.kotlin.coroutines.play.services)
         }
         commonMain.dependencies {
