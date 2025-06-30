@@ -69,7 +69,8 @@ actual class HttpClientFactory actual constructor(
                         }
                     }
                     sendWithoutRequest { request ->
-                        !request.url.encodedPath.startsWith("/auth")
+                        request.url.encodedPath.startsWith("/auth") &&
+                                request.url.encodedPath != "/auth/logout"
                     }
                 }
             }
