@@ -7,8 +7,8 @@ class DeleteAccountUseCase(
     private val dataSource: AuthDataSource,
     private val scheduler: DeleteAccountScheduler
 ) {
-    suspend operator fun invoke(username: String, password: String) {
+    suspend operator fun invoke(password: String) {
         dataSource.deleteUser()
-        scheduler.schedule(username, password)
+        scheduler.schedule(password)
     }
 }

@@ -68,8 +68,7 @@ actual val platformModule: Module = module {
         DeleteAccountViewModel(
             deleteAccountUseCase = get(),
             snackbarController = get(),
-            passwordValidator = get(),
-            usernameValidator = get()
+            passwordValidator = get()
         )
     }
 }

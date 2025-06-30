@@ -116,10 +116,10 @@ class AuthRepositoryImpl(
         }
     }
 
-    override fun deleteAccount(username: String, password: String): Flow<Result<Unit>> {
+    override fun deleteAccount(password: String): Flow<Result<Unit>> {
         return safeApiCall<Unit> {
             httpClient.post(NetworkConstants.BASE_URL + "auth/delete") {
-                setBody(DeleteAccountRequest(username, password))
+                setBody(DeleteAccountRequest(password))
             }
         }.map { result ->
             when (result) {

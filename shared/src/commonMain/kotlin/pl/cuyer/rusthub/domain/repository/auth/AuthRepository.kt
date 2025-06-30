@@ -12,5 +12,5 @@ interface AuthRepository {
     fun upgrade(email: String, username: String, password: String): Flow<Result<TokenPair>>
     fun authAnonymously(): Flow<Result<AccessToken>>
     fun logout(): Flow<Result<Unit>>
-    fun deleteAccount(username: String, password: String): Flow<Result<Unit>>
+    fun deleteAccount(password: String): Flow<Result<Unit>>
 }

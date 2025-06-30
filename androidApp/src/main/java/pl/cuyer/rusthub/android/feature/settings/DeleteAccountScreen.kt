@@ -22,7 +22,6 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppSecureTextField
-import pl.cuyer.rusthub.android.designsystem.AppTextField
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountAction
@@ -61,17 +60,6 @@ fun DeleteAccountScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(spacing.medium)
         ) {
-            AppTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = state.value.username,
-                labelText = "Username or E-mail",
-                placeholderText = "Enter your username or e-mail",
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next,
-                onValueChange = { onAction(DeleteAccountAction.OnUsernameChange(it)) },
-                isError = state.value.usernameError != null,
-                errorText = state.value.usernameError
-            )
             AppSecureTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = state.value.password,

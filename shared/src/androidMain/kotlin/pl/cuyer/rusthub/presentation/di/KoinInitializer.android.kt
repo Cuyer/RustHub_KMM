@@ -13,7 +13,7 @@ import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
-import pl.cuyer.rusthub.presentation.features.settings.DeleteAccountViewModel
+import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.SyncScheduler
@@ -88,8 +88,7 @@ actual val platformModule: Module = module {
         DeleteAccountViewModel(
             deleteAccountUseCase = get(),
             snackbarController = get(),
-            passwordValidator = get(),
-            usernameValidator = get()
+            passwordValidator = get()
         )
     }
     viewModel { (serverId: Long, serverName: String?) ->

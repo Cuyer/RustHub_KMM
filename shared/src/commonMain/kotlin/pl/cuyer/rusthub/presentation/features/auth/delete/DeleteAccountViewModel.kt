@@ -16,13 +16,11 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.validator.PasswordValidator
-import pl.cuyer.rusthub.util.validator.UsernameValidator
 
 class DeleteAccountViewModel(
     private val deleteAccountUseCase: DeleteAccountUseCase,
     private val snackbarController: SnackbarController,
-    private val passwordValidator: PasswordValidator,
-    private val usernameValidator: UsernameValidator
+    private val passwordValidator: PasswordValidator
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -40,7 +38,6 @@ class DeleteAccountViewModel(
         when (action) {
             DeleteAccountAction.OnDelete -> delete()
             is DeleteAccountAction.OnPasswordChange -> updatePassword(action.password)
-            is DeleteAccountAction.OnUsernameChange -> updateUsername(action.username)
         }
     }
 
@@ -48,31 +45,24 @@ class DeleteAccountViewModel(
         _state.update { it.copy(password = password, passwordError = null) }
     }
 
-    private fun updateUsername(username: String) {
-        _state.update { it.copy(username = username, usernameError = null) }
-    }
-
     private fun delete() {
         deleteJob?.cancel()
         deleteJob = coroutineScope.launch {
-            val username = _state.value.username
             val password = _state.value.password
-            val usernameResult = usernameValidator.validate(username)
             val passwordResult = passwordValidator.validate(password)
             _state.update {
                 it.copy(
-                    usernameError = usernameResult.errorMessage,
                     passwordError = passwordResult.errorMessage
                 )
             }
-            if (!usernameResult.isValid || !passwordResult.isValid) {
+            if (!passwordResult.isValid) {
                 snackbarController.sendEvent(
                     SnackbarEvent(message = "Please correct the errors above and try again.")
                 )
                 return@launch
             }
             updateLoading(true)
-            deleteAccountUseCase(username, password)
+            deleteAccountUseCase(password)
             updateLoading(false)
             _uiEvent.send(UiEvent.Navigate(Onboarding))
         }

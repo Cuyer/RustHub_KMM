@@ -10,14 +10,9 @@ import androidx.work.workDataOf
 import pl.cuyer.rusthub.work.DeleteAccountWorker
 
 actual class DeleteAccountScheduler(private val context: Context) {
-    actual fun schedule(username: String, password: String) {
+    actual fun schedule(password: String) {
         val request = OneTimeWorkRequestBuilder<DeleteAccountWorker>()
-            .setInputData(
-                workDataOf(
-                    DeleteAccountWorker.USERNAME to username,
-                    DeleteAccountWorker.PASSWORD to password
-                )
-            )
+            .setInputData(workDataOf(DeleteAccountWorker.PASSWORD to password))
             .setConstraints(
                 Constraints.Builder()
                     .setRequiredNetworkType(NetworkType.CONNECTED)
