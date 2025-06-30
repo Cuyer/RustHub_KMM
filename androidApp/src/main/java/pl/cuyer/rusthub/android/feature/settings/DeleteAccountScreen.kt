@@ -13,6 +13,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
@@ -20,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.navigation3.runtime.NavKey
+import pl.cuyer.rusthub.domain.model.AuthProvider
 import kotlinx.coroutines.flow.Flow
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppSecureTextField
@@ -63,28 +65,34 @@ fun DeleteAccountScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(spacing.medium)
         ) {
-            AppTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = state.value.username,
-                labelText = "Username",
-                placeholderText = "Enter your username",
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next,
-                onValueChange = { onAction(DeleteAccountAction.OnUsernameChange(it)) },
-                isError = state.value.usernameError != null,
-                errorText = state.value.usernameError
+            Text(
+                "Deleting your account is irreversible. All your data will be removed.",
+                style = MaterialTheme.typography.bodyMedium
             )
-            AppSecureTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = state.value.password,
-                labelText = "Password",
-                placeholderText = "Enter your password",
-                onSubmit = { onAction(DeleteAccountAction.OnDelete) },
-                imeAction = ImeAction.Send,
-                onValueChange = { onAction(DeleteAccountAction.OnPasswordChange(it)) },
-                isError = state.value.passwordError != null,
-                errorText = state.value.passwordError
-            )
+            if (state.value.provider != AuthProvider.GOOGLE) {
+                AppTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.value.username,
+                    labelText = "Username",
+                    placeholderText = "Enter your username",
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next,
+                    onValueChange = { onAction(DeleteAccountAction.OnUsernameChange(it)) },
+                    isError = state.value.usernameError != null,
+                    errorText = state.value.usernameError
+                )
+                AppSecureTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.value.password,
+                    labelText = "Password",
+                    placeholderText = "Enter your password",
+                    onSubmit = { onAction(DeleteAccountAction.OnDelete) },
+                    imeAction = ImeAction.Send,
+                    onValueChange = { onAction(DeleteAccountAction.OnPasswordChange(it)) },
+                    isError = state.value.passwordError != null,
+                    errorText = state.value.passwordError
+                )
+            }
             AppButton(
                 modifier = Modifier.fillMaxWidth(),
                 isLoading = state.value.isLoading,
