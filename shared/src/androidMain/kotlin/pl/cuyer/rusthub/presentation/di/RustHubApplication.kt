@@ -10,6 +10,7 @@ import pl.cuyer.rusthub.domain.repository.favourite.network.FavouriteRepository
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
+import pl.cuyer.rusthub.domain.repository.auth.AuthRepository
 import pl.cuyer.rusthub.util.MessagingTokenManager
 import pl.cuyer.rusthub.util.NotificationPresenter
 import pl.cuyer.rusthub.work.CustomWorkerFactory
@@ -22,6 +23,7 @@ class RustHubApplication : Application(), Configuration.Provider {
     val subscriptionSyncDataSource by inject<SubscriptionSyncDataSource>()
     val serverDataSource by inject<ServerDataSource>()
     val tokenManager by inject<MessagingTokenManager>()
+    val authRepository by inject<AuthRepository>()
 
     override fun onCreate() {
         super.onCreate()
@@ -42,7 +44,8 @@ class RustHubApplication : Application(), Configuration.Provider {
                     subscriptionRepository = subscriptionRepository,
                     subscriptionSyncDataSource = subscriptionSyncDataSource,
                     serverDataSource = serverDataSource,
-                    tokenManager = tokenManager
+                    tokenManager = tokenManager,
+                    authRepository = authRepository
                 )
             )
             .build()

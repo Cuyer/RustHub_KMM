@@ -22,6 +22,9 @@ data object Settings : NavKey
 data object ChangePassword : NavKey
 
 @Serializable
+data object DeleteAccount : NavKey
+
+@Serializable
 data class ServerDetails(
     val id: Long,
     val name: String

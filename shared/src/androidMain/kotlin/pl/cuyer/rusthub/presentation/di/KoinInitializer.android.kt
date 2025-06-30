@@ -13,12 +13,15 @@ import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
+import pl.cuyer.rusthub.presentation.features.settings.DeleteAccountViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
+import pl.cuyer.rusthub.util.LogoutScheduler
+import pl.cuyer.rusthub.util.DeleteAccountScheduler
 import dev.icerock.moko.permissions.PermissionsController
 
 actual val platformModule: Module = module {
@@ -28,6 +31,8 @@ actual val platformModule: Module = module {
     single { SyncScheduler(get()) }
     single { SubscriptionSyncScheduler(get()) }
     single { MessagingTokenScheduler(get()) }
+    single { LogoutScheduler(androidContext()) }
+    single { DeleteAccountScheduler(androidContext()) }
     single { StoreNavigator(androidContext()) }
     single { PermissionsController(androidContext()) }
     viewModel {
@@ -77,6 +82,14 @@ actual val platformModule: Module = module {
             logoutUserUseCase = get(),
             getUserUseCase = get(),
             permissionsController = get()
+        )
+    }
+    viewModel {
+        DeleteAccountViewModel(
+            deleteAccountUseCase = get(),
+            snackbarController = get(),
+            passwordValidator = get(),
+            usernameValidator = get()
         )
     }
     viewModel { (serverId: Long, serverName: String?) ->

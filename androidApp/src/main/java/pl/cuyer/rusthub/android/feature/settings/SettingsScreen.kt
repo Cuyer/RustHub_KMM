@@ -268,7 +268,7 @@ private fun AccountSection(onAction: (SettingsAction) -> Unit) {
             containerColor = MaterialTheme.colorScheme.error,
             contentColor = MaterialTheme.colorScheme.onError
         ),
-        onClick = { onAction(SettingsAction.OnLogout) },
+        onClick = { onAction(SettingsAction.OnDeleteAccount) },
     ) {
         Text(
             text = "Delete account"

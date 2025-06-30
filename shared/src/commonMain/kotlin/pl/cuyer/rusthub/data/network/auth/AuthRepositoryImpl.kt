@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.data.network.auth.model.AccessTokenDto
+import pl.cuyer.rusthub.data.network.auth.model.DeleteAccountRequest
 import pl.cuyer.rusthub.data.network.auth.model.LoginRequest
 import pl.cuyer.rusthub.data.network.auth.model.RefreshRequest
 import pl.cuyer.rusthub.data.network.auth.model.RegisterRequest
@@ -103,4 +104,29 @@ class AuthRepositoryImpl(
         }
     }
 
+    override fun logout(): Flow<Result<Unit>> {
+        return safeApiCall<Unit> {
+            httpClient.post(NetworkConstants.BASE_URL + "auth/logout")
+        }.map { result ->
+            when (result) {
+                is Result.Success -> Result.Success(Unit)
+                is Result.Error -> result
+                Result.Loading -> Result.Loading
+            }
+        }
+    }
+
+    override fun deleteAccount(username: String, password: String): Flow<Result<Unit>> {
+        return safeApiCall<Unit> {
+            httpClient.post(NetworkConstants.BASE_URL + "auth/delete") {
+                setBody(DeleteAccountRequest(username, password))
+            }
+        }.map { result ->
+            when (result) {
+                is Result.Success -> Result.Success(Unit)
+                is Result.Error -> result
+                Result.Loading -> Result.Loading
+            }
+        }
+    }
 }
