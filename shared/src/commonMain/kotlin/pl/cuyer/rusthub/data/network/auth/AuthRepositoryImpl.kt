@@ -12,6 +12,7 @@ import pl.cuyer.rusthub.data.network.auth.model.DeleteAccountRequest
 import pl.cuyer.rusthub.data.network.auth.model.LoginRequest
 import pl.cuyer.rusthub.data.network.auth.model.RefreshRequest
 import pl.cuyer.rusthub.data.network.auth.model.RegisterRequest
+import pl.cuyer.rusthub.data.network.auth.model.GoogleLoginRequest
 import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
 import pl.cuyer.rusthub.data.network.auth.model.UpgradeRequest
 import pl.cuyer.rusthub.data.network.auth.model.mapper.toDomain
@@ -95,6 +96,20 @@ class AuthRepositoryImpl(
     override fun authAnonymously(): Flow<Result<AccessToken>> {
         return safeApiCall<AccessTokenDto> {
             httpClient.post(NetworkConstants.BASE_URL + "auth/anonymous")
+        }.map { result ->
+            when (result) {
+                is Result.Success -> Result.Success(result.data.toDomain())
+                is Result.Error -> result
+                is Result.Loading -> Result.Loading
+            }
+        }
+    }
+
+    override fun loginWithGoogle(token: String): Flow<Result<TokenPair>> {
+        return safeApiCall<TokenPairDto> {
+            httpClient.post(NetworkConstants.BASE_URL + "auth/google") {
+                setBody(GoogleLoginRequest(token))
+            }
         }.map { result ->
             when (result) {
                 is Result.Success -> Result.Success(result.data.toDomain())

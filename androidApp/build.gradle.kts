@@ -82,5 +82,7 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.messaging)
     implementation(libs.firebase.performance)
+    implementation(libs.google.auth)
+    implementation(libs.androidx.credentials)
     debugImplementation(libs.compose.ui.tooling)
 }

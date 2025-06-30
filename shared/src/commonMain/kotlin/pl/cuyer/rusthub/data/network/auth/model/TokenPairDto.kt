@@ -7,5 +7,6 @@ data class TokenPairDto(
     val accessToken: String,
     val refreshToken: String,
     val username: String,
-    val email: String
+    val email: String,
+    val provider: String
 )

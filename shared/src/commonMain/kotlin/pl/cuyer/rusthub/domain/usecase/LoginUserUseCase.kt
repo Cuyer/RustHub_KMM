@@ -27,7 +27,8 @@ class LoginUserUseCase(
                             accessToken = accessToken,
                             refreshToken = refreshToken,
                             username = this.username,
-                            email = email
+                            email = email,
+                            provider = provider
                         )
                         tokenManager.currentToken()
                         send(Result.Success(Unit))

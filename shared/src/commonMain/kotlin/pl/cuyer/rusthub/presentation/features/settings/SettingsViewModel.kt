@@ -18,6 +18,7 @@ import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.Settings
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.model.User
+import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.usecase.GetSettingsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
@@ -27,13 +28,15 @@ import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
 import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import pl.cuyer.rusthub.util.GoogleAuthClient
 
 class SettingsViewModel(
     private val getSettingsUseCase: GetSettingsUseCase,
     private val saveSettingsUseCase: SaveSettingsUseCase,
     private val logoutUserUseCase: LogoutUserUseCase,
     private val getUserUseCase: GetUserUseCase,
-    private val permissionsController: PermissionsController
+    private val permissionsController: PermissionsController,
+    private val googleAuthClient: GoogleAuthClient,
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -90,11 +93,13 @@ class SettingsViewModel(
     }
 
     private fun observeUser() {
-
+        getUserUseCase()
+            .onEach { updateUser(it) }
+            .launchIn(coroutineScope)
     }
 
     private fun updateUser(user: User?) {
-        _state.update { it.copy(username = user?.username) }
+        _state.update { it.copy(username = user?.username, provider = user?.provider) }
     }
 
     private fun save() {
@@ -110,6 +115,9 @@ class SettingsViewModel(
     private fun logout() {
         coroutineScope.launch {
             logoutUserUseCase()
+            if (state.value.provider == AuthProvider.GOOGLE) {
+                googleAuthClient.signOut()
+            }
             _uiEvent.send(UiEvent.Navigate(Onboarding))
         }
     }

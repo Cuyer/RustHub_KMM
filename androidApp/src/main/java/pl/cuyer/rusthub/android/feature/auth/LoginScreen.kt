@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.koin.compose.koinInject
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppSecureTextField
 import pl.cuyer.rusthub.android.designsystem.AppTextField
@@ -165,7 +166,7 @@ private fun LoginScreenCompact(
             modifier = Modifier.fillMaxWidth(),
             backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
             contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
-        ) {}
+        ) { onAction(LoginAction.OnGoogleLogin) }
 
     }
 }
@@ -248,7 +249,7 @@ private fun LoginScreenExpanded(
                 modifier = Modifier.fillMaxWidth(),
                 backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
                 contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
-            ) {}
+            ) { onAction(LoginAction.OnGoogleLogin) }
         }
     }
 }

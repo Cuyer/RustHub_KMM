@@ -32,7 +32,8 @@ class RegisterUserUseCase(
                             accessToken = accessToken,
                             refreshToken = refreshToken,
                             username = username,
-                            email = email
+                            email = email,
+                            provider = provider
                         )
                         tokenManager.currentToken()
                         send(Result.Success(Unit))

@@ -4,11 +4,13 @@ import pl.cuyer.rusthub.data.network.auth.model.AccessTokenDto
 import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
 import pl.cuyer.rusthub.domain.model.AccessToken
 import pl.cuyer.rusthub.domain.model.TokenPair
+import pl.cuyer.rusthub.domain.model.AuthProvider
 
 fun AccessTokenDto.toDomain(): AccessToken {
     return AccessToken(
         accessToken = accessToken,
-        username = username
+        username = username,
+        provider = AuthProvider.valueOf(provider)
     )
 }
 
@@ -17,6 +19,7 @@ fun TokenPairDto.toDomain(): TokenPair {
         accessToken = accessToken,
         refreshToken = refreshToken,
         username = username,
-        email = email
+        email = email,
+        provider = AuthProvider.valueOf(provider)
     )
 }
