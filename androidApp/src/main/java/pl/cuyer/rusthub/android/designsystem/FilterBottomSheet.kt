@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
@@ -140,6 +141,10 @@ fun FilterBottomSheet(
                             )
                             Spacer(Modifier.height(spacing.medium))
                             AppButton(
+                                colors = ButtonDefaults.elevatedButtonColors().copy(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                ),
                                 onClick = {
                                     onAction(ServerAction.OnSaveFilters(filters = it.toDomain()))
                                     onDismissAndRefresh()
@@ -151,6 +156,9 @@ fun FilterBottomSheet(
                                 Text("Apply Filters")
                             }
                             AppOutlinedButton(
+                                colors = ButtonDefaults.outlinedButtonColors().copy(
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                ),
                                 onClick = {
                                     onAction(ServerAction.OnClearFilters)
                                     onDismissAndRefresh()
