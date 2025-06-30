@@ -17,10 +17,8 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.http.encodedPath
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.data.network.auth.model.RefreshRequest
 import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
@@ -41,7 +39,7 @@ actual class HttpClientFactory actual constructor(
             install(Auth) {
                 bearer {
                     loadTokens {
-                        authDataSource.getUser().firstOrNull()?.let {
+                        authDataSource.getUserOnce()?.let {
                             BearerTokens(it.accessToken, it.refreshToken ?: "")
                         }
                     }
@@ -67,10 +65,6 @@ actual class HttpClientFactory actual constructor(
                             authDataSource.deleteUser()
                             null
                         }
-                    }
-                    sendWithoutRequest { request ->
-                        val path = request.url.encodedPath
-                        path.startsWith("/auth") && path !in setOf("/auth/logout", "/auth/delete")
                     }
                 }
             }

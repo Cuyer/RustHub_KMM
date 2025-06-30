@@ -42,7 +42,7 @@ actual class HttpClientFactory actual constructor(
             install(Auth) {
                 bearer {
                     loadTokens {
-                        authDataSource.getUser().firstOrNull()?.let {
+                        authDataSource.getUserOnce()?.let {
                             BearerTokens(it.accessToken, it.refreshToken ?: "")
                         }
                     }

@@ -15,4 +15,6 @@ interface AuthDataSource {
 
     suspend fun deleteUser()
     fun getUser(): Flow<User?>
+
+    suspend fun getUserOnce(): User?
 }

@@ -30,19 +30,4 @@ actual class MessagingTokenManager actual constructor(
             null
         }
     }
-
-    actual suspend fun deleteToken() {
-        val token = try {
-            FirebaseMessaging.getInstance().token.await()
-        } catch (e: Exception) {
-            Napier.e("Failed to read FCM token before deletion", e)
-            null
-        }
-        token?.let { repository.deleteToken(it) }
-        try {
-            FirebaseMessaging.getInstance().deleteToken().await()
-        } catch (e: Exception) {
-            Napier.e("Failed to delete FCM token", e)
-        }
-    }
 }

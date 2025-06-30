@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -46,8 +45,8 @@ import pl.cuyer.rusthub.android.designsystem.SignProviderButton
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
-import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.common.getImageByFileName
+import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.features.auth.login.LoginAction
 import pl.cuyer.rusthub.presentation.features.auth.login.LoginState
 import pl.cuyer.rusthub.presentation.navigation.ServerList
@@ -169,34 +168,6 @@ private fun LoginScreenCompact(
             contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
         ) { onAction(LoginAction.OnGoogleLogin) }
 
-        SignProviderButton(
-            image = getImageByFileName("ic_apple").drawableResId,
-            contentDescription = "Apple logo",
-            text = "Sign in with Apple",
-            modifier = Modifier.fillMaxWidth(),
-            backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
-            contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
-            tint = if (isSystemInDarkTheme()) Color.Black else Color.White
-        ) {}
-
-        SignProviderButton(
-            image = getImageByFileName("ic_facebook").drawableResId,
-            contentDescription = "Facebook logo",
-            text = "Sign in with Facebook",
-            modifier = Modifier.fillMaxWidth(),
-            backgroundColor = Color(0xFF1877F2),
-            contentColor = Color.White
-        ) {}
-
-        SignProviderButton(
-            image = getImageByFileName("ic_x").drawableResId,
-            contentDescription = "X logo",
-            text = "Sign in with X",
-            modifier = Modifier.fillMaxWidth(),
-            backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
-            contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
-            tint = if (isSystemInDarkTheme()) Color.Black else Color.White
-        ) {}
     }
 }
 
@@ -279,35 +250,6 @@ private fun LoginScreenExpanded(
                 backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
                 contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
             ) { onAction(LoginAction.OnGoogleLogin) }
-
-            SignProviderButton(
-                image = getImageByFileName("ic_apple").drawableResId,
-                contentDescription = "Apple logo",
-                text = "Sign in with Apple",
-                modifier = Modifier.fillMaxWidth(),
-                backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
-                contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
-                tint = if (isSystemInDarkTheme()) Color.Black else Color.White
-            ) {}
-
-            SignProviderButton(
-                image = getImageByFileName("ic_facebook").drawableResId,
-                contentDescription = "Facebook logo",
-                text = "Sign in with Facebook",
-                modifier = Modifier.fillMaxWidth(),
-                backgroundColor = Color(0xFF1877F2),
-                contentColor = Color.White
-            ) {}
-
-            SignProviderButton(
-                image = getImageByFileName("ic_x").drawableResId,
-                contentDescription = "X logo",
-                text = "Sign in with X",
-                modifier = Modifier.fillMaxWidth(),
-                backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
-                contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
-                tint = if (isSystemInDarkTheme()) Color.Black else Color.White
-            ) {}
         }
     }
 }

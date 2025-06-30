@@ -51,4 +51,10 @@ class AuthDataSourceImpl(
             .map { it?.toUser() }
     }
 
+    override suspend fun getUserOnce(): User? {
+        return withContext(Dispatchers.IO) {
+            queries.getUser().executeAsOneOrNull()?.toUser()
+        }
+    }
+
 }

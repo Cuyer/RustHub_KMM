@@ -4,15 +4,13 @@ import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
+import pl.cuyer.rusthub.domain.repository.auth.AuthRepository
 import pl.cuyer.rusthub.domain.repository.favourite.FavouriteSyncDataSource
 import pl.cuyer.rusthub.domain.repository.favourite.network.FavouriteRepository
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
-import pl.cuyer.rusthub.domain.repository.auth.AuthRepository
 import pl.cuyer.rusthub.util.MessagingTokenManager
-import pl.cuyer.rusthub.work.DeleteAccountWorker
-import pl.cuyer.rusthub.work.LogoutWorker
 
 class CustomWorkerFactory(
     private val favouriteRepository: FavouriteRepository,
@@ -53,9 +51,6 @@ class CustomWorkerFactory(
             }
             LogoutWorker::class.qualifiedName -> {
                 LogoutWorker(appContext, workerParameters, authRepository)
-            }
-            DeleteAccountWorker::class.qualifiedName -> {
-                DeleteAccountWorker(appContext, workerParameters, authRepository)
             }
             else -> null
         }

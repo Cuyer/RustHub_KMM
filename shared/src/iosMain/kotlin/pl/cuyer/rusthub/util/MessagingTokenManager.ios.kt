@@ -8,5 +8,4 @@ actual class MessagingTokenManager(
 ) {
     actual suspend fun registerToken(token: String) {}
     actual suspend fun currentToken(): String? = null
-    actual suspend fun deleteToken() {}
 }
