@@ -69,8 +69,8 @@ actual class HttpClientFactory actual constructor(
                         }
                     }
                     sendWithoutRequest { request ->
-                        request.url.encodedPath.startsWith("/auth") &&
-                                request.url.encodedPath != "/auth/logout"
+                        val path = request.url.encodedPath
+                        path.startsWith("/auth") && path !in setOf("/auth/logout", "/auth/delete")
                     }
                 }
             }
