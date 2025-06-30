@@ -14,4 +14,5 @@ sealed interface SettingsAction {
     data object OnSubscribe : SettingsAction
     data object OnPrivacyPolicy : SettingsAction
     data object OnDeleteAccount : SettingsAction
+    data object OnUpgradeAccount : SettingsAction
 }

@@ -46,6 +46,7 @@ import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.Theme
+import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.presentation.features.settings.SettingsAction
 import pl.cuyer.rusthub.presentation.features.settings.SettingsState
@@ -106,6 +107,7 @@ fun SettingsScreen(
                 theme = state.value.theme,
                 language = state.value.language,
                 username = state.value.username,
+                provider = state.value.provider,
                 onAction = onAction
             )
         } else {
@@ -118,6 +120,7 @@ fun SettingsScreen(
                 theme = state.value.theme,
                 language = state.value.language,
                 username = state.value.username,
+                provider = state.value.provider,
                 onAction = onAction
             )
         }
@@ -130,6 +133,7 @@ private fun SettingsScreenCompact(
     username: String?,
     theme: Theme,
     language: Language,
+    provider: AuthProvider?,
     onAction: (SettingsAction) -> Unit
 ) {
     Column(
@@ -139,7 +143,7 @@ private fun SettingsScreenCompact(
         GreetingSection(username)
         PreferencesSection(theme, language, onAction)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
-        AccountSection(onAction)
+        AccountSection(provider, onAction)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
         OtherSection(onAction)
     }
@@ -151,6 +155,7 @@ private fun SettingsScreenExpanded(
     username: String?,
     theme: Theme,
     language: Language,
+    provider: AuthProvider?,
     onAction: (SettingsAction) -> Unit
 ) {
     Row(
@@ -166,7 +171,7 @@ private fun SettingsScreenExpanded(
             GreetingSection(username)
             PreferencesSection(theme, language, onAction)
             HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
-            AccountSection(onAction)
+            AccountSection(provider, onAction)
         }
         Column(
             modifier = Modifier
@@ -221,7 +226,7 @@ private fun PreferencesSection(
 }
 
 @Composable
-private fun AccountSection(onAction: (SettingsAction) -> Unit) {
+private fun AccountSection(provider: AuthProvider?, onAction: (SettingsAction) -> Unit) {
     Text(
         text = "Account",
         style = MaterialTheme.typography.titleLarge,
@@ -262,11 +267,39 @@ private fun AccountSection(onAction: (SettingsAction) -> Unit) {
         }
     }
 
-    AppTextButton(
-        modifier = Modifier.fillMaxWidth(),
-        onClick = { onAction(SettingsAction.OnDeleteAccount) }
-    ) {
-        Text("Delete account", color = MaterialTheme.colorScheme.error)
+    if (provider == AuthProvider.ANONYMOUS) {
+        AppTextButton(
+            onClick = { onAction(SettingsAction.OnUpgradeAccount) }
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Upgrade account")
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowRight,
+                    contentDescription = "Upgrade account button"
+                )
+            }
+        }
+    } else {
+        AppTextButton(
+            onClick = { onAction(SettingsAction.OnDeleteAccount) }
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Delete account", color = MaterialTheme.colorScheme.error)
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowRight,
+                    contentDescription = "Delete account button",
+                    tint = MaterialTheme.colorScheme.error
+                )
+            }
+        }
     }
 }
 

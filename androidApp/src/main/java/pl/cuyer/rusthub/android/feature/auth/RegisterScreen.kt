@@ -171,9 +171,7 @@ private fun RegisterScreenCompact(
             modifier = Modifier.fillMaxWidth(),
             backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
             contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
-        ) {
-
-        }
+        ) { onAction(RegisterAction.OnGoogleLogin) }
     }
 }
 
@@ -268,9 +266,7 @@ private fun RegisterScreenExpanded(
                 modifier = Modifier.fillMaxWidth(),
                 backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
                 contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
-            ) {
-
-            }
+            ) { onAction(RegisterAction.OnGoogleLogin) }
         }
     }
 }
