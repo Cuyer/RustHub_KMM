@@ -96,7 +96,8 @@ actual val platformModule: Module = module {
             deleteAccountUseCase = get(),
             snackbarController = get(),
             passwordValidator = get(),
-            usernameValidator = get()
+            usernameValidator = get(),
+            getUserUseCase = get()
         )
     }
     viewModel { (serverId: Long, serverName: String?) ->
