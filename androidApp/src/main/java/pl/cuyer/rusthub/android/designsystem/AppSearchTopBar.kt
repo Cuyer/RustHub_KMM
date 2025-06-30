@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExpandedDockedSearchBar
 import androidx.compose.material3.ExpandedFullScreenSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -221,10 +222,16 @@ fun RustSearchBarTopAppBar(
                             .padding(spacing.medium),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        AppButton(onClick = {
-                            onDelete("")
-                            coroutineScope.launch { searchBarState.animateToCollapsed() }
-                        }) {
+                        AppButton(
+                            onClick = {
+                                onDelete("")
+                                coroutineScope.launch { searchBarState.animateToCollapsed() }
+                            },
+                            colors = ButtonDefaults.elevatedButtonColors().copy(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        ) {
                             Text("Clear search history")
                         }
                     }
@@ -276,8 +283,12 @@ private fun AppSearchTopBarPreview() {
                     isLoadingSearchHistory = false
                 )
             }
-        ) { Box(Modifier
-            .padding(it)
-            .fillMaxSize()) }
+        ) {
+            Box(
+                Modifier
+                    .padding(it)
+                    .fillMaxSize()
+            )
+        }
     }
 }
