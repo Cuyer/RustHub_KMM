@@ -94,7 +94,7 @@ private val darkScheme = darkColorScheme(
 fun RustHubTheme(
     theme: Theme = Theme.SYSTEM,
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = false,
+    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val darkTheme = when (theme) {
