@@ -27,6 +27,7 @@ import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
 import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
+import pl.cuyer.rusthub.presentation.navigation.Register
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
 
@@ -66,6 +67,7 @@ class SettingsViewModel(
             SettingsAction.OnSubscribe -> showSubscriptionDialog(false)
             SettingsAction.OnPrivacyPolicy -> openPrivacyPolicy()
             SettingsAction.OnDeleteAccount -> navigateDeleteAccount()
+            SettingsAction.OnUpgradeAccount -> navigateRegister()
         }
     }
 
@@ -82,6 +84,12 @@ class SettingsViewModel(
     private fun navigateChangePassword() {
         coroutineScope.launch {
             _uiEvent.send(UiEvent.Navigate(ChangePassword))
+        }
+    }
+
+    private fun navigateRegister() {
+        coroutineScope.launch {
+            _uiEvent.send(UiEvent.Navigate(Register))
         }
     }
 

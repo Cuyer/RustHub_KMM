@@ -53,6 +53,9 @@ actual val platformModule: Module = module {
     factory {
         RegisterViewModel(
             registerUserUseCase = get(),
+            loginWithGoogleUseCase = get(),
+            getGoogleClientIdUseCase = get(),
+            googleAuthClient = get(),
             snackbarController = get(),
             emailValidator = get(),
             passwordValidator = get(),
