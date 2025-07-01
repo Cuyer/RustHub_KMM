@@ -33,6 +33,16 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+    flavorDimensions += "mode"
+    productFlavors {
+        create("prod") {
+            dimension = "mode"
+        }
+        create("test") {
+            dimension = "mode"
+            applicationIdSuffix = ".test"
+        }
+    }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
