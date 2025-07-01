@@ -181,7 +181,10 @@ private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: Onboa
 
         CarouselAutoPlayHandler(pagerState, features.size)
 
-        Row(horizontalArrangement = Arrangement.spacedBy(spacing.xsmall)) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(spacing.xsmall),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             repeat(features.size) { index ->
                 val selected = pagerState.currentPage == index
                 Box(
@@ -347,7 +350,6 @@ private fun FeatureItem(icon: ImageVector, title: String, description: String) {
         Column {
             Text(text = title, style = MaterialTheme.typography.titleMedium)
             Text(
-                minLines = 2,
                 text = description,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
