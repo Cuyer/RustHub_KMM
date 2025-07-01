@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -201,7 +202,9 @@ private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: Onboa
 @Composable
 private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> Unit) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .imePadding()
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
@@ -224,7 +227,8 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
         AppButton(
             onClick = { onAction(OnboardingAction.OnContinueWithEmail) },
             isLoading = state.isLoading,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = state.email.isNotBlank()
         ) { Text("Continue with email") }
 
         Row(
