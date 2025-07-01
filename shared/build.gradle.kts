@@ -92,6 +92,17 @@ android {
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
+    flavorDimensions += "mode"
+    productFlavors {
+        create("prod") {
+            dimension = "mode"
+            buildConfigField("String", "BASE_URL", "\"https://prod.example.com/\"")
+        }
+        create("test") {
+            dimension = "mode"
+            buildConfigField("String", "BASE_URL", "\"http://192.168.100.229:8080/\"")
+        }
+    }
     buildTypes {
         release {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard.pro")
