@@ -36,6 +36,9 @@ actual val platformModule: Module = module {
         OnboardingViewModel(
             authAnonymouslyUseCase = get(),
             checkUserExistsUseCase = get(),
+            loginWithGoogleUseCase = get(),
+            getGoogleClientIdUseCase = get(),
+            googleAuthClient = get(),
             snackbarController = get(),
         )
     }

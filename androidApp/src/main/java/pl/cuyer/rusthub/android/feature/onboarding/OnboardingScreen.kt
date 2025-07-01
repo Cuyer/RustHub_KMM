@@ -48,6 +48,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -108,52 +109,58 @@ fun OnboardingScreen(
     }
 
     val context = LocalContext.current
-    calculateWindowSizeClass(context as Activity)
+    val windowSizeClass = calculateWindowSizeClass(context as Activity)
+    val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        OnboardingContent(onAction = onAction, state = state.value)
+        if (isTabletMode) {
+            OnboardingContentExpanded(onAction = onAction, state = state.value)
+        } else {
+            OnboardingContent(onAction = onAction, state = state.value)
+        }
     }
 }
 
 private data class Feature(val icon: ImageVector, val title: String, val description: String)
+
+private val features = listOf(
+    Feature(
+        Icons.Default.Search,
+        "Find Servers",
+        "Search and explore Rust servers by name, type, last wipe or more."
+    ),
+    Feature(
+        Icons.Default.ContentCopy,
+        "Copy IPs",
+        "Quickly copy server IP addresses to send them to your friends."
+    ),
+    Feature(
+        Icons.Default.Info,
+        "View Details",
+        "See server info like time of last wipe, map, ranking and more."
+    ),
+    Feature(
+        Icons.Default.FilterList,
+        "Smart Filters",
+        "Narrow your search using advanced filtering options."
+    ),
+    Feature(
+        Icons.Default.Notifications,
+        "Notifications",
+        "Receive notifications about map and full wipes."
+    ),
+    Feature(
+        Icons.Default.Favorite,
+        "Favourites",
+        "Add servers to your favourites to easily access them."
+    )
+)
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: OnboardingState) {
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
-    val features = listOf(
-        Feature(
-            Icons.Default.Search,
-            "Find Servers",
-            "Search and explore Rust servers by name, type, last wipe or more."
-        ),
-        Feature(
-            Icons.Default.ContentCopy,
-            "Copy IPs",
-            "Quickly copy server IP addresses to send them to your friends."
-        ),
-        Feature(
-            Icons.Default.Info,
-            "View Details",
-            "See server info like time of last wipe, map, ranking and more."
-        ),
-        Feature(
-            Icons.Default.FilterList,
-            "Smart Filters",
-            "Narrow your search using advanced filtering options."
-        ),
-        Feature(
-            Icons.Default.Notifications,
-            "Notifications",
-            "Receive notifications about map and full wipes."
-        ),
-        Feature(
-            Icons.Default.Favorite,
-            "Favourites",
-            "Add servers to your favourites to easily access them."
-        )
-    )
 
     val pagerState = rememberPagerState(pageCount = { features.size })
 
@@ -210,6 +217,93 @@ private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: Onboa
                     onAction,
                     state.isLoading
                 )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun OnboardingContentExpanded(
+    onAction: (OnboardingAction) -> Unit,
+    state: OnboardingState
+) {
+    val focusManager = LocalFocusManager.current
+    val interactionSource = remember { MutableInteractionSource() }
+    val pagerState = rememberPagerState(pageCount = { features.size })
+
+    Row(
+        modifier = Modifier
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ) { focusManager.clearFocus() }
+            .fillMaxSize()
+            .padding(spacing.medium),
+        horizontalArrangement = Arrangement.spacedBy(spacing.large),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(
+                spacing.medium,
+                Alignment.CenterVertically
+            )
+        ) {
+            HeaderSection()
+
+            Spacer(modifier = Modifier.height(spacing.medium))
+
+            HorizontalPager(state = pagerState) { page ->
+                val feature = features[page]
+                FeatureItem(feature.icon, feature.title, feature.description)
+            }
+
+            CarouselAutoPlayHandler(pagerState, features.size)
+
+            Row(horizontalArrangement = Arrangement.spacedBy(spacing.xsmall)) {
+                repeat(features.size) { index ->
+                    val selected = pagerState.currentPage == index
+                    Box(
+                        modifier = Modifier
+                            .size(if (selected) 8.dp else 6.dp)
+                            .background(
+                                color = if (selected) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.onSurfaceVariant,
+                                shape = CircleShape
+                            )
+                    )
+                }
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(
+                spacing.medium,
+                Alignment.CenterVertically
+            )
+        ) {
+            AuthSection(state, onAction)
+
+            LookaheadScope {
+                AnimatedVisibility(
+                    visible = state.showOtherOptions,
+                    enter = slideInVertically() + scaleIn(),
+                    exit = slideOutVertically() + scaleOut()
+                ) {
+                    ActionButtons(
+                        modifier = Modifier.animateBounds(this@LookaheadScope),
+                        onAction = onAction,
+                        isLoading = state.isLoading
+                    )
+                }
             }
         }
     }
