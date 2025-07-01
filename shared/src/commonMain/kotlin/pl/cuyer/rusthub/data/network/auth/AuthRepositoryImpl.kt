@@ -1,8 +1,10 @@
 package pl.cuyer.rusthub.data.network.auth
 
 import io.ktor.client.HttpClient
+import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.request.parameter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
@@ -13,6 +15,7 @@ import pl.cuyer.rusthub.data.network.auth.model.LoginRequest
 import pl.cuyer.rusthub.data.network.auth.model.RefreshRequest
 import pl.cuyer.rusthub.data.network.auth.model.RegisterRequest
 import pl.cuyer.rusthub.data.network.auth.model.GoogleLoginRequest
+import pl.cuyer.rusthub.data.network.auth.model.UserExistsResponseDto
 import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
 import pl.cuyer.rusthub.data.network.auth.model.UpgradeRequest
 import pl.cuyer.rusthub.data.network.auth.model.mapper.toDomain
@@ -141,6 +144,20 @@ class AuthRepositoryImpl(
                 is Result.Success -> Result.Success(Unit)
                 is Result.Error -> result
                 Result.Loading -> Result.Loading
+            }
+        }
+    }
+
+    override fun checkUserExists(email: String): Flow<Result<Boolean>> {
+        return safeApiCall<UserExistsResponseDto> {
+            httpClient.get(NetworkConstants.BASE_URL + "auth/email-exists") {
+                parameter("email", email)
+            }
+        }.map { result ->
+            when (result) {
+                is Result.Success -> Result.Success(result.data.exists)
+                is Result.Error -> result
+                is Result.Loading -> Result.Loading
             }
         }
     }

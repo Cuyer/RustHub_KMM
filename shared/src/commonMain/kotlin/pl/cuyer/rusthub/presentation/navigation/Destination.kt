@@ -6,11 +6,12 @@ import kotlinx.serialization.Serializable
 @Serializable
 data object Onboarding : NavKey
 
-@Serializable
-data object Login : NavKey
 
 @Serializable
-data object Register : NavKey
+data class Credentials(
+    val email: String,
+    val exists: Boolean
+) : NavKey
 
 @Serializable
 data object ServerList : NavKey

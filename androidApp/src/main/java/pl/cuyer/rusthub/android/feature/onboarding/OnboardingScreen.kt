@@ -2,18 +2,21 @@ package pl.cuyer.rusthub.android.feature.onboarding
 
 import android.app.Activity
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
@@ -23,11 +26,11 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -45,11 +48,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppOutlinedButton
+import pl.cuyer.rusthub.android.designsystem.AppTextButton
+import pl.cuyer.rusthub.android.designsystem.AppTextField
+import pl.cuyer.rusthub.android.designsystem.SignProviderButton
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
-import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.common.getImageByFileName
+import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingAction
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
@@ -68,21 +74,28 @@ fun OnboardingScreen(
     }
 
     val context = LocalContext.current
-    val windowSizeClass = calculateWindowSizeClass(context as Activity)
-
-    val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
+    calculateWindowSizeClass(context as Activity)
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        if (isTabletMode) {
-            OnboardingScreenExpanded(onAction, state.value.isLoading)
-        } else {
-            OnboardingScreenCompact(onAction, state.value.isLoading)
-        }
+        OnboardingContent(onAction = onAction, state = state.value)
     }
 }
 
+private data class Feature(val icon: ImageVector, val title: String, val description: String)
+
 @Composable
-private fun OnboardingScreenCompact(onAction: (OnboardingAction) -> Unit, isLoading: Boolean) {
+private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: OnboardingState) {
+    val features = listOf(
+        Feature(Icons.Default.Search, "Find Servers", "Search and explore Rust servers by name, type, last wipe or more."),
+        Feature(Icons.Default.ContentCopy, "Copy IPs", "Quickly copy server IP addresses to send them to your friends."),
+        Feature(Icons.Default.Info, "View Details", "See server info like time of last wipe, map, ranking and more."),
+        Feature(Icons.Default.FilterList, "Smart Filters", "Narrow your search using advanced filtering options."),
+        Feature(Icons.Default.Notifications, "Notifications", "Receive notifications about map and full wipes."),
+        Feature(Icons.Default.Favorite, "Favourites", "Add servers to your favourites to easily access them.")
+    )
+
+    val pagerState = rememberPagerState(pageCount = { features.size })
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -92,70 +105,85 @@ private fun OnboardingScreenCompact(onAction: (OnboardingAction) -> Unit, isLoad
         verticalArrangement = Arrangement.spacedBy(spacing.medium, Alignment.CenterVertically)
     ) {
         HeaderSection()
-        FeatureList()
-        ActionButtons(onAction, isLoading)
-    }
-}
 
-@Composable
-private fun OnboardingScreenExpanded(onAction: (OnboardingAction) -> Unit, isLoading: Boolean) {
-    Row(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(spacing.medium),
-        horizontalArrangement = Arrangement.spacedBy(spacing.large),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(spacing.medium)
-        ) {
-            HeaderSectionExpanded()
-            FeatureList()
+        HorizontalPager(state = pagerState) { page ->
+            val feature = features[page]
+            FeatureItem(feature.icon, feature.title, feature.description)
         }
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxHeight(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            ActionButtons(onAction, isLoading)
+
+        Row(horizontalArrangement = Arrangement.spacedBy(spacing.xsmall)) {
+            repeat(features.size) { index ->
+                val selected = pagerState.currentPage == index
+                Box(
+                    modifier = Modifier
+                        .size(if (selected) 8.dp else 6.dp)
+                        .background(
+                            color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                            shape = CircleShape
+                        )
+                )
+            }
+        }
+
+        AuthSection(state, onAction)
+
+        if (state.showOtherOptions) {
+            ActionButtons(onAction, state.isLoading)
         }
     }
 }
 
 @Composable
-fun HeaderSectionExpanded() {
-    Row(
+private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> Unit) {
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(spacing.medium),
-        verticalAlignment = Alignment.CenterVertically
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
-        Column {
-            Text(
-                text = "Welcome to RustHub",
-                style = MaterialTheme.typography.headlineLarge,
-                textAlign = TextAlign.Center
-            )
+        Text(text = "Hello", style = MaterialTheme.typography.headlineLarge)
+        Text(
+            text = "Lets start with your email",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        AppTextField(
+            value = state.email,
+            onValueChange = { onAction(OnboardingAction.OnEmailChange(it)) },
+            labelText = "Email",
+            placeholderText = "Enter your email",
+            keyboardType = androidx.compose.ui.text.input.KeyboardType.Email,
+            imeAction = androidx.compose.ui.text.input.ImeAction.Done,
+            isError = state.emailError != null,
+            errorText = state.emailError,
+            modifier = Modifier.fillMaxWidth()
+        )
+        AppButton(
+            onClick = { onAction(OnboardingAction.OnContinueWithEmail) },
+            isLoading = state.isLoading,
+            modifier = Modifier.fillMaxWidth()
+        ) { Text("Continue with email") }
 
-            Text(
-                text = "Your gateway to the Rust server world",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
-            )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(spacing.small)
+        ) {
+            HorizontalDivider(modifier = Modifier.weight(1f))
+            Text("or")
+            HorizontalDivider(modifier = Modifier.weight(1f))
         }
 
-        Image(
-            painter = painterResource(id = getImageByFileName("rusthub_logo").drawableResId),
-            contentDescription = "Application logo"
-        )
+        SignProviderButton(
+            image = getImageByFileName("ic_google").drawableResId,
+            contentDescription = "Google logo",
+            text = "Continue with Google",
+            modifier = Modifier.fillMaxWidth()
+        ) { onAction(OnboardingAction.OnGoogleLogin) }
+
+        AppTextButton(onClick = { onAction(OnboardingAction.OnShowOtherOptions) }) {
+            Text("Other options")
+        }
     }
 }
-
 
 @Composable
 private fun HeaderSection() {
@@ -179,66 +207,15 @@ private fun HeaderSection() {
 }
 
 @Composable
-private fun FeatureList() {
-    FeatureItem(
-        Icons.Default.Search,
-        "Find Servers",
-        "Search and explore Rust servers by name, type, last wipe or more."
-    )
-    FeatureItem(
-        Icons.Default.ContentCopy,
-        "Copy IPs",
-        "Quickly copy server IP addresses to send them to your friends."
-    )
-    FeatureItem(
-        Icons.Default.Info,
-        "View Details",
-        "See server info like time of last wipe, map, ranking and more."
-    )
-    FeatureItem(
-        Icons.Default.FilterList,
-        "Smart Filters",
-        "Narrow your search using advanced filtering options."
-    )
-    FeatureItem(
-        Icons.Default.Notifications,
-        "Notifications",
-        "Receive notifications about map and full wipes."
-    )
-    FeatureItem(
-        Icons.Default.Favorite,
-        "Favourites",
-        "Add servers to your favourites to easily access them."
-    )
-}
-
-@Composable
 private fun ActionButtons(onAction: (OnboardingAction) -> Unit, isLoading: Boolean) {
-    AppButton(
-        onClick = { onAction(OnboardingAction.OnLoginClick) },
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text("Log In")
-    }
-
-    AppButton(
-        onClick = { onAction(OnboardingAction.OnRegisterClick) },
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text("Register")
-    }
-
     AppOutlinedButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = { onAction(OnboardingAction.OnContinueAsGuest) },
         isLoading = isLoading
     ) {
-        Text(
-            text = "Continue as Guest",
-        )
+        Text("Continue as Guest")
     }
 }
-
 
 @Composable
 private fun FeatureItem(icon: ImageVector, title: String, description: String) {
@@ -247,8 +224,7 @@ private fun FeatureItem(icon: ImageVector, title: String, description: String) {
         modifier = Modifier.fillMaxWidth()
     ) {
         Box(
-            modifier = Modifier
-                .size(40.dp),
+            modifier = Modifier.size(40.dp),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -271,8 +247,7 @@ private fun FeatureItem(icon: ImageVector, title: String, description: String) {
     }
 }
 
-
-@Preview(device = "spec:parent=pixel_5,orientation=landscape")
+@Preview
 @Composable
 private fun OnboardingPrev() {
     RustHubTheme(theme = Theme.SYSTEM) {

@@ -18,8 +18,8 @@ import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.usecase.AuthAnonymouslyUseCase
-import pl.cuyer.rusthub.presentation.navigation.Login
-import pl.cuyer.rusthub.presentation.navigation.Register
+import pl.cuyer.rusthub.domain.usecase.CheckUserExistsUseCase
+import pl.cuyer.rusthub.presentation.navigation.Credentials
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
@@ -27,6 +27,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 
 class OnboardingViewModel(
     private val authAnonymouslyUseCase: AuthAnonymouslyUseCase,
+    private val checkUserExistsUseCase: CheckUserExistsUseCase,
     private val snackbarController: SnackbarController,
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -40,12 +41,15 @@ class OnboardingViewModel(
     )
 
     var authAnonymouslyJob: Job? = null
+    var checkEmailJob: Job? = null
 
     fun onAction(action: OnboardingAction) {
         when (action) {
-            OnboardingAction.OnLoginClick -> navigate(Login)
-            OnboardingAction.OnRegisterClick -> navigate(Register)
             OnboardingAction.OnContinueAsGuest -> continueAsGuest()
+            is OnboardingAction.OnEmailChange -> updateEmail(action.email)
+            OnboardingAction.OnContinueWithEmail -> continueWithEmail()
+            OnboardingAction.OnGoogleLogin -> Unit
+            OnboardingAction.OnShowOtherOptions -> toggleOtherOptions()
         }
     }
 
@@ -65,6 +69,37 @@ class OnboardingViewModel(
                     }
                 }
         }
+    }
+
+    private fun updateEmail(email: String) {
+        _state.update { it.copy(email = email, emailError = null) }
+    }
+
+    private fun continueWithEmail() {
+        checkEmailJob?.cancel()
+        checkEmailJob = coroutineScope.launch {
+            val email = _state.value.email
+            if (email.isBlank()) {
+                _state.update { it.copy(emailError = "Email cannot be empty") }
+                return@launch
+            }
+            checkUserExistsUseCase(email)
+                .onStart { updateLoading(true) }
+                .onCompletion { updateLoading(false) }
+                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .collectLatest { result ->
+                    ensureActive()
+                    when (result) {
+                        is Result.Success -> navigate(Credentials(email, result.data))
+                        is Result.Error -> showErrorSnackbar(result.exception.message ?: "Error")
+                        else -> Unit
+                    }
+                }
+        }
+    }
+
+    private fun toggleOtherOptions() {
+        _state.update { it.copy(showOtherOptions = !it.showOtherOptions) }
     }
 
     private suspend fun showErrorSnackbar(message: String) {
