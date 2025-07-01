@@ -60,6 +60,8 @@ import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -218,10 +220,13 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
             onValueChange = { onAction(OnboardingAction.OnEmailChange(it)) },
             labelText = "Email",
             placeholderText = "Enter your email",
-            keyboardType = androidx.compose.ui.text.input.KeyboardType.Email,
-            imeAction = androidx.compose.ui.text.input.ImeAction.Done,
+            keyboardType = KeyboardType.Email,
+            imeAction = if (state.email.isNotBlank()) ImeAction.Send else ImeAction.Done,
             isError = state.emailError != null,
             errorText = state.emailError,
+            onSubmit = {
+                onAction(OnboardingAction.OnContinueWithEmail)
+            },
             modifier = Modifier.fillMaxWidth()
         )
         AppButton(
