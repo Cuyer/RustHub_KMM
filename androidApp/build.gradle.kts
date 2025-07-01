@@ -20,6 +20,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     packaging {
         resources {
@@ -33,16 +34,20 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
     flavorDimensions += "mode"
     productFlavors {
-        create("prod") {
+        create("production") {
             dimension = "mode"
         }
-        create("test") {
+        create("development") {
             dimension = "mode"
-            applicationIdSuffix = ".test"
+            applicationIdSuffix = ".development"
         }
     }
+
+
+
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
@@ -51,7 +56,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("development")
+        }
+
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("development")
         }
     }
 }

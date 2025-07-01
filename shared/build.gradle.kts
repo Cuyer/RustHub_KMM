@@ -94,21 +94,32 @@ android {
     }
     flavorDimensions += "mode"
     productFlavors {
-        create("prod") {
+        create("production") {
             dimension = "mode"
             buildConfigField("String", "BASE_URL", "\"https://prod.example.com/\"")
         }
-        create("test") {
+        create("development") {
             dimension = "mode"
             buildConfigField("String", "BASE_URL", "\"http://192.168.100.229:8080/\"")
         }
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
+
+
+    
     buildTypes {
         release {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard.pro")
             isMinifyEnabled = false
             isJniDebuggable = false
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("development")
+        }
+
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("development")
         }
     }
     compileOptions {
