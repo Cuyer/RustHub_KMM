@@ -53,6 +53,7 @@ import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteAccountUseCase
+import pl.cuyer.rusthub.domain.usecase.CheckUserExistsUseCase
 import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
@@ -113,6 +114,7 @@ val appModule = module {
     single { LoginWithGoogleUseCase(get(), get(), get()) }
     single { GetGoogleClientIdUseCase(get()) }
     single { AuthAnonymouslyUseCase(get(), get(), get()) }
+    single { CheckUserExistsUseCase(get()) }
     single { GetUserUseCase(get()) }
     single { LogoutUserUseCase(get(), get()) }
     single { DeleteAccountUseCase(get(), get()) }

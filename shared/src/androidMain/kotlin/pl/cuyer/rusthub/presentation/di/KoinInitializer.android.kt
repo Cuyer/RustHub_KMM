@@ -7,8 +7,7 @@ import org.koin.dsl.module
 import pl.cuyer.rusthub.data.local.DatabaseDriverFactory
 import pl.cuyer.rusthub.data.network.HttpClientFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
-import pl.cuyer.rusthub.presentation.features.auth.login.LoginViewModel
-import pl.cuyer.rusthub.presentation.features.auth.register.RegisterViewModel
+import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
@@ -41,30 +40,20 @@ actual val platformModule: Module = module {
     viewModel {
         OnboardingViewModel(
             authAnonymouslyUseCase = get(),
+            checkUserExistsUseCase = get(),
             snackbarController = get(),
         )
     }
-    viewModel {
-        LoginViewModel(
+    viewModel { (email: String, exists: Boolean) ->
+        CredentialsViewModel(
+            email = email,
+            userExists = exists,
             loginUserUseCase = get(),
-            loginWithGoogleUseCase = get(),
-            getGoogleClientIdUseCase = get(),
-            googleAuthClient = get(),
-            snackbarController = get(),
-            passwordValidator = get(),
-            usernameValidator = get()
-        )
-    }
-    viewModel {
-        RegisterViewModel(
             registerUserUseCase = get(),
-            loginWithGoogleUseCase = get(),
-            getGoogleClientIdUseCase = get(),
-            googleAuthClient = get(),
             snackbarController = get(),
-            emailValidator = get(),
             passwordValidator = get(),
-            usernameValidator = get()
+            usernameValidator = get(),
+            emailValidator = get(),
         )
     }
     viewModel {

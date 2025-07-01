@@ -40,8 +40,7 @@ import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
-import pl.cuyer.rusthub.android.feature.auth.LoginScreen
-import pl.cuyer.rusthub.android.feature.auth.RegisterScreen
+import pl.cuyer.rusthub.android.feature.auth.CredentialsScreen
 import pl.cuyer.rusthub.android.feature.onboarding.OnboardingScreen
 import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
@@ -51,18 +50,16 @@ import pl.cuyer.rusthub.android.feature.settings.SettingsScreen
 import pl.cuyer.rusthub.android.feature.settings.DeleteAccountScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.common.Constants
-import pl.cuyer.rusthub.presentation.features.auth.login.LoginViewModel
-import pl.cuyer.rusthub.presentation.features.auth.register.RegisterViewModel
+import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
-import pl.cuyer.rusthub.presentation.navigation.Login
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
+import pl.cuyer.rusthub.presentation.navigation.Credentials
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
-import pl.cuyer.rusthub.presentation.navigation.Register
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.Settings
@@ -144,23 +141,10 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                                 }
                             )
                         }
-                        entry<Login> {
-                            val viewModel = koinViewModel<LoginViewModel>()
+                        entry<Credentials> { key ->
+                            val viewModel: CredentialsViewModel = koinViewModel { parametersOf(key.email, key.exists) }
                             val state = viewModel.state.collectAsStateWithLifecycle()
-                            LoginScreen(
-                                stateProvider = { state },
-                                uiEvent = viewModel.uiEvent,
-                                onAction = viewModel::onAction,
-                                onNavigate = { dest ->
-                                    backStack.clear()
-                                    backStack.add(dest)
-                                }
-                            )
-                        }
-                        entry<Register> {
-                            val viewModel = koinViewModel<RegisterViewModel>()
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            RegisterScreen(
+                            CredentialsScreen(
                                 stateProvider = { state },
                                 uiEvent = viewModel.uiEvent,
                                 onAction = viewModel::onAction,

@@ -27,7 +27,7 @@ import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
 import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
-import pl.cuyer.rusthub.presentation.navigation.Register
+import pl.cuyer.rusthub.presentation.navigation.Credentials
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
 
@@ -89,7 +89,7 @@ class SettingsViewModel(
 
     private fun navigateRegister() {
         coroutineScope.launch {
-            _uiEvent.send(UiEvent.Navigate(Register))
+            _uiEvent.send(UiEvent.Navigate(Credentials("", false)))
         }
     }
 
