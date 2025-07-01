@@ -95,7 +95,10 @@ import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingAction
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(
+    ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3ExpressiveApi::class,
+    ExperimentalSharedTransitionApi::class
+)
 @Composable
 fun OnboardingScreen(
     onNavigate: (NavKey) -> Unit,
@@ -112,11 +115,17 @@ fun OnboardingScreen(
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        if (isTabletMode) {
-            OnboardingContentExpanded(onAction = onAction, state = state.value)
-        } else {
-            OnboardingContent(onAction = onAction, state = state.value)
+    LookaheadScope {
+        Box(
+            modifier = Modifier
+                .animateBounds(this)
+                .fillMaxSize(), contentAlignment = Alignment.Center
+        ) {
+            if (isTabletMode) {
+                OnboardingContentExpanded(onAction = onAction, state = state.value)
+            } else {
+                OnboardingContent(onAction = onAction, state = state.value)
+            }
         }
     }
 }
@@ -208,19 +217,15 @@ private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: Onboa
         Spacer(modifier = Modifier.height(spacing.medium))
         AuthSection(state, onAction)
 
-        LookaheadScope {
-            AnimatedVisibility(
-                visible = state.showOtherOptions,
-                enter = slideInVertically() + scaleIn(),
-                exit = slideOutVertically() + scaleOut()
-            ) {
-                ActionButtons(
-                    modifier = Modifier
-                        .animateBounds(this@LookaheadScope),
-                    onAction,
-                    state.isLoading
-                )
-            }
+        AnimatedVisibility(
+            visible = state.showOtherOptions,
+            enter = slideInVertically() + scaleIn(),
+            exit = slideOutVertically() + scaleOut()
+        ) {
+            ActionButtons(
+                onAction,
+                state.isLoading
+            )
         }
     }
 }
@@ -295,18 +300,15 @@ private fun OnboardingContentExpanded(
         ) {
             AuthSection(state, onAction)
 
-            LookaheadScope {
-                AnimatedVisibility(
-                    visible = state.showOtherOptions,
-                    enter = slideInVertically() + scaleIn(),
-                    exit = slideOutVertically() + scaleOut()
-                ) {
-                    ActionButtons(
-                        modifier = Modifier.animateBounds(this@LookaheadScope),
-                        onAction = onAction,
-                        isLoading = state.isLoading
-                    )
-                }
+            AnimatedVisibility(
+                visible = state.showOtherOptions,
+                enter = slideInVertically() + scaleIn(),
+                exit = slideOutVertically() + scaleOut()
+            ) {
+                ActionButtons(
+                    onAction = onAction,
+                    isLoading = state.isLoading
+                )
             }
         }
     }
@@ -420,12 +422,11 @@ private fun HeaderSection() {
 
 @Composable
 private fun ActionButtons(
-    modifier: Modifier,
     onAction: (OnboardingAction) -> Unit,
     isLoading: Boolean
 ) {
     AppOutlinedButton(
-        modifier = modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         onClick = { onAction(OnboardingAction.OnContinueAsGuest) },
         isLoading = isLoading
     ) {
