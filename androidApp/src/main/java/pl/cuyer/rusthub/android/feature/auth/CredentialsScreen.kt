@@ -23,6 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
 import pl.cuyer.rusthub.android.designsystem.AppButton
@@ -77,7 +79,9 @@ fun CredentialsScreen(
                     placeholderText = "Enter your email",
                     isError = state.value.emailError != null,
                     errorText = state.value.emailError,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
                 )
             } else {
                 Text(text = state.value.email, style = MaterialTheme.typography.titleMedium)
@@ -90,7 +94,9 @@ fun CredentialsScreen(
                     placeholderText = "Enter your username",
                     isError = state.value.usernameError != null,
                     errorText = state.value.usernameError,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
                 )
             }
             AppSecureTextField(
@@ -101,7 +107,8 @@ fun CredentialsScreen(
                 onSubmit = { onAction(CredentialsAction.OnSubmit) },
                 isError = state.value.passwordError != null,
                 errorText = state.value.passwordError,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                imeAction = ImeAction.Send
             )
             AppButton(
                 onClick = { onAction(CredentialsAction.OnSubmit) },

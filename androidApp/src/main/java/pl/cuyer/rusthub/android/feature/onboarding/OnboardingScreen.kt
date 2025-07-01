@@ -1,8 +1,19 @@
 package pl.cuyer.rusthub.android.feature.onboarding
 
 import android.app.Activity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.animateBounds
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +21,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,6 +35,7 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -34,11 +47,17 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -83,21 +102,53 @@ fun OnboardingScreen(
 
 private data class Feature(val icon: ImageVector, val title: String, val description: String)
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: OnboardingState) {
+    val focusManager = LocalFocusManager.current
+    val interactionSource = remember { MutableInteractionSource() }
     val features = listOf(
-        Feature(Icons.Default.Search, "Find Servers", "Search and explore Rust servers by name, type, last wipe or more."),
-        Feature(Icons.Default.ContentCopy, "Copy IPs", "Quickly copy server IP addresses to send them to your friends."),
-        Feature(Icons.Default.Info, "View Details", "See server info like time of last wipe, map, ranking and more."),
-        Feature(Icons.Default.FilterList, "Smart Filters", "Narrow your search using advanced filtering options."),
-        Feature(Icons.Default.Notifications, "Notifications", "Receive notifications about map and full wipes."),
-        Feature(Icons.Default.Favorite, "Favourites", "Add servers to your favourites to easily access them.")
+        Feature(
+            Icons.Default.Search,
+            "Find Servers",
+            "Search and explore Rust servers by name, type, last wipe or more."
+        ),
+        Feature(
+            Icons.Default.ContentCopy,
+            "Copy IPs",
+            "Quickly copy server IP addresses to send them to your friends."
+        ),
+        Feature(
+            Icons.Default.Info,
+            "View Details",
+            "See server info like time of last wipe, map, ranking and more."
+        ),
+        Feature(
+            Icons.Default.FilterList,
+            "Smart Filters",
+            "Narrow your search using advanced filtering options."
+        ),
+        Feature(
+            Icons.Default.Notifications,
+            "Notifications",
+            "Receive notifications about map and full wipes."
+        ),
+        Feature(
+            Icons.Default.Favorite,
+            "Favourites",
+            "Add servers to your favourites to easily access them."
+        )
     )
 
     val pagerState = rememberPagerState(pageCount = { features.size })
 
+
     Column(
         modifier = Modifier
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ) { focusManager.clearFocus() }
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(spacing.medium),
@@ -105,6 +156,8 @@ private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: Onboa
         verticalArrangement = Arrangement.spacedBy(spacing.medium, Alignment.CenterVertically)
     ) {
         HeaderSection()
+
+        Spacer(modifier = Modifier.height(spacing.medium))
 
         HorizontalPager(state = pagerState) { page ->
             val feature = features[page]
@@ -125,10 +178,22 @@ private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: Onboa
             }
         }
 
+        Spacer(modifier = Modifier.height(spacing.medium))
         AuthSection(state, onAction)
 
-        if (state.showOtherOptions) {
-            ActionButtons(onAction, state.isLoading)
+        LookaheadScope {
+            AnimatedVisibility(
+                visible = state.showOtherOptions,
+                enter = slideInVertically() + scaleIn(),
+                exit = slideOutVertically() + scaleOut()
+            ) {
+                ActionButtons(
+                    modifier = Modifier
+                        .animateBounds(this@LookaheadScope),
+                    onAction,
+                    state.isLoading
+                )
+            }
         }
     }
 }
@@ -140,9 +205,8 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
-        Text(text = "Hello", style = MaterialTheme.typography.headlineLarge)
         Text(
-            text = "Lets start with your email",
+            text = "Let's start with your email",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -176,11 +240,28 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
             image = getImageByFileName("ic_google").drawableResId,
             contentDescription = "Google logo",
             text = "Continue with Google",
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
+            contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
         ) { onAction(OnboardingAction.OnGoogleLogin) }
 
-        AppTextButton(onClick = { onAction(OnboardingAction.OnShowOtherOptions) }) {
-            Text("Other options")
+        AppTextButton(
+            onClick = { onAction(OnboardingAction.OnShowOtherOptions) }
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(spacing.small)
+            ) {
+                val rotation by animateFloatAsState(if (state.showOtherOptions) 180f else 0f)
+
+                Text("Other options")
+                Icon(
+                    modifier = Modifier
+                        .rotate(rotation),
+                    imageVector = Icons.Default.KeyboardArrowDown,
+                    contentDescription = "Arrow down"
+                )
+            }
         }
     }
 }
@@ -191,7 +272,7 @@ private fun HeaderSection() {
         painter = painterResource(id = getImageByFileName("rusthub_logo").drawableResId),
         contentDescription = "Application logo"
     )
-
+    Spacer(modifier = Modifier.height(spacing.small))
     Text(
         text = "Welcome to RustHub",
         style = MaterialTheme.typography.headlineLarge,
@@ -207,9 +288,13 @@ private fun HeaderSection() {
 }
 
 @Composable
-private fun ActionButtons(onAction: (OnboardingAction) -> Unit, isLoading: Boolean) {
+private fun ActionButtons(
+    modifier: Modifier,
+    onAction: (OnboardingAction) -> Unit,
+    isLoading: Boolean
+) {
     AppOutlinedButton(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         onClick = { onAction(OnboardingAction.OnContinueAsGuest) },
         isLoading = isLoading
     ) {
@@ -239,6 +324,7 @@ private fun FeatureItem(icon: ImageVector, title: String, description: String) {
         Column {
             Text(text = title, style = MaterialTheme.typography.titleMedium)
             Text(
+                minLines = 2,
                 text = description,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
