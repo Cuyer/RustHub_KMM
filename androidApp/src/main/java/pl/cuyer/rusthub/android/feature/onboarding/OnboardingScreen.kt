@@ -314,6 +314,7 @@ private fun OnboardingContentExpanded(
 
 @Composable
 private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> Unit) {
+    val focusManager = LocalFocusManager.current
     Column(
         modifier = Modifier
             .imePadding()
@@ -341,7 +342,10 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
             modifier = Modifier.fillMaxWidth()
         )
         AppButton(
-            onClick = { onAction(OnboardingAction.OnContinueWithEmail) },
+            onClick = {
+                focusManager.clearFocus()
+                onAction(OnboardingAction.OnContinueWithEmail)
+            },
             isLoading = state.isLoading,
             modifier = Modifier.fillMaxWidth(),
             enabled = state.email.isNotBlank()
@@ -361,12 +365,19 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
             contentDescription = "Google logo",
             text = "Continue with Google",
             modifier = Modifier.fillMaxWidth(),
+            isLoading = state.googleLoading,
             backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
             contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
-        ) { onAction(OnboardingAction.OnGoogleLogin) }
+        ) {
+            focusManager.clearFocus()
+            onAction(OnboardingAction.OnGoogleLogin)
+        }
 
         AppTextButton(
-            onClick = { onAction(OnboardingAction.OnShowOtherOptions) }
+            onClick = {
+                focusManager.clearFocus()
+                onAction(OnboardingAction.OnShowOtherOptions)
+            }
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

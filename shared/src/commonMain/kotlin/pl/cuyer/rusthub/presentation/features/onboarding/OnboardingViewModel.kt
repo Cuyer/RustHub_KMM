@@ -15,18 +15,19 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
-import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
-import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.usecase.AuthAnonymouslyUseCase
 import pl.cuyer.rusthub.domain.usecase.CheckUserExistsUseCase
+import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
+import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
 import pl.cuyer.rusthub.presentation.navigation.Credentials
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.util.GoogleAuthClient
+import pl.cuyer.rusthub.util.validator.EmailValidator
 
 class OnboardingViewModel(
     private val authAnonymouslyUseCase: AuthAnonymouslyUseCase,
@@ -35,6 +36,7 @@ class OnboardingViewModel(
     private val getGoogleClientIdUseCase: GetGoogleClientIdUseCase,
     private val googleAuthClient: GoogleAuthClient,
     private val snackbarController: SnackbarController,
+    private val emailValidator: EmailValidator
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -86,10 +88,23 @@ class OnboardingViewModel(
         checkEmailJob?.cancel()
         checkEmailJob = coroutineScope.launch {
             val email = _state.value.email
-            if (email.isBlank()) {
-                _state.update { it.copy(emailError = "Email cannot be empty") }
+            val emailResult = emailValidator.validate(email)
+            _state.update {
+                it.copy(
+                    emailError = emailResult.errorMessage
+                )
+            }
+
+            if (!emailResult.isValid) {
+                snackbarController.sendEvent(
+                    SnackbarEvent(
+                        message = "Please correct the errors above and try again.",
+                        action = null
+                    )
+                )
                 return@launch
             }
+
             checkUserExistsUseCase(email)
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
@@ -109,6 +124,8 @@ class OnboardingViewModel(
         googleJob?.cancel()
         googleJob = coroutineScope.launch {
             getGoogleClientIdUseCase()
+                .onStart { updateGoogleLoading(true) }
+                .onCompletion { updateGoogleLoading(false) }
                 .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
                 .collectLatest { result ->
                     when (result) {
@@ -133,8 +150,8 @@ class OnboardingViewModel(
         googleJob?.cancel()
         googleJob = coroutineScope.launch {
             loginWithGoogleUseCase(token)
-                .onStart { updateLoading(true) }
-                .onCompletion { updateLoading(false) }
+                .onStart { updateGoogleLoading(true) }
+                .onCompletion { updateGoogleLoading(false) }
                 .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
                 .collectLatest { result ->
                     ensureActive()
@@ -157,6 +174,10 @@ class OnboardingViewModel(
 
     private fun updateLoading(isLoading: Boolean) {
         _state.update { it.copy(isLoading = isLoading) }
+    }
+
+    private fun updateGoogleLoading(isLoading: Boolean) {
+        _state.update { it.copy(googleLoading = isLoading) }
     }
 
     private fun navigate(destination: NavKey) {

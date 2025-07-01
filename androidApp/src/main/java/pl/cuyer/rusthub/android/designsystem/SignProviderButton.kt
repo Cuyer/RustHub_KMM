@@ -31,15 +31,20 @@ fun SignProviderButton(
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
     tint: Color? = null,
+    isLoading: Boolean = false,
     onClick: () -> Unit
 ) {
+    //TODO poprawić kolor loadingu na google buttonie
     AppButton(
+        isLoading = isLoading,
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors().copy(
+        colors = ButtonDefaults.elevatedButtonColors().copy(
             containerColor = backgroundColor,
-            contentColor = contentColor
+            contentColor = contentColor,
+            disabledContainerColor = backgroundColor,
+            disabledContentColor = contentColor
         ),
     ) {
         Row(
