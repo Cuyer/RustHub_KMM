@@ -12,6 +12,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +28,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -47,10 +49,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -65,9 +71,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation3.runtime.NavKey
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppOutlinedButton
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
@@ -166,6 +178,8 @@ private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: Onboa
             val feature = features[page]
             FeatureItem(feature.icon, feature.title, feature.description)
         }
+
+        CarouselAutoPlayHandler(pagerState, features.size)
 
         Row(horizontalArrangement = Arrangement.spacedBy(spacing.xsmall)) {
             repeat(features.size) { index ->
@@ -338,6 +352,41 @@ private fun FeatureItem(icon: ImageVector, title: String, description: String) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+        }
+    }
+}
+
+@Composable
+fun CarouselAutoPlayHandler(
+    pagerState: PagerState,
+    carouselSize: Int,
+    delayMillis: Long = 5000L
+) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val interactions = remember(pagerState.interactionSource) {
+        pagerState.interactionSource.interactions
+            .flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+    }
+    val scope = rememberCoroutineScope()
+    var cooldownKey by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(interactions) {
+        interactions.collectLatest { interaction ->
+            when (interaction) {
+                is DragInteraction.Start,
+                is DragInteraction.Stop,
+                is DragInteraction.Cancel -> {
+                    cooldownKey++
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(pagerState.currentPage, cooldownKey) {
+        delay(delayMillis)
+        val nextPage = (pagerState.currentPage + 1) % carouselSize
+        scope.launch {
+            pagerState.animateScrollToPage(nextPage)
         }
     }
 }
