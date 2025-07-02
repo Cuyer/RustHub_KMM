@@ -19,7 +19,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
-import androidx.navigation3.runtime.NavKey
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import kotlinx.coroutines.flow.Flow
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppSecureTextField
@@ -33,7 +34,6 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpgradeAccountScreen(
-    onNavigate: (NavKey) -> Unit,
     uiEvent: Flow<UiEvent>,
     stateProvider: () -> State<UpgradeState>,
     onAction: (UpgradeAction) -> Unit,
@@ -42,8 +42,8 @@ fun UpgradeAccountScreen(
     val state = stateProvider()
     ObserveAsEvents(uiEvent) { event ->
         when (event) {
-            is UiEvent.Navigate -> onNavigate(event.destination)
             is UiEvent.NavigateUp -> onNavigateUp()
+            else -> Unit
         }
     }
     Scaffold(
@@ -52,7 +52,10 @@ fun UpgradeAccountScreen(
                 title = { Text("Upgrade account") },
                 navigationIcon = {
                     IconButton(onClick = { onAction(UpgradeAction.OnNavigateUp) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Navigate up")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Navigate up"
+                        )
                     }
                 },
                 scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
@@ -75,7 +78,9 @@ fun UpgradeAccountScreen(
                 placeholderText = "Enter username",
                 isError = state.value.usernameError != null,
                 errorText = state.value.usernameError,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                imeAction = ImeAction.Next,
+                keyboardType = KeyboardType.Email
             )
             AppSecureTextField(
                 value = state.value.password,
@@ -85,12 +90,13 @@ fun UpgradeAccountScreen(
                 onSubmit = { onAction(UpgradeAction.OnSubmit) },
                 isError = state.value.passwordError != null,
                 errorText = state.value.passwordError,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                imeAction = if (state.value.username.isNotBlank() && state.value.email.isNotBlank() && state.value.password.isNotBlank()) ImeAction.Send else ImeAction.Done,
             )
             AppButton(
                 onClick = { onAction(UpgradeAction.OnSubmit) },
                 isLoading = state.value.isLoading,
-                enabled = state.value.username.isNotBlank() && state.value.password.isNotBlank(),
+                enabled = state.value.username.isNotBlank() && state.value.password.isNotBlank() && state.value.email.isNotBlank(),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Upgrade")
