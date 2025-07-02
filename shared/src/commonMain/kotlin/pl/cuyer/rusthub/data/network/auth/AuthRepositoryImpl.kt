@@ -80,13 +80,12 @@ class AuthRepositoryImpl(
     }
 
     override fun upgrade(
-        email: String,
         username: String,
         password: String
     ): Flow<Result<TokenPair>> {
         return safeApiCall<TokenPairDto> {
             httpClient.post(NetworkConstants.BASE_URL + "auth/upgrade") {
-                setBody(UpgradeRequest(email, username, password))
+                setBody(UpgradeRequest(username, password))
             }
         }.map { result ->
             when (result) {

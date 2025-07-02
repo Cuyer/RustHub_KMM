@@ -24,9 +24,9 @@ import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
-import pl.cuyer.rusthub.presentation.navigation.Credentials
 import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
+import pl.cuyer.rusthub.presentation.navigation.UpgradeAccount
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
@@ -68,7 +68,7 @@ class SettingsViewModel(
             SettingsAction.OnSubscribe -> showSubscriptionDialog(false)
             SettingsAction.OnPrivacyPolicy -> openPrivacyPolicy()
             SettingsAction.OnDeleteAccount -> navigateDeleteAccount()
-            SettingsAction.OnUpgradeAccount -> navigateRegister()
+            SettingsAction.OnUpgradeAccount -> navigateUpgrade()
         }
     }
 
@@ -88,9 +88,9 @@ class SettingsViewModel(
         }
     }
 
-    private fun navigateRegister() {
+    private fun navigateUpgrade() {
         coroutineScope.launch {
-            _uiEvent.send(UiEvent.Navigate(Credentials("", false)))
+            _uiEvent.send(UiEvent.Navigate(UpgradeAccount))
         }
     }
 

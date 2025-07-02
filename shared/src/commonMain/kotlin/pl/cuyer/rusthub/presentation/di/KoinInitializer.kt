@@ -53,6 +53,7 @@ import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteAccountUseCase
+import pl.cuyer.rusthub.domain.usecase.UpgradeAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.CheckUserExistsUseCase
 import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
@@ -118,6 +119,7 @@ val appModule = module {
     single { GetUserUseCase(get()) }
     single { LogoutUserUseCase(get(), get()) }
     single { DeleteAccountUseCase(get(), get()) }
+    single { UpgradeAccountUseCase(get(), get(), get()) }
     single { GetSettingsUseCase(get()) }
     single { SaveSettingsUseCase(get()) }
     single { SettingsController(get()) }
