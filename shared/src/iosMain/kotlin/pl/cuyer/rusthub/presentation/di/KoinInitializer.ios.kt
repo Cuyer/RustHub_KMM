@@ -21,10 +21,12 @@ import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
 import pl.cuyer.rusthub.util.LogoutScheduler
 import dev.icerock.moko.permissions.PermissionsController
+import pl.cuyer.rusthub.util.TokenRefresher
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
     single { HttpClientFactory(get(), get()).create() }
+    single { TokenRefresher(get()) }
     single { ClipboardHandler() }
     single { SyncScheduler() }
     single { SubscriptionSyncScheduler() }

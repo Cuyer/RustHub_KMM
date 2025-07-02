@@ -27,6 +27,7 @@ import pl.cuyer.rusthub.data.network.subscription.SubscriptionClientImpl
 import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.repository.auth.AuthRepository
+import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.domain.repository.favourite.FavouriteSyncDataSource
 import pl.cuyer.rusthub.domain.repository.favourite.network.FavouriteRepository
 import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
@@ -99,6 +100,7 @@ val appModule = module {
     singleOf(::AuthRepositoryImpl) bind AuthRepository::class
     singleOf(::AuthDataSourceImpl) bind AuthDataSource::class
     singleOf(::ConfigRepositoryImpl) bind ConfigRepository::class
+    single { TokenRefresher(get()) }
     single { EmailValidator }
     single { PasswordValidator }
     single { UsernameValidator }
@@ -111,17 +113,17 @@ val appModule = module {
     single { GetSearchQueriesUseCase(get()) }
     single { DeleteSearchQueriesUseCase(get()) }
     single { GetServerDetailsUseCase(get()) }
-    single { RegisterUserUseCase(get(), get(), get()) }
-    single { LoginUserUseCase(get(), get(), get()) }
-    single { LoginWithGoogleUseCase(get(), get(), get()) }
+    single { RegisterUserUseCase(get(), get(), get(), get()) }
+    single { LoginUserUseCase(get(), get(), get(), get()) }
+    single { LoginWithGoogleUseCase(get(), get(), get(), get()) }
     single { GetGoogleClientIdUseCase(get()) }
-    single { AuthAnonymouslyUseCase(get(), get(), get()) }
+    single { AuthAnonymouslyUseCase(get(), get(), get(), get()) }
     single { CheckUserExistsUseCase(get()) }
     single { GetUserUseCase(get()) }
-    single { LogoutUserUseCase(get(), get()) }
-    single { DeleteAccountUseCase(get(), get()) }
-    single { UpgradeAccountUseCase(get(), get(), get()) }
-    single { UpgradeWithGoogleUseCase(get(), get(), get()) }
+    single { LogoutUserUseCase(get(), get(), get()) }
+    single { DeleteAccountUseCase(get(), get(), get()) }
+    single { UpgradeAccountUseCase(get(), get(), get(), get()) }
+    single { UpgradeWithGoogleUseCase(get(), get(), get(), get()) }
     single { GetSettingsUseCase(get()) }
     single { SaveSettingsUseCase(get()) }
     single { SettingsController(get()) }
