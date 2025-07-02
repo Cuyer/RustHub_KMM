@@ -7,11 +7,12 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlin.time.Duration
 
 private val json = Json { ignoreUnknownKeys = true }
 
 @OptIn(ExperimentalEncodingApi::class)
-fun anonymousAccountExpiresInDays(token: String): Int? {
+fun anonymousAccountExpiresIn(token: String): Duration? {
     val parts = token.split(".")
     if (parts.size < 2) return null
     val payload = parts[1]
@@ -24,9 +25,23 @@ fun anonymousAccountExpiresInDays(token: String): Int? {
             ?: return null
         val expiration = Instant.fromEpochSeconds(exp)
         val now = Clock.System.now()
-        val days = (expiration - now).inWholeDays
-        if (days >= 0) days.toInt() else null
+        val duration = expiration - now
+        if (duration.inWholeSeconds > 0) duration else null
     } catch (_: Exception) {
         null
+    }
+}
+
+fun formatExpiration(duration: Duration): String {
+    val days = duration.inWholeDays
+    val hours = duration.inWholeHours % 24
+    val minutes = duration.inWholeMinutes % 60
+    return if (days > 0) {
+        "$days day" + if (days > 1) "s" else ""
+    } else {
+        buildString {
+            if (hours > 0) append("${hours}h ")
+            append("${minutes}m")
+        }
     }
 }
