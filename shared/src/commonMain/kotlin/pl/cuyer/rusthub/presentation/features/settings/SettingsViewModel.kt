@@ -14,20 +14,20 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
+import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.Settings
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.model.User
-import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.usecase.GetSettingsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
+import pl.cuyer.rusthub.presentation.navigation.Credentials
+import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
-import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
-import pl.cuyer.rusthub.presentation.navigation.Credentials
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
 
@@ -107,7 +107,13 @@ class SettingsViewModel(
     }
 
     private fun updateUser(user: User?) {
-        _state.update { it.copy(username = user?.username, provider = user?.provider) }
+        _state.update {
+            it.copy(
+                username = user?.username,
+                provider = user?.provider,
+                subscribed = user?.subscribed
+            )
+        }
     }
 
     private fun save() {
