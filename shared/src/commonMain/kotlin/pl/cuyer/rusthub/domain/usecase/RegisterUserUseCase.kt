@@ -33,7 +33,8 @@ class RegisterUserUseCase(
                             refreshToken = refreshToken,
                             username = username,
                             email = email,
-                            provider = provider
+                            provider = provider,
+                            subscribed = subscribed
                         )
                         tokenManager.currentToken()
                         send(Result.Success(Unit))

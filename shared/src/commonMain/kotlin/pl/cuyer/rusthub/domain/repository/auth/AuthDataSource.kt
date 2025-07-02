@@ -11,6 +11,7 @@ interface AuthDataSource {
         accessToken: String,
         refreshToken: String?,
         provider: AuthProvider,
+        subscribed: Boolean,
     )
 
     suspend fun deleteUser()

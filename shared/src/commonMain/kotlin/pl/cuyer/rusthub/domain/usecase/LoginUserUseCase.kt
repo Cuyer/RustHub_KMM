@@ -28,7 +28,8 @@ class LoginUserUseCase(
                             refreshToken = refreshToken,
                             username = this.username,
                             email = email,
-                            provider = provider
+                            provider = provider,
+                            subscribed = subscribed
                         )
                         tokenManager.currentToken()
                         send(Result.Success(Unit))

@@ -60,7 +60,8 @@ actual class HttpClientFactory actual constructor(
                                 username = newTokens.username,
                                 accessToken = newTokens.accessToken,
                                 refreshToken = newTokens.refreshToken,
-                                provider = AuthProvider.valueOf(newTokens.provider)
+                                provider = AuthProvider.valueOf(newTokens.provider),
+                                subscribed = newTokens.subscribed
                             )
                             BearerTokens(newTokens.accessToken, newTokens.refreshToken)
                         } else {

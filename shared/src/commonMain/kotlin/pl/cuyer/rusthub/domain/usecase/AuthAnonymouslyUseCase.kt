@@ -25,7 +25,8 @@ class AuthAnonymouslyUseCase(
                             username = username,
                             accessToken = accessToken,
                             refreshToken = null,
-                            provider = provider
+                            provider = provider,
+                            subscribed = subscribed
                         )
                         tokenManager.currentToken()
                         send(Result.Success(Unit))

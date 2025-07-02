@@ -26,6 +26,7 @@ import pl.cuyer.rusthub.data.network.auth.model.RefreshRequest
 import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
+import pl.cuyer.rusthub.domain.model.AuthProvider
 import platform.Foundation.NSLocale
 import platform.Foundation.currentLocale
 import platform.Foundation.languageCode
@@ -61,7 +62,9 @@ actual class HttpClientFactory actual constructor(
                                 email = newTokens.email,
                                 username = newTokens.username,
                                 accessToken = newTokens.accessToken,
-                                refreshToken = newTokens.refreshToken
+                                refreshToken = newTokens.refreshToken,
+                                provider = AuthProvider.valueOf(newTokens.provider),
+                                subscribed = newTokens.subscribed
                             )
                             BearerTokens(newTokens.accessToken, newTokens.refreshToken)
                         } else null
