@@ -112,7 +112,7 @@ class SettingsViewModel(
             it.copy(
                 username = user?.username,
                 provider = user?.provider,
-                subscribed = user?.subscribed,
+                subscribed = user?.subscribed == true,
                 anonymousExpirationDays = user?.let { u ->
                     if (u.provider == AuthProvider.ANONYMOUS) {
                         anonymousAccountExpiresInDays(u.accessToken)

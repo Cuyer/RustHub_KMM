@@ -244,7 +244,7 @@ private fun AccountSection(
         modifier = Modifier.padding(bottom = spacing.small)
     )
 
-    if (provider != AuthProvider.GOOGLE) {
+    if (provider !in listOf(AuthProvider.ANONYMOUS, AuthProvider.GOOGLE)) {
         AppTextButton(
             onClick = { onAction(SettingsAction.OnChangePasswordClick) }
         ) {
