@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -176,6 +177,7 @@ private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: Onboa
 
     Column(
         modifier = Modifier
+            .statusBarsPadding()
             .clickable(
                 interactionSource = interactionSource,
                 indication = null
@@ -369,7 +371,7 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
             modifier = Modifier.fillMaxWidth(),
             isLoading = state.googleLoading,
             backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
-            contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
+            contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White
         ) {
             focusManager.clearFocus()
             onAction(OnboardingAction.OnGoogleLogin)
@@ -405,7 +407,7 @@ private fun HeaderSection() {
         painter = painterResource(id = getImageByFileName("rusthub_logo").drawableResId),
         contentDescription = "Application logo"
     )
-    Spacer(modifier = Modifier.height(spacing.small))
+
     Text(
         text = "Welcome to RustHub",
         style = MaterialTheme.typography.headlineLarge,
