@@ -17,9 +17,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
+import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.usecase.DeleteAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
-import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
@@ -80,7 +80,12 @@ class DeleteAccountViewModel(
                     .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
                     .collectLatest { result ->
                         when (result) {
-                            is Result.Success -> _uiEvent.send(UiEvent.Navigate(Onboarding))
+                            is Result.Success -> {
+                                snackbarController.sendEvent(
+                                    SnackbarEvent(message = "Account deleted successfully")
+                                )
+                                _uiEvent.send(UiEvent.Navigate(Onboarding))
+                            }
                             is Result.Error -> showErrorSnackbar(result.exception.message ?: "Unable to delete account")
                             else -> Unit
                         }
@@ -110,7 +115,12 @@ class DeleteAccountViewModel(
                 .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
                 .collectLatest { result ->
                     when (result) {
-                        is Result.Success -> _uiEvent.send(UiEvent.Navigate(Onboarding))
+                        is Result.Success -> {
+                            snackbarController.sendEvent(
+                                SnackbarEvent(message = "Account deleted successfully")
+                            )
+                            _uiEvent.send(UiEvent.Navigate(Onboarding))
+                        }
                         is Result.Error -> showErrorSnackbar(result.exception.message ?: "Unable to delete account")
                         else -> Unit
                     }

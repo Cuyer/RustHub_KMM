@@ -26,9 +26,9 @@ import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
-import pl.cuyer.rusthub.presentation.navigation.UpgradeAccount
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import pl.cuyer.rusthub.presentation.navigation.UpgradeAccount
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.anonymousAccountExpiresInDays
 
@@ -110,7 +110,9 @@ class SettingsViewModel(
     private fun updateUser(user: User?) {
         _state.update {
             it.copy(
-                username = user?.username,
+                username = if (user?.provider == AuthProvider.GOOGLE) user.username.substringBefore(
+                    "-"
+                ) else user?.username,
                 provider = user?.provider,
                 subscribed = user?.subscribed == true,
                 anonymousExpirationDays = user?.let { u ->

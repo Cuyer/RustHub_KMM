@@ -21,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -84,7 +85,7 @@ fun UpgradeAccountScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Upgrade account") },
+                title = { },
                 navigationIcon = {
                     IconButton(onClick = { onAction(UpgradeAction.OnNavigateUp) }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Navigate up")
@@ -133,6 +134,25 @@ private fun UpgradeScreenCompact(state: UpgradeState, onAction: (UpgradeAction) 
                 .imePadding()
                 .fillMaxWidth()
         ) { Text("Upgrade") }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(spacing.small)
+        ) {
+            HorizontalDivider(modifier = Modifier.weight(1f))
+            Text("or")
+            HorizontalDivider(modifier = Modifier.weight(1f))
+        }
+
+        SignProviderButton(
+            image = getImageByFileName("ic_google").drawableResId,
+            contentDescription = "Google logo",
+            text = "Upgrade with Google",
+            modifier = Modifier.fillMaxWidth(),
+            isLoading = state.googleLoading,
+            backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
+            contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
+        ) { onAction(UpgradeAction.OnGoogleLogin) }
     }
 }
 
@@ -162,6 +182,25 @@ private fun UpgradeScreenExpanded(state: UpgradeState, onAction: (UpgradeAction)
                     .imePadding()
                     .fillMaxWidth()
             ) { Text("Upgrade") }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(spacing.small)
+            ) {
+                HorizontalDivider(modifier = Modifier.weight(1f))
+                Text("or")
+                HorizontalDivider(modifier = Modifier.weight(1f))
+            }
+
+            SignProviderButton(
+                image = getImageByFileName("ic_google").drawableResId,
+                contentDescription = "Google logo",
+                text = "Upgrade with Google",
+                modifier = Modifier.fillMaxWidth(),
+                isLoading = state.googleLoading,
+                backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
+            ) { onAction(UpgradeAction.OnGoogleLogin) }
         }
     }
 }
@@ -171,7 +210,7 @@ private fun UpgradeStaticContent(modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxWidth()) {
         Icon(
             modifier = Modifier.size(64.dp),
-            painter = painterResource(getImageByFileName("ic_padlock").drawableResId),
+            painter = painterResource(getImageByFileName("ic_rocket").drawableResId),
             contentDescription = "Padlock Icon"
         )
         Spacer(Modifier.size(spacing.small))
@@ -225,14 +264,5 @@ private fun UpgradeFields(state: UpgradeState, onAction: (UpgradeAction) -> Unit
                     state.password.isNotBlank()
             ) ImeAction.Send else ImeAction.Done
         )
-        SignProviderButton(
-            image = getImageByFileName("ic_google").drawableResId,
-            contentDescription = "Google logo",
-            text = "Upgrade with Google",
-            modifier = Modifier.fillMaxWidth(),
-            isLoading = state.googleLoading,
-            backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
-            contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
-        ) { onAction(UpgradeAction.OnGoogleLogin) }
     }
 }

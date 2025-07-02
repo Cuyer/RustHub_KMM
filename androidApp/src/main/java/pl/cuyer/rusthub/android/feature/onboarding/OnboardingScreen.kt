@@ -226,7 +226,7 @@ private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: Onboa
         ) {
             ActionButtons(
                 onAction,
-                state.isLoading
+                state.continueAsGuestLoading
             )
         }
     }
@@ -309,7 +309,7 @@ private fun OnboardingContentExpanded(
             ) {
                 ActionButtons(
                     onAction = onAction,
-                    isLoading = state.isLoading
+                    continueAsGuestLoading = state.continueAsGuestLoading
                 )
             }
         }
@@ -425,12 +425,12 @@ private fun HeaderSection() {
 @Composable
 private fun ActionButtons(
     onAction: (OnboardingAction) -> Unit,
-    isLoading: Boolean
+    continueAsGuestLoading: Boolean
 ) {
     AppOutlinedButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = { onAction(OnboardingAction.OnContinueAsGuest) },
-        isLoading = isLoading
+        isLoading = continueAsGuestLoading
     ) {
         Text("Continue as Guest")
     }

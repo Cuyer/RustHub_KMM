@@ -66,8 +66,8 @@ class OnboardingViewModel(
         authAnonymouslyJob?.cancel()
         authAnonymouslyJob = coroutineScope.launch {
             authAnonymouslyUseCase()
-                .onStart { updateLoading(true) }
-                .onCompletion { updateLoading(false) }
+                .onStart { updateContinueAsGuestLoading(true) }
+                .onCompletion { updateContinueAsGuestLoading(false) }
                 .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
                 .collectLatest { result ->
                     ensureActive()
@@ -180,6 +180,10 @@ class OnboardingViewModel(
 
     private fun updateGoogleLoading(isLoading: Boolean) {
         _state.update { it.copy(googleLoading = isLoading) }
+    }
+
+    private fun updateContinueAsGuestLoading(isLoading: Boolean) {
+        _state.update { it.copy(continueAsGuestLoading = isLoading) }
     }
 
     private fun navigate(destination: NavKey) {
