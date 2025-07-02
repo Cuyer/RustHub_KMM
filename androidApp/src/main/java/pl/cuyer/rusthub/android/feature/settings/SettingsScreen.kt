@@ -107,7 +107,7 @@ fun SettingsScreen(
                 username = state.value.username,
                 provider = state.value.provider,
                 subscribed = state.value.subscribed,
-                expirationDays = state.value.anonymousExpirationDays,
+                expiration = state.value.anonymousExpiration,
                 onAction = onAction
             )
         } else {
@@ -122,7 +122,7 @@ fun SettingsScreen(
                 username = state.value.username,
                 provider = state.value.provider,
                 subscribed = state.value.subscribed,
-                expirationDays = state.value.anonymousExpirationDays,
+                expiration = state.value.anonymousExpiration,
                 onAction = onAction
             )
         }
@@ -137,7 +137,7 @@ private fun SettingsScreenCompact(
     language: Language,
     provider: AuthProvider?,
     subscribed: Boolean,
-    expirationDays: Int?,
+    expiration: String?,
     onAction: (SettingsAction) -> Unit
 ) {
     Column(
@@ -147,7 +147,7 @@ private fun SettingsScreenCompact(
         GreetingSection(username)
         PreferencesSection(theme, language, onAction)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
-        AccountSection(provider, subscribed, expirationDays, onAction)
+        AccountSection(provider, subscribed, expiration, onAction)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
         OtherSection(onAction)
     }
@@ -161,7 +161,7 @@ private fun SettingsScreenExpanded(
     language: Language,
     provider: AuthProvider?,
     subscribed: Boolean,
-    expirationDays: Int?,
+    expiration: String?,
     onAction: (SettingsAction) -> Unit
 ) {
     Row(
@@ -177,7 +177,7 @@ private fun SettingsScreenExpanded(
             GreetingSection(username)
             PreferencesSection(theme, language, onAction)
             HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
-            AccountSection(provider, subscribed, expirationDays, onAction)
+            AccountSection(provider, subscribed, expiration, onAction)
         }
         Column(
             modifier = Modifier
@@ -235,7 +235,7 @@ private fun PreferencesSection(
 private fun AccountSection(
     provider: AuthProvider?,
     subscribed: Boolean,
-    expirationDays: Int?,
+    expiration: String?,
     onAction: (SettingsAction) -> Unit
 ) {
     Text(
@@ -283,9 +283,9 @@ private fun AccountSection(
     }
 
     if (provider == AuthProvider.ANONYMOUS) {
-        expirationDays?.let {
+        expiration?.let {
             Text(
-                text = "Your temporary account expires in $it days. Upgrade to keep favourites and wipe alerts.",
+                text = "Your temporary account expires in $it. Upgrade to keep favourites and wipe alerts.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(bottom = spacing.small)
