@@ -10,6 +10,7 @@ import pl.cuyer.rusthub.data.network.HttpClientFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
+import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
@@ -95,6 +96,14 @@ actual val platformModule: Module = module {
             passwordValidator = get(),
             usernameValidator = get(),
             getUserUseCase = get()
+        )
+    }
+    viewModel {
+        UpgradeViewModel(
+            upgradeAccountUseCase = get(),
+            snackbarController = get(),
+            usernameValidator = get(),
+            passwordValidator = get()
         )
     }
     viewModel { (serverId: Long, serverName: String?) ->
