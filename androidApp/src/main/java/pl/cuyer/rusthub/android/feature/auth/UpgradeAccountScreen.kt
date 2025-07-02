@@ -161,7 +161,7 @@ private fun UpgradeScreenExpanded(state: UpgradeState, onAction: (UpgradeAction)
     Row(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = spacing.medium),
+            .padding(spacing.medium),
         verticalAlignment = Alignment.CenterVertically
     ) {
         UpgradeStaticContent(modifier = Modifier.weight(1f))

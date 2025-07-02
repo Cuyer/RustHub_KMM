@@ -8,6 +8,7 @@ import org.koin.dsl.module
 import pl.cuyer.rusthub.data.local.DatabaseDriverFactory
 import pl.cuyer.rusthub.data.network.HttpClientFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
+import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
@@ -19,12 +20,11 @@ import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.LogoutScheduler
-import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
-import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
+import pl.cuyer.rusthub.util.TokenRefresher
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory(androidContext()).create() }
@@ -96,7 +96,6 @@ actual val platformModule: Module = module {
             deleteAccountUseCase = get(),
             snackbarController = get(),
             passwordValidator = get(),
-            usernameValidator = get(),
             getUserUseCase = get()
         )
     }

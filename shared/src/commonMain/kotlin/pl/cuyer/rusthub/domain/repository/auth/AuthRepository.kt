@@ -15,6 +15,6 @@ interface AuthRepository {
     fun loginWithGoogle(token: String): Flow<Result<TokenPair>>
     fun upgradeWithGoogle(token: String): Flow<Result<TokenPair>>
     fun logout(): Flow<Result<Unit>>
-    fun deleteAccount(username: String, password: String): Flow<Result<Unit>>
+    fun deleteAccount(password: String): Flow<Result<Unit>>
     fun checkUserExists(email: String): Flow<Result<UserExistsInfo>>
 }

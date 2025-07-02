@@ -13,8 +13,8 @@ class DeleteAccountUseCase(
     private val dataSource: AuthDataSource,
     private val tokenRefresher: TokenRefresher,
 ) {
-    operator fun invoke(username: String, password: String): Flow<Result<Unit>> = channelFlow {
-        repository.deleteAccount(username, password).collectLatest { result ->
+    operator fun invoke(password: String): Flow<Result<Unit>> = channelFlow {
+        repository.deleteAccount(password).collectLatest { result ->
             when (result) {
                 is Result.Success -> {
                     dataSource.deleteUser()

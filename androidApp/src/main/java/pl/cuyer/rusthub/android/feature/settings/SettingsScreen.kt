@@ -73,14 +73,7 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        text = "Settings",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                },
+                title = { },
                 actions = {
                     IconButton(onClick = { onAction(SettingsAction.OnLogout) }) {
                         val icon = Icons.AutoMirrored.Default.Logout
