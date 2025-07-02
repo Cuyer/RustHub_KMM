@@ -21,6 +21,7 @@ import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.LogoutScheduler
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
+import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
@@ -28,6 +29,7 @@ import pl.cuyer.rusthub.util.SyncScheduler
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory(androidContext()).create() }
     single { HttpClientFactory(get(), get()).create() }
+    single { TokenRefresher(get()) }
     single { ClipboardHandler(get()) }
     single { SyncScheduler(get()) }
     single { SubscriptionSyncScheduler(get()) }
