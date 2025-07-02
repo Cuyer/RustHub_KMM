@@ -8,4 +8,5 @@ data class UpgradeState(
     val usernameError: String? = null,
     val passwordError: String? = null,
     val isLoading: Boolean = false,
+    val googleLoading: Boolean = false,
 )

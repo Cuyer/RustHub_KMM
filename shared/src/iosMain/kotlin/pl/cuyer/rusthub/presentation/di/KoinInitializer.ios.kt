@@ -81,6 +81,9 @@ actual val platformModule: Module = module {
     factory {
         UpgradeViewModel(
             upgradeAccountUseCase = get(),
+            upgradeWithGoogleUseCase = get(),
+            getGoogleClientIdUseCase = get(),
+            googleAuthClient = get(),
             snackbarController = get(),
             usernameValidator = get(),
             passwordValidator = get(),

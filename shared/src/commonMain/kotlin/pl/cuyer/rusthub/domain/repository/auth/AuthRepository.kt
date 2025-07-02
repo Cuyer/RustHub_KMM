@@ -13,6 +13,7 @@ interface AuthRepository {
     fun upgrade(username: String, email: String, password: String): Flow<Result<TokenPair>>
     fun authAnonymously(): Flow<Result<AccessToken>>
     fun loginWithGoogle(token: String): Flow<Result<TokenPair>>
+    fun upgradeWithGoogle(token: String): Flow<Result<TokenPair>>
     fun logout(): Flow<Result<Unit>>
     fun deleteAccount(username: String, password: String): Flow<Result<Unit>>
     fun checkUserExists(email: String): Flow<Result<UserExistsInfo>>

@@ -4,7 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UpgradeRequest(
-    val username: String,
-    val email: String,
-    val password: String
+    val username: String? = null,
+    val password: String? = null,
+    val email: String? = null,
+    val token: String? = null,
 )

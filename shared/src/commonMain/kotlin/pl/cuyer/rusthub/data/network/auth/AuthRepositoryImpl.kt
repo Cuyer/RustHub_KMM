@@ -86,7 +86,13 @@ class AuthRepositoryImpl(
     ): Flow<Result<TokenPair>> {
         return safeApiCall<TokenPairDto> {
             httpClient.post(NetworkConstants.BASE_URL + "auth/upgrade") {
-                setBody(UpgradeRequest(username, email, password))
+                setBody(
+                    UpgradeRequest(
+                        username = username,
+                        password = password,
+                        email = email,
+                    )
+                )
             }
         }.map { result ->
             when (result) {
@@ -113,6 +119,20 @@ class AuthRepositoryImpl(
         return safeApiCall<TokenPairDto> {
             httpClient.post(NetworkConstants.BASE_URL + "auth/google") {
                 setBody(GoogleLoginRequest(token))
+            }
+        }.map { result ->
+            when (result) {
+                is Result.Success -> Result.Success(result.data.toDomain())
+                is Result.Error -> result
+                is Result.Loading -> Result.Loading
+            }
+        }
+    }
+
+    override fun upgradeWithGoogle(token: String): Flow<Result<TokenPair>> {
+        return safeApiCall<TokenPairDto> {
+            httpClient.post(NetworkConstants.BASE_URL + "auth/upgrade") {
+                setBody(UpgradeRequest(token = token))
             }
         }.map { result ->
             when (result) {

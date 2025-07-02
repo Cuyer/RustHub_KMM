@@ -6,4 +6,5 @@ sealed interface UpgradeAction {
     data class OnUsernameChange(val username: String) : UpgradeAction
     data class OnPasswordChange(val password: String) : UpgradeAction
     data object OnNavigateUp : UpgradeAction
+    data object OnGoogleLogin : UpgradeAction
 }
