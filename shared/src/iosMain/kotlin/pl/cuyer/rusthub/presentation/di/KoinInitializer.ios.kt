@@ -41,6 +41,9 @@ actual val platformModule: Module = module {
             getGoogleClientIdUseCase = get(),
             googleAuthClient = get(),
             snackbarController = get(),
+            loginWithGoogleUseCase = get(),
+            getGoogleClientIdUseCase = get(),
+            googleAuthClient = get()
         )
     }
     factory { (email: String, exists: Boolean, provider: AuthProvider?) ->

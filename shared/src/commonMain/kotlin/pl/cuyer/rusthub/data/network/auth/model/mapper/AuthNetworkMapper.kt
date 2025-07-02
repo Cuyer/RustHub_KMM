@@ -29,6 +29,6 @@ fun TokenPairDto.toDomain(): TokenPair {
 fun UserExistsResponseDto.toDomain(): UserExistsInfo {
     return UserExistsInfo(
         exists = exists,
-        provider = provider?.let { AuthProvider.valueOf(it) }
+        provider = provider
     )
 }

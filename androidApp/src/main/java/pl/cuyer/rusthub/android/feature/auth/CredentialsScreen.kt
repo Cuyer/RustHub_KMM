@@ -1,9 +1,12 @@
 package pl.cuyer.rusthub.android.feature.auth
 
 import android.app.Activity
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.animateBounds
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +42,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -77,7 +82,7 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 
 @OptIn(
     ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3ExpressiveApi::class,
-    ExperimentalMaterial3Api::class
+    ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class
 )
 @Composable
 fun CredentialsScreen(
@@ -119,19 +124,44 @@ fun CredentialsScreen(
             )
         }
     ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = null
-                ) { focusManager.clearFocus() }
-        ) {
-            if (isTabletMode) {
-                CredentialsScreenExpanded(state.value, onAction)
-            } else {
-                CredentialsScreenCompact(state.value, onAction)
+        LookaheadScope {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .animateBounds(this)
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) { focusManager.clearFocus() }
+            ) {
+                if (isTabletMode) {
+                    CredentialsScreenExpanded(
+                        email = state.value.email,
+                        userExists = state.value.userExists,
+                        provider = state.value.provider,
+                        googleLoading = state.value.googleLoading,
+                        username = state.value.username,
+                        password = state.value.password,
+                        passwordError = state.value.passwordError,
+                        usernameError = state.value.usernameError,
+                        isLoading = state.value.isLoading,
+                        onAction = onAction
+                    )
+                } else {
+                    CredentialsScreenCompact(
+                        email = state.value.email,
+                        userExists = state.value.userExists,
+                        provider = state.value.provider,
+                        googleLoading = state.value.googleLoading,
+                        username = state.value.username,
+                        password = state.value.password,
+                        passwordError = state.value.passwordError,
+                        usernameError = state.value.usernameError,
+                        isLoading = state.value.isLoading,
+                        onAction = onAction
+                    )
+                }
             }
         }
     }
@@ -182,7 +212,18 @@ private fun CredentialsStaticContent(
 }
 
 @Composable
-private fun CredentialsScreenCompact(state: CredentialsState, onAction: (CredentialsAction) -> Unit) {
+private fun CredentialsScreenCompact(
+    email: String,
+    userExists: Boolean,
+    provider: AuthProvider?,
+    googleLoading: Boolean,
+    username: String,
+    password: String,
+    passwordError: String? = null,
+    usernameError: String? = null,
+    isLoading: Boolean,
+    onAction: (CredentialsAction) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -191,54 +232,27 @@ private fun CredentialsScreenCompact(state: CredentialsState, onAction: (Credent
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
         CredentialsStaticContent(
-            email = state.email,
-            userExists = state.userExists,
-            provider = state.provider
+            email = email,
+            userExists = userExists,
+            provider = provider
         )
-        CredentialsFields(state, onAction)
-        AppButton(
-            onClick = { onAction(CredentialsAction.OnSubmit) },
-            isLoading = state.isLoading,
-            enabled = when (state.userExists) {
-                true -> state.password.isNotBlank()
-                false -> state.username.isNotBlank() && state.password.isNotBlank()
-            },
-            modifier = Modifier
-                .imePadding()
-                .fillMaxWidth()
-        ) { Text("Continue") }
-    }
-}
-
-@Composable
-private fun CredentialsScreenExpanded(state: CredentialsState, onAction: (CredentialsAction) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(spacing.medium),
-        horizontalArrangement = Arrangement.spacedBy(spacing.large),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        CredentialsStaticContent(
-            modifier = Modifier.weight(1f),
-            email = state.email,
-            userExists = state.userExists,
-            provider = state.provider
+        CredentialsFields(
+            userExists = userExists,
+            provider = provider,
+            googleLoading = googleLoading,
+            username = username,
+            password = password,
+            passwordError = passwordError,
+            usernameError = usernameError,
+            onAction = onAction
         )
-
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(spacing.small)
-        ) {
-            CredentialsFields(state, onAction)
+        if (provider != AuthProvider.GOOGLE) {
             AppButton(
                 onClick = { onAction(CredentialsAction.OnSubmit) },
-                isLoading = state.isLoading,
-                enabled = when (state.userExists) {
-                    true -> state.password.isNotBlank()
-                    false -> state.username.isNotBlank() && state.password.isNotBlank()
+                isLoading = isLoading,
+                enabled = when (userExists) {
+                    true -> password.isNotBlank()
+                    false -> username.isNotBlank() && password.isNotBlank()
                 },
                 modifier = Modifier
                     .imePadding()
@@ -249,53 +263,130 @@ private fun CredentialsScreenExpanded(state: CredentialsState, onAction: (Creden
 }
 
 @Composable
-private fun CredentialsFields(state: CredentialsState, onAction: (CredentialsAction) -> Unit) {
-    if (state.userExists && state.provider == AuthProvider.GOOGLE) {
-        SignProviderButton(
-            image = getImageByFileName("ic_google").drawableResId,
-            contentDescription = "Google logo",
-            text = "Continue with Google",
-            onClick = { onAction(CredentialsAction.OnSubmit) },
-            modifier = Modifier.fillMaxWidth()
+private fun CredentialsScreenExpanded(
+    email: String,
+    userExists: Boolean,
+    provider: AuthProvider?,
+    googleLoading: Boolean,
+    username: String,
+    password: String,
+    passwordError: String? = null,
+    usernameError: String? = null,
+    isLoading: Boolean,
+    onAction: (CredentialsAction) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = spacing.medium),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        CredentialsStaticContent(
+            modifier = Modifier.weight(1f),
+            email = email,
+            userExists = userExists,
+            provider = provider
         )
-        return
-    }
 
-    if (!state.userExists) {
-        AppTextField(
-            requestFocus = true,
-            value = state.username,
-            onValueChange = { onAction(CredentialsAction.OnUsernameChange(it)) },
-            labelText = "Username",
-            placeholderText = "Enter your username",
-            isError = state.usernameError != null,
-            errorText = state.usernameError,
-            modifier = Modifier.fillMaxWidth(),
-            keyboardType = KeyboardType.Text,
-            imeAction = ImeAction.Next
-        )
-    }
-    if (state.provider != AuthProvider.GOOGLE) {
-        AppSecureTextField(
-            requestFocus = state.userExists,
-            value = state.password,
-            onValueChange = { onAction(CredentialsAction.OnPasswordChange(it)) },
-            labelText = "Password",
-            placeholderText = "Enter your password",
-            onSubmit = { onAction(CredentialsAction.OnSubmit) },
-            isError = state.passwordError != null,
-            errorText = state.passwordError,
-            modifier = Modifier.fillMaxWidth(),
-            imeAction = when (state.userExists) {
-                true -> if (state.password.isNotBlank()) ImeAction.Send else ImeAction.Done
-                false -> if (state.username.isNotBlank() && state.password.isNotBlank()) ImeAction.Send else ImeAction.Done
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(spacing.small)
+        ) {
+            CredentialsFields(
+                userExists = userExists,
+                provider = provider,
+                googleLoading = googleLoading,
+                username = username,
+                password = password,
+                passwordError = passwordError,
+                usernameError = usernameError,
+                onAction = onAction
+            )
+            if (provider != AuthProvider.GOOGLE) {
+                AppButton(
+                    onClick = { onAction(CredentialsAction.OnSubmit) },
+                    isLoading = isLoading,
+                    enabled = when (userExists) {
+                        true -> password.isNotBlank()
+                        false -> username.isNotBlank() && password.isNotBlank()
+                    },
+                    modifier = Modifier
+                        .imePadding()
+                        .fillMaxWidth()
+                ) { Text("Continue") }
             }
-        )
-        if (state.userExists) {
-            TextButton(
-                modifier = Modifier.align(Alignment.End),
-                onClick = {}
-            ) { Text(text = "Forgot password?") }
+        }
+    }
+}
+
+@Composable
+private fun CredentialsFields(
+    userExists: Boolean,
+    provider: AuthProvider?,
+    googleLoading: Boolean,
+    username: String,
+    password: String,
+    passwordError: String?,
+    usernameError: String?,
+    onAction: (CredentialsAction) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        if (userExists && provider == AuthProvider.GOOGLE) {
+            SignProviderButton(
+                image = getImageByFileName("ic_google").drawableResId,
+                contentDescription = "Google logo",
+                text = "Continue with Google",
+                modifier = Modifier.fillMaxWidth(),
+                isLoading = googleLoading,
+                backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White
+            ) {
+                onAction(CredentialsAction.OnGoogleLogin)
+            }
+            return
+        }
+
+        if (!userExists) {
+            AppTextField(
+                requestFocus = true,
+                value = username,
+                onValueChange = { onAction(CredentialsAction.OnUsernameChange(it)) },
+                labelText = "Username",
+                placeholderText = "Enter your username",
+                isError = usernameError != null,
+                errorText = usernameError,
+                modifier = Modifier.fillMaxWidth(),
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            )
+        }
+        if (provider != AuthProvider.GOOGLE) {
+            AppSecureTextField(
+                requestFocus = userExists,
+                value = password,
+                onValueChange = { onAction(CredentialsAction.OnPasswordChange(it)) },
+                labelText = "Password",
+                placeholderText = "Enter your password",
+                onSubmit = { onAction(CredentialsAction.OnSubmit) },
+                isError = passwordError != null,
+                errorText = passwordError,
+                modifier = Modifier.fillMaxWidth(),
+                imeAction = when (userExists) {
+                    true -> if (password.isNotBlank()) ImeAction.Send else ImeAction.Done
+                    false -> if (username.isNotBlank() && password.isNotBlank()) ImeAction.Send else ImeAction.Done
+                }
+            )
+            if (userExists) {
+                TextButton(
+                    modifier = Modifier.align(Alignment.End),
+                    onClick = {}
+                ) { Text(text = "Forgot password?") }
+            }
         }
     }
 }

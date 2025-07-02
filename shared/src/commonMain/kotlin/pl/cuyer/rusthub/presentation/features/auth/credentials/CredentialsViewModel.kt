@@ -22,10 +22,13 @@ import pl.cuyer.rusthub.domain.exception.UserAlreadyExistsException
 import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
 import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
 import pl.cuyer.rusthub.domain.model.AuthProvider
+import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
+import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.validator.EmailValidator
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
@@ -39,7 +42,10 @@ class CredentialsViewModel(
     private val registerUserUseCase: RegisterUserUseCase,
     private val snackbarController: SnackbarController,
     private val passwordValidator: PasswordValidator,
-    private val usernameValidator: UsernameValidator
+    private val usernameValidator: UsernameValidator,
+    private val loginWithGoogleUseCase: LoginWithGoogleUseCase,
+    private val getGoogleClientIdUseCase: GetGoogleClientIdUseCase,
+    private val googleAuthClient: GoogleAuthClient
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -54,10 +60,12 @@ class CredentialsViewModel(
     )
 
     private var submitJob: Job? = null
+    var googleJob: Job? = null
 
     fun onAction(action: CredentialsAction) {
         when (action) {
             CredentialsAction.OnSubmit -> submit()
+            CredentialsAction.OnGoogleLogin -> startGoogleLogin()
             is CredentialsAction.OnUsernameChange -> updateUsername(action.username)
             is CredentialsAction.OnPasswordChange -> updatePassword(action.password)
             CredentialsAction.OnNavigateUp -> navigateUp()
@@ -102,6 +110,54 @@ class CredentialsViewModel(
                     }
                 }
         }
+    }
+
+    private fun startGoogleLogin() {
+        googleJob?.cancel()
+        googleJob = coroutineScope.launch {
+            getGoogleClientIdUseCase()
+                .onStart { updateGoogleLoading(true) }
+                .onCompletion { updateGoogleLoading(false) }
+                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .collectLatest { result ->
+                    when (result) {
+                        is Result.Success -> {
+                            val token = googleAuthClient.getIdToken(result.data)
+                            if (token != null) {
+                                loginWithGoogleToken(token)
+                            } else {
+                                showErrorSnackbar("Google sign in failed")
+                            }
+                        }
+                        is Result.Error -> showErrorSnackbar(
+                            result.exception.message ?: "Unable to get client id"
+                        )
+                        else -> Unit
+                    }
+                }
+        }
+    }
+
+    private fun loginWithGoogleToken(token: String) {
+        googleJob?.cancel()
+        googleJob = coroutineScope.launch {
+            loginWithGoogleUseCase(token)
+                .onStart { updateGoogleLoading(true) }
+                .onCompletion { updateGoogleLoading(false) }
+                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .collectLatest { result ->
+                    ensureActive()
+                    when (result) {
+                        is Result.Success -> navigate(ServerList)
+                        is Result.Error -> showErrorSnackbar("Error occurred during Google sign in")
+                        else -> Unit
+                    }
+                }
+        }
+    }
+
+    private fun updateGoogleLoading(isLoading: Boolean) {
+        _state.update { it.copy(googleLoading = isLoading) }
     }
 
     private fun handleError(exception: Throwable) {

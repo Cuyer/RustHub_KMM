@@ -5,4 +5,5 @@ sealed interface CredentialsAction {
     data class OnUsernameChange(val username: String) : CredentialsAction
     data class OnPasswordChange(val password: String) : CredentialsAction
     data object OnNavigateUp : CredentialsAction
+    data object OnGoogleLogin : CredentialsAction
 }
