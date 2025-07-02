@@ -12,7 +12,8 @@ fun AccessTokenDto.toDomain(): AccessToken {
     return AccessToken(
         accessToken = accessToken,
         username = username,
-        provider = AuthProvider.valueOf(provider)
+        provider = AuthProvider.valueOf(provider),
+        subscribed = subscribed
     )
 }
 
@@ -22,7 +23,8 @@ fun TokenPairDto.toDomain(): TokenPair {
         refreshToken = refreshToken,
         username = username,
         email = email,
-        provider = AuthProvider.valueOf(provider)
+        provider = AuthProvider.valueOf(provider),
+        subscribed = subscribed
     )
 }
 

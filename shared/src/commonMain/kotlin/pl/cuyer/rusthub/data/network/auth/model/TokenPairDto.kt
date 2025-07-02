@@ -8,5 +8,6 @@ data class TokenPairDto(
     val refreshToken: String,
     val username: String,
     val email: String,
-    val provider: String
+    val provider: String,
+    val subscribed: Boolean = false
 )

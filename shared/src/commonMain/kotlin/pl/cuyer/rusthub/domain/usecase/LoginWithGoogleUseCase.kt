@@ -25,7 +25,8 @@ class LoginWithGoogleUseCase(
                             username = username,
                             accessToken = accessToken,
                             refreshToken = refreshToken,
-                            provider = provider
+                            provider = provider,
+                            subscribed = subscribed
                         )
                         tokenManager.currentToken()
                         send(Result.Success(Unit))
