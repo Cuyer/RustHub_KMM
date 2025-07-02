@@ -30,6 +30,7 @@ import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
+import pl.cuyer.rusthub.util.anonymousAccountExpiresInDays
 
 class SettingsViewModel(
     private val getSettingsUseCase: GetSettingsUseCase,
@@ -111,7 +112,14 @@ class SettingsViewModel(
             it.copy(
                 username = user?.username,
                 provider = user?.provider,
-                subscribed = user?.subscribed
+                subscribed = user?.subscribed,
+                anonymousExpirationDays = user?.let { u ->
+                    if (u.provider == AuthProvider.ANONYMOUS) {
+                        anonymousAccountExpiresInDays(u.accessToken)
+                    } else {
+                        null
+                    }
+                }
             )
         }
     }
