@@ -10,5 +10,6 @@ data class SettingsState(
     val username: String? = null,
     val showSubscriptionDialog: Boolean = false,
     val provider: AuthProvider? = null,
-    val subscribed: Boolean = false
+    val subscribed: Boolean = false,
+    val anonymousExpirationDays: Int? = null
 )
