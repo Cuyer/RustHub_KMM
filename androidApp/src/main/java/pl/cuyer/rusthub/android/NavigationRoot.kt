@@ -48,9 +48,11 @@ import pl.cuyer.rusthub.android.feature.settings.ChangePasswordScreen
 import pl.cuyer.rusthub.android.feature.settings.PrivacyPolicyScreen
 import pl.cuyer.rusthub.android.feature.settings.SettingsScreen
 import pl.cuyer.rusthub.android.feature.settings.DeleteAccountScreen
+import pl.cuyer.rusthub.android.feature.auth.UpgradeAccountScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.common.Constants
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
+import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
@@ -60,6 +62,7 @@ import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.Credentials
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
+import pl.cuyer.rusthub.presentation.navigation.UpgradeAccount
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.Settings
@@ -203,6 +206,20 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                             val viewModel = koinViewModel<DeleteAccountViewModel>()
                             val state = viewModel.state.collectAsStateWithLifecycle()
                             DeleteAccountScreen(
+                                onNavigateUp = { backStack.removeLastOrNull() },
+                                onNavigate = { dest ->
+                                    if (dest is Onboarding) backStack.clear()
+                                    backStack.add(dest)
+                                },
+                                uiEvent = viewModel.uiEvent,
+                                stateProvider = { state },
+                                onAction = viewModel::onAction
+                            )
+                        }
+                        entry<UpgradeAccount> {
+                            val viewModel = koinViewModel<UpgradeViewModel>()
+                            val state = viewModel.state.collectAsStateWithLifecycle()
+                            UpgradeAccountScreen(
                                 onNavigateUp = { backStack.removeLastOrNull() },
                                 onNavigate = { dest ->
                                     if (dest is Onboarding) backStack.clear()
