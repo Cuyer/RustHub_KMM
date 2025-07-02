@@ -2,9 +2,11 @@ package pl.cuyer.rusthub.data.network.auth.model.mapper
 
 import pl.cuyer.rusthub.data.network.auth.model.AccessTokenDto
 import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
+import pl.cuyer.rusthub.data.network.auth.model.UserExistsResponseDto
 import pl.cuyer.rusthub.domain.model.AccessToken
 import pl.cuyer.rusthub.domain.model.TokenPair
 import pl.cuyer.rusthub.domain.model.AuthProvider
+import pl.cuyer.rusthub.domain.model.UserExistsInfo
 
 fun AccessTokenDto.toDomain(): AccessToken {
     return AccessToken(
@@ -21,5 +23,12 @@ fun TokenPairDto.toDomain(): TokenPair {
         username = username,
         email = email,
         provider = AuthProvider.valueOf(provider)
+    )
+}
+
+fun UserExistsResponseDto.toDomain(): UserExistsInfo {
+    return UserExistsInfo(
+        exists = exists,
+        provider = provider?.let { AuthProvider.valueOf(it) }
     )
 }

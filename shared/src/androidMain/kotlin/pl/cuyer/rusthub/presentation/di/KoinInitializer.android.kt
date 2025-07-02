@@ -18,6 +18,7 @@ import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.LogoutScheduler
+import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
 import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
@@ -48,10 +49,11 @@ actual val platformModule: Module = module {
             emailValidator = get()
         )
     }
-    viewModel { (email: String, exists: Boolean) ->
+    viewModel { (email: String, exists: Boolean, provider: AuthProvider?) ->
         CredentialsViewModel(
             email = email,
             userExists = exists,
+            provider = provider,
             loginUserUseCase = get(),
             registerUserUseCase = get(),
             snackbarController = get(),

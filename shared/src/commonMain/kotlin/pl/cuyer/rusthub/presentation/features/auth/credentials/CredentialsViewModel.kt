@@ -21,6 +21,7 @@ import pl.cuyer.rusthub.domain.exception.InvalidCredentialsException
 import pl.cuyer.rusthub.domain.exception.UserAlreadyExistsException
 import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
 import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
+import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
@@ -33,6 +34,7 @@ import pl.cuyer.rusthub.util.validator.ValidationResult
 class CredentialsViewModel(
     email: String,
     private val userExists: Boolean,
+    private val provider: AuthProvider?,
     private val loginUserUseCase: LoginUserUseCase,
     private val registerUserUseCase: RegisterUserUseCase,
     private val snackbarController: SnackbarController,
@@ -42,11 +44,13 @@ class CredentialsViewModel(
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    private val _state = MutableStateFlow(CredentialsState(email = email, userExists = userExists))
+    private val _state = MutableStateFlow(
+        CredentialsState(email = email, userExists = userExists, provider = provider)
+    )
     val state = _state.stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000L),
-        initialValue = CredentialsState(email = email, userExists = userExists)
+        initialValue = CredentialsState(email = email, userExists = userExists, provider = provider)
     )
 
     private var submitJob: Job? = null

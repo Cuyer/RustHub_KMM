@@ -3,8 +3,7 @@ package pl.cuyer.rusthub.domain.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-enum class AuthProvider {
-    LOCAL,
-    GOOGLE,
-    ANONYMOUS
-}
+data class UserExistsInfo(
+    val exists: Boolean,
+    val provider: AuthProvider? = null
+)
