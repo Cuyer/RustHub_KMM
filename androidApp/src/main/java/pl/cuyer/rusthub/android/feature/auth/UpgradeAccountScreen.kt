@@ -80,6 +80,17 @@ fun UpgradeAccountScreen(
                 errorText = state.value.usernameError,
                 modifier = Modifier.fillMaxWidth(),
                 imeAction = ImeAction.Next,
+                keyboardType = KeyboardType.Text
+            )
+            AppTextField(
+                value = state.value.email,
+                onValueChange = { onAction(UpgradeAction.OnEmailChange(it)) },
+                labelText = "E-mail",
+                placeholderText = "Enter e-mail",
+                isError = state.value.emailError != null,
+                errorText = state.value.emailError,
+                modifier = Modifier.fillMaxWidth(),
+                imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Email
             )
             AppSecureTextField(

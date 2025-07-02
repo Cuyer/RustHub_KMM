@@ -83,7 +83,8 @@ actual val platformModule: Module = module {
             upgradeAccountUseCase = get(),
             snackbarController = get(),
             usernameValidator = get(),
-            passwordValidator = get()
+            passwordValidator = get(),
+            emailValidator = get()
         )
     }
 }
