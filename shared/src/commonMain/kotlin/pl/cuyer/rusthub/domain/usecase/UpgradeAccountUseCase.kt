@@ -15,8 +15,8 @@ class UpgradeAccountUseCase(
     private val tokenManager: MessagingTokenManager,
 ) {
     @OptIn(ExperimentalPagingApi::class)
-    operator fun invoke(username: String, password: String): Flow<Result<Unit>> = channelFlow {
-        repository.upgrade(username, password).collectLatest { result ->
+    operator fun invoke(username: String, email: String, password: String): Flow<Result<Unit>> = channelFlow {
+        repository.upgrade(username, email, password).collectLatest { result ->
             when (result) {
                 is Result.Success -> {
                     with(result.data) {

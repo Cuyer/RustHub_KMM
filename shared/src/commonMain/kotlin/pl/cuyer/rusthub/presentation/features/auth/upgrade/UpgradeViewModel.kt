@@ -19,6 +19,7 @@ import pl.cuyer.rusthub.domain.usecase.UpgradeAccountUseCase
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.util.validator.EmailValidator
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
 
@@ -27,6 +28,7 @@ class UpgradeViewModel(
     private val snackbarController: SnackbarController,
     private val usernameValidator: UsernameValidator,
     private val passwordValidator: PasswordValidator,
+    private val emailValidator: EmailValidator,
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -45,6 +47,7 @@ class UpgradeViewModel(
             UpgradeAction.OnSubmit -> submit()
             is UpgradeAction.OnUsernameChange -> updateUsername(action.username)
             is UpgradeAction.OnPasswordChange -> updatePassword(action.password)
+            is UpgradeAction.OnEmailChange -> updateEmail(action.email)
             UpgradeAction.OnNavigateUp -> navigateUp()
         }
     }
@@ -61,24 +64,30 @@ class UpgradeViewModel(
         _state.update { it.copy(password = password, passwordError = null) }
     }
 
+    private fun updateEmail(email: String) {
+        _state.update { it.copy(email = email, emailError = null) }
+    }
+
     private fun submit() {
         submitJob?.cancel()
         submitJob = coroutineScope.launch {
             val usernameResult = usernameValidator.validate(_state.value.username)
             val passwordResult = passwordValidator.validate(_state.value.password)
+            val emailResult = emailValidator.validate(_state.value.email)
             _state.update {
                 it.copy(
                     usernameError = usernameResult.errorMessage,
                     passwordError = passwordResult.errorMessage,
+                    emailError = emailResult.errorMessage,
                 )
             }
-            if (!usernameResult.isValid || !passwordResult.isValid) {
+            if (!usernameResult.isValid || !passwordResult.isValid || !emailResult.isValid) {
                 snackbarController.sendEvent(
                     SnackbarEvent("Please correct the errors above and try again.")
                 )
                 return@launch
             }
-            upgradeAccountUseCase(_state.value.username, _state.value.password)
+            upgradeAccountUseCase(_state.value.username, _state.value.email, _state.value.password)
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
                 .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
