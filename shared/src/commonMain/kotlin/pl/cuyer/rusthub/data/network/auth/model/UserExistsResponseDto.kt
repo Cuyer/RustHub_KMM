@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserExistsResponseDto(
-    val exists: Boolean
+    val exists: Boolean,
+    val provider: String? = null
 )
 

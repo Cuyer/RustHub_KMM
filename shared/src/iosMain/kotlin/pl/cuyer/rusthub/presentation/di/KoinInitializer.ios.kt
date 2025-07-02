@@ -6,6 +6,7 @@ import pl.cuyer.rusthub.data.local.DatabaseDriverFactory
 import pl.cuyer.rusthub.data.network.HttpClientFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
+import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
@@ -42,10 +43,11 @@ actual val platformModule: Module = module {
             snackbarController = get(),
         )
     }
-    factory { (email: String, exists: Boolean) ->
+    factory { (email: String, exists: Boolean, provider: AuthProvider?) ->
         CredentialsViewModel(
             email = email,
             userExists = exists,
+            provider = provider,
             loginUserUseCase = get(),
             registerUserUseCase = get(),
             snackbarController = get(),

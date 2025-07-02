@@ -23,6 +23,7 @@ import pl.cuyer.rusthub.data.network.util.BaseApiResponse
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
 import pl.cuyer.rusthub.domain.model.AccessToken
 import pl.cuyer.rusthub.domain.model.TokenPair
+import pl.cuyer.rusthub.domain.model.UserExistsInfo
 import pl.cuyer.rusthub.domain.repository.auth.AuthRepository
 
 class AuthRepositoryImpl(
@@ -148,14 +149,14 @@ class AuthRepositoryImpl(
         }
     }
 
-    override fun checkUserExists(email: String): Flow<Result<Boolean>> {
+    override fun checkUserExists(email: String): Flow<Result<UserExistsInfo>> {
         return safeApiCall<UserExistsResponseDto> {
             httpClient.get(NetworkConstants.BASE_URL + "auth/email-exists") {
                 parameter("email", email)
             }
         }.map { result ->
             when (result) {
-                is Result.Success -> Result.Success(result.data.exists)
+                is Result.Success -> Result.Success(result.data.toDomain())
                 is Result.Error -> result
                 is Result.Loading -> Result.Loading
             }

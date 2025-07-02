@@ -112,7 +112,9 @@ class OnboardingViewModel(
                 .collectLatest { result ->
                     ensureActive()
                     when (result) {
-                        is Result.Success -> navigate(Credentials(email, result.data))
+                        is Result.Success -> navigate(
+                            Credentials(email, result.data.exists, result.data.provider)
+                        )
                         is Result.Error -> showErrorSnackbar(result.exception.message ?: "Error")
                         else -> Unit
                     }

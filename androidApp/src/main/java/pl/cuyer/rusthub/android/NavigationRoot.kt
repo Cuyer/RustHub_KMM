@@ -142,7 +142,8 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                             )
                         }
                         entry<Credentials> { key ->
-                            val viewModel: CredentialsViewModel = koinViewModel { parametersOf(key.email, key.exists) }
+                            val viewModel: CredentialsViewModel =
+                                koinViewModel { parametersOf(key.email, key.exists, key.provider) }
                             val state = viewModel.state.collectAsStateWithLifecycle()
                             CredentialsScreen(
                                 stateProvider = { state },
