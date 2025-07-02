@@ -16,6 +16,9 @@ import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.usecase.UpgradeAccountUseCase
+import pl.cuyer.rusthub.domain.usecase.UpgradeWithGoogleUseCase
+import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
+import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
@@ -25,6 +28,9 @@ import pl.cuyer.rusthub.util.validator.UsernameValidator
 
 class UpgradeViewModel(
     private val upgradeAccountUseCase: UpgradeAccountUseCase,
+    private val upgradeWithGoogleUseCase: UpgradeWithGoogleUseCase,
+    private val getGoogleClientIdUseCase: GetGoogleClientIdUseCase,
+    private val googleAuthClient: GoogleAuthClient,
     private val snackbarController: SnackbarController,
     private val usernameValidator: UsernameValidator,
     private val passwordValidator: PasswordValidator,
@@ -41,6 +47,7 @@ class UpgradeViewModel(
     )
 
     private var submitJob: Job? = null
+    private var googleJob: Job? = null
 
     fun onAction(action: UpgradeAction) {
         when (action) {
@@ -48,6 +55,7 @@ class UpgradeViewModel(
             is UpgradeAction.OnUsernameChange -> updateUsername(action.username)
             is UpgradeAction.OnPasswordChange -> updatePassword(action.password)
             is UpgradeAction.OnEmailChange -> updateEmail(action.email)
+            UpgradeAction.OnGoogleLogin -> startGoogleLogin()
             UpgradeAction.OnNavigateUp -> navigateUp()
         }
     }
@@ -110,8 +118,62 @@ class UpgradeViewModel(
         }
     }
 
+    private fun startGoogleLogin() {
+        googleJob?.cancel()
+        googleJob = coroutineScope.launch {
+            getGoogleClientIdUseCase()
+                .onStart { updateGoogleLoading(true) }
+                .onCompletion { updateGoogleLoading(false) }
+                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .collectLatest { result ->
+                    when (result) {
+                        is Result.Success -> {
+                            val token = googleAuthClient.getIdToken(result.data)
+                            if (token != null) {
+                                upgradeWithGoogleToken(token)
+                            } else {
+                                showErrorSnackbar("Google sign in failed")
+                            }
+                        }
+                        is Result.Error -> showErrorSnackbar(
+                            result.exception.message ?: "Unable to get client id"
+                        )
+                        else -> Unit
+                    }
+                }
+        }
+    }
+
+    private fun upgradeWithGoogleToken(token: String) {
+        googleJob?.cancel()
+        googleJob = coroutineScope.launch {
+            upgradeWithGoogleUseCase(token)
+                .onStart { updateGoogleLoading(true) }
+                .onCompletion { updateGoogleLoading(false) }
+                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .collectLatest { result ->
+                    when (result) {
+                        is Result.Success -> {
+                            snackbarController.sendEvent(
+                                SnackbarEvent("Account has been upgraded successfully!")
+                            )
+                            navigateUp()
+                        }
+                        is Result.Error -> showErrorSnackbar(
+                            result.exception.message ?: "Unable to upgrade account"
+                        )
+                        else -> Unit
+                    }
+                }
+        }
+    }
+
     private fun updateLoading(isLoading: Boolean) {
         _state.update { it.copy(isLoading = isLoading) }
+    }
+
+    private fun updateGoogleLoading(isLoading: Boolean) {
+        _state.update { it.copy(googleLoading = isLoading) }
     }
 
     private fun showErrorSnackbar(message: String) {

@@ -61,6 +61,7 @@ import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleSubscriptionUseCase
+import pl.cuyer.rusthub.domain.usecase.UpgradeWithGoogleUseCase
 import pl.cuyer.rusthub.presentation.settings.SettingsController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.util.MessagingTokenManager
@@ -120,6 +121,7 @@ val appModule = module {
     single { LogoutUserUseCase(get(), get()) }
     single { DeleteAccountUseCase(get(), get()) }
     single { UpgradeAccountUseCase(get(), get(), get()) }
+    single { UpgradeWithGoogleUseCase(get(), get(), get()) }
     single { GetSettingsUseCase(get()) }
     single { SaveSettingsUseCase(get()) }
     single { SettingsController(get()) }
