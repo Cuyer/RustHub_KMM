@@ -27,6 +27,9 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
 
 @Composable
@@ -39,13 +42,15 @@ fun AppSecureTextField(
     imeAction: ImeAction,
     onValueChange: (String) -> Unit = {},
     isError: Boolean = false,
-    errorText: String? = null
+    errorText: String? = null,
+    requestFocus: Boolean = false
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     var passwordVisible by remember { mutableStateOf(false) }
     val isKeyboardOpen by keyboardAsState()
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     LaunchedEffect(isKeyboardOpen) {
         if (!isKeyboardOpen) {
@@ -53,8 +58,15 @@ fun AppSecureTextField(
         }
     }
 
+    LaunchedEffect(lifecycleOwner.lifecycle) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            focusRequester.requestFocus()
+        }
+    }
+
     OutlinedTextField(
-        modifier = modifier.focusRequester(focusRequester),
+        modifier = if (requestFocus) modifier
+            .focusRequester(focusRequester) else modifier,
         value = value,
         onValueChange = onValueChange,
         readOnly = false,

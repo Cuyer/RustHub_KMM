@@ -151,6 +151,9 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                                 onNavigate = { dest ->
                                     backStack.clear()
                                     backStack.add(dest)
+                                },
+                                onNavigateUp = {
+                                    backStack.removeLastOrNull()
                                 }
                             )
                         }

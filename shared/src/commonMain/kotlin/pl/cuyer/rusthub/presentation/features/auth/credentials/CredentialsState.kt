@@ -5,7 +5,6 @@ data class CredentialsState(
     val userExists: Boolean,
     val username: String = "",
     val password: String = "",
-    val emailError: String? = null,
     val usernameError: String? = null,
     val passwordError: String? = null,
     val isLoading: Boolean = false

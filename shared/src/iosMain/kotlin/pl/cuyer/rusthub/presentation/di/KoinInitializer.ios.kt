@@ -50,8 +50,7 @@ actual val platformModule: Module = module {
             registerUserUseCase = get(),
             snackbarController = get(),
             passwordValidator = get(),
-            usernameValidator = get(),
-            emailValidator = get(),
+            usernameValidator = get()
         )
     }
     factory {

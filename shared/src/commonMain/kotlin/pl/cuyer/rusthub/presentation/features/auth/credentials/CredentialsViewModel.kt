@@ -37,8 +37,7 @@ class CredentialsViewModel(
     private val registerUserUseCase: RegisterUserUseCase,
     private val snackbarController: SnackbarController,
     private val passwordValidator: PasswordValidator,
-    private val usernameValidator: UsernameValidator,
-    private val emailValidator: EmailValidator,
+    private val usernameValidator: UsernameValidator
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -55,9 +54,15 @@ class CredentialsViewModel(
     fun onAction(action: CredentialsAction) {
         when (action) {
             CredentialsAction.OnSubmit -> submit()
-            is CredentialsAction.OnEmailChange -> updateEmail(action.email)
             is CredentialsAction.OnUsernameChange -> updateUsername(action.username)
             is CredentialsAction.OnPasswordChange -> updatePassword(action.password)
+            CredentialsAction.OnNavigateUp -> navigateUp()
+        }
+    }
+
+    private fun navigateUp() {
+        coroutineScope.launch {
+            _uiEvent.send(UiEvent.NavigateUp)
         }
     }
 
@@ -76,12 +81,6 @@ class CredentialsViewModel(
                 return@launch
             }
             val currentEmail = _state.value.email
-            val emailResult = if (currentEmail.isBlank()) emailValidator.validate(currentEmail) else ValidationResult(true)
-            _state.update { it.copy(emailError = emailResult.errorMessage) }
-            if (!emailResult.isValid) {
-                snackbarController.sendEvent(SnackbarEvent("Please correct the errors above and try again."))
-                return@launch
-            }
             if (userExists) {
                 loginUserUseCase(currentEmail, password)
             } else {
@@ -111,10 +110,6 @@ class CredentialsViewModel(
 
     private fun updateUsername(username: String) {
         _state.update { it.copy(username = username, usernameError = null) }
-    }
-
-    private fun updateEmail(email: String) {
-        _state.update { it.copy(email = email, emailError = null) }
     }
 
     private fun updatePassword(password: String) {
