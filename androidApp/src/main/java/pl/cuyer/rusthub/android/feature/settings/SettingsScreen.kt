@@ -258,7 +258,7 @@ private fun AccountSection(
         }
     }
 
-    if (!subscribed) {
+    if (!subscribed && provider != AuthProvider.ANONYMOUS) {
         AppTextButton(
             onClick = { onAction(SettingsAction.OnSubscriptionClick) }
         ) {
