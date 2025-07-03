@@ -129,10 +129,11 @@ actual class NotificationPresenter(private val context: Context) {
         context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
     private fun createPendingIntent(): PendingIntent {
+        val packageName = context.packageName
         val intent = Intent().apply {
             component = ComponentName(
-                PACKAGE_NAME,
-                MAIN_ACTIVITY
+                packageName,
+                "$packageName.MainActivity"
             )
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
@@ -142,9 +143,6 @@ actual class NotificationPresenter(private val context: Context) {
     //TODO można dodać nawigację po kliknięciu do serwera
 
     companion object {
-        const val MAIN_ACTIVITY =
-            BuildConfig.LIBRARY_PACKAGE_NAME + ".android." + BuildConfig.FLAVOR + ".MainActivity"
-        const val PACKAGE_NAME = BuildConfig.LIBRARY_PACKAGE_NAME + ".android." + BuildConfig.FLAVOR
         const val DEFAULT_CHANNEL_ID = "notification_channel_name"
     }
 }
