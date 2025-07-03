@@ -25,6 +25,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
@@ -51,10 +56,17 @@ fun AppTextField(
     }
     val isKeyboardOpen by keyboardAsState()
     val focusManager = LocalFocusManager.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(isKeyboardOpen) {
         if (!isKeyboardOpen) {
             focusManager.clearFocus()
+        }
+    }
+
+    LaunchedEffect(lifecycleOwner.lifecycle) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            focusRequester.requestFocus()
         }
     }
 

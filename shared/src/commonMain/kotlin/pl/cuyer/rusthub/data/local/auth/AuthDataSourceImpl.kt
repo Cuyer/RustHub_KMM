@@ -25,6 +25,7 @@ class AuthDataSourceImpl(
         accessToken: String,
         refreshToken: String?,
         provider: AuthProvider,
+        subscribed: Boolean,
     ) {
         withContext(Dispatchers.IO) {
             queries.insertUser(
@@ -33,7 +34,8 @@ class AuthDataSourceImpl(
                 username = username,
                 accessToken = accessToken,
                 refreshToken = refreshToken,
-                provider = provider.name
+                provider = provider.name,
+                subscribed = if (subscribed) 1L else 0L
             )
         }
     }

@@ -5,5 +5,6 @@ data class TokenPair(
     val refreshToken: String,
     val username: String,
     val email: String,
-    val provider: AuthProvider
+    val provider: AuthProvider,
+    val subscribed: Boolean,
 )

@@ -2,11 +2,13 @@ package pl.cuyer.rusthub.android.designsystem
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,16 +33,27 @@ fun SignProviderButton(
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
     tint: Color? = null,
+    isLoading: Boolean = false,
     onClick: () -> Unit
 ) {
     AppButton(
+        isLoading = isLoading,
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors().copy(
+        colors = ButtonDefaults.elevatedButtonColors().copy(
             containerColor = backgroundColor,
-            contentColor = contentColor
+            contentColor = contentColor,
+            disabledContainerColor = backgroundColor,
+            disabledContentColor = contentColor
         ),
+        loadingIndicator = {
+            CircularProgressIndicator(
+                color = contentColor,
+                modifier = Modifier.size(16.dp),
+                strokeWidth = 2.dp
+            )
+        }
     ) {
         Row(
             modifier = Modifier
@@ -76,12 +89,16 @@ fun SignProviderButton(
 @Preview(showBackground = true)
 @Composable
 private fun GoogleSignInButtonPreview() {
-    RustHubTheme(theme = Theme.SYSTEM) {
+    RustHubTheme(theme = Theme.DARK) {
         SignProviderButton(
+            modifier = Modifier.fillMaxWidth(),
             onClick = {},
+            isLoading = true,
             image = getImageByFileName("ic_google").drawableResId,
+            backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
+            contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
             contentDescription = "Google logo",
-            text = "Sign in with Google"
+            text = "Continue with Google"
         )
     }
 }

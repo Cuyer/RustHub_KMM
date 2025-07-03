@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.presentation.di
 
+import dev.icerock.moko.permissions.PermissionsController
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
@@ -7,27 +8,31 @@ import org.koin.dsl.module
 import pl.cuyer.rusthub.data.local.DatabaseDriverFactory
 import pl.cuyer.rusthub.data.network.HttpClientFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
-import pl.cuyer.rusthub.presentation.features.auth.login.LoginViewModel
-import pl.cuyer.rusthub.presentation.features.auth.register.RegisterViewModel
+import pl.cuyer.rusthub.domain.model.AuthProvider
+import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
+import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
+import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
-import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
-import pl.cuyer.rusthub.util.SyncScheduler
-import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
-import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.GoogleAuthClient
-import pl.cuyer.rusthub.util.MessagingTokenScheduler
 import pl.cuyer.rusthub.util.LogoutScheduler
-import dev.icerock.moko.permissions.PermissionsController
+import pl.cuyer.rusthub.util.MessagingTokenScheduler
+import pl.cuyer.rusthub.util.StoreNavigator
+import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
+import pl.cuyer.rusthub.util.SyncScheduler
+import pl.cuyer.rusthub.util.TokenRefresher
+import pl.cuyer.rusthub.util.ShareHandler
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory(androidContext()).create() }
     single { HttpClientFactory(get(), get()).create() }
+    single { TokenRefresher(get()) }
     single { ClipboardHandler(get()) }
+    single { ShareHandler(get()) }
     single { SyncScheduler(get()) }
     single { SubscriptionSyncScheduler(get()) }
     single { MessagingTokenScheduler(get()) }
@@ -41,30 +46,27 @@ actual val platformModule: Module = module {
     viewModel {
         OnboardingViewModel(
             authAnonymouslyUseCase = get(),
+            checkUserExistsUseCase = get(),
+            loginWithGoogleUseCase = get(),
+            getGoogleClientIdUseCase = get(),
+            googleAuthClient = get(),
             snackbarController = get(),
+            emailValidator = get()
         )
     }
-    viewModel {
-        LoginViewModel(
+    viewModel { (email: String, exists: Boolean, provider: AuthProvider?) ->
+        CredentialsViewModel(
+            email = email,
+            userExists = exists,
+            provider = provider,
             loginUserUseCase = get(),
-            loginWithGoogleUseCase = get(),
-            getGoogleClientIdUseCase = get(),
-            googleAuthClient = get(),
-            snackbarController = get(),
-            passwordValidator = get(),
-            usernameValidator = get()
-        )
-    }
-    viewModel {
-        RegisterViewModel(
             registerUserUseCase = get(),
+            snackbarController = get(),
+            passwordValidator = get(),
+            usernameValidator = get(),
             loginWithGoogleUseCase = get(),
             getGoogleClientIdUseCase = get(),
-            googleAuthClient = get(),
-            snackbarController = get(),
-            emailValidator = get(),
-            passwordValidator = get(),
-            usernameValidator = get()
+            googleAuthClient = get()
         )
     }
     viewModel {
@@ -96,8 +98,19 @@ actual val platformModule: Module = module {
             deleteAccountUseCase = get(),
             snackbarController = get(),
             passwordValidator = get(),
-            usernameValidator = get(),
             getUserUseCase = get()
+        )
+    }
+    viewModel {
+        UpgradeViewModel(
+            upgradeAccountUseCase = get(),
+            upgradeWithGoogleUseCase = get(),
+            getGoogleClientIdUseCase = get(),
+            googleAuthClient = get(),
+            snackbarController = get(),
+            usernameValidator = get(),
+            passwordValidator = get(),
+            emailValidator = get()
         )
     }
     viewModel { (serverId: Long, serverName: String?) ->
@@ -109,7 +122,8 @@ actual val platformModule: Module = module {
             serverName = serverName,
             serverId = serverId,
             clipboardHandler = get(),
-            snackbarController = get()
+            snackbarController = get(),
+            shareHandler = get()
         )
     }
 }

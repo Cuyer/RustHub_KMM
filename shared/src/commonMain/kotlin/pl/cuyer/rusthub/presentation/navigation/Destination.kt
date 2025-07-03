@@ -2,15 +2,18 @@ package pl.cuyer.rusthub.presentation.navigation
 
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
+import pl.cuyer.rusthub.domain.model.AuthProvider
 
 @Serializable
 data object Onboarding : NavKey
 
-@Serializable
-data object Login : NavKey
 
 @Serializable
-data object Register : NavKey
+data class Credentials(
+    val email: String,
+    val exists: Boolean,
+    val provider: AuthProvider? = null
+) : NavKey
 
 @Serializable
 data object ServerList : NavKey
@@ -23,6 +26,9 @@ data object ChangePassword : NavKey
 
 @Serializable
 data object DeleteAccount : NavKey
+
+@Serializable
+data object UpgradeAccount : NavKey
 
 @Serializable
 data class ServerDetails(

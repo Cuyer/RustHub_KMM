@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +28,10 @@ fun AppLabel(
     ElevatedCard(
         modifier = modifier
             .height(IntrinsicSize.Max),
+        colors = CardDefaults.elevatedCardColors().copy(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        ),
         shape = RectangleShape
     ) {
         Row(
@@ -50,7 +55,7 @@ fun AppLabel(
 @Composable
 @Preview
 private fun LabelPreview() {
-    RustHubTheme(theme = Theme.SYSTEM) {
+    RustHubTheme(theme = Theme.LIGHT) {
         AppLabel(
             text = "Monthly"
         )

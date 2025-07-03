@@ -21,8 +21,8 @@ fun DetailsRow(details: Map<String, String>) {
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight(),
-        maxItemsInEachColumn = 2,
-        maxLines = 3,
+        maxItemsInEachColumn = 3,
+        maxLines = 2,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         details.forEach {
@@ -36,7 +36,8 @@ fun DetailsRow(details: Map<String, String>) {
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.primary
                     ),
-                    text = it.value)
+                    text = it.value
+                )
 
             }
         }

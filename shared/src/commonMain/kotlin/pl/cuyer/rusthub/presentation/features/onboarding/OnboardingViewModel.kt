@@ -18,16 +18,25 @@ import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.usecase.AuthAnonymouslyUseCase
-import pl.cuyer.rusthub.presentation.navigation.Login
-import pl.cuyer.rusthub.presentation.navigation.Register
+import pl.cuyer.rusthub.domain.usecase.CheckUserExistsUseCase
+import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
+import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
+import pl.cuyer.rusthub.presentation.navigation.Credentials
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.util.GoogleAuthClient
+import pl.cuyer.rusthub.util.validator.EmailValidator
 
 class OnboardingViewModel(
     private val authAnonymouslyUseCase: AuthAnonymouslyUseCase,
+    private val checkUserExistsUseCase: CheckUserExistsUseCase,
+    private val loginWithGoogleUseCase: LoginWithGoogleUseCase,
+    private val getGoogleClientIdUseCase: GetGoogleClientIdUseCase,
+    private val googleAuthClient: GoogleAuthClient,
     private val snackbarController: SnackbarController,
+    private val emailValidator: EmailValidator
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -40,12 +49,16 @@ class OnboardingViewModel(
     )
 
     var authAnonymouslyJob: Job? = null
+    var checkEmailJob: Job? = null
+    var googleJob: Job? = null
 
     fun onAction(action: OnboardingAction) {
         when (action) {
-            OnboardingAction.OnLoginClick -> navigate(Login)
-            OnboardingAction.OnRegisterClick -> navigate(Register)
             OnboardingAction.OnContinueAsGuest -> continueAsGuest()
+            is OnboardingAction.OnEmailChange -> updateEmail(action.email)
+            OnboardingAction.OnContinueWithEmail -> continueWithEmail()
+            OnboardingAction.OnGoogleLogin -> startGoogleLogin()
+            OnboardingAction.OnShowOtherOptions -> toggleOtherOptions()
         }
     }
 
@@ -53,8 +66,8 @@ class OnboardingViewModel(
         authAnonymouslyJob?.cancel()
         authAnonymouslyJob = coroutineScope.launch {
             authAnonymouslyUseCase()
-                .onStart { updateLoading(true) }
-                .onCompletion { updateLoading(false) }
+                .onStart { updateContinueAsGuestLoading(true) }
+                .onCompletion { updateContinueAsGuestLoading(false) }
                 .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
                 .collectLatest { result ->
                     ensureActive()
@@ -67,12 +80,110 @@ class OnboardingViewModel(
         }
     }
 
+    private fun updateEmail(email: String) {
+        _state.update { it.copy(email = email, emailError = null) }
+    }
+
+    private fun continueWithEmail() {
+        checkEmailJob?.cancel()
+        checkEmailJob = coroutineScope.launch {
+            val email = _state.value.email
+            val emailResult = emailValidator.validate(email)
+            _state.update {
+                it.copy(
+                    emailError = emailResult.errorMessage
+                )
+            }
+
+            if (!emailResult.isValid) {
+                snackbarController.sendEvent(
+                    SnackbarEvent(
+                        message = "Please correct the errors above and try again.",
+                        action = null
+                    )
+                )
+                return@launch
+            }
+
+            checkUserExistsUseCase(email)
+                .onStart { updateLoading(true) }
+                .onCompletion { updateLoading(false) }
+                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .collectLatest { result ->
+                    ensureActive()
+                    when (result) {
+                        is Result.Success -> navigate(
+                            Credentials(email, result.data.exists, result.data.provider)
+                        )
+                        is Result.Error -> showErrorSnackbar(result.exception.message ?: "Error")
+                        else -> Unit
+                    }
+                }
+        }
+    }
+
+    private fun startGoogleLogin() {
+        googleJob?.cancel()
+        googleJob = coroutineScope.launch {
+            getGoogleClientIdUseCase()
+                .onStart { updateGoogleLoading(true) }
+                .onCompletion { updateGoogleLoading(false) }
+                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .collectLatest { result ->
+                    when (result) {
+                        is Result.Success -> {
+                            val token = googleAuthClient.getIdToken(result.data)
+                            if (token != null) {
+                                loginWithGoogleToken(token)
+                            } else {
+                                showErrorSnackbar("Google sign in failed")
+                            }
+                        }
+                        is Result.Error -> showErrorSnackbar(
+                            result.exception.message ?: "Unable to get client id"
+                        )
+                        else -> Unit
+                    }
+                }
+        }
+    }
+
+    private fun loginWithGoogleToken(token: String) {
+        googleJob?.cancel()
+        googleJob = coroutineScope.launch {
+            loginWithGoogleUseCase(token)
+                .onStart { updateGoogleLoading(true) }
+                .onCompletion { updateGoogleLoading(false) }
+                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .collectLatest { result ->
+                    ensureActive()
+                    when (result) {
+                        is Result.Success -> navigate(ServerList)
+                        is Result.Error -> showErrorSnackbar("Error occurred during Google sign in")
+                        else -> Unit
+                    }
+                }
+        }
+    }
+
+    private fun toggleOtherOptions() {
+        _state.update { it.copy(showOtherOptions = !it.showOtherOptions) }
+    }
+
     private suspend fun showErrorSnackbar(message: String) {
         snackbarController.sendEvent(SnackbarEvent(message = message))
     }
 
     private fun updateLoading(isLoading: Boolean) {
         _state.update { it.copy(isLoading = isLoading) }
+    }
+
+    private fun updateGoogleLoading(isLoading: Boolean) {
+        _state.update { it.copy(googleLoading = isLoading) }
+    }
+
+    private fun updateContinueAsGuestLoading(isLoading: Boolean) {
+        _state.update { it.copy(continueAsGuestLoading = isLoading) }
     }
 
     private fun navigate(destination: NavKey) {

@@ -6,4 +6,5 @@ data class User(
     val accessToken: String,
     val refreshToken: String?,
     val provider: AuthProvider,
+    val subscribed: Boolean,
 )

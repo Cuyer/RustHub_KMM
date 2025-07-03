@@ -8,11 +8,13 @@ import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.repository.auth.AuthRepository
 import pl.cuyer.rusthub.util.MessagingTokenManager
+import pl.cuyer.rusthub.util.TokenRefresher
 
 class LoginUserUseCase(
     private val client: AuthRepository,
     private val dataSource: AuthDataSource,
     private val tokenManager: MessagingTokenManager,
+    private val tokenRefresher: TokenRefresher,
 ) {
     @OptIn(ExperimentalPagingApi::class)
     operator fun invoke(
@@ -28,8 +30,10 @@ class LoginUserUseCase(
                             refreshToken = refreshToken,
                             username = this.username,
                             email = email,
-                            provider = provider
+                            provider = provider,
+                            subscribed = subscribed
                         )
+                        tokenRefresher.clear()
                         tokenManager.currentToken()
                         send(Result.Success(Unit))
                     }

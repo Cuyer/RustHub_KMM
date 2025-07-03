@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class AccessTokenDto(
     val accessToken: String,
     val username: String,
-    val provider: String
+    val provider: String,
+    val subscribed: Boolean = false
 )

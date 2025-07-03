@@ -6,16 +6,19 @@ import kotlinx.coroutines.flow.collectLatest
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.repository.auth.AuthRepository
+import pl.cuyer.rusthub.util.TokenRefresher
 
 class DeleteAccountUseCase(
     private val repository: AuthRepository,
     private val dataSource: AuthDataSource,
+    private val tokenRefresher: TokenRefresher,
 ) {
-    operator fun invoke(username: String, password: String): Flow<Result<Unit>> = channelFlow {
-        repository.deleteAccount(username, password).collectLatest { result ->
+    operator fun invoke(password: String): Flow<Result<Unit>> = channelFlow {
+        repository.deleteAccount(password).collectLatest { result ->
             when (result) {
                 is Result.Success -> {
                     dataSource.deleteUser()
+                    tokenRefresher.clear()
                     send(Result.Success(Unit))
                 }
 

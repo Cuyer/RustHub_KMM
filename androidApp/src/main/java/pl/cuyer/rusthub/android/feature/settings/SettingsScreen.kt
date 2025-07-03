@@ -12,7 +12,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -37,16 +36,15 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.compose.koinInject
-import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppExposedDropdownMenu
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import pl.cuyer.rusthub.android.designsystem.SubscriptionDialog
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.Theme
-import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.presentation.features.settings.SettingsAction
 import pl.cuyer.rusthub.presentation.features.settings.SettingsState
@@ -75,14 +73,7 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        text = "Settings",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                },
+                title = { },
                 actions = {
                     IconButton(onClick = { onAction(SettingsAction.OnLogout) }) {
                         val icon = Icons.AutoMirrored.Default.Logout
@@ -108,6 +99,8 @@ fun SettingsScreen(
                 language = state.value.language,
                 username = state.value.username,
                 provider = state.value.provider,
+                subscribed = state.value.subscribed,
+                expiration = state.value.anonymousExpiration,
                 onAction = onAction
             )
         } else {
@@ -121,6 +114,8 @@ fun SettingsScreen(
                 language = state.value.language,
                 username = state.value.username,
                 provider = state.value.provider,
+                subscribed = state.value.subscribed,
+                expiration = state.value.anonymousExpiration,
                 onAction = onAction
             )
         }
@@ -134,6 +129,8 @@ private fun SettingsScreenCompact(
     theme: Theme,
     language: Language,
     provider: AuthProvider?,
+    subscribed: Boolean,
+    expiration: String?,
     onAction: (SettingsAction) -> Unit
 ) {
     Column(
@@ -143,7 +140,7 @@ private fun SettingsScreenCompact(
         GreetingSection(username)
         PreferencesSection(theme, language, onAction)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
-        AccountSection(provider, onAction)
+        AccountSection(provider, subscribed, expiration, onAction)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
         OtherSection(onAction)
     }
@@ -156,6 +153,8 @@ private fun SettingsScreenExpanded(
     theme: Theme,
     language: Language,
     provider: AuthProvider?,
+    subscribed: Boolean,
+    expiration: String?,
     onAction: (SettingsAction) -> Unit
 ) {
     Row(
@@ -171,7 +170,7 @@ private fun SettingsScreenExpanded(
             GreetingSection(username)
             PreferencesSection(theme, language, onAction)
             HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
-            AccountSection(provider, onAction)
+            AccountSection(provider, subscribed, expiration, onAction)
         }
         Column(
             modifier = Modifier
@@ -226,48 +225,65 @@ private fun PreferencesSection(
 }
 
 @Composable
-private fun AccountSection(provider: AuthProvider?, onAction: (SettingsAction) -> Unit) {
+private fun AccountSection(
+    provider: AuthProvider?,
+    subscribed: Boolean,
+    expiration: String?,
+    onAction: (SettingsAction) -> Unit
+) {
     Text(
         text = "Account",
         style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(bottom = spacing.small)
     )
 
-    AppTextButton(
-        onClick = { onAction(SettingsAction.OnChangePasswordClick) }
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+    if (provider !in listOf(AuthProvider.ANONYMOUS, AuthProvider.GOOGLE)) {
+        AppTextButton(
+            onClick = { onAction(SettingsAction.OnChangePasswordClick) }
         ) {
-            Text("Change password")
-            Icon(
-                imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                contentDescription = "Change password button"
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Change password")
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowRight,
+                    contentDescription = "Change password button"
+                )
+            }
         }
     }
 
-    AppTextButton(
-        onClick = { onAction(SettingsAction.OnSubscriptionClick) }
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+    if (!subscribed && provider != AuthProvider.ANONYMOUS) {
+        AppTextButton(
+            onClick = { onAction(SettingsAction.OnSubscriptionClick) }
         ) {
-            Text("Subscription")
-            Icon(
-                imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                contentDescription = "Subscription button"
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Subscription")
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowRight,
+                    contentDescription = "Subscription button"
+                )
+            }
         }
     }
 
     if (provider == AuthProvider.ANONYMOUS) {
+        expiration?.let {
+            Text(
+                text = "Your temporary account expires in $it. Upgrade to keep favourites and wipe alerts.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(bottom = spacing.small)
+            )
+        }
         AppTextButton(
             onClick = { onAction(SettingsAction.OnUpgradeAccount) }
         ) {

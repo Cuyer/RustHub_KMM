@@ -27,6 +27,7 @@ import pl.cuyer.rusthub.data.network.subscription.SubscriptionClientImpl
 import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.repository.auth.AuthRepository
+import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.domain.repository.favourite.FavouriteSyncDataSource
 import pl.cuyer.rusthub.domain.repository.favourite.network.FavouriteRepository
 import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
@@ -53,12 +54,15 @@ import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteAccountUseCase
+import pl.cuyer.rusthub.domain.usecase.UpgradeAccountUseCase
+import pl.cuyer.rusthub.domain.usecase.CheckUserExistsUseCase
 import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleSubscriptionUseCase
+import pl.cuyer.rusthub.domain.usecase.UpgradeWithGoogleUseCase
 import pl.cuyer.rusthub.presentation.settings.SettingsController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.util.MessagingTokenManager
@@ -96,6 +100,7 @@ val appModule = module {
     singleOf(::AuthRepositoryImpl) bind AuthRepository::class
     singleOf(::AuthDataSourceImpl) bind AuthDataSource::class
     singleOf(::ConfigRepositoryImpl) bind ConfigRepository::class
+    single { TokenRefresher(get()) }
     single { EmailValidator }
     single { PasswordValidator }
     single { UsernameValidator }
@@ -108,14 +113,17 @@ val appModule = module {
     single { GetSearchQueriesUseCase(get()) }
     single { DeleteSearchQueriesUseCase(get()) }
     single { GetServerDetailsUseCase(get()) }
-    single { RegisterUserUseCase(get(), get(), get()) }
-    single { LoginUserUseCase(get(), get(), get()) }
-    single { LoginWithGoogleUseCase(get(), get(), get()) }
+    single { RegisterUserUseCase(get(), get(), get(), get()) }
+    single { LoginUserUseCase(get(), get(), get(), get()) }
+    single { LoginWithGoogleUseCase(get(), get(), get(), get()) }
     single { GetGoogleClientIdUseCase(get()) }
-    single { AuthAnonymouslyUseCase(get(), get(), get()) }
+    single { AuthAnonymouslyUseCase(get(), get(), get(), get()) }
+    single { CheckUserExistsUseCase(get()) }
     single { GetUserUseCase(get()) }
-    single { LogoutUserUseCase(get(), get()) }
-    single { DeleteAccountUseCase(get(), get()) }
+    single { LogoutUserUseCase(get(), get(), get()) }
+    single { DeleteAccountUseCase(get(), get(), get()) }
+    single { UpgradeAccountUseCase(get(), get(), get(), get()) }
+    single { UpgradeWithGoogleUseCase(get(), get(), get(), get()) }
     single { GetSettingsUseCase(get()) }
     single { SaveSettingsUseCase(get()) }
     single { SettingsController(get()) }

@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.android.feature.server
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -14,9 +15,13 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.NotificationsNone
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
@@ -30,9 +35,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
@@ -59,8 +68,8 @@ import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
-import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.model.ServerStatus
+import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsAction
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsState
@@ -104,18 +113,64 @@ fun ServerDetailsScreen(
                     )
                 },
                 actions = {
-                    IconButton(onClick = { onAction(ServerDetailsAction.OnToggleFavourite) }) {
-                        val icon =
-                            if (state.details?.isFavorite == true) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder
-                        Icon(icon, contentDescription = null)
+                    var expanded by remember { mutableStateOf(false) }
+                    val rotation by animateFloatAsState(if (expanded) 90f else 0f)
+                    IconButton(onClick = { expanded = !expanded }) {
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = null,
+                            modifier = Modifier.rotate(rotation)
+                        )
                     }
-                    IconButton(onClick = { onAction(ServerDetailsAction.OnSubscribe) }) {
-                        val icon = if (state.details?.isSubscribed == true) {
-                            Icons.Filled.Notifications
-                        } else {
-                            Icons.Outlined.NotificationsNone
-                        }
-                        Icon(icon, contentDescription = null)
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    if (state.details?.isFavorite == true) "Remove from favourites" else "Add to favourites"
+                                )
+                            },
+                            onClick = {
+                                expanded = false
+                                onAction(ServerDetailsAction.OnToggleFavourite)
+                            },
+                            leadingIcon = {
+                                val icon = if (state.details?.isFavorite == true) {
+                                    Icons.Filled.Favorite
+                                } else {
+                                    Icons.Outlined.FavoriteBorder
+                                }
+                                Icon(icon, contentDescription = null)
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    if (state.details?.isSubscribed == true) "Turn off notifications" else "Turn on notifications"
+                                )
+                            },
+                            onClick = {
+                                expanded = false
+                                onAction(ServerDetailsAction.OnSubscribe)
+                            },
+                            leadingIcon = {
+                                val icon = if (state.details?.isSubscribed == true) {
+                                    Icons.Filled.Notifications
+                                } else {
+                                    Icons.Outlined.NotificationsNone
+                                }
+                                Icon(icon, contentDescription = null)
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Share") },
+                            onClick = {
+                                expanded = false
+                                onAction(ServerDetailsAction.OnShare)
+                            },
+                            leadingIcon = {
+                                Icon(Icons.Default.Share, contentDescription = null)
+                            }
+                        )
                     }
                 },
                 scrollBehavior = scrollBehavior

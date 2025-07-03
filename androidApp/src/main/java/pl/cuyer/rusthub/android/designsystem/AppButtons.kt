@@ -31,6 +31,12 @@ fun AppButton(
     enabled: Boolean = true,
     colors: ButtonColors = ButtonDefaults.elevatedButtonColors(),
     isLoading: Boolean = false,
+    loadingIndicator: @Composable () -> Unit = {
+        CircularProgressIndicator(
+            modifier = Modifier.size(16.dp),
+            strokeWidth = 2.dp
+        )
+    },
     content: @Composable RowScope.() -> Unit
 ) {
     ElevatedButton(
@@ -45,10 +51,7 @@ fun AppButton(
             transitionSpec = { defaultFadeTransition() }
         ) { loading ->
             if (loading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(16.dp),
-                    strokeWidth = 2.dp
-                )
+                loadingIndicator()
             } else {
                 content()
             }

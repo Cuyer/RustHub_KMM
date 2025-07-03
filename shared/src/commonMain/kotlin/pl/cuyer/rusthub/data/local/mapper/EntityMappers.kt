@@ -186,7 +186,8 @@ fun UserEntity.toUser(): User = User(
     username,
     access_token,
     refresh_token,
-    AuthProvider.valueOf(provider)
+    AuthProvider.valueOf(provider),
+    subscribed = subscribed == 1L
 )
 
 
