@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -30,6 +31,7 @@ import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.navigation.UpgradeAccount
 import pl.cuyer.rusthub.util.GoogleAuthClient
+import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.util.anonymousAccountExpiresIn
 import pl.cuyer.rusthub.util.formatExpiration
 
@@ -140,10 +142,14 @@ class SettingsViewModel(
     private fun logout() {
         coroutineScope.launch {
             logoutUserUseCase()
-            if (state.value.provider == AuthProvider.GOOGLE) {
-                googleAuthClient.signOut()
-            }
-            _uiEvent.send(UiEvent.Navigate(Onboarding))
+                .collectLatest { result ->
+                    if (result is Result.Success) {
+                        if (state.value.provider == AuthProvider.GOOGLE) {
+                            googleAuthClient.signOut()
+                        }
+                        _uiEvent.send(UiEvent.Navigate(Onboarding))
+                    }
+                }
         }
     }
 

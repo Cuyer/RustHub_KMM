@@ -20,7 +20,6 @@ import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.GoogleAuthClient
-import pl.cuyer.rusthub.util.LogoutScheduler
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
 import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
@@ -37,7 +36,6 @@ actual val platformModule: Module = module {
     single { SyncScheduler(get()) }
     single { SubscriptionSyncScheduler(get()) }
     single { MessagingTokenScheduler(get()) }
-    single { LogoutScheduler(androidContext()) }
     single { StoreNavigator(androidContext()) }
     single { GoogleAuthClient(androidContext()) }
     single { PermissionsController(androidContext()) }
