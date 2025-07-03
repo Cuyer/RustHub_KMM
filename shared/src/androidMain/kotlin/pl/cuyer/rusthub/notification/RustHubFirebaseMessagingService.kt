@@ -5,10 +5,10 @@ import com.google.firebase.messaging.RemoteMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import pl.cuyer.rusthub.domain.model.NotificationType
-import pl.cuyer.rusthub.util.NotificationPresenter
-import pl.cuyer.rusthub.util.MessagingTokenManager
 import org.koin.android.ext.android.inject
+import pl.cuyer.rusthub.domain.model.NotificationType
+import pl.cuyer.rusthub.util.MessagingTokenManager
+import pl.cuyer.rusthub.util.NotificationPresenter
 
 class RustHubFirebaseMessagingService : FirebaseMessagingService() {
     private val tokenManager by inject<MessagingTokenManager>()
@@ -24,7 +24,7 @@ class RustHubFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Dispatchers.Main.immediate).launch {
             tokenManager.registerToken(token)
         }
     }

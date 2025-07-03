@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import pl.cuyer.rusthub.BuildConfig
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.NotificationType
@@ -55,7 +56,7 @@ actual class NotificationPresenter(private val context: Context) {
         timestamp: String
     ): NotificationCompat.Builder {
         return NotificationCompat.Builder(context, channelId(type))
-            .setSmallIcon(getImageByFileName("rusthub_logo").drawableResId)
+            .setSmallIcon(getImageByFileName("rusthub_notification_icon").drawableResId)
             .setContentTitle(createTitle(type))
             .setContentText(createBody(name, type, timestamp))
             .setContentIntent(createPendingIntent())
@@ -141,8 +142,9 @@ actual class NotificationPresenter(private val context: Context) {
     //TODO można dodać nawigację po kliknięciu do serwera
 
     companion object {
-        const val MAIN_ACTIVITY = "pl.cuyer.rusthub.android.MainActivity"
-        const val PACKAGE_NAME = "pl.cuyer.rusthub.android"
+        const val MAIN_ACTIVITY =
+            BuildConfig.LIBRARY_PACKAGE_NAME + ".android." + BuildConfig.FLAVOR + ".MainActivity"
+        const val PACKAGE_NAME = BuildConfig.LIBRARY_PACKAGE_NAME + ".android." + BuildConfig.FLAVOR
         const val DEFAULT_CHANNEL_ID = "notification_channel_name"
     }
 }
