@@ -37,10 +37,12 @@ import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.ClipboardHandler
+import pl.cuyer.rusthub.util.ShareHandler
 
 class ServerDetailsViewModel(
     private val clipboardHandler: ClipboardHandler,
     private val snackbarController: SnackbarController,
+    private val shareHandler: ShareHandler,
     private val getServerDetailsUseCase: GetServerDetailsUseCase,
     private val toggleFavouriteUseCase: ToggleFavouriteUseCase,
     private val toggleSubscriptionUseCase: ToggleSubscriptionUseCase,
@@ -74,6 +76,7 @@ class ServerDetailsViewModel(
             ServerDetailsAction.OnDismissSubscriptionDialog -> showSubscriptionDialog(false)
             ServerDetailsAction.OnDismissNotificationInfo -> showNotificationInfo(false)
             ServerDetailsAction.OnSubscribe -> handleSubscribeAction()
+            ServerDetailsAction.OnShare -> shareServer()
         }
     }
 
@@ -103,6 +106,12 @@ class ServerDetailsViewModel(
                 )
             )
         }
+    }
+
+    private fun shareServer() {
+        val ip = state.value.details?.serverIp ?: return
+        val name = state.value.serverName ?: "Rust Server"
+        shareHandler.share("Join $name at $ip")
     }
 
 
