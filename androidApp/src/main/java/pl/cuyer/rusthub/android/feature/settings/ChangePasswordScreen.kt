@@ -137,6 +137,7 @@ private fun ChangePasswordScreenCompact(
             modifier = Modifier
                 .imePadding()
                 .fillMaxWidth(),
+            enabled = state.oldPassword.isNotBlank() && state.newPassword.isNotBlank(),
             isLoading = state.isLoading,
             onClick = {
                 focusManager.clearFocus()
@@ -228,7 +229,8 @@ private fun ChangePasswordFields(
             isError = oldPasswordError != null,
             errorText = oldPasswordError,
             modifier = Modifier.fillMaxWidth(),
-            imeAction = ImeAction.Next
+            imeAction = ImeAction.Next,
+            onSubmit = { }
         )
         AppSecureTextField(
             value = newPassword,
