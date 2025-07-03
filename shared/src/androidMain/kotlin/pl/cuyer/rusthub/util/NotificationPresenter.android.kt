@@ -14,6 +14,7 @@ import kotlinx.datetime.toLocalDateTime
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.NotificationType
+import kotlin.random.Random
 
 actual class NotificationPresenter(private val context: Context) {
     actual fun show(name: String, type: NotificationType, timestamp: String) {
@@ -136,10 +137,13 @@ actual class NotificationPresenter(private val context: Context) {
             )
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        return PendingIntent.getActivity(
+            context,
+            Random.nextInt(),
+            intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
     }
-
-    //TODO można dodać nawigację po kliknięciu do serwera
 
     companion object {
         const val DEFAULT_CHANNEL_ID = "notification_channel_name"
