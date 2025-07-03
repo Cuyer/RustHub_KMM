@@ -2,19 +2,23 @@ package pl.cuyer.rusthub.presentation.features.settings
 
 import dev.icerock.moko.permissions.PermissionsController
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
+import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.Settings
@@ -30,8 +34,9 @@ import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.navigation.UpgradeAccount
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
-import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.util.anonymousAccountExpiresIn
 import pl.cuyer.rusthub.util.formatExpiration
 
@@ -42,11 +47,13 @@ class SettingsViewModel(
     private val getUserUseCase: GetUserUseCase,
     private val permissionsController: PermissionsController,
     private val googleAuthClient: GoogleAuthClient,
+    private val snackbarController: SnackbarController
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
 
+    private var logoutJob: Job? = null
     private val _state = MutableStateFlow(SettingsState())
     val state = _state
         .onStart {
@@ -54,10 +61,10 @@ class SettingsViewModel(
             observeUser()
         }
         .stateIn(
-        scope = coroutineScope,
-        started = SharingStarted.WhileSubscribed(5_000L),
-        initialValue = SettingsState()
-    )
+            scope = coroutineScope,
+            started = SharingStarted.WhileSubscribed(5_000L),
+            initialValue = SettingsState()
+        )
 
     fun onAction(action: SettingsAction) {
         when (action) {
@@ -140,17 +147,35 @@ class SettingsViewModel(
     }
 
     private fun logout() {
-        coroutineScope.launch {
+        logoutJob?.cancel()
+        logoutJob = coroutineScope.launch {
             logoutUserUseCase()
+                .onStart { updateLoading(true) }
+                .onCompletion { updateLoading(false) }
+                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
                 .collectLatest { result ->
-                    if (result is Result.Success) {
-                        if (state.value.provider == AuthProvider.GOOGLE) {
-                            googleAuthClient.signOut()
+                    when (result) {
+                        is Result.Success -> {
+                            if (state.value.provider == AuthProvider.GOOGLE) {
+                                googleAuthClient.signOut()
+                            }
+                            _uiEvent.send(UiEvent.Navigate(Onboarding))
                         }
-                        _uiEvent.send(UiEvent.Navigate(Onboarding))
+
+                        is Result.Error -> showErrorSnackbar("Error occurred when trying to logout")
+
+                        else -> Unit
                     }
                 }
         }
+    }
+
+    private fun updateLoading(isLoading: Boolean) {
+        _state.update { it.copy(isLoading = isLoading) }
+    }
+
+    private fun showErrorSnackbar(message: String) {
+        coroutineScope.launch { snackbarController.sendEvent(SnackbarEvent(message = message)) }
     }
 
     private fun navigateDeleteAccount() {
@@ -166,7 +191,7 @@ class SettingsViewModel(
             )
         }
     }
-    
+
     private fun openPrivacyPolicy() {
         coroutineScope.launch {
             _uiEvent.send(UiEvent.Navigate(PrivacyPolicy))

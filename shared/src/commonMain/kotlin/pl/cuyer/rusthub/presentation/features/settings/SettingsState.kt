@@ -11,5 +11,6 @@ data class SettingsState(
     val showSubscriptionDialog: Boolean = false,
     val provider: AuthProvider? = null,
     val subscribed: Boolean = false,
-    val anonymousExpiration: String? = null
+    val anonymousExpiration: String? = null,
+    val isLoading: Boolean = false
 )

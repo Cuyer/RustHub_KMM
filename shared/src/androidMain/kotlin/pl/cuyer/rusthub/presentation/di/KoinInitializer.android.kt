@@ -21,11 +21,11 @@ import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
+import pl.cuyer.rusthub.util.ShareHandler
 import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
-import pl.cuyer.rusthub.util.ShareHandler
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory(androidContext()).create() }
@@ -89,7 +89,8 @@ actual val platformModule: Module = module {
             logoutUserUseCase = get(),
             getUserUseCase = get(),
             permissionsController = get(),
-            googleAuthClient = get()
+            googleAuthClient = get(),
+            snackbarController = get()
         )
     }
     viewModel {

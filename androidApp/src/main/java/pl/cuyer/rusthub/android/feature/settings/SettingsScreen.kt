@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.android.feature.settings
 
 import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,9 +14,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -52,7 +55,10 @@ import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.StoreNavigator
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class,
+    ExperimentalMaterial3ExpressiveApi::class
+)
 @Composable
 fun SettingsScreen(
     onNavigate: (NavKey) -> Unit,
@@ -84,40 +90,46 @@ fun SettingsScreen(
             )
         }
     ) { innerPadding ->
-        SubscriptionDialog(
-            showDialog = state.value.showSubscriptionDialog,
-            onConfirm = { onAction(SettingsAction.OnSubscribe) },
-            onDismiss = { onAction(SettingsAction.OnDismissSubscriptionDialog) }
-        )
-        if (isTabletMode) {
-            SettingsScreenExpanded(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(spacing.medium),
-                theme = state.value.theme,
-                language = state.value.language,
-                username = state.value.username,
-                provider = state.value.provider,
-                subscribed = state.value.subscribed,
-                expiration = state.value.anonymousExpiration,
-                onAction = onAction
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(spacing.medium)
+        ) {
+            if (state.value.isLoading) {
+                LoadingIndicator(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                )
+            }
+            SubscriptionDialog(
+                showDialog = state.value.showSubscriptionDialog,
+                onConfirm = { onAction(SettingsAction.OnSubscribe) },
+                onDismiss = { onAction(SettingsAction.OnDismissSubscriptionDialog) }
             )
-        } else {
-            SettingsScreenCompact(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(innerPadding)
-                    .padding(spacing.medium),
-                theme = state.value.theme,
-                language = state.value.language,
-                username = state.value.username,
-                provider = state.value.provider,
-                subscribed = state.value.subscribed,
-                expiration = state.value.anonymousExpiration,
-                onAction = onAction
-            )
+            if (isTabletMode) {
+                SettingsScreenExpanded(
+                    theme = state.value.theme,
+                    language = state.value.language,
+                    username = state.value.username,
+                    provider = state.value.provider,
+                    subscribed = state.value.subscribed,
+                    expiration = state.value.anonymousExpiration,
+                    onAction = onAction
+                )
+            } else {
+                SettingsScreenCompact(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState()),
+                    theme = state.value.theme,
+                    language = state.value.language,
+                    username = state.value.username,
+                    provider = state.value.provider,
+                    subscribed = state.value.subscribed,
+                    expiration = state.value.anonymousExpiration,
+                    onAction = onAction
+                )
+            }
         }
     }
 }
