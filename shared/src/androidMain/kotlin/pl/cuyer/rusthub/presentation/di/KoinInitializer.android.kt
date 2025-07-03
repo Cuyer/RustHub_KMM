@@ -25,12 +25,14 @@ import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
+import pl.cuyer.rusthub.util.ShareHandler
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory(androidContext()).create() }
     single { HttpClientFactory(get(), get()).create() }
     single { TokenRefresher(get()) }
     single { ClipboardHandler(get()) }
+    single { ShareHandler(get()) }
     single { SyncScheduler(get()) }
     single { SubscriptionSyncScheduler(get()) }
     single { MessagingTokenScheduler(get()) }
@@ -120,7 +122,8 @@ actual val platformModule: Module = module {
             serverName = serverName,
             serverId = serverId,
             clipboardHandler = get(),
-            snackbarController = get()
+            snackbarController = get(),
+            shareHandler = get()
         )
     }
 }

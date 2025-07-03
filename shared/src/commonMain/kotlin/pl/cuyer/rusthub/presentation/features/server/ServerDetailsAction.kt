@@ -6,4 +6,5 @@ sealed interface ServerDetailsAction {
     data object OnSubscribe : ServerDetailsAction
     data object OnDismissSubscriptionDialog : ServerDetailsAction
     data object OnDismissNotificationInfo : ServerDetailsAction
+    data object OnShare : ServerDetailsAction
 }
