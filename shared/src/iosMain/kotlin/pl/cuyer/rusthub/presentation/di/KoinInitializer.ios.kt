@@ -8,6 +8,7 @@ import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
+import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordViewModel
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
@@ -77,6 +78,13 @@ actual val platformModule: Module = module {
             snackbarController = get(),
             passwordValidator = get(),
             getUserUseCase = get()
+        )
+    }
+    factory {
+        ChangePasswordViewModel(
+            changePasswordUseCase = get(),
+            snackbarController = get(),
+            passwordValidator = get(),
         )
     }
     factory {

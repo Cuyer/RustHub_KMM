@@ -53,6 +53,7 @@ import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.common.Constants
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
+import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordViewModel
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
@@ -227,7 +228,14 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                             )
                         }
                         entry<ChangePassword> {
-                            ChangePasswordScreen(onNavigateUp = { backStack.removeLastOrNull() })
+                            val viewModel = koinViewModel<ChangePasswordViewModel>()
+                            val state = viewModel.state.collectAsStateWithLifecycle()
+                            ChangePasswordScreen(
+                                onNavigateUp = { backStack.removeLastOrNull() },
+                                uiEvent = viewModel.uiEvent,
+                                stateProvider = { state },
+                                onAction = viewModel::onAction
+                            )
                         }
 
                         entry<PrivacyPolicy> {
