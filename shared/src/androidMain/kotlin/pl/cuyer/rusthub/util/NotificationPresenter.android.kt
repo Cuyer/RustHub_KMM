@@ -11,7 +11,6 @@ import androidx.core.app.NotificationCompat
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import pl.cuyer.rusthub.BuildConfig
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.NotificationType
@@ -133,7 +132,7 @@ actual class NotificationPresenter(private val context: Context) {
         val intent = Intent().apply {
             component = ComponentName(
                 packageName,
-                "$packageName.MainActivity"
+                "pl.cuyer.rusthub.android.MainActivity"
             )
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
