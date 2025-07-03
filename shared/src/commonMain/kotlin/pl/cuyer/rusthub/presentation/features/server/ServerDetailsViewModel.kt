@@ -97,7 +97,7 @@ class ServerDetailsViewModel(
     }
 
     private fun saveIpToClipboard(ipAddress: String) {
-        clipboardHandler.copyToClipboard("Server address", ipAddress)
+        clipboardHandler.copyToClipboard("Server address", "client.connect $ipAddress")
         coroutineScope.launch {
             snackbarController.sendEvent(
                 event = SnackbarEvent(
@@ -110,8 +110,7 @@ class ServerDetailsViewModel(
 
     private fun shareServer() {
         val ip = state.value.details?.serverIp ?: return
-        val name = state.value.serverName ?: "Rust Server"
-        shareHandler.share("Join $name at $ip")
+        shareHandler.share("client.connect $ip")
     }
 
 

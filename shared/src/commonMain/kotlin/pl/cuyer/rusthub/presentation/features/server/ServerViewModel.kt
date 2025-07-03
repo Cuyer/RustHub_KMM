@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
@@ -22,15 +23,13 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock.System
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.data.local.mapper.toServerInfo
 import pl.cuyer.rusthub.domain.model.SearchQuery
-import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.model.ServerFilter
+import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.domain.usecase.ClearFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteSearchQueriesUseCase
@@ -209,7 +208,7 @@ class ServerViewModel(
 
     private fun saveIpToClipboard(ipAddress: String?) {
         ipAddress?.let {
-            clipboardHandler.copyToClipboard("Server address", it)
+            clipboardHandler.copyToClipboard("Server address", "client.connect $it")
             coroutineScope.launch {
                 snackbarController.sendEvent(
                     event = SnackbarEvent(
