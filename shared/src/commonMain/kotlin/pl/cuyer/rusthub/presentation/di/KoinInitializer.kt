@@ -122,6 +122,7 @@ val appModule = module {
     single { GetUserUseCase(get()) }
     single { LogoutUserUseCase(get(), get(), get()) }
     single { DeleteAccountUseCase(get(), get(), get()) }
+    single { ChangePasswordUseCase(get()) }
     single { UpgradeAccountUseCase(get(), get(), get(), get()) }
     single { UpgradeWithGoogleUseCase(get(), get(), get(), get()) }
     single { GetSettingsUseCase(get()) }
