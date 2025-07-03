@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
-import pl.cuyer.rusthub.domain.repository.auth.AuthRepository
 import pl.cuyer.rusthub.domain.repository.favourite.FavouriteSyncDataSource
 import pl.cuyer.rusthub.domain.repository.favourite.network.FavouriteRepository
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
@@ -18,8 +17,7 @@ class CustomWorkerFactory(
     private val subscriptionRepository: SubscriptionRepository,
     private val subscriptionSyncDataSource: SubscriptionSyncDataSource,
     private val serverDataSource: ServerDataSource,
-    private val tokenManager: MessagingTokenManager,
-    private val authRepository: AuthRepository
+    private val tokenManager: MessagingTokenManager
 ) : WorkerFactory() {
 
     override fun createWorker(
@@ -48,9 +46,6 @@ class CustomWorkerFactory(
             }
             TokenRefreshWorker::class.qualifiedName -> {
                 TokenRefreshWorker(appContext, workerParameters, tokenManager)
-            }
-            LogoutWorker::class.qualifiedName -> {
-                LogoutWorker(appContext, workerParameters, authRepository)
             }
             else -> null
         }
