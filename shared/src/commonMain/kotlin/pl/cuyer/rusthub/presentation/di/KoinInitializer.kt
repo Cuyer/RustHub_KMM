@@ -25,6 +25,7 @@ import pl.cuyer.rusthub.data.network.filtersOptions.FiltersOptionsClientImpl
 import pl.cuyer.rusthub.data.network.notification.MessagingTokenClientImpl
 import pl.cuyer.rusthub.data.network.server.ServerClientImpl
 import pl.cuyer.rusthub.data.network.subscription.SubscriptionClientImpl
+import pl.cuyer.rusthub.data.network.user.UserRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.repository.auth.AuthRepository
@@ -41,6 +42,7 @@ import pl.cuyer.rusthub.domain.repository.server.ServerRepository
 import pl.cuyer.rusthub.domain.repository.settings.SettingsDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
+import pl.cuyer.rusthub.domain.repository.user.UserRepository
 import pl.cuyer.rusthub.domain.usecase.AuthAnonymouslyUseCase
 import pl.cuyer.rusthub.domain.usecase.ChangePasswordUseCase
 import pl.cuyer.rusthub.domain.usecase.CheckUserExistsUseCase
@@ -66,6 +68,8 @@ import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleSubscriptionUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeWithGoogleUseCase
+import pl.cuyer.rusthub.domain.usecase.CheckEmailConfirmedUseCase
+import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
 import pl.cuyer.rusthub.presentation.settings.SettingsController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.util.MessagingTokenManager
@@ -100,6 +104,7 @@ val appModule = module {
     singleOf(::FiltersOptionsDataSourceImpl) bind FiltersOptionsDataSource::class
     singleOf(::AuthRepositoryImpl) bind AuthRepository::class
     singleOf(::AuthDataSourceImpl) bind AuthDataSource::class
+    singleOf(::UserRepositoryImpl) bind UserRepository::class
     singleOf(::ConfigRepositoryImpl) bind ConfigRepository::class
     single { TokenRefresher(get()) }
     single { EmailValidator }
@@ -120,6 +125,8 @@ val appModule = module {
     single { GetGoogleClientIdUseCase(get()) }
     single { AuthAnonymouslyUseCase(get(), get(), get(), get()) }
     single { CheckUserExistsUseCase(get()) }
+    single { CheckEmailConfirmedUseCase(get()) }
+    single { ResendConfirmationUseCase(get()) }
     single { GetUserUseCase(get()) }
     single { LogoutUserUseCase(get(), get(), get()) }
     single { DeleteAccountUseCase(get(), get(), get()) }

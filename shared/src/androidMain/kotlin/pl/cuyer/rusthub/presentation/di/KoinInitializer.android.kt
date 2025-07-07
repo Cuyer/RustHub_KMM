@@ -13,6 +13,7 @@ import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewMo
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
 import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordViewModel
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
+import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
@@ -118,6 +119,14 @@ actual val platformModule: Module = module {
             usernameValidator = get(),
             passwordValidator = get(),
             emailValidator = get()
+        )
+    }
+    viewModel {
+        ConfirmEmailViewModel(
+            checkEmailConfirmedUseCase = get(),
+            getUserUseCase = get(),
+            resendConfirmationUseCase = get(),
+            snackbarController = get(),
         )
     }
     viewModel { (serverId: Long, serverName: String?) ->

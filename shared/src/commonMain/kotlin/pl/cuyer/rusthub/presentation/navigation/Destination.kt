@@ -31,6 +31,9 @@ data object DeleteAccount : NavKey
 data object UpgradeAccount : NavKey
 
 @Serializable
+data object ConfirmEmail : NavKey
+
+@Serializable
 data class ServerDetails(
     val id: Long,
     val name: String

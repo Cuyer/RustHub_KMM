@@ -13,14 +13,19 @@ import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.domain.model.User
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
+import pl.cuyer.rusthub.domain.usecase.CheckEmailConfirmedUseCase
+import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.ServerList
+import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.common.Result
 
 class StartupViewModel(
     private val snackbarController: SnackbarController,
     private val getUserUseCase: GetUserUseCase,
+    private val checkEmailConfirmedUseCase: CheckEmailConfirmedUseCase,
 ) : BaseViewModel() {
 
     private val _state = MutableStateFlow(StartupState())
@@ -41,7 +46,20 @@ class StartupViewModel(
             }
             .onEach { user ->
                 Napier.i("User: $user")
-                updateStartDestination(user)
+                if (user != null) {
+                    if (user.provider == AuthProvider.GOOGLE) {
+                        updateStartDestination(user, true)
+                    } else {
+                        checkEmailConfirmedUseCase()
+                            .catch { showErrorSnackbar(it.message ?: "Unknown error") }
+                            .collect { result ->
+                                val confirmed = result is Result.Success && result.data
+                                updateStartDestination(user, confirmed)
+                            }
+                    }
+                } else {
+                    updateStartDestination(null, true)
+                }
                 updateLoadingState(false)
             }
             .catch {
@@ -55,10 +73,14 @@ class StartupViewModel(
         _state.update { it.copy(isLoading = loading) }
     }
 
-    private fun updateStartDestination(user: User?) {
+    private fun updateStartDestination(user: User?, confirmed: Boolean) {
         _state.update {
             it.copy(
-                startDestination = if (user != null) ServerList else Onboarding
+                startDestination = when {
+                    user == null -> Onboarding
+                    confirmed -> ServerList
+                    else -> ConfirmEmail
+                }
             )
         }
     }
