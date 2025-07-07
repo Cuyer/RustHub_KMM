@@ -30,6 +30,7 @@ import pl.cuyer.rusthub.domain.exception.ServersQueryException
 import pl.cuyer.rusthub.domain.exception.TimeoutException
 import pl.cuyer.rusthub.domain.exception.UnauthorizedException
 import pl.cuyer.rusthub.domain.exception.UserAlreadyExistsException
+import pl.cuyer.rusthub.domain.exception.TooManyRequestsException
 import kotlin.coroutines.coroutineContext
 
 abstract class BaseApiResponse(
@@ -113,6 +114,8 @@ abstract class BaseApiResponse(
                 ForbiddenException("Forbidden")
             HttpStatusCode.NotFound.value ->
                 NotFoundException("Not found")
+            HttpStatusCode.TooManyRequests.value ->
+                TooManyRequestsException("Too many requests")
             else -> HttpStatusException("HTTP $statusCode error")
         }
     }

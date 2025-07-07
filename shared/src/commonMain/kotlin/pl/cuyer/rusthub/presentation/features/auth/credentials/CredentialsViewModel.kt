@@ -25,6 +25,7 @@ import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
 import pl.cuyer.rusthub.presentation.navigation.ServerList
+import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
@@ -104,7 +105,9 @@ class CredentialsViewModel(
                 .collectLatest { result ->
                     ensureActive()
                     when (result) {
-                        is Result.Success -> navigate(ServerList)
+                        is Result.Success -> {
+                            if (userExists) navigate(ServerList) else navigate(ConfirmEmail)
+                        }
                         is Result.Error -> handleError(result.exception)
                         else -> Unit
                     }

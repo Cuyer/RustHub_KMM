@@ -13,7 +13,9 @@ import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
+import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
+import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
 import pl.cuyer.rusthub.util.StoreNavigator
@@ -34,7 +36,15 @@ actual val platformModule: Module = module {
     single { StoreNavigator() }
     single { GoogleAuthClient() }
     single { PermissionsController() }
-    factory { StartupViewModel(get()) }
+    factory { StartupViewModel(get(), get()) }
+    factory {
+        ConfirmEmailViewModel(
+            checkEmailConfirmedUseCase = get(),
+            getUserUseCase = get(),
+            resendConfirmationUseCase = get(),
+            snackbarController = get(),
+        )
+    }
     factory {
         OnboardingViewModel(
             authAnonymouslyUseCase = get(),

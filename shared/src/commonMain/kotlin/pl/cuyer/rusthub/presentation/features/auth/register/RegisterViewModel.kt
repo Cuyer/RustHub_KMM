@@ -22,6 +22,7 @@ import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
 import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.presentation.navigation.ServerList
+import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
@@ -171,7 +172,7 @@ class RegisterViewModel(
                 .collectLatest { result ->
                     ensureActive()
                     when (result) {
-                        is Result.Success -> _uiEvent.send(UiEvent.Navigate(ServerList))
+                        is Result.Success -> _uiEvent.send(UiEvent.Navigate(ConfirmEmail))
 
                         is Result.Error ->  when(result.exception) {
                             is UserAlreadyExistsException -> showErrorSnackbar("User already exists.")

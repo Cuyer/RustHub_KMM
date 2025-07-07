@@ -20,6 +20,8 @@ import pl.cuyer.rusthub.domain.usecase.UpgradeWithGoogleUseCase
 import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
+import androidx.navigation3.runtime.NavKey
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.validator.EmailValidator
@@ -107,7 +109,7 @@ class UpgradeViewModel(
                                     "Account has been upgraded successfully!"
                                 )
                             )
-                            navigateUp()
+                            navigate(ConfirmEmail)
                         }
                         is Result.Error -> showErrorSnackbar(
                             result.exception.message ?: "Unable to upgrade account"
@@ -178,5 +180,9 @@ class UpgradeViewModel(
 
     private fun showErrorSnackbar(message: String) {
         coroutineScope.launch { snackbarController.sendEvent(SnackbarEvent(message)) }
+    }
+
+    private fun navigate(destination: NavKey) {
+        coroutineScope.launch { _uiEvent.send(UiEvent.Navigate(destination)) }
     }
 }
