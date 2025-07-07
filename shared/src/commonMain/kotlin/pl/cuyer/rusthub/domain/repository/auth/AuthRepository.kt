@@ -18,4 +18,5 @@ interface AuthRepository {
     fun deleteAccount(password: String): Flow<Result<Unit>>
     fun changePassword(oldPassword: String, newPassword: String): Flow<Result<Unit>>
     fun checkUserExists(email: String): Flow<Result<UserExistsInfo>>
+    fun requestPasswordReset(email: String): Flow<Result<Unit>>
 }

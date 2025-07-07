@@ -366,7 +366,7 @@ private fun CredentialsFields(
             if (userExists) {
                 TextButton(
                     modifier = Modifier.align(Alignment.End),
-                    onClick = {}
+                    onClick = { onAction(CredentialsAction.OnForgotPassword) }
                 ) { Text(text = "Forgot password?") }
             }
         }

@@ -41,3 +41,6 @@ data class ServerDetails(
 
 @Serializable
 data object PrivacyPolicy : NavKey
+
+@Serializable
+data class ResetPassword(val email: String) : NavKey

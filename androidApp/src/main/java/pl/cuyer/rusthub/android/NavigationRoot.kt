@@ -50,11 +50,13 @@ import pl.cuyer.rusthub.android.feature.settings.ChangePasswordScreen
 import pl.cuyer.rusthub.android.feature.settings.DeleteAccountScreen
 import pl.cuyer.rusthub.android.feature.settings.PrivacyPolicyScreen
 import pl.cuyer.rusthub.android.feature.settings.SettingsScreen
+import pl.cuyer.rusthub.android.feature.auth.ResetPasswordScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.common.Constants
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
 import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordViewModel
+import pl.cuyer.rusthub.presentation.features.auth.password.ResetPasswordViewModel
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
 import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
@@ -67,6 +69,7 @@ import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
 import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
+import pl.cuyer.rusthub.presentation.navigation.ResetPassword
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.Settings
@@ -242,6 +245,17 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                                     backStack.add(dest)
                                 },
                                 onNavigateUp = { backStack.removeLastOrNull() }
+                            )
+                        }
+                        entry<ResetPassword> { key ->
+                            val viewModel: ResetPasswordViewModel =
+                                koinViewModel { parametersOf(key.email) }
+                            val state = viewModel.state.collectAsStateWithLifecycle()
+                            ResetPasswordScreen(
+                                onNavigateUp = { backStack.removeLastOrNull() },
+                                uiEvent = viewModel.uiEvent,
+                                stateProvider = { state },
+                                onAction = viewModel::onAction
                             )
                         }
                         entry<ChangePassword> {

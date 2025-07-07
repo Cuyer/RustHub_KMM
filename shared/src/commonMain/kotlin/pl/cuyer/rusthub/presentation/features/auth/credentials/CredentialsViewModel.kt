@@ -26,6 +26,7 @@ import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
+import pl.cuyer.rusthub.presentation.navigation.ResetPassword
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
@@ -69,6 +70,7 @@ class CredentialsViewModel(
             CredentialsAction.OnGoogleLogin -> startGoogleLogin()
             is CredentialsAction.OnUsernameChange -> updateUsername(action.username)
             is CredentialsAction.OnPasswordChange -> updatePassword(action.password)
+            CredentialsAction.OnForgotPassword -> navigateResetPassword()
             CredentialsAction.OnNavigateUp -> navigateUp()
         }
     }
@@ -76,6 +78,12 @@ class CredentialsViewModel(
     private fun navigateUp() {
         coroutineScope.launch {
             _uiEvent.send(UiEvent.NavigateUp)
+        }
+    }
+
+    private fun navigateResetPassword() {
+        coroutineScope.launch {
+            _uiEvent.send(UiEvent.Navigate(ResetPassword(_state.value.email)))
         }
     }
 
