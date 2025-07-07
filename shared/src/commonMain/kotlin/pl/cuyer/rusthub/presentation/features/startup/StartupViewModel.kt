@@ -11,16 +11,16 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
-import pl.cuyer.rusthub.domain.model.User
-import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
-import pl.cuyer.rusthub.domain.usecase.CheckEmailConfirmedUseCase
+import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.AuthProvider
+import pl.cuyer.rusthub.domain.model.User
+import pl.cuyer.rusthub.domain.usecase.CheckEmailConfirmedUseCase
+import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
+import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.ServerList
-import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
-import pl.cuyer.rusthub.common.Result
 
 class StartupViewModel(
     private val snackbarController: SnackbarController,
@@ -47,7 +47,7 @@ class StartupViewModel(
             .onEach { user ->
                 Napier.i("User: $user")
                 if (user != null) {
-                    if (user.provider == AuthProvider.GOOGLE) {
+                    if (user.provider in setOf(AuthProvider.GOOGLE, AuthProvider.ANONYMOUS)) {
                         updateStartDestination(user, true)
                     } else {
                         checkEmailConfirmedUseCase()

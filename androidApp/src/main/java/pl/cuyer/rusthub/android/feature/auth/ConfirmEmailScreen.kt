@@ -1,8 +1,10 @@
 package pl.cuyer.rusthub.android.feature.auth
 
 import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateBounds
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -27,7 +29,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -44,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
 import pl.cuyer.rusthub.android.designsystem.AppButton
+import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
@@ -80,12 +82,16 @@ fun ConfirmEmailScreen(
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
+    BackHandler {
+        onAction(ConfirmEmailAction.OnBack)
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateUp) {
+                    IconButton(onClick = { onAction(ConfirmEmailAction.OnBack) }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Navigate up")
                     }
                 },
@@ -129,7 +135,9 @@ private fun ConfirmEmailScreenCompact(state: ConfirmEmailState, onAction: (Confi
                 .imePadding()
                 .fillMaxWidth()
         ) { Text("Confirmed") }
-        TextButton(onClick = { onAction(ConfirmEmailAction.OnResend) }) {
+        AppTextButton(
+            onClick = { onAction(ConfirmEmailAction.OnResend) }
+        ) {
             Text("Resend email")
         }
     }
@@ -159,7 +167,7 @@ private fun ConfirmEmailScreenExpanded(state: ConfirmEmailState, onAction: (Conf
                     .imePadding()
                     .fillMaxWidth()
             ) { Text("Confirmed") }
-            TextButton(onClick = { onAction(ConfirmEmailAction.OnResend) }) {
+            AppTextButton(onClick = { onAction(ConfirmEmailAction.OnResend) }) {
                 Text("Resend email")
             }
         }
@@ -168,10 +176,10 @@ private fun ConfirmEmailScreenExpanded(state: ConfirmEmailState, onAction: (Conf
 
 @Composable
 private fun ConfirmEmailStaticContent(email: String, modifier: Modifier = Modifier) {
-    Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(
+    Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start) {
+        Image(
             modifier = Modifier.size(64.dp),
-            painter = painterResource(getImageByFileName("ic_padlock").drawableResId),
+            painter = painterResource(getImageByFileName("ic_mail").drawableResId),
             contentDescription = "Mail Icon",
         )
         Spacer(Modifier.size(spacing.small))

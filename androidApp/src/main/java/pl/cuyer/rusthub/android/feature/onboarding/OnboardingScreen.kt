@@ -334,8 +334,8 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
         AppTextField(
             value = state.email,
             onValueChange = { onAction(OnboardingAction.OnEmailChange(it)) },
-            labelText = "Email",
-            placeholderText = "Enter your email",
+            labelText = "E-mail",
+            placeholderText = "Enter your e-mail",
             keyboardType = KeyboardType.Email,
             imeAction = if (state.email.isNotBlank()) ImeAction.Send else ImeAction.Done,
             isError = state.emailError != null,
@@ -353,7 +353,7 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
             isLoading = state.isLoading,
             modifier = Modifier.fillMaxWidth(),
             enabled = state.email.isNotBlank()
-        ) { Text("Continue with email") }
+        ) { Text("Continue with e-mail") }
 
         Row(
             verticalAlignment = Alignment.CenterVertically,

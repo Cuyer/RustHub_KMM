@@ -19,19 +19,17 @@ import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.exception.InvalidCredentialsException
 import pl.cuyer.rusthub.domain.exception.UserAlreadyExistsException
-import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
-import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
+import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
-import pl.cuyer.rusthub.presentation.navigation.ServerList
-import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
+import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
 import pl.cuyer.rusthub.presentation.navigation.ResetPassword
+import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
-import pl.cuyer.rusthub.util.validator.EmailValidator
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
 import pl.cuyer.rusthub.util.validator.ValidationResult
@@ -113,9 +111,7 @@ class CredentialsViewModel(
                 .collectLatest { result ->
                     ensureActive()
                     when (result) {
-                        is Result.Success -> {
-                            if (userExists) navigate(ServerList) else navigate(ConfirmEmail)
-                        }
+                        is Result.Success -> navigate(ServerList)
                         is Result.Error -> handleError(result.exception)
                         else -> Unit
                     }

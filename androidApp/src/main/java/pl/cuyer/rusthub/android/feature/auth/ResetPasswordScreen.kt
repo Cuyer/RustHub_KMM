@@ -39,8 +39,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppTextField
@@ -190,7 +190,7 @@ private fun ResetPasswordStaticContent(modifier: Modifier = Modifier) {
         Icon(
             modifier = Modifier.size(64.dp),
             painter = painterResource(getImageByFileName("ic_padlock").drawableResId),
-            contentDescription = "Padlock Icon"
+            contentDescription = "Forgot password icon"
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
@@ -199,7 +199,7 @@ private fun ResetPasswordStaticContent(modifier: Modifier = Modifier) {
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
-            text = "Enter your email to receive password reset link.",
+            text = "Enter your e-mail to receive password reset link.",
             style = MaterialTheme.typography.bodyMedium
         )
     }
@@ -215,9 +215,9 @@ private fun ResetPasswordField(
         requestFocus = true,
         value = email,
         onValueChange = { onAction(ResetPasswordAction.OnEmailChange(it)) },
-        labelText = "Email",
-        placeholderText = "Enter your email",
-        keyboardType = androidx.compose.ui.text.input.KeyboardType.Email,
+        labelText = "E-mail",
+        placeholderText = "Enter your e-mail",
+        keyboardType = KeyboardType.Email,
         imeAction = if (email.isNotBlank()) ImeAction.Send else ImeAction.Done,
         onSubmit = { onAction(ResetPasswordAction.OnSend) },
         isError = emailError != null,

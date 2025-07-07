@@ -40,8 +40,9 @@ import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
-import pl.cuyer.rusthub.android.feature.auth.CredentialsScreen
 import pl.cuyer.rusthub.android.feature.auth.ConfirmEmailScreen
+import pl.cuyer.rusthub.android.feature.auth.CredentialsScreen
+import pl.cuyer.rusthub.android.feature.auth.ResetPasswordScreen
 import pl.cuyer.rusthub.android.feature.auth.UpgradeAccountScreen
 import pl.cuyer.rusthub.android.feature.onboarding.OnboardingScreen
 import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
@@ -50,22 +51,21 @@ import pl.cuyer.rusthub.android.feature.settings.ChangePasswordScreen
 import pl.cuyer.rusthub.android.feature.settings.DeleteAccountScreen
 import pl.cuyer.rusthub.android.feature.settings.PrivacyPolicyScreen
 import pl.cuyer.rusthub.android.feature.settings.SettingsScreen
-import pl.cuyer.rusthub.android.feature.auth.ResetPasswordScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.common.Constants
+import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
 import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordViewModel
 import pl.cuyer.rusthub.presentation.features.auth.password.ResetPasswordViewModel
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
-import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
-import pl.cuyer.rusthub.presentation.navigation.Credentials
 import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
+import pl.cuyer.rusthub.presentation.navigation.Credentials
 import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
@@ -160,7 +160,7 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                                 uiEvent = viewModel.uiEvent,
                                 onAction = viewModel::onAction,
                                 onNavigate = { dest ->
-                                    backStack.clear()
+                                    if (dest is ServerList) backStack.clear()
                                     backStack.add(dest)
                                 },
                                 onNavigateUp = {
@@ -244,7 +244,12 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                                     backStack.clear()
                                     backStack.add(dest)
                                 },
-                                onNavigateUp = { backStack.removeLastOrNull() }
+                                onNavigateUp = {
+                                    if (backStack.isNotEmpty()) {
+                                        backStack.clear()
+                                    }
+                                    backStack.add(Onboarding)
+                                }
                             )
                         }
                         entry<ResetPassword> { key ->

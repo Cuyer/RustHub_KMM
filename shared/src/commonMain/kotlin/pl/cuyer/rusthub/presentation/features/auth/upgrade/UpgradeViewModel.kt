@@ -15,15 +15,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
+import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeWithGoogleUseCase
-import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
-import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
-import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
-import androidx.navigation3.runtime.NavKey
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.validator.EmailValidator
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
@@ -109,7 +107,7 @@ class UpgradeViewModel(
                                     "Account has been upgraded successfully!"
                                 )
                             )
-                            navigate(ConfirmEmail)
+                            _uiEvent.send(UiEvent.NavigateUp)
                         }
                         is Result.Error -> showErrorSnackbar(
                             result.exception.message ?: "Unable to upgrade account"
@@ -180,9 +178,5 @@ class UpgradeViewModel(
 
     private fun showErrorSnackbar(message: String) {
         coroutineScope.launch { snackbarController.sendEvent(SnackbarEvent(message)) }
-    }
-
-    private fun navigate(destination: NavKey) {
-        coroutineScope.launch { _uiEvent.send(UiEvent.Navigate(destination)) }
     }
 }
