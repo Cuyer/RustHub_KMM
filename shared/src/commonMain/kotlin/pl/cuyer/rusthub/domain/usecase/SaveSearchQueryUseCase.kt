@@ -6,7 +6,7 @@ import pl.cuyer.rusthub.domain.repository.search.SearchQueryDataSource
 class SaveSearchQueryUseCase(
     private val dataSource: SearchQueryDataSource
 ) {
-    operator fun invoke(query: SearchQuery) {
+    suspend operator fun invoke(query: SearchQuery) {
         dataSource.upsertQuery(query)
     }
 }

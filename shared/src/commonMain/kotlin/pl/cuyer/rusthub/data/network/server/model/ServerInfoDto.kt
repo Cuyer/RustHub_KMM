@@ -60,5 +60,13 @@ data class ServerInfoDto(
     @SerialName("map_url")
     val mapUrl: String? = null,
     @SerialName("header_image")
-    val headerImage: String? = null
+    val headerImage: String? = null,
+    @SerialName("is_favorite")
+    val isFavorite: Boolean? = null,
+    @SerialName("is_subscribed")
+    val isSubscribed: Boolean? = null,
+    @SerialName("next_wipe")
+    val nextWipe: Instant? = null,
+    @SerialName("next_map_wipe")
+    val nextMapWipe: Instant? = null
 )

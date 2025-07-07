@@ -7,7 +7,7 @@ class ClearFiltersUseCase(
     private val dataSource: FiltersDataSource
 ) {
     @OptIn(ExperimentalPagingApi::class)
-    operator fun invoke() {
+    suspend operator fun invoke() {
         return dataSource.clearFilters()
     }
 }

@@ -7,9 +7,11 @@ import androidx.paging.RemoteMediator
 import database.ServerEntity
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.Clock
 import pl.cuyer.rusthub.common.Constants.DEFAULT_KEY
 import pl.cuyer.rusthub.common.Result
+import pl.cuyer.rusthub.domain.exception.ConnectivityException
 import pl.cuyer.rusthub.domain.model.RemoteKey
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
@@ -24,6 +26,14 @@ class ServerRemoteMediator(
     private val searchQuery: String?
 ) : RemoteMediator<Int, ServerEntity>() {
     private val keyId = DEFAULT_KEY
+
+    override suspend fun initialize(): InitializeAction {
+        val current = filters.getFilters().firstOrNull()
+        if (current == null) {
+            filters.upsertFilters(ServerQuery())
+        }
+        return InitializeAction.LAUNCH_INITIAL_REFRESH
+    }
 
     override suspend fun load(
         loadType: LoadType,
@@ -40,10 +50,19 @@ class ServerRemoteMediator(
 
         return try {
             val query: ServerQuery = filters.getFilters().first() ?: ServerQuery()
-            when (val result = api.getServers(page, state.config.pageSize, query, searchQuery)
+            when (val result = api.getServers(
+                page,
+                state.config.pageSize,
+                query,
+                searchQuery
+            )
                 .first { it !is Result.Loading }) {
                 is Result.Error -> {
-                    MediatorResult.Error(result.exception)
+                    return@load if (result.exception is ConnectivityException) {
+                        MediatorResult.Success(endOfPaginationReached = true)
+                    } else {
+                        MediatorResult.Error(result.exception)
+                    }
                 }
                 is Result.Success -> {
                     if (loadType == LoadType.REFRESH) {
@@ -71,7 +90,11 @@ class ServerRemoteMediator(
                 Result.Loading -> MediatorResult.Success(endOfPaginationReached = false)
             }
         } catch (e: Exception) {
-            MediatorResult.Error(e)
+            if (e is ConnectivityException) {
+                MediatorResult.Success(endOfPaginationReached = true)
+            } else {
+                MediatorResult.Error(e)
+            }
         }
     }
 }

@@ -7,13 +7,15 @@ import pl.cuyer.rusthub.domain.model.Maps
 import pl.cuyer.rusthub.domain.model.Order
 import pl.cuyer.rusthub.domain.model.Region
 import pl.cuyer.rusthub.domain.model.ServerQuery
+import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.WipeSchedule
 
 @Serializable
 data class FilterUi(
     val lists: List<Triple<String, List<String>, Int?>> = listOf(),
     val checkboxes: List<Pair<String, Boolean>> = listOf(),
-    val ranges: List<Triple<String, Int, Int?>> = listOf()
+    val ranges: List<Triple<String, Int, Int?>> = listOf(),
+    val filter: ServerFilter = ServerFilter.ALL
 )
 
 fun FilterUi.toDomain(): ServerQuery {
@@ -42,6 +44,7 @@ fun FilterUi.toDomain(): ServerQuery {
         modded = modded,
         playerCount = playerCount,
         groupLimit = groupLimit,
-        ranking = ranking
+        ranking = ranking,
+        filter = filter
     )
 }

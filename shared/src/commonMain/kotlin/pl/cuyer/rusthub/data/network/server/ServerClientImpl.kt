@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.data.network.server.mapper.toDomain
 import pl.cuyer.rusthub.data.network.server.model.PagedServerInfoDto
@@ -12,10 +13,14 @@ import pl.cuyer.rusthub.data.network.util.NetworkConstants
 import pl.cuyer.rusthub.data.network.util.appendNonNull
 import pl.cuyer.rusthub.domain.model.PagedServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
+import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
 
-class ServerClientImpl(private val httpClient: HttpClient) : ServerRepository,
-    BaseApiResponse() {
+class ServerClientImpl(
+    private val httpClient: HttpClient,
+    json: Json
+) : ServerRepository,
+    BaseApiResponse(json) {
     override fun getServers(
         page: Int,
         size: Int,
@@ -40,6 +45,7 @@ class ServerClientImpl(private val httpClient: HttpClient) : ServerRepository,
                     if (!searchQuery.isNullOrBlank()) parameters.append("name", searchQuery)
                     if (query.official == true) parameters.append("official", true.toString())
                     if (query.modded == true) parameters.append("modded", true.toString())
+                    appendNonNull("filter" to query.filter)
                 }
             }
         }.map { result ->

@@ -42,9 +42,13 @@ data class ServerInfoUi(
     val monuments: Int? = null,
     val averageFps: Long? = null,
     val lastWipe: String? = null,
+    val nextWipe: String? = null,
+    val nextMapWipe: String? = null,
     val pve: Boolean? = null,
     val website: String? = null,
     val isPremium: Boolean? = null,
     val mapUrl: String? = null,
-    val headerImage: String? = null
+    val headerImage: String? = null,
+    val isFavorite: Boolean? = null,
+    val isSubscribed: Boolean? = null
 )

@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">RustHub</string>
+    <string name="notification_channel_name">Notifications</string>
+    <string name="notification_channel_description">General notifications in the application.</string>
+    <string name="map_wipe_notification_channel_name">Map wipe notifications</string>
+    <string name="map_wipe_notification_channel_description">Notifications about map wipes.</string>
+    <string name="wipe_notification_channel_name">Wipe notifications</string>
+    <string name="wipe_notification_channel_description">Notifications about server wipes.</string>
+    <string name="map_wipe_notification_body">%1$s is going to be map wiped at %2$s</string>
+    <string name="wipe_notification_body">%1$s is going to be full wiped at %2$s!</string>
+    <string name="map_wipe_notification_title">Map wipe</string>
+    <string name="wipe_notification_title">Full wipe</string>
 </resources>

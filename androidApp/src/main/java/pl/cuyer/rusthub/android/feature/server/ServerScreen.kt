@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.android.feature.server
 
-import androidx.compose.animation.AnimatedContent
+import android.app.Activity
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -11,8 +12,9 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -21,17 +23,24 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSearchBarState
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -45,13 +54,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import app.cash.paging.PagingData
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
-import app.cash.paging.compose.itemContentType
-import app.cash.paging.compose.itemKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -66,18 +75,26 @@ import pl.cuyer.rusthub.android.model.Label
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.android.util.HandlePagingItems
+import pl.cuyer.rusthub.domain.model.Theme
+import pl.cuyer.rusthub.domain.exception.NetworkUnavailableException
+import pl.cuyer.rusthub.domain.exception.TimeoutException
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
+import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.WipeType
-import pl.cuyer.rusthub.presentation.features.ServerAction
-import pl.cuyer.rusthub.presentation.features.ServerState
+import pl.cuyer.rusthub.presentation.features.server.ServerAction
+import pl.cuyer.rusthub.presentation.features.server.ServerState
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import java.util.Locale
 import java.util.UUID
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class,
+    ExperimentalMaterial3WindowSizeClassApi::class
+)
 @Composable
 fun ServerScreen(
     onNavigate: (NavKey) -> Unit,
@@ -109,32 +126,55 @@ fun ServerScreen(
         }
     }
 
+    val context: Context = LocalContext.current
+
+    val windowSizeClass = calculateWindowSizeClass(context as Activity)
+
+    val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
+
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     Scaffold(
         topBar = {
-            RustSearchBarTopAppBar(
-                searchBarState = searchBarState,
-                textFieldState = textFieldState,
-                onSearchTriggered = {
-                    onAction(ServerAction.OnSearch(textFieldState.text.toString()))
-                },
-                onOpenFilters = { showSheet = true },
-                searchQueryUi = state.value.searchQuery,
-                onDelete = {
-                    if (it.isBlank()) onAction(ServerAction.DeleteSearchQueries) else onAction(
-                        ServerAction.DeleteSearchQueryByQuery(it)
-                    )
-                },
-                onClearSearchQuery = {
-                    onAction(ServerAction.OnClearSearchQuery)
-                },
-                scrollBehavior = scrollBehavior
-            )
+            Column(
+                modifier = with(scrollBehavior)
+                { Modifier.searchBarScrollBehavior() }
+            ) {
+                RustSearchBarTopAppBar(
+                    searchBarState = searchBarState,
+                    textFieldState = textFieldState,
+                    onSearchTriggered = {
+                        onAction(ServerAction.OnSearch(textFieldState.text.toString()))
+                    },
+                    onOpenFilters = { showSheet = true },
+                    searchQueryUi = state.value.searchQuery,
+                    onDelete = {
+                        if (it.isBlank()) onAction(ServerAction.DeleteSearchQueries) else onAction(
+                            ServerAction.DeleteSearchQueryByQuery(it)
+                        )
+                    },
+                    onClearSearchQuery = {
+                        onAction(ServerAction.OnClearSearchQuery)
+                    },
+                    isLoadingSearchHistory = state.value.isLoadingSearchHistory
+                )
+                ServerFilterChips(
+                    selected = state.value.filter,
+                    onSelectedChange = {
+                        onAction(ServerAction.OnFilterChange(it))
+                        pagedList.refresh()
+                    },
+                    modifier = Modifier
+                        .navigationBarsPadding()
+                        .padding(horizontal = spacing.xmedium)
+                        .then(
+                            if (isTabletMode) Modifier.displayCutoutPadding() else Modifier
+                        )
+
+                )
+            }
         },
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .navigationBarsPadding(),
-        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { innerPadding ->
         PullToRefreshBox(
             isRefreshing = false,
@@ -145,37 +185,39 @@ fun ServerScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .consumeWindowInsets(innerPadding)
         ) {
-            AnimatedContent(state.value.isLoading) { isLoading ->
-                if (isLoading) {
+            HandlePagingItems(pagedList) {
+                onRefresh {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(spacing.medium)
                     ) {
-                    items(
-                        count = 6
-                    ) {
-                        ServerListItemShimmer(
-                            modifier = Modifier
-                                .animateItem()
-                                .padding(horizontal = spacing.xmedium)
-                        )
+                        items(
+                            count = 6
+                        ) {
+                            ServerListItemShimmer(
+                                modifier = Modifier
+                                    .animateItem()
+                                    .padding(horizontal = spacing.xmedium)
+                            )
+                        }
                     }
                 }
-            } else {
-                LazyColumn(
-                    state = lazyListState,
-                    verticalArrangement = Arrangement.spacedBy(spacing.medium)
-                ) {
-                    items(
-                        count = pagedList.itemCount,
-                        key = pagedList.itemKey { it.id ?: UUID.randomUUID() },
-                        contentType = pagedList.itemContentType()
-                    ) { index ->
-                        pagedList[index]?.let { item ->
+                onError { error ->
+                    when (error) {
+                        is NetworkUnavailableException, is TimeoutException -> Unit
+                        else -> onAction(ServerAction.OnError(error.message ?: "Unknown Error"))
+                    }
+                }
+                onSuccess { items ->
+                    LazyColumn(
+                        state = lazyListState,
+                        verticalArrangement = Arrangement.spacedBy(spacing.medium),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        onPagingItems(key = { it.id ?: UUID.randomUUID() }) { item ->
+                            val interactionSource = remember { MutableInteractionSource() }
                             val labels by rememberUpdatedState(createLabels(item))
                             val details by rememberUpdatedState(createDetails(item))
-                            val interactionSource = remember { MutableInteractionSource() }
                             ServerListItem(
                                 modifier = Modifier
                                     .animateItem()
@@ -188,7 +230,8 @@ fun ServerScreen(
                                         onClick = {
                                             onAction(
                                                 ServerAction.OnServerClick(
-                                                    item.id ?: Long.MAX_VALUE, item.name ?: ""
+                                                    item.id ?: Long.MAX_VALUE,
+                                                    item.name ?: ""
                                                 )
                                             )
                                         }
@@ -200,57 +243,92 @@ fun ServerScreen(
                                 isOnline = item.serverStatus == ServerStatus.ONLINE
                             )
                         }
+                        onAppendItem {
+                            CircularProgressIndicator(
+                                Modifier
+                                    .animateItem()
+                                    .padding(6.dp)
+                            )
+                        }
                     }
                 }
             }
-        }
-        if (showSheet) {
-            FilterBottomSheet(
-                stateProvider = { state },
-                sheetState = sheetState,
-                onDismiss = {
-                    showSheet = false
-                },
-                onDismissAndRefresh = {
-                    showSheet = false
-                    pagedList.refresh()
-                },
-                onAction = onAction
-            )
-        }
-        AnimatedVisibility(
-            visible = !isAtTop,
-            enter = slideInVertically(
-                initialOffsetY = { it },
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioLowBouncy,
-                    stiffness = Spring.StiffnessVeryLow
+            if (showSheet) {
+                FilterBottomSheet(
+                    stateProvider = { state },
+                    sheetState = sheetState,
+                    onDismiss = {
+                        showSheet = false
+                    },
+                    onDismissAndRefresh = {
+                        showSheet = false
+                        pagedList.refresh()
+                    },
+                    onAction = onAction
                 )
-            ) + scaleIn(
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioLowBouncy,
-                    stiffness = Spring.StiffnessLow
-                )
-            ),
-            exit = slideOutVertically(
-                targetOffsetY = { it },
-                animationSpec = tween(durationMillis = 150)
-            ),
-            modifier = Modifier
-                .padding(spacing.medium)
-                .align(Alignment.BottomEnd)
-        ) {
-            FloatingActionButton(
-                onClick = {
-                    coroutineScope.launch {
-                        lazyListState.animateScrollToItem(0)
-                    }
-                }
+            }
+            AnimatedVisibility(
+                visible = !isAtTop,
+                enter = slideInVertically(
+                    initialOffsetY = { it },
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioLowBouncy,
+                        stiffness = Spring.StiffnessVeryLow
+                    )
+                ) + scaleIn(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioLowBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
+                ),
+                exit = slideOutVertically(
+                    targetOffsetY = { it },
+                    animationSpec = tween(durationMillis = 150)
+                ),
+                modifier = Modifier
+                    .padding(spacing.medium)
+                    .align(Alignment.BottomEnd)
             ) {
-                Icon(Icons.Default.ArrowUpward, contentDescription = "Scroll to top")
+                FloatingActionButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            lazyListState.animateScrollToItem(0)
+                            scrollBehavior.scrollOffset = 1f
+                        }
+                    }
+                ) {
+                    Icon(Icons.Default.ArrowUpward, contentDescription = "Scroll to top")
+                }
             }
         }
-        }
+    }
+}
+
+@Composable
+private fun ServerFilterChips(
+    selected: ServerFilter,
+    onSelectedChange: (ServerFilter) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    FlowRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(spacing.small)
+    ) {
+        FilterChip(
+            selected = selected == ServerFilter.ALL,
+            onClick = { onSelectedChange(ServerFilter.ALL) },
+            label = { Text("All") }
+        )
+        FilterChip(
+            selected = selected == ServerFilter.FAVOURITES,
+            onClick = { onSelectedChange(ServerFilter.FAVOURITES) },
+            label = { Text("Favourites") }
+        )
+        FilterChip(
+            selected = selected == ServerFilter.SUBSCRIBED,
+            onClick = { onSelectedChange(ServerFilter.SUBSCRIBED) },
+            label = { Text("Subscribed") }
+        )
     }
 }
 
@@ -307,13 +385,13 @@ private fun createLabels(item: ServerInfoUi): List<Label> {
 @Preview
 @Composable
 private fun ServerScreenPreview() {
-    RustHubTheme {
+    RustHubTheme(theme = Theme.SYSTEM) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
             ServerScreen(
-                stateProvider = { mutableStateOf(ServerState(isLoading = false)) },
+                stateProvider = { mutableStateOf(ServerState(isRefreshing = false)) },
                 onAction = {},
                 onNavigate = {},
                 uiEvent = MutableStateFlow(

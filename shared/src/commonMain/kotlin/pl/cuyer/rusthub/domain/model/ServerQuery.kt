@@ -14,5 +14,6 @@ data class ServerQuery(
     val difficulty: Difficulty? = null,
     val wipeSchedule: WipeSchedule? = null,
     val official: Boolean? = null,
-    val order: Order = Order.WIPE
+    val order: Order = Order.WIPE,
+    val filter: ServerFilter = ServerFilter.ALL
 )

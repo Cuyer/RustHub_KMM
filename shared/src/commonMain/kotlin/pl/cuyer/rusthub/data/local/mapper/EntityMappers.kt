@@ -10,6 +10,8 @@ import database.FiltersWipeScheduleEntity
 import database.RemoteKeyEntity
 import database.SearchQueryEntity
 import database.ServerEntity
+import database.UserEntity
+import database.SettingsEntity
 import kotlinx.datetime.Instant
 import pl.cuyer.rusthub.data.local.model.DifficultyEntity
 import pl.cuyer.rusthub.data.local.model.FlagEntity
@@ -17,8 +19,11 @@ import pl.cuyer.rusthub.data.local.model.MapsEntity
 import pl.cuyer.rusthub.data.local.model.OrderEntity
 import pl.cuyer.rusthub.data.local.model.RegionEntity
 import pl.cuyer.rusthub.data.local.model.ServerStatusEntity
+import pl.cuyer.rusthub.data.local.model.ServerFilterEntity
 import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity
 import pl.cuyer.rusthub.data.local.model.WipeTypeEntity
+import pl.cuyer.rusthub.data.local.model.LanguageEntity
+import pl.cuyer.rusthub.data.local.model.ThemeEntity
 import pl.cuyer.rusthub.domain.model.Difficulty
 import pl.cuyer.rusthub.domain.model.FiltersOptions
 import pl.cuyer.rusthub.domain.model.Flag
@@ -29,9 +34,15 @@ import pl.cuyer.rusthub.domain.model.RemoteKey
 import pl.cuyer.rusthub.domain.model.SearchQuery
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
+import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerStatus
+import pl.cuyer.rusthub.domain.model.User
 import pl.cuyer.rusthub.domain.model.WipeSchedule
 import pl.cuyer.rusthub.domain.model.WipeType
+import pl.cuyer.rusthub.domain.model.AuthProvider
+import pl.cuyer.rusthub.domain.model.Language
+import pl.cuyer.rusthub.domain.model.Settings
+import pl.cuyer.rusthub.domain.model.Theme
 
 fun DifficultyEntity?.toDomain(): Difficulty? = this?.let { Difficulty.valueOf(it.name) }
 fun Difficulty?.toEntity(): DifficultyEntity? = this?.let { DifficultyEntity.valueOf(it.name) }
@@ -55,6 +66,9 @@ fun ServerStatusEntity?.toDomain(): ServerStatus? = this?.let { ServerStatus.val
 fun ServerStatus?.toEntity(): ServerStatusEntity? =
     this?.let { ServerStatusEntity.valueOf(it.name) }
 
+fun ServerFilterEntity?.toDomain(): ServerFilter? = this?.let { ServerFilter.valueOf(it.name) }
+fun ServerFilter?.toEntity(): ServerFilterEntity? = this?.let { ServerFilterEntity.valueOf(it.name) }
+
 fun WipeTypeEntity?.toDomain(): WipeType? = this?.let { WipeType.valueOf(it.name) }
 fun WipeType?.toEntity(): WipeTypeEntity? = this?.let { WipeTypeEntity.valueOf(it.name) }
 
@@ -71,7 +85,8 @@ fun FiltersEntity.toServerQuery(): ServerQuery {
         wipeSchedule = wipe_schedule.toDomain(),
         official = is_official == 1L,
         order = sort_order.toDomain() ?: Order.WIPE,
-        map = map_name.toDomain()
+        map = map_name.toDomain(),
+        filter = filter.toDomain() ?: ServerFilter.ALL
     )
 }
 
@@ -110,7 +125,11 @@ fun ServerEntity.toServerInfo(): ServerInfo {
         website = website,
         isPremium = is_premium == 1L,
         mapUrl = map_url,
-        headerImage = header_image
+        headerImage = header_image,
+        isFavorite = favourite == 1L,
+        isSubscribed = subscribed == 1L,
+        nextWipe = rust_next_wipe?.let { Instant.parse(it) },
+        nextMapWipe = rust_next_map_wipe?.let { Instant.parse(it) }
     )
 }
 
@@ -162,3 +181,25 @@ fun FiltersWipeScheduleEntity?.toDomain(): WipeSchedule? =
 
 fun SearchQueryEntity.toDomain(): SearchQuery = SearchQuery(id, query, Instant.parse(timestamp))
 
+fun UserEntity.toUser(): User = User(
+    email,
+    username,
+    access_token,
+    refresh_token,
+    AuthProvider.valueOf(provider),
+    subscribed = subscribed == 1L
+)
+
+
+
+
+fun ThemeEntity?.toDomain(): Theme? = this?.let { Theme.valueOf(it.name) }
+fun Theme?.toEntity(): ThemeEntity? = this?.let { ThemeEntity.valueOf(it.name) }
+
+fun LanguageEntity?.toDomain(): Language? = this?.let { Language.valueOf(it.name) }
+fun Language?.toEntity(): LanguageEntity? = this?.let { LanguageEntity.valueOf(it.name) }
+
+fun SettingsEntity.toSettings(): Settings = Settings(
+    theme = theme.toDomain() ?: Theme.SYSTEM,
+    language = language.toDomain() ?: Language.ENGLISH
+)

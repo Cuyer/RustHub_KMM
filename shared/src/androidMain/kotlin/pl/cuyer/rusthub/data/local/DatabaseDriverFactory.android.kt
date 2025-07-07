@@ -34,8 +34,13 @@ actual class DatabaseDriverFactory(
                 regionAdapter = EnumColumnAdapter(),
                 difficultyAdapter = EnumColumnAdapter(),
                 wipe_scheduleAdapter = EnumColumnAdapter(),
-                sort_orderAdapter = EnumColumnAdapter()
+                sort_orderAdapter = EnumColumnAdapter(),
+                filterAdapter = EnumColumnAdapter()
             ),
+            settingsEntityAdapter = database.SettingsEntity.Adapter(
+                themeAdapter = EnumColumnAdapter(),
+                languageAdapter = EnumColumnAdapter()
+            )
         )
     }
 }

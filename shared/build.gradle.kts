@@ -45,7 +45,14 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.android)
             implementation(libs.androidx.navigation)
+            implementation(libs.androidx.work.runtime)
             implementation(libs.ktor.client.okhttp)
+            implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation(libs.firebase.messaging)
+            implementation(libs.google.auth)
+            implementation(libs.androidx.credentials)
+            implementation(libs.google.identity)
+            implementation(libs.kotlin.coroutines.play.services)
         }
         commonMain.dependencies {
             implementation(project.dependencies.platform(libs.koin.bom))
@@ -65,6 +72,8 @@ kotlin {
             implementation(libs.paging)
             implementation(libs.sqldelight.extensions.paging3)
             api(libs.moko.resources)
+            implementation(libs.moko.permissions)
+            implementation(libs.moko.permissions.notifications)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -83,12 +92,34 @@ android {
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
+    flavorDimensions += "mode"
+    productFlavors {
+        create("production") {
+            dimension = "mode"
+            buildConfigField("String", "BASE_URL", "\"https://prod.example.com/\"")
+        }
+        create("development") {
+            dimension = "mode"
+            buildConfigField("String", "BASE_URL", "\"http://192.168.100.229:8080/\"")
+        }
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
+
+
+    
     buildTypes {
         release {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard.pro")
             isMinifyEnabled = false
             isJniDebuggable = false
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("development")
+        }
+
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("development")
         }
     }
     compileOptions {

@@ -5,7 +5,7 @@ import pl.cuyer.rusthub.domain.model.SearchQuery
 
 interface SearchQueryDataSource {
     fun getQueries(): Flow<List<SearchQuery>>
-    fun upsertQuery(query: SearchQuery)
-    fun clearQueries()
-    fun deleteByQuery(query: String)
+    suspend fun upsertQuery(query: SearchQuery)
+    suspend fun clearQueries()
+    suspend fun deleteByQuery(query: String)
 }

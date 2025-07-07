@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.presentation.model
 
 import pl.cuyer.rusthub.domain.model.Order
 import pl.cuyer.rusthub.domain.model.ServerQuery
+import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.displayName
 
 fun ServerQuery?.toUi(
@@ -42,6 +43,7 @@ fun ServerQuery?.toUi(
             Triple("Max player count", playerCount, (this?.playerCount)?.toInt()),
             Triple("Group limit", groupLimit, (this?.groupLimit)?.toInt()),
             Triple("Max ranking", ranking, (this?.ranking)?.toInt())
-        )
+        ),
+        filter = this?.filter ?: ServerFilter.ALL
     )
 }

@@ -3,6 +3,9 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.crashlytics)
+    alias(libs.plugins.performance)
 }
 
 android {
@@ -17,6 +20,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     packaging {
         resources {
@@ -30,6 +34,20 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    flavorDimensions += "mode"
+    productFlavors {
+        create("production") {
+            dimension = "mode"
+        }
+        create("development") {
+            dimension = "mode"
+            applicationIdSuffix = ".development"
+        }
+    }
+
+
+
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
@@ -38,7 +56,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("development")
+        }
+
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("development")
         }
     }
 }
@@ -68,8 +90,18 @@ dependencies {
     implementation(libs.androidx.compose.material3.adaptive.navigation3)
     implementation(libs.androidx.compose.material3.windowsizeclass)
     implementation(libs.androidx.lifecycle.process)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.compose.icons)
     implementation(libs.paging.compose)
+    implementation(libs.moko.permissions.compose)
+    implementation(libs.moko.permissions.notifications)
     implementation(libs.kotlin.serialization)
+    implementation(project.dependencies.platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.messaging)
+    implementation(libs.firebase.performance)
+    implementation(libs.google.auth)
+    implementation(libs.androidx.credentials)
     debugImplementation(libs.compose.ui.tooling)
 }

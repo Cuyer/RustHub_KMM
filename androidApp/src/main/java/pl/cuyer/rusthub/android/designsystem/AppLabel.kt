@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.domain.model.Theme
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -27,10 +28,11 @@ fun AppLabel(
     ElevatedCard(
         modifier = modifier
             .height(IntrinsicSize.Max),
-        shape = RectangleShape,
         colors = CardDefaults.elevatedCardColors().copy(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        )
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        ),
+        shape = RectangleShape
     ) {
         Row(
             modifier = Modifier
@@ -53,7 +55,7 @@ fun AppLabel(
 @Composable
 @Preview
 private fun LabelPreview() {
-    RustHubTheme {
+    RustHubTheme(theme = Theme.LIGHT) {
         AppLabel(
             text = "Monthly"
         )

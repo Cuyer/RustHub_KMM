@@ -17,7 +17,7 @@ import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
@@ -28,7 +28,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,7 +41,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,8 +49,9 @@ import kotlinx.serialization.json.Json
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
-import pl.cuyer.rusthub.presentation.features.ServerAction
-import pl.cuyer.rusthub.presentation.features.ServerState
+import pl.cuyer.rusthub.domain.model.Theme
+import pl.cuyer.rusthub.presentation.features.server.ServerAction
+import pl.cuyer.rusthub.presentation.features.server.ServerState
 import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.presentation.model.toDomain
 
@@ -100,8 +99,11 @@ fun FilterBottomSheet(
             modifier = Modifier
                 .padding(start = spacing.medium, end = spacing.medium, bottom = spacing.medium)
         )
-        HorizontalDivider()
-        AnimatedContent(stateProvider().value.isLoading) { loading ->
+        HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
+        AnimatedContent(
+            targetState = stateProvider().value.isLoadingFilters,
+            transitionSpec = { defaultFadeTransition() }
+        ) { loading ->
             if (loading) {
                 Box(
                     modifier = Modifier
@@ -138,8 +140,11 @@ fun FilterBottomSheet(
                                 onFiltersChange = { newFilters = it }
                             )
                             Spacer(Modifier.height(spacing.medium))
-                            Button(
-                                shape = RectangleShape,
+                            AppButton(
+                                colors = ButtonDefaults.elevatedButtonColors().copy(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                ),
                                 onClick = {
                                     onAction(ServerAction.OnSaveFilters(filters = it.toDomain()))
                                     onDismissAndRefresh()
@@ -150,8 +155,10 @@ fun FilterBottomSheet(
                             ) {
                                 Text("Apply Filters")
                             }
-                            TextButton(
-                                shape = RectangleShape,
+                            AppOutlinedButton(
+                                colors = ButtonDefaults.outlinedButtonColors().copy(
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                ),
                                 onClick = {
                                     onAction(ServerAction.OnClearFilters)
                                     onDismissAndRefresh()
@@ -160,7 +167,9 @@ fun FilterBottomSheet(
                                     .fillMaxWidth()
                                     .padding(vertical = spacing.small, horizontal = spacing.large)
                             ) {
-                                Text("Reset Filters")
+                                Text(
+                                    text = "Reset Filters",
+                                )
                             }
                         }
                     }
@@ -259,7 +268,7 @@ private fun FilterBottomSheetPreview() {
     val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
 
-    RustHubTheme {
+    RustHubTheme(theme = Theme.SYSTEM) {
         Surface(
             modifier = Modifier
                 .fillMaxSize(),
@@ -272,7 +281,7 @@ private fun FilterBottomSheetPreview() {
                         sheetState.hide()
                     }
                 },
-                stateProvider = { mutableStateOf(ServerState(isLoading = true)) },
+                stateProvider = { mutableStateOf(ServerState(loadingMore = true)) },
                 onAction = { },
                 onDismissAndRefresh = { }
             )
