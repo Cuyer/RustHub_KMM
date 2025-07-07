@@ -70,6 +70,7 @@ import pl.cuyer.rusthub.domain.usecase.UpgradeAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeWithGoogleUseCase
 import pl.cuyer.rusthub.domain.usecase.CheckEmailConfirmedUseCase
 import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
+import pl.cuyer.rusthub.domain.usecase.RequestPasswordResetUseCase
 import pl.cuyer.rusthub.presentation.settings.SettingsController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.util.MessagingTokenManager
@@ -131,6 +132,7 @@ val appModule = module {
     single { LogoutUserUseCase(get(), get(), get()) }
     single { DeleteAccountUseCase(get(), get(), get()) }
     single { ChangePasswordUseCase(get()) }
+    single { RequestPasswordResetUseCase(get()) }
     single { UpgradeAccountUseCase(get(), get(), get(), get()) }
     single { UpgradeWithGoogleUseCase(get(), get(), get(), get()) }
     single { GetSettingsUseCase(get()) }

@@ -16,6 +16,7 @@ import pl.cuyer.rusthub.data.network.auth.model.GoogleLoginRequest
 import pl.cuyer.rusthub.data.network.auth.model.LoginRequest
 import pl.cuyer.rusthub.data.network.auth.model.RefreshRequest
 import pl.cuyer.rusthub.data.network.auth.model.RegisterRequest
+import pl.cuyer.rusthub.data.network.auth.model.ForgotPasswordRequest
 import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
 import pl.cuyer.rusthub.data.network.auth.model.UpgradeRequest
 import pl.cuyer.rusthub.data.network.auth.model.UserExistsResponseDto
@@ -194,6 +195,20 @@ class AuthRepositoryImpl(
                 is Result.Success -> Result.Success(result.data.toDomain())
                 is Result.Error -> result
                 is Result.Loading -> Result.Loading
+            }
+        }
+    }
+
+    override fun requestPasswordReset(email: String): Flow<Result<Unit>> {
+        return safeApiCall<Unit> {
+            httpClient.post(NetworkConstants.BASE_URL + "forgot-password") {
+                setBody(ForgotPasswordRequest(email))
+            }
+        }.map { result ->
+            when (result) {
+                is Result.Success -> Result.Success(Unit)
+                is Result.Error -> result
+                Result.Loading -> Result.Loading
             }
         }
     }
