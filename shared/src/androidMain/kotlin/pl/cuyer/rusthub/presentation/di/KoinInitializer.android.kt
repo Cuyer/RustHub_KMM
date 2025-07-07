@@ -42,7 +42,7 @@ actual val platformModule: Module = module {
     single { GoogleAuthClient(androidContext()) }
     single { PermissionsController(androidContext()) }
     viewModel {
-        StartupViewModel(get(), get())
+        StartupViewModel(get(), get(), get())
     }
     viewModel {
         OnboardingViewModel(
