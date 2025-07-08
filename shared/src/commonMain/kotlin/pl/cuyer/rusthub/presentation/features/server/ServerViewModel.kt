@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock.System
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.data.local.mapper.toServerInfo
 import pl.cuyer.rusthub.domain.model.SearchQuery
@@ -51,6 +50,8 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.ClipboardHandler
+import kotlin.time.Clock.System
+import kotlin.time.ExperimentalTime
 
 //TODO pomyśleć co zrobić żeby uniknąć importu z data do viewmodela (mapowanie)
 class ServerViewModel(
@@ -184,6 +185,7 @@ class ServerViewModel(
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     private fun handleSearch(query: String) {
         coroutineScope.launch {
             runCatching {
@@ -297,6 +299,7 @@ class ServerViewModel(
         _state.update { it.copy(loadingMore = loading) }
     }
 
+    @OptIn(ExperimentalTime::class)
     private fun updateFilter(filter: ServerFilter) {
         coroutineScope.launch {
             runCatching {

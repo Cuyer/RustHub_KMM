@@ -8,7 +8,6 @@ import database.ServerEntity
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.datetime.Clock
 import pl.cuyer.rusthub.common.Constants.DEFAULT_KEY
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.exception.ConnectivityException
@@ -16,6 +15,8 @@ import pl.cuyer.rusthub.domain.model.RemoteKey
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
 import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalPagingApi::class)
 class ServerRemoteMediator(
@@ -27,6 +28,7 @@ class ServerRemoteMediator(
 ) : RemoteMediator<Int, ServerEntity>() {
     private val keyId = DEFAULT_KEY
 
+    @OptIn(ExperimentalTime::class)
     override suspend fun initialize(): InitializeAction {
         val current = filters.getFilters().firstOrNull()
         if (current == null) {
@@ -35,6 +37,7 @@ class ServerRemoteMediator(
         return InitializeAction.LAUNCH_INITIAL_REFRESH
     }
 
+    @OptIn(ExperimentalTime::class)
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, ServerEntity>
@@ -58,7 +61,7 @@ class ServerRemoteMediator(
             )
                 .first { it !is Result.Loading }) {
                 is Result.Error -> {
-                    return@load if (result.exception is ConnectivityException) {
+                    return if (result.exception is ConnectivityException) {
                         MediatorResult.Success(endOfPaginationReached = true)
                     } else {
                         MediatorResult.Error(result.exception)

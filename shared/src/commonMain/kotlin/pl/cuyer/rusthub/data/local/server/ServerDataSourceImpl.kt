@@ -17,11 +17,13 @@ import pl.cuyer.rusthub.data.local.mapper.toServerInfo
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
+import kotlin.time.ExperimentalTime
 
 class ServerDataSourceImpl(
     db: RustHubDatabase
 ) : ServerDataSource, Queries(db) {
 
+    @OptIn(ExperimentalTime::class)
     override suspend fun upsertServers(
         servers: List<ServerInfo>
     ) {

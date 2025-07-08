@@ -1,8 +1,9 @@
 package pl.cuyer.rusthub.domain.model
 
-import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
-data class ServerQuery(
+data class ServerQuery @OptIn(ExperimentalTime::class) constructor(
     val wipe: Instant? = null,
     val ranking: Long? = null,
     val modded: Boolean? = null,

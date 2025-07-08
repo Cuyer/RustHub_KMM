@@ -10,39 +10,40 @@ import database.FiltersWipeScheduleEntity
 import database.RemoteKeyEntity
 import database.SearchQueryEntity
 import database.ServerEntity
-import database.UserEntity
 import database.SettingsEntity
-import kotlinx.datetime.Instant
+import database.UserEntity
 import pl.cuyer.rusthub.data.local.model.DifficultyEntity
 import pl.cuyer.rusthub.data.local.model.FlagEntity
+import pl.cuyer.rusthub.data.local.model.LanguageEntity
 import pl.cuyer.rusthub.data.local.model.MapsEntity
 import pl.cuyer.rusthub.data.local.model.OrderEntity
 import pl.cuyer.rusthub.data.local.model.RegionEntity
-import pl.cuyer.rusthub.data.local.model.ServerStatusEntity
 import pl.cuyer.rusthub.data.local.model.ServerFilterEntity
+import pl.cuyer.rusthub.data.local.model.ServerStatusEntity
+import pl.cuyer.rusthub.data.local.model.ThemeEntity
 import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity
 import pl.cuyer.rusthub.data.local.model.WipeTypeEntity
-import pl.cuyer.rusthub.data.local.model.LanguageEntity
-import pl.cuyer.rusthub.data.local.model.ThemeEntity
+import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.model.Difficulty
 import pl.cuyer.rusthub.domain.model.FiltersOptions
 import pl.cuyer.rusthub.domain.model.Flag
+import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.Maps
 import pl.cuyer.rusthub.domain.model.Order
 import pl.cuyer.rusthub.domain.model.Region
 import pl.cuyer.rusthub.domain.model.RemoteKey
 import pl.cuyer.rusthub.domain.model.SearchQuery
+import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
-import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerStatus
+import pl.cuyer.rusthub.domain.model.Settings
+import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.model.User
 import pl.cuyer.rusthub.domain.model.WipeSchedule
 import pl.cuyer.rusthub.domain.model.WipeType
-import pl.cuyer.rusthub.domain.model.AuthProvider
-import pl.cuyer.rusthub.domain.model.Language
-import pl.cuyer.rusthub.domain.model.Settings
-import pl.cuyer.rusthub.domain.model.Theme
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 fun DifficultyEntity?.toDomain(): Difficulty? = this?.let { Difficulty.valueOf(it.name) }
 fun Difficulty?.toEntity(): DifficultyEntity? = this?.let { DifficultyEntity.valueOf(it.name) }
@@ -72,6 +73,7 @@ fun ServerFilter?.toEntity(): ServerFilterEntity? = this?.let { ServerFilterEnti
 fun WipeTypeEntity?.toDomain(): WipeType? = this?.let { WipeType.valueOf(it.name) }
 fun WipeType?.toEntity(): WipeTypeEntity? = this?.let { WipeTypeEntity.valueOf(it.name) }
 
+@OptIn(ExperimentalTime::class)
 fun FiltersEntity.toServerQuery(): ServerQuery {
     return ServerQuery(
         wipe = wipe?.let { Instant.parse(it) },
@@ -90,6 +92,7 @@ fun FiltersEntity.toServerQuery(): ServerQuery {
     )
 }
 
+@OptIn(ExperimentalTime::class)
 fun ServerEntity.toServerInfo(): ServerInfo {
     return ServerInfo(
         id = id,
@@ -117,10 +120,10 @@ fun ServerEntity.toServerInfo(): ServerInfo {
         decay = decay?.toFloat(),
         upkeep = upkeep?.toFloat(),
         rates = rates?.toInt(),
-        seed = seed?.toLong(),
+        seed = seed,
         mapSize = map_size?.toInt(),
         monuments = monuments?.toInt(),
-        averageFps = average_fps?.toLong(),
+        averageFps = average_fps,
         pve = pve == 1L,
         website = website,
         isPremium = is_premium == 1L,
@@ -179,6 +182,7 @@ fun FiltersRegionEntity?.toDomain(): Region? = this?.let { Region.valueOf(it.lab
 fun FiltersWipeScheduleEntity?.toDomain(): WipeSchedule? =
     this?.let { WipeSchedule.valueOf(it.label) }
 
+@OptIn(ExperimentalTime::class)
 fun SearchQueryEntity.toDomain(): SearchQuery = SearchQuery(id, query, Instant.parse(timestamp))
 
 fun UserEntity.toUser(): User = User(

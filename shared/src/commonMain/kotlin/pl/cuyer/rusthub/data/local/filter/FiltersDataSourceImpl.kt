@@ -14,6 +14,7 @@ import pl.cuyer.rusthub.data.local.mapper.toServerQuery
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
+import kotlin.time.ExperimentalTime
 
 class FiltersDataSourceImpl(
     db: RustHubDatabase
@@ -27,6 +28,7 @@ class FiltersDataSourceImpl(
             .map { it?.toServerQuery() }
     }
 
+    @OptIn(ExperimentalTime::class)
     override suspend fun upsertFilters(filters: ServerQuery) {
         withContext(Dispatchers.IO) {
             queries.upsertFilters(

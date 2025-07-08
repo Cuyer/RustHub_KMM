@@ -1,6 +1,5 @@
 package pl.cuyer.rusthub.data.network.server.model
 
-import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import pl.cuyer.rusthub.data.network.model.DifficultyDto
@@ -10,9 +9,11 @@ import pl.cuyer.rusthub.data.network.model.RegionDto
 import pl.cuyer.rusthub.data.network.model.ServerStatusDto
 import pl.cuyer.rusthub.data.network.model.WipeScheduleDto
 import pl.cuyer.rusthub.data.network.model.WipeTypeDto
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @Serializable
-data class ServerInfoDto(
+data class ServerInfoDto @OptIn(ExperimentalTime::class) constructor(
     val id: Long? = null,
     val name: String? = null,
     val wipe: Instant? = null,

@@ -1,17 +1,18 @@
 package pl.cuyer.rusthub.util
 
-import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
+import kotlin.time.Clock
 import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 private val json = Json { ignoreUnknownKeys = true }
 
-@OptIn(ExperimentalEncodingApi::class)
+@OptIn(ExperimentalEncodingApi::class, ExperimentalTime::class)
 fun anonymousAccountExpiresIn(token: String): Duration? {
     val parts = token.split(".")
     if (parts.size < 2) return null

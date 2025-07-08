@@ -1,8 +1,9 @@
 package pl.cuyer.rusthub.domain.model
 
-import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
-data class ServerInfo(
+data class ServerInfo @OptIn(ExperimentalTime::class) constructor(
     val id: Long? = null,
     val name: String? = null,
     val wipe: Instant? = null,

@@ -8,13 +8,14 @@ import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.NotificationType
 import kotlin.random.Random
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 actual class NotificationPresenter(private val context: Context) {
     actual fun show(name: String, type: NotificationType, timestamp: String) {
@@ -99,6 +100,7 @@ actual class NotificationPresenter(private val context: Context) {
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     fun parseAndFormatWipeTime(wipeTimeString: String): String {
         val instant = Instant.parse(wipeTimeString)
         val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
