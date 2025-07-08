@@ -27,6 +27,10 @@ class MainActivity : ComponentActivity() {
         }
 
         enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(
+                lightScrim,
+                darkScrim
+            ),
             navigationBarStyle = SystemBarStyle.auto(
                 lightScrim,
                 darkScrim
@@ -38,6 +42,28 @@ class MainActivity : ComponentActivity() {
         setContent {
             val state = startupViewModel.state.collectAsStateWithLifecycle()
             val appTheme = settingsController.theme.collectAsStateWithLifecycle()
+
+            val darkTheme = when (appTheme.value) {
+                pl.cuyer.rusthub.domain.model.Theme.LIGHT -> false
+                pl.cuyer.rusthub.domain.model.Theme.DARK -> true
+                pl.cuyer.rusthub.domain.model.Theme.SYSTEM -> androidx.compose.foundation.isSystemInDarkTheme()
+            }
+
+            androidx.compose.runtime.LaunchedEffect(darkTheme) {
+                enableEdgeToEdge(
+                    statusBarStyle = if (darkTheme) {
+                        SystemBarStyle.dark(darkScrim)
+                    } else {
+                        SystemBarStyle.light(lightScrim)
+                    },
+                    navigationBarStyle = if (darkTheme) {
+                        SystemBarStyle.dark(darkScrim)
+                    } else {
+                        SystemBarStyle.light(lightScrim)
+                    }
+                )
+            }
+
             KoinContext {
                 RustHubTheme(theme = appTheme.value) {
                     if (!state.value.isLoading) {
