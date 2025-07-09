@@ -325,7 +325,7 @@ private fun SubscriptionMainContent(
     }
     AppButton(
         modifier = Modifier.fillMaxWidth(),
-        onClick = {}) { Text("Subscribe to ${'$'}{selectedPlan.label} plan") }
+        onClick = {}) { Text("Subscribe to ${selectedPlan.label} plan") }
     AppTextButton(onClick = onNavigateUp) { Text("Not now") }
     Text(
         textAlign = TextAlign.Center,
