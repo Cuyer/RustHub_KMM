@@ -34,7 +34,11 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import android.app.Activity
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -54,6 +58,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LookaheadScope
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -107,7 +112,11 @@ private enum class Plan(val label: String, val billed: String) {
     YEARLY("Yearly", billed = "Billed yearly"), LIFETIME("Lifetime", billed = "Pay once")
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3WindowSizeClassApi::class,
+    ExperimentalAnimationApi::class
+)
 @Composable
 fun SubscriptionScreen(
     onNavigateUp: () -> Unit,
@@ -116,6 +125,10 @@ fun SubscriptionScreen(
 ) {
     var selectedPlan by remember { mutableStateOf(Plan.MONTHLY) }
     val pagerState = rememberPagerState(pageCount = { benefits.size })
+    val context = LocalContext.current
+    val windowSizeClass = calculateWindowSizeClass(context as Activity)
+    val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -128,123 +141,200 @@ fun SubscriptionScreen(
             )
         }
     ) { innerPadding ->
+        if (isTabletMode) {
+            SubscriptionScreenExpanded(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                pagerState = pagerState,
+                selectedPlan = selectedPlan,
+                onPlanSelect = { selectedPlan = it },
+                onNavigateUp = onNavigateUp,
+                onPrivacyPolicy = onPrivacyPolicy,
+                onTerms = onTerms
+            )
+        } else {
+            SubscriptionScreenCompact(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                pagerState = pagerState,
+                selectedPlan = selectedPlan,
+                onPlanSelect = { selectedPlan = it },
+                onNavigateUp = onNavigateUp,
+                onPrivacyPolicy = onPrivacyPolicy,
+                onTerms = onTerms
+            )
+        }
+    }
+}
+
+@Composable
+private fun SubscriptionScreenCompact(
+    modifier: Modifier = Modifier,
+    pagerState: PagerState,
+    selectedPlan: Plan,
+    onPlanSelect: (Plan) -> Unit,
+    onNavigateUp: () -> Unit,
+    onPrivacyPolicy: () -> Unit,
+    onTerms: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .padding(spacing.medium),
+        verticalArrangement = Arrangement.spacedBy(spacing.medium),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        SubscriptionMainContent(pagerState, selectedPlan, onPlanSelect, onNavigateUp, onPrivacyPolicy, onTerms)
+        Spacer(modifier = Modifier.height(spacing.medium))
+        ComparisonSection()
+        Spacer(modifier = Modifier.height(spacing.medium))
+        FaqSection()
+    }
+}
+
+@Composable
+private fun SubscriptionScreenExpanded(
+    modifier: Modifier = Modifier,
+    pagerState: PagerState,
+    selectedPlan: Plan,
+    onPlanSelect: (Plan) -> Unit,
+    onNavigateUp: () -> Unit,
+    onPrivacyPolicy: () -> Unit,
+    onTerms: () -> Unit
+) {
+    Row(
+        modifier = modifier.padding(spacing.medium),
+        horizontalArrangement = Arrangement.spacedBy(spacing.large)
+    ) {
         Column(
             modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(spacing.medium),
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(spacing.medium),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            HorizontalPager(state = pagerState) { page ->
-                val benefit = benefits[page]
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(spacing.small)
-                ) {
-                    Image(
-                        modifier = Modifier.size(200.dp),
-                        painter = painterResource(benefit.image),
-                        contentDescription = null
-                    )
-                    Text(benefit.title, style = MaterialTheme.typography.titleMedium)
-                    Text(
-                        benefit.desc,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-            CarouselAutoPlayHandler(pagerState, benefits.size)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(
-                    spacing.xsmall,
-                    Alignment.CenterHorizontally
-                )
-            ) {
-                repeat(benefits.size) { index ->
-                    val selected = pagerState.currentPage == index
-                    Box(
-                        modifier = Modifier
-                            .size(if (selected) 8.dp else 6.dp)
-                            .background(
-                                color = if (selected) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.onSurfaceVariant,
-                                shape = CircleShape
-                            )
-                    )
-                }
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(
-                    spacing.small,
-                    Alignment.CenterHorizontally
-                )
-            ) {
-                Plan.entries.forEach { plan ->
-                    val isSelected = plan == selectedPlan
+            SubscriptionMainContent(pagerState, selectedPlan, onPlanSelect, onNavigateUp, onPrivacyPolicy, onTerms)
+        }
 
-                    ElevatedCard(
-                        onClick = { selectedPlan = plan },
-                        modifier = Modifier
-                            .then(
-                                if (isSelected) Modifier.border(
-                                    width = 1.dp,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    shape = CardDefaults.elevatedShape
-                                ) else Modifier
-                            )
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .padding(spacing.medium)
-                                .widthIn(min = 60.dp, max = 80.dp)
-                                .fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                "PRO",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = Color(0xFFFDDA0D)
-                            )
-                            Text(plan.label, style = MaterialTheme.typography.titleMedium)
-                            Text(
-                                plan.billed,
-                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Thin)
-                            )
-                        }
-                    }
-                }
-            }
-            AppButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {}) { Text("Subscribe to ${selectedPlan.label} plan") }
-            AppTextButton(onClick = onNavigateUp) { Text("Not now") }
-            Text(
-                textAlign = TextAlign.Center,
-                text = "Cancel your subscription at any time.\n\nSubscriptions will automatically renew unless canceled within 24-hours before the end of the current period. You can cancel anytime through your Google Play Store settings.\nRust Hub Pro Lifetime is a one time in-app purchase",
-                style = MaterialTheme.typography.bodySmall
-            )
-            Row(horizontalArrangement = Arrangement.spacedBy(spacing.medium)) {
-                AppTextButton(onClick = onPrivacyPolicy) { Text("Privacy policy") }
-                AppTextButton(onClick = onTerms) { Text("Terms & conditions") }
-            }
-            Spacer(
-                modifier = Modifier
-                    .height(spacing.medium)
-            )
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(spacing.medium),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             ComparisonSection()
-            Spacer(
-                modifier = Modifier
-                    .height(spacing.medium)
-            )
+            Spacer(modifier = Modifier.height(spacing.medium))
             FaqSection()
         }
+    }
+}
+
+@Composable
+private fun SubscriptionMainContent(
+    pagerState: PagerState,
+    selectedPlan: Plan,
+    onPlanSelect: (Plan) -> Unit,
+    onNavigateUp: () -> Unit,
+    onPrivacyPolicy: () -> Unit,
+    onTerms: () -> Unit
+) {
+    HorizontalPager(state = pagerState) { page ->
+        val benefit = benefits[page]
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(spacing.small)
+        ) {
+            Image(
+                modifier = Modifier.size(200.dp),
+                painter = painterResource(benefit.image),
+                contentDescription = null
+            )
+            Text(benefit.title, style = MaterialTheme.typography.titleMedium)
+            Text(
+                benefit.desc,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+    CarouselAutoPlayHandler(pagerState, benefits.size)
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(
+            spacing.xsmall,
+            Alignment.CenterHorizontally
+        )
+    ) {
+        repeat(benefits.size) { index ->
+            val selected = pagerState.currentPage == index
+            Box(
+                modifier = Modifier
+                    .size(if (selected) 8.dp else 6.dp)
+                    .background(
+                        color = if (selected) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurfaceVariant,
+                        shape = CircleShape
+                    )
+            )
+        }
+    }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(
+            spacing.small,
+            Alignment.CenterHorizontally
+        )
+    ) {
+        Plan.entries.forEach { plan ->
+            val isSelected = plan == selectedPlan
+
+            ElevatedCard(
+                onClick = { onPlanSelect(plan) },
+                modifier = Modifier.then(
+                    if (isSelected) Modifier.border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = CardDefaults.elevatedShape
+                    ) else Modifier
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(spacing.medium)
+                        .widthIn(min = 60.dp, max = 80.dp)
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        "PRO",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color(0xFFFDDA0D)
+                    )
+                    Text(plan.label, style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        plan.billed,
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Thin)
+                    )
+                }
+            }
+        }
+    }
+    AppButton(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = {}) { Text("Subscribe to ${'$'}{selectedPlan.label} plan") }
+    AppTextButton(onClick = onNavigateUp) { Text("Not now") }
+    Text(
+        textAlign = TextAlign.Center,
+        text = "Cancel your subscription at any time.\n\nSubscriptions will automatically renew unless canceled within 24-hours before the end of the current period. You can cancel anytime through your Google Play Store settings.\nRust Hub Pro Lifetime is a one time in-app purchase",
+        style = MaterialTheme.typography.bodySmall
+    )
+    Row(horizontalArrangement = Arrangement.spacedBy(spacing.medium)) {
+        AppTextButton(onClick = onPrivacyPolicy) { Text("Privacy policy") }
+        AppTextButton(onClick = onTerms) { Text("Terms & conditions") }
     }
 }
 
@@ -435,5 +525,4 @@ private fun FaqSectionPreview() {
 private fun ComparisonSectionPreview() {
     RustHubTheme {
         ComparisonSection()
-    }
-}
+    }}
