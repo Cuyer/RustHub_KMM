@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.exception.NetworkUnavailableException
+import pl.cuyer.rusthub.domain.exception.ServiceUnavailableException
 import pl.cuyer.rusthub.domain.model.FiltersOptions
 import pl.cuyer.rusthub.domain.repository.filtersOptions.FiltersOptionsDataSource
 import pl.cuyer.rusthub.domain.repository.filtersOptions.FiltersOptionsRepository
@@ -20,7 +21,8 @@ class GetFiltersOptionsUseCase(
                 when (it) {
                     is Result.Success -> it.data?.let { data -> dataSource.upsertFiltersOptions(data) }
                     is Result.Error -> when (it.exception) {
-                        is NetworkUnavailableException -> Unit
+                        is NetworkUnavailableException,
+                        is ServiceUnavailableException -> Unit
                         else -> throw it.exception
                     }
                     is Result.Loading -> Unit
@@ -30,5 +32,4 @@ class GetFiltersOptionsUseCase(
         launch {
             dataSource.getFiltersOptions().collect { send(it) }
         }
-    }
-}
+    }}

@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.collectLatest
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.exception.NetworkUnavailableException
 import pl.cuyer.rusthub.domain.exception.TimeoutException
+import pl.cuyer.rusthub.domain.exception.ServiceUnavailableException
 import pl.cuyer.rusthub.domain.model.FavouriteSyncOperation
 import pl.cuyer.rusthub.domain.model.SyncState
 import pl.cuyer.rusthub.domain.repository.favourite.FavouriteSyncDataSource
@@ -33,7 +34,8 @@ class ToggleFavouriteUseCase(
 
                 is Result.Error -> {
                     when (result.exception) {
-                        is NetworkUnavailableException, is TimeoutException -> {
+                        is NetworkUnavailableException, is TimeoutException,
+                        is ServiceUnavailableException -> {
                             serverDataSource.updateFavourite(serverId, add)
                             syncDataSource.upsertOperation(
                                 FavouriteSyncOperation(
