@@ -45,6 +45,7 @@ import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepos
 import pl.cuyer.rusthub.domain.repository.user.UserRepository
 import pl.cuyer.rusthub.domain.usecase.AuthAnonymouslyUseCase
 import pl.cuyer.rusthub.domain.usecase.ChangePasswordUseCase
+import pl.cuyer.rusthub.domain.usecase.CheckEmailConfirmedUseCase
 import pl.cuyer.rusthub.domain.usecase.CheckUserExistsUseCase
 import pl.cuyer.rusthub.domain.usecase.ClearFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteAccountUseCase
@@ -61,6 +62,8 @@ import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
+import pl.cuyer.rusthub.domain.usecase.RequestPasswordResetUseCase
+import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
@@ -68,9 +71,6 @@ import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleSubscriptionUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeWithGoogleUseCase
-import pl.cuyer.rusthub.domain.usecase.CheckEmailConfirmedUseCase
-import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
-import pl.cuyer.rusthub.domain.usecase.RequestPasswordResetUseCase
 import pl.cuyer.rusthub.presentation.settings.SettingsController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.util.MessagingTokenManager
@@ -148,5 +148,4 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
     Napier.base(DebugAntilog())
     appDeclaration()
     modules(appModule, platformModule)
-    printLogger()
 }

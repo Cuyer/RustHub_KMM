@@ -5,6 +5,7 @@ import androidx.work.Configuration
 import androidx.work.WorkManager
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
 import pl.cuyer.rusthub.domain.repository.favourite.FavouriteSyncDataSource
 import pl.cuyer.rusthub.domain.repository.favourite.network.FavouriteRepository
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
@@ -27,6 +28,7 @@ class RustHubApplication : Application(), Configuration.Provider {
         super.onCreate()
         initKoin {
             androidContext(this@RustHubApplication)
+            androidLogger()
             modules(appModule, platformModule)
         }
         NotificationPresenter(this).createDefaultChannels()

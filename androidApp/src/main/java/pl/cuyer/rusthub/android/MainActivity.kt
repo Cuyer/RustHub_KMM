@@ -11,7 +11,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.compose.KoinContext
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
@@ -66,11 +65,9 @@ class MainActivity : ComponentActivity() {
                 )
             }
 
-            KoinContext {
-                RustHubTheme(theme = appTheme.value) {
-                    if (!state.value.isLoading) {
-                        NavigationRoot(startDestination = state.value.startDestination)
-                    }
+            RustHubTheme(theme = appTheme.value) {
+                if (!state.value.isLoading) {
+                    NavigationRoot(startDestination = state.value.startDestination)
                 }
             }
         }

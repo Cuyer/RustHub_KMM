@@ -88,6 +88,8 @@ import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import java.util.Locale
 import java.util.UUID
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @OptIn(
@@ -332,11 +334,12 @@ private fun ServerFilterChips(
 }
 
 
+@OptIn(ExperimentalTime::class)
 private fun createDetails(item: ServerInfoUi): Map<String, String> {
     val details = mutableMapOf<String, String>()
 
     item.wipe?.let { wipeInstant: Instant ->
-        val now = System.now()
+        val now = Clock.System.now()
         val duration = now - wipeInstant
         val minutesAgo = duration.inWholeMinutes
 

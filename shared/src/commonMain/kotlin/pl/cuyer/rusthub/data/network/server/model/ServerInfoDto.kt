@@ -9,6 +9,7 @@ import pl.cuyer.rusthub.data.network.model.RegionDto
 import pl.cuyer.rusthub.data.network.model.ServerStatusDto
 import pl.cuyer.rusthub.data.network.model.WipeScheduleDto
 import pl.cuyer.rusthub.data.network.model.WipeTypeDto
+import pl.cuyer.rusthub.data.network.util.serializers.InstantSerializer
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -16,6 +17,7 @@ import kotlin.time.Instant
 data class ServerInfoDto @OptIn(ExperimentalTime::class) constructor(
     val id: Long? = null,
     val name: String? = null,
+    @Serializable(with = InstantSerializer::class)
     val wipe: Instant? = null,
     val ranking: Long? = null,
     val modded: Boolean? = null,
@@ -66,8 +68,10 @@ data class ServerInfoDto @OptIn(ExperimentalTime::class) constructor(
     val isFavorite: Boolean? = null,
     @SerialName("is_subscribed")
     val isSubscribed: Boolean? = null,
+    @Serializable(with = InstantSerializer::class)
     @SerialName("next_wipe")
     val nextWipe: Instant? = null,
+    @Serializable(with = InstantSerializer::class)
     @SerialName("next_map_wipe")
     val nextMapWipe: Instant? = null
 )

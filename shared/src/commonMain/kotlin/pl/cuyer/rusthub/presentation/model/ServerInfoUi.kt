@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.presentation.model
 
 import kotlinx.serialization.Serializable
+import pl.cuyer.rusthub.data.network.util.serializers.InstantSerializer
 import pl.cuyer.rusthub.domain.model.Difficulty
 import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Maps
@@ -15,6 +16,7 @@ import kotlin.time.Instant
 data class ServerInfoUi @OptIn(ExperimentalTime::class) constructor(
     val id: Long? = null,
     val name: String? = null,
+    @Serializable(with = InstantSerializer::class)
     val wipe: Instant? = null,
     val ranking: Long? = null,
     val modded: Boolean? = null,
