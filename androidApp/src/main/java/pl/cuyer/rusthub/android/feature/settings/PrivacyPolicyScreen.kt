@@ -18,11 +18,11 @@ import androidx.compose.ui.viewinterop.AndroidView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrivacyPolicyScreen(url: String, onNavigateUp: () -> Unit) {
+fun PrivacyPolicyScreen(url: String, onNavigateUp: () -> Unit, title: String = "Privacy policy") {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Privacy policy") },
+                title = { Text(title) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
                         Icon(

@@ -32,6 +32,7 @@ import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
+import pl.cuyer.rusthub.presentation.navigation.Subscription
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.navigation.UpgradeAccount
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
@@ -73,9 +74,9 @@ class SettingsViewModel(
             SettingsAction.OnChangePasswordClick -> navigateChangePassword()
             SettingsAction.OnNotificationsClick -> permissionsController.openAppSettings()
             SettingsAction.OnLogout -> logout()
-            SettingsAction.OnSubscriptionClick -> showSubscriptionDialog(true)
-            SettingsAction.OnDismissSubscriptionDialog -> showSubscriptionDialog(false)
-            SettingsAction.OnSubscribe -> showSubscriptionDialog(false)
+            SettingsAction.OnSubscriptionClick -> navigateSubscription()
+            SettingsAction.OnDismissSubscriptionDialog -> Unit
+            SettingsAction.OnSubscribe -> Unit
             SettingsAction.OnPrivacyPolicy -> openPrivacyPolicy()
             SettingsAction.OnDeleteAccount -> navigateDeleteAccount()
             SettingsAction.OnUpgradeAccount -> navigateUpgrade()
@@ -181,6 +182,12 @@ class SettingsViewModel(
     private fun navigateDeleteAccount() {
         coroutineScope.launch {
             _uiEvent.send(UiEvent.Navigate(DeleteAccount))
+        }
+    }
+
+    private fun navigateSubscription() {
+        coroutineScope.launch {
+            _uiEvent.send(UiEvent.Navigate(Subscription))
         }
     }
 

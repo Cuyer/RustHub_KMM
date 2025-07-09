@@ -51,6 +51,7 @@ import pl.cuyer.rusthub.android.feature.settings.ChangePasswordScreen
 import pl.cuyer.rusthub.android.feature.settings.DeleteAccountScreen
 import pl.cuyer.rusthub.android.feature.settings.PrivacyPolicyScreen
 import pl.cuyer.rusthub.android.feature.settings.SettingsScreen
+import pl.cuyer.rusthub.android.feature.subscription.SubscriptionScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.common.Constants
 import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
@@ -69,6 +70,8 @@ import pl.cuyer.rusthub.presentation.navigation.Credentials
 import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
+import pl.cuyer.rusthub.presentation.navigation.Subscription
+import pl.cuyer.rusthub.presentation.navigation.Terms
 import pl.cuyer.rusthub.presentation.navigation.ResetPassword
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
@@ -278,6 +281,20 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                             PrivacyPolicyScreen(
                                 url = Constants.PRIVACY_POLICY_URL,
                                 onNavigateUp = { backStack.removeLastOrNull() }
+                            )
+                        }
+                        entry<Terms> {
+                            PrivacyPolicyScreen(
+                                url = Constants.TERMS_URL,
+                                title = "Terms & conditions",
+                                onNavigateUp = { backStack.removeLastOrNull() }
+                            )
+                        }
+                        entry<Subscription> {
+                            SubscriptionScreen(
+                                onNavigateUp = { backStack.removeLastOrNull() },
+                                onPrivacyPolicy = { backStack.add(PrivacyPolicy) },
+                                onTerms = { backStack.add(Terms) }
                             )
                         }
                     },
