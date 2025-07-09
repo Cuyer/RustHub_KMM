@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import pl.cuyer.rusthub.common.Constants.DEFAULT_KEY
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.exception.ConnectivityException
+import pl.cuyer.rusthub.domain.exception.ServiceUnavailableException
 import pl.cuyer.rusthub.domain.model.RemoteKey
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
@@ -61,7 +62,10 @@ class ServerRemoteMediator(
             )
                 .first { it !is Result.Loading }) {
                 is Result.Error -> {
-                    return if (result.exception is ConnectivityException) {
+                    return if (
+                        result.exception is ConnectivityException ||
+                        result.exception is ServiceUnavailableException
+                    ) {
                         MediatorResult.Success(endOfPaginationReached = true)
                     } else {
                         MediatorResult.Error(result.exception)
@@ -93,11 +97,10 @@ class ServerRemoteMediator(
                 Result.Loading -> MediatorResult.Success(endOfPaginationReached = false)
             }
         } catch (e: Exception) {
-            if (e is ConnectivityException) {
+            if (e is ConnectivityException || e is ServiceUnavailableException) {
                 MediatorResult.Success(endOfPaginationReached = true)
             } else {
                 MediatorResult.Error(e)
             }
         }
-    }
-}
+    }}

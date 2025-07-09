@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.collectLatest
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.exception.NetworkUnavailableException
 import pl.cuyer.rusthub.domain.exception.TimeoutException
+import pl.cuyer.rusthub.domain.exception.ServiceUnavailableException
 import pl.cuyer.rusthub.domain.model.SubscriptionSyncOperation
 import pl.cuyer.rusthub.domain.model.SyncState
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
@@ -31,7 +32,8 @@ class ToggleSubscriptionUseCase(
                 }
                 is Result.Error -> {
                     when (result.exception) {
-                        is NetworkUnavailableException, is TimeoutException -> {
+                        is NetworkUnavailableException, is TimeoutException,
+                        is ServiceUnavailableException -> {
                             serverDataSource.updateSubscription(serverId, add)
                             syncDataSource.upsertOperation(
                                 SubscriptionSyncOperation(

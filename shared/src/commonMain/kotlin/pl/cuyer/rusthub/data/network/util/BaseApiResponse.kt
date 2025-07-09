@@ -31,6 +31,7 @@ import pl.cuyer.rusthub.domain.exception.TimeoutException
 import pl.cuyer.rusthub.domain.exception.UnauthorizedException
 import pl.cuyer.rusthub.domain.exception.UserAlreadyExistsException
 import pl.cuyer.rusthub.domain.exception.TooManyRequestsException
+import pl.cuyer.rusthub.domain.exception.ServiceUnavailableException
 import kotlin.coroutines.coroutineContext
 
 abstract class BaseApiResponse(
@@ -116,6 +117,8 @@ abstract class BaseApiResponse(
                 NotFoundException("Not found")
             HttpStatusCode.TooManyRequests.value ->
                 TooManyRequestsException("Too many requests")
+            HttpStatusCode.ServiceUnavailable.value ->
+                ServiceUnavailableException("Service unavailable")
             else -> HttpStatusException("HTTP $statusCode error")
         }
     }
@@ -126,5 +129,4 @@ abstract class BaseApiResponse(
             is TimeoutCancellationException -> TimeoutException(throwable.message ?: "Request timed out")
             else -> throwable
         }
-    }
-}
+    }}

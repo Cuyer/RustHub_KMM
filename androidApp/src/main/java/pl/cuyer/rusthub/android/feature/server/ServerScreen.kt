@@ -76,6 +76,7 @@ import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.HandlePagingItems
 import pl.cuyer.rusthub.domain.exception.NetworkUnavailableException
 import pl.cuyer.rusthub.domain.exception.TimeoutException
+import pl.cuyer.rusthub.domain.exception.ServiceUnavailableException
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
 import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerStatus
@@ -205,7 +206,8 @@ fun ServerScreen(
                 }
                 onError { error ->
                     when (error) {
-                        is NetworkUnavailableException, is TimeoutException -> Unit
+                        is NetworkUnavailableException, is TimeoutException,
+                        is ServiceUnavailableException -> Unit
                         else -> onAction(ServerAction.OnError(error.message ?: "Unknown Error"))
                     }
                 }
