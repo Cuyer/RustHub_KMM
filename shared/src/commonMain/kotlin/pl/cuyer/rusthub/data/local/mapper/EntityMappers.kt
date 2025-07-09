@@ -42,8 +42,7 @@ import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.model.User
 import pl.cuyer.rusthub.domain.model.WipeSchedule
 import pl.cuyer.rusthub.domain.model.WipeType
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
+import kotlinx.datetime.Instant
 
 fun DifficultyEntity?.toDomain(): Difficulty? = this?.let { Difficulty.valueOf(it.name) }
 fun Difficulty?.toEntity(): DifficultyEntity? = this?.let { DifficultyEntity.valueOf(it.name) }
@@ -73,7 +72,6 @@ fun ServerFilter?.toEntity(): ServerFilterEntity? = this?.let { ServerFilterEnti
 fun WipeTypeEntity?.toDomain(): WipeType? = this?.let { WipeType.valueOf(it.name) }
 fun WipeType?.toEntity(): WipeTypeEntity? = this?.let { WipeTypeEntity.valueOf(it.name) }
 
-@OptIn(ExperimentalTime::class)
 fun FiltersEntity.toServerQuery(): ServerQuery {
     return ServerQuery(
         wipe = wipe?.let { Instant.parse(it) },
@@ -92,7 +90,6 @@ fun FiltersEntity.toServerQuery(): ServerQuery {
     )
 }
 
-@OptIn(ExperimentalTime::class)
 fun ServerEntity.toServerInfo(): ServerInfo {
     return ServerInfo(
         id = id,
@@ -182,7 +179,6 @@ fun FiltersRegionEntity?.toDomain(): Region? = this?.let { Region.valueOf(it.lab
 fun FiltersWipeScheduleEntity?.toDomain(): WipeSchedule? =
     this?.let { WipeSchedule.valueOf(it.label) }
 
-@OptIn(ExperimentalTime::class)
 fun SearchQueryEntity.toDomain(): SearchQuery = SearchQuery(id, query, Instant.parse(timestamp))
 
 fun UserEntity.toUser(): User = User(

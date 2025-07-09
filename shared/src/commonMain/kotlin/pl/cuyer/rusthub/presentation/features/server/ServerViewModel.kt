@@ -50,8 +50,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.ClipboardHandler
-import kotlin.time.Clock.System
-import kotlin.time.ExperimentalTime
+import kotlinx.datetime.Clock.System
 
 //TODO pomyśleć co zrobić żeby uniknąć importu z data do viewmodela (mapowanie)
 class ServerViewModel(
@@ -185,7 +184,6 @@ class ServerViewModel(
         }
     }
 
-    @OptIn(ExperimentalTime::class)
     private fun handleSearch(query: String) {
         coroutineScope.launch {
             runCatching {
@@ -299,7 +297,6 @@ class ServerViewModel(
         _state.update { it.copy(loadingMore = loading) }
     }
 
-    @OptIn(ExperimentalTime::class)
     private fun updateFilter(filter: ServerFilter) {
         coroutineScope.launch {
             runCatching {
@@ -313,5 +310,4 @@ class ServerViewModel(
                 sendSnackbarEvent("Error occurred during saving filters.")
             }
         }
-    }
-}
+    }}

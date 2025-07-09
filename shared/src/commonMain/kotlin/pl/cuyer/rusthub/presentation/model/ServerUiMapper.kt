@@ -4,11 +4,9 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.util.formatLocalDateTime
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
-@OptIn(ExperimentalTime::class)
 fun ServerInfo.toUi(): ServerInfoUi {
     return ServerInfoUi(
         id = id,
@@ -54,7 +52,6 @@ fun ServerInfo.toUi(): ServerInfoUi {
 
 }
 
-@OptIn(ExperimentalTime::class)
 fun formatLastWipe(wipeInstant: Instant): String {
     val now = Clock.System.now()
     val duration = now - wipeInstant
@@ -70,7 +67,6 @@ fun formatLastWipe(wipeInstant: Instant): String {
     return "$formattedDate ($timeAgo)"
 }
 
-@OptIn(ExperimentalTime::class)
 fun formatNextWipe(wipeInstant: Instant): String {
     val now = Clock.System.now()
     val duration = wipeInstant - now

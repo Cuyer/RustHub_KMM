@@ -16,8 +16,7 @@ import pl.cuyer.rusthub.domain.model.RemoteKey
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
 import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
+import kotlinx.datetime.Clock
 
 @OptIn(ExperimentalPagingApi::class)
 class ServerRemoteMediator(
@@ -29,7 +28,6 @@ class ServerRemoteMediator(
 ) : RemoteMediator<Int, ServerEntity>() {
     private val keyId = DEFAULT_KEY
 
-    @OptIn(ExperimentalTime::class)
     override suspend fun initialize(): InitializeAction {
         val current = filters.getFilters().firstOrNull()
         if (current == null) {
@@ -38,7 +36,6 @@ class ServerRemoteMediator(
         return InitializeAction.LAUNCH_INITIAL_REFRESH
     }
 
-    @OptIn(ExperimentalTime::class)
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, ServerEntity>
