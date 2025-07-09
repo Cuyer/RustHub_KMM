@@ -41,7 +41,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.android.designsystem.AppExposedDropdownMenu
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
-import pl.cuyer.rusthub.android.designsystem.SubscriptionDialog
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
@@ -102,11 +101,6 @@ fun SettingsScreen(
                         .align(Alignment.Center)
                 )
             }
-            SubscriptionDialog(
-                showDialog = state.value.showSubscriptionDialog,
-                onConfirm = { onAction(SettingsAction.OnSubscribe) },
-                onDismiss = { onAction(SettingsAction.OnDismissSubscriptionDialog) }
-            )
             if (isTabletMode) {
                 SettingsScreenExpanded(
                     theme = state.value.theme,
