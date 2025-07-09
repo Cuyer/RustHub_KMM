@@ -14,8 +14,7 @@ import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.NotificationType
 import kotlin.random.Random
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
+import kotlinx.datetime.Instant
 
 actual class NotificationPresenter(private val context: Context) {
     actual fun show(name: String, type: NotificationType, timestamp: String) {
@@ -100,7 +99,6 @@ actual class NotificationPresenter(private val context: Context) {
         }
     }
 
-    @OptIn(ExperimentalTime::class)
     fun parseAndFormatWipeTime(wipeTimeString: String): String {
         val instant = Instant.parse(wipeTimeString)
         val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())

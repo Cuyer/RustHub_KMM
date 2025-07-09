@@ -12,7 +12,6 @@ import pl.cuyer.rusthub.data.local.mapper.toDomain
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.SearchQuery
 import pl.cuyer.rusthub.domain.repository.search.SearchQueryDataSource
-import kotlin.time.ExperimentalTime
 
 class SearchQueryDataSourceImpl(
     db: RustHubDatabase
@@ -29,7 +28,6 @@ class SearchQueryDataSourceImpl(
             }
     }
 
-    @OptIn(ExperimentalTime::class)
     override suspend fun upsertQuery(query: SearchQuery) {
         withContext(Dispatchers.IO) {
             queries.upsertSearchQuery(

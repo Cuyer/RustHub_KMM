@@ -1,7 +1,6 @@
 package pl.cuyer.rusthub.presentation.model
 
 import kotlinx.serialization.Serializable
-import pl.cuyer.rusthub.data.network.util.serializers.InstantSerializer
 import pl.cuyer.rusthub.domain.model.Difficulty
 import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Maps
@@ -9,14 +8,12 @@ import pl.cuyer.rusthub.domain.model.Region
 import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.WipeSchedule
 import pl.cuyer.rusthub.domain.model.WipeType
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
+import kotlinx.datetime.Instant
 
 @Serializable
-data class ServerInfoUi @OptIn(ExperimentalTime::class) constructor(
+data class ServerInfoUi(
     val id: Long? = null,
     val name: String? = null,
-    @Serializable(with = InstantSerializer::class)
     val wipe: Instant? = null,
     val ranking: Long? = null,
     val modded: Boolean? = null,

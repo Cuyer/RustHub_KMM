@@ -5,9 +5,7 @@ import pl.cuyer.rusthub.data.network.server.model.PagedServerInfoDto
 import pl.cuyer.rusthub.data.network.server.model.ServerInfoDto
 import pl.cuyer.rusthub.domain.model.PagedServerInfo
 import pl.cuyer.rusthub.domain.model.ServerInfo
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 fun ServerInfoDto.toDomain(): ServerInfo {
     return ServerInfo(
         id = id,

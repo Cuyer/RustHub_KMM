@@ -9,7 +9,6 @@ import pl.cuyer.rusthub.domain.model.Region
 import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.model.WipeSchedule
-import kotlin.time.ExperimentalTime
 
 @Serializable
 data class FilterUi(
@@ -19,7 +18,6 @@ data class FilterUi(
     val filter: ServerFilter = ServerFilter.ALL
 )
 
-@OptIn(ExperimentalTime::class)
 fun FilterUi.toDomain(): ServerQuery {
     val selectedMap = lists.getOrNull(0)?.let { it.second.getOrNull(it.third ?: -1) }
     val selectedFlag = lists.getOrNull(1)?.let { it.second.getOrNull(it.third ?: -1) }

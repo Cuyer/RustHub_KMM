@@ -5,14 +5,13 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
-import kotlin.time.Clock
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
 private val json = Json { ignoreUnknownKeys = true }
 
-@OptIn(ExperimentalEncodingApi::class, ExperimentalTime::class)
+@OptIn(ExperimentalEncodingApi::class)
 fun anonymousAccountExpiresIn(token: String): Duration? {
     val parts = token.split(".")
     if (parts.size < 2) return null

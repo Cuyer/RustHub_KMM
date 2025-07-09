@@ -1,9 +1,8 @@
 package pl.cuyer.rusthub.domain.model
 
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
+import kotlinx.datetime.Instant
 
-data class SearchQuery @OptIn(ExperimentalTime::class) constructor(
+data class SearchQuery(
     val id: Long?,
     val query: String,
     val timestamp: Instant
