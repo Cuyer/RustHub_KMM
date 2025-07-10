@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -20,11 +21,14 @@ import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.exception.InvalidCredentialsException
 import pl.cuyer.rusthub.domain.exception.UserAlreadyExistsException
 import pl.cuyer.rusthub.domain.model.AuthProvider
+import pl.cuyer.rusthub.domain.usecase.CheckEmailConfirmedUseCase
 import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
+import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
 import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
 import pl.cuyer.rusthub.presentation.navigation.ResetPassword
+import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
@@ -40,6 +44,8 @@ class CredentialsViewModel(
     private val provider: AuthProvider?,
     private val loginUserUseCase: LoginUserUseCase,
     private val registerUserUseCase: RegisterUserUseCase,
+    private val checkEmailConfirmedUseCase: CheckEmailConfirmedUseCase,
+    private val getUserUseCase: GetUserUseCase,
     private val snackbarController: SnackbarController,
     private val passwordValidator: PasswordValidator,
     private val usernameValidator: UsernameValidator,
@@ -111,7 +117,7 @@ class CredentialsViewModel(
                 .collectLatest { result ->
                     ensureActive()
                     when (result) {
-                        is Result.Success -> navigate(ServerList)
+                        is Result.Success -> handlePostAuth()
                         is Result.Error -> handleError(result.exception)
                         else -> Unit
                     }
@@ -160,6 +166,34 @@ class CredentialsViewModel(
                         else -> Unit
                     }
                 }
+        }
+    }
+
+    private suspend fun handlePostAuth() {
+        val user = getUserUseCase().first()
+        if (user?.provider == AuthProvider.LOCAL) {
+            if (!userExists) {
+                navigate(ConfirmEmail)
+                return
+            }
+
+            when (val result = checkEmailConfirmedUseCase().first()) {
+                is Result.Success -> {
+                    if (result.data) {
+                        navigate(ServerList)
+                    } else {
+                        navigate(ConfirmEmail)
+                    }
+                }
+
+                is Result.Error -> {
+                    showErrorSnackbar(result.exception.message ?: "Unable to verify email")
+                }
+
+                else -> Unit
+            }
+        } else {
+            navigate(ServerList)
         }
     }
 
