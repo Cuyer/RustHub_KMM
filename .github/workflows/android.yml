@@ -8,6 +8,7 @@ on:
 
 jobs:
   build-dev:
+    if: github.ref == 'refs/heads/develop'
     name: Build Dev APK
     runs-on: ubuntu-latest
     env:
@@ -39,6 +40,7 @@ jobs:
           path: androidApp/build/outputs/apk/developmentRelease/*.apk
 
   build-prod:
+    if: github.ref == 'refs/heads/main'
     name: Build Prod APK
     runs-on: ubuntu-latest
     env:
