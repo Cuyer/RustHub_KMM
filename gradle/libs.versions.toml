@@ -33,6 +33,7 @@ work = "2.10.2"
 serialization = "1.8.1"
 coil = "3.2.0"
 performance-gradle = "1.4.2"
+buildkonfig = "0.17.1"
 google-auth = "21.3.0"
 credential = "1.6.0-alpha03"
 identity = "1.1.1"
@@ -141,3 +142,4 @@ crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlyti
 performance = { id = "com.google.firebase.firebase-perf", version.ref = "performance-gradle" }
 sqlDelightGradlePlugin = { id = "app.cash.sqldelight", version.ref = "sql-delight-version" }
 mokoMultiplatformResources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko-resources" }
+buildKonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }

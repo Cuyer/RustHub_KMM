@@ -1,8 +1,8 @@
 package pl.cuyer.rusthub.util
 
-import pl.cuyer.rusthub.android.BuildConfig
+import pl.cuyer.rusthub.SharedBuildConfig
 
 actual object AppInfo {
-    actual val versionName: String = BuildConfig.VERSION_NAME
+    actual val versionName: String = SharedBuildConfig.VERSION_NAME
 }
 
