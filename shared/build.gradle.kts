@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -8,6 +9,7 @@ plugins {
     alias(libs.plugins.sqlDelightGradlePlugin)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.mokoMultiplatformResources)
+    alias(libs.plugins.buildKonfig)
 }
 
 kotlin {
@@ -150,6 +152,14 @@ android {
 multiplatformResources {
     resourcesPackage.set("pl.cuyer.rusthub")
     resourcesClassName.set("SharedRes")
+}
+
+buildkonfig {
+    packageName = "pl.cuyer.rusthub"
+    exposeObjectWithName = "SharedBuildConfig"
+    defaultConfigs {
+        buildConfigField(STRING, "VERSION_NAME", project.property("VERSION_NAME") as String)
+    }
 }
 
 sqldelight {
