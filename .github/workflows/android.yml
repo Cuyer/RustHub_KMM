@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: development-apk
-          path: androidApp/build/outputs/apk/developmentRelease/*.apk
+          path: androidApp/build/outputs/apk/development/release/*.apk
 
   build-prod:
     if: github.ref == 'refs/heads/main'
@@ -69,4 +69,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: production-apk
-          path: androidApp/build/outputs/apk/productionRelease/*.apk
+          path: androidApp/build/outputs/apk/production/release/*.apk
