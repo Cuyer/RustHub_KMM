@@ -31,7 +31,7 @@ import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleSubscriptionUseCase
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
-import pl.cuyer.rusthub.presentation.model.toUi
+import pl.cuyer.rusthub.domain.model.toUiModel
 import pl.cuyer.rusthub.presentation.navigation.Subscription
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.Duration
@@ -226,7 +226,7 @@ class ServerDetailsViewModel(
     private fun observeServerDetails(serverId: Long): Job {
         serverDetailsJob?.cancel()
         return getServerDetailsUseCase(serverId)
-            .map { it?.toUi() }
+            .map { it?.toUiModel() }
             .flowOn(Dispatchers.Default)
             .onEach { mappedDetails ->
                 updateDetails(mappedDetails)

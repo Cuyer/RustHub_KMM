@@ -5,6 +5,9 @@ import app.cash.paging.ExperimentalPagingApi
 import app.cash.paging.PagingConfig
 import app.cash.paging.PagingData
 import database.ServerEntity
+import kotlinx.coroutines.flow.map
+import pl.cuyer.rusthub.data.local.mapper.toServerInfo
+import pl.cuyer.rusthub.domain.model.ServerInfo
 import kotlinx.coroutines.flow.Flow
 import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
 import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
@@ -21,7 +24,7 @@ class GetPagedServersUseCase(
     @OptIn(ExperimentalPagingApi::class)
     operator fun invoke(
         searchQuery: String?
-    ): Flow<PagingData<ServerEntity>> {
+    ): Flow<PagingData<ServerInfo>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 40,
@@ -39,6 +42,8 @@ class GetPagedServersUseCase(
                     searchQuery
                 )
             }
-        ).flow
+        ).flow.map { pagingData ->
+            pagingData.map { it.toServerInfo() }
+        }
     }
 }
