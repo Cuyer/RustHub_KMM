@@ -96,11 +96,15 @@ android {
     productFlavors {
         create("production") {
             dimension = "mode"
-            buildConfigField("String", "BASE_URL", "\"https://prod.example.com/\"")
+            buildConfigField("String", "BASE_URL", "\"https://api.rusthub.me/\"")
+            buildConfigField("String", "PRIVACY_POLICY_URL", "\"https://rusthub.me/privacy\"")
+            buildConfigField("String", "TERMS_URL", "\"https://rusthub.me/terms\"")
         }
         create("development") {
             dimension = "mode"
-            buildConfigField("String", "BASE_URL", "\"http://192.168.100.229:8080/\"")
+            buildConfigField("String", "BASE_URL", "\"https://dev.api.rusthub.me/\"")
+            buildConfigField("String", "PRIVACY_POLICY_URL", "\"https://dev.rusthub.me/privacy\"")
+            buildConfigField("String", "TERMS_URL", "\"https://dev.rusthub.me/terms\"")
         }
     }
 
