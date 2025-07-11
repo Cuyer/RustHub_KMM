@@ -33,7 +33,7 @@ jobs:
         run: ./gradlew :androidApp:assembleDevelopmentRelease
 
       - name: Upload Development APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: development-apk
           path: androidApp/build/outputs/apk/developmentRelease/*.apk
@@ -64,7 +64,7 @@ jobs:
         run: ./gradlew :androidApp:assembleProductionRelease
 
       - name: Upload Production APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: production-apk
           path: androidApp/build/outputs/apk/productionRelease/*.apk
