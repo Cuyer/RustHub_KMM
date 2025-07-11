@@ -16,8 +16,9 @@ jobs:
           distribution: temurin
           java-version: '17'
       - name: Decrypt dev keystore
-        run: gpg --batch --yes --decrypt --passphrase "$DEV_KEYSTORE_PASSWORD" \
-          -o keystore-dev.jks keystore-dev.gpg
+        run: |
+          gpg --batch --yes --passphrase "$DEV_KEYSTORE_PASSWORD" \
+          --output keystore-dev.jks keystore-dev.gpg
       - name: Build development release
         run: ./gradlew :androidApp:assembleDevelopmentRelease
         env:
@@ -34,8 +35,9 @@ jobs:
           distribution: temurin
           java-version: '17'
       - name: Decrypt prod keystore
-        run: gpg --batch --yes --decrypt --passphrase "$PROD_KEYSTORE_PASSWORD" \
-          -o keystore-prod.jks keystore-prod.gpg
+        run: |
+          gpg --batch --yes --passphrase "$PROD_KEYSTORE_PASSWORD" \
+          --output keystore-prod.jks keystore-prod.gpg
       - name: Build production release
         run: ./gradlew :androidApp:assembleProductionRelease
         env:
