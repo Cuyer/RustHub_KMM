@@ -13,7 +13,6 @@ import pl.cuyer.rusthub.data.network.util.NetworkConstants
 import pl.cuyer.rusthub.data.network.util.appendNonNull
 import pl.cuyer.rusthub.domain.model.PagedServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
-import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
 
 class ServerClientImpl(

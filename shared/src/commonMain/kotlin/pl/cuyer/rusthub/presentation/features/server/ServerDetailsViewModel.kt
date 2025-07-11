@@ -31,7 +31,8 @@ import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleSubscriptionUseCase
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
-import pl.cuyer.rusthub.presentation.model.toUi
+import pl.cuyer.rusthub.domain.model.toUiModel
+import pl.cuyer.rusthub.presentation.navigation.Subscription
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
@@ -73,7 +74,7 @@ class ServerDetailsViewModel(
         when (action) {
             is ServerDetailsAction.OnSaveToClipboard -> saveIpToClipboard(action.ipAddress)
             ServerDetailsAction.OnToggleFavourite -> toggleFavourite()
-            ServerDetailsAction.OnDismissSubscriptionDialog -> showSubscriptionDialog(false)
+            ServerDetailsAction.OnDismissSubscriptionDialog -> Unit
             ServerDetailsAction.OnDismissNotificationInfo -> showNotificationInfo(false)
             ServerDetailsAction.OnSubscribe -> handleSubscribeAction()
             ServerDetailsAction.OnShare -> shareServer()
@@ -137,7 +138,7 @@ class ServerDetailsViewModel(
                             )
                         }
                         is Result.Error -> when (result.exception) {
-                            is FavoriteLimitException -> showSubscriptionDialog(true)
+                            is FavoriteLimitException -> navigateSubscription()
                             else -> showErrorSnackbar("Error occurred when trying to ${if (add) "add" else "remove"} server from favourites")
                         }
                         Result.Loading -> Unit
@@ -171,7 +172,7 @@ class ServerDetailsViewModel(
                             )
                         }
                         is Result.Error -> when (result.exception) {
-                            is SubscriptionLimitException -> showSubscriptionDialog(true)
+                            is SubscriptionLimitException -> navigateSubscription()
                             else -> showErrorSnackbar("Error occurred when trying to ${if (subscribed) "subscribe" else "unsubscribe"} from notifications")
                         }
                         Result.Loading -> Unit
@@ -185,6 +186,12 @@ class ServerDetailsViewModel(
             it.copy(
                 showSubscriptionDialog = show
             )
+        }
+    }
+
+    private fun navigateSubscription() {
+        coroutineScope.launch {
+            _uiEvent.send(UiEvent.Navigate(Subscription))
         }
     }
 
@@ -219,7 +226,7 @@ class ServerDetailsViewModel(
     private fun observeServerDetails(serverId: Long): Job {
         serverDetailsJob?.cancel()
         return getServerDetailsUseCase(serverId)
-            .map { it?.toUi() }
+            .map { it?.toUiModel() }
             .flowOn(Dispatchers.Default)
             .onEach { mappedDetails ->
                 updateDetails(mappedDetails)

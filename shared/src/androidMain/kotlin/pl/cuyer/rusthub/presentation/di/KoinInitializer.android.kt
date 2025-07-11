@@ -9,11 +9,12 @@ import pl.cuyer.rusthub.data.local.DatabaseDriverFactory
 import pl.cuyer.rusthub.data.network.HttpClientFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.AuthProvider
+import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
 import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordViewModel
+import pl.cuyer.rusthub.presentation.features.auth.password.ResetPasswordViewModel
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
-import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
@@ -41,7 +42,7 @@ actual val platformModule: Module = module {
     single { GoogleAuthClient(androidContext()) }
     single { PermissionsController(androidContext()) }
     viewModel {
-        StartupViewModel(get(), get())
+        StartupViewModel(get(), get(), get())
     }
     viewModel {
         OnboardingViewModel(
@@ -61,6 +62,8 @@ actual val platformModule: Module = module {
             provider = provider,
             loginUserUseCase = get(),
             registerUserUseCase = get(),
+            checkEmailConfirmedUseCase = get(),
+            getUserUseCase = get(),
             snackbarController = get(),
             passwordValidator = get(),
             usernameValidator = get(),
@@ -109,6 +112,14 @@ actual val platformModule: Module = module {
             passwordValidator = get(),
         )
     }
+    viewModel { (email: String) ->
+        ResetPasswordViewModel(
+            email = email,
+            requestPasswordResetUseCase = get(),
+            snackbarController = get(),
+            emailValidator = get()
+        )
+    }
     viewModel {
         UpgradeViewModel(
             upgradeAccountUseCase = get(),
@@ -127,6 +138,7 @@ actual val platformModule: Module = module {
             getUserUseCase = get(),
             resendConfirmationUseCase = get(),
             snackbarController = get(),
+            logoutUserUseCase = get()
         )
     }
     viewModel { (serverId: Long, serverName: String?) ->

@@ -38,10 +38,11 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import pl.cuyer.rusthub.android.feature.auth.CredentialsScreen
 import pl.cuyer.rusthub.android.feature.auth.ConfirmEmailScreen
+import pl.cuyer.rusthub.android.feature.auth.CredentialsScreen
+import pl.cuyer.rusthub.android.feature.auth.ResetPasswordScreen
 import pl.cuyer.rusthub.android.feature.auth.UpgradeAccountScreen
 import pl.cuyer.rusthub.android.feature.onboarding.OnboardingScreen
 import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
@@ -50,23 +51,28 @@ import pl.cuyer.rusthub.android.feature.settings.ChangePasswordScreen
 import pl.cuyer.rusthub.android.feature.settings.DeleteAccountScreen
 import pl.cuyer.rusthub.android.feature.settings.PrivacyPolicyScreen
 import pl.cuyer.rusthub.android.feature.settings.SettingsScreen
+import pl.cuyer.rusthub.android.feature.subscription.SubscriptionScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.common.Constants
+import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
 import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordViewModel
+import pl.cuyer.rusthub.presentation.features.auth.password.ResetPasswordViewModel
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
-import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
-import pl.cuyer.rusthub.presentation.navigation.Credentials
 import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
+import pl.cuyer.rusthub.presentation.navigation.Credentials
 import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
+import pl.cuyer.rusthub.presentation.navigation.Subscription
+import pl.cuyer.rusthub.presentation.navigation.Terms
+import pl.cuyer.rusthub.presentation.navigation.ResetPassword
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.Settings
@@ -157,7 +163,7 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                                 uiEvent = viewModel.uiEvent,
                                 onAction = viewModel::onAction,
                                 onNavigate = { dest ->
-                                    backStack.clear()
+                                    if (dest is ServerList) backStack.clear()
                                     backStack.add(dest)
                                 },
                                 onNavigateUp = {
@@ -241,7 +247,23 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                                     backStack.clear()
                                     backStack.add(dest)
                                 },
-                                onNavigateUp = { backStack.removeLastOrNull() }
+                                onNavigateUp = {
+                                    if (backStack.isNotEmpty()) {
+                                        backStack.clear()
+                                    }
+                                    backStack.add(Onboarding)
+                                }
+                            )
+                        }
+                        entry<ResetPassword> { key ->
+                            val viewModel: ResetPasswordViewModel =
+                                koinViewModel { parametersOf(key.email) }
+                            val state = viewModel.state.collectAsStateWithLifecycle()
+                            ResetPasswordScreen(
+                                onNavigateUp = { backStack.removeLastOrNull() },
+                                uiEvent = viewModel.uiEvent,
+                                stateProvider = { state },
+                                onAction = viewModel::onAction
                             )
                         }
                         entry<ChangePassword> {
@@ -259,6 +281,20 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                             PrivacyPolicyScreen(
                                 url = Constants.PRIVACY_POLICY_URL,
                                 onNavigateUp = { backStack.removeLastOrNull() }
+                            )
+                        }
+                        entry<Terms> {
+                            PrivacyPolicyScreen(
+                                url = Constants.TERMS_URL,
+                                title = "Terms & conditions",
+                                onNavigateUp = { backStack.removeLastOrNull() }
+                            )
+                        }
+                        entry<Subscription> {
+                            SubscriptionScreen(
+                                onNavigateUp = { backStack.removeLastOrNull() },
+                                onPrivacyPolicy = { backStack.add(PrivacyPolicy) },
+                                onTerms = { backStack.add(Terms) }
                             )
                         }
                     },

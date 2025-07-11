@@ -6,8 +6,8 @@ import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Maps
 import pl.cuyer.rusthub.domain.model.Order
 import pl.cuyer.rusthub.domain.model.Region
-import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.model.ServerFilter
+import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.model.WipeSchedule
 
 @Serializable

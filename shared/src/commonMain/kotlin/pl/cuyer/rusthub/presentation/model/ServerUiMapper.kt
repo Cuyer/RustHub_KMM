@@ -1,11 +1,11 @@
 package pl.cuyer.rusthub.presentation.model
 
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.util.formatLocalDateTime
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 fun ServerInfo.toUi(): ServerInfoUi {
     return ServerInfoUi(

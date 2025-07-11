@@ -1,6 +1,5 @@
 package pl.cuyer.rusthub.presentation.model
 
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import pl.cuyer.rusthub.domain.model.Difficulty
 import pl.cuyer.rusthub.domain.model.Flag
@@ -9,6 +8,7 @@ import pl.cuyer.rusthub.domain.model.Region
 import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.WipeSchedule
 import pl.cuyer.rusthub.domain.model.WipeType
+import kotlinx.datetime.Instant
 
 @Serializable
 data class ServerInfoUi(

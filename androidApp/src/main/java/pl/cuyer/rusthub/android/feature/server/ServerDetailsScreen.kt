@@ -63,9 +63,9 @@ import org.koin.compose.koinInject
 import pl.cuyer.rusthub.android.designsystem.NotificationInfoDialog
 import pl.cuyer.rusthub.android.designsystem.ServerDetail
 import pl.cuyer.rusthub.android.designsystem.ServerWebsite
-import pl.cuyer.rusthub.android.designsystem.SubscriptionDialog
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
 import pl.cuyer.rusthub.domain.model.ServerStatus
@@ -87,6 +87,10 @@ fun ServerDetailsScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val lazyListState = rememberLazyListState()
     val state = stateProvider().value
+
+    ObserveAsEvents(uiEvent) { event ->
+        if (event is UiEvent.Navigate) onNavigate(event.destination)
+    }
 
     val permissionsController = koinInject<PermissionsController>()
     BindEffect(permissionsController)
@@ -178,11 +182,6 @@ fun ServerDetailsScreen(
         }
     ) { innerPadding ->
         if (state.details != null) {
-            SubscriptionDialog(
-                showDialog = state.showSubscriptionDialog,
-                onConfirm = { onAction(ServerDetailsAction.OnSubscribe) },
-                onDismiss = { onAction(ServerDetailsAction.OnDismissSubscriptionDialog) }
-            )
             LazyColumn(
                 state = lazyListState,
                 modifier = Modifier

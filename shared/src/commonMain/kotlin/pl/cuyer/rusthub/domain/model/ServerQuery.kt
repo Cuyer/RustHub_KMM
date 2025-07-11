@@ -15,5 +15,4 @@ data class ServerQuery(
     val wipeSchedule: WipeSchedule? = null,
     val official: Boolean? = null,
     val order: Order = Order.WIPE,
-    val filter: ServerFilter = ServerFilter.ALL
-)
+    val filter: ServerFilter = ServerFilter.ALL)

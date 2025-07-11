@@ -1,6 +1,5 @@
 package pl.cuyer.rusthub.data.network.server.model
 
-import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import pl.cuyer.rusthub.data.network.model.DifficultyDto
@@ -10,6 +9,7 @@ import pl.cuyer.rusthub.data.network.model.RegionDto
 import pl.cuyer.rusthub.data.network.model.ServerStatusDto
 import pl.cuyer.rusthub.data.network.model.WipeScheduleDto
 import pl.cuyer.rusthub.data.network.model.WipeTypeDto
+import kotlinx.datetime.Instant
 
 @Serializable
 data class ServerInfoDto(

@@ -7,5 +7,4 @@ fun SearchQuery.toUi(): SearchQueryUi {
         query = query,
         id = id,
         timestamp = timestamp
-    )
-}
+    )}

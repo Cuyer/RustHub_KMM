@@ -65,8 +65,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock.System
-import kotlinx.datetime.Instant
 import pl.cuyer.rusthub.android.designsystem.FilterBottomSheet
 import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.designsystem.ServerListItem
@@ -76,12 +74,13 @@ import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.HandlePagingItems
-import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.exception.NetworkUnavailableException
 import pl.cuyer.rusthub.domain.exception.TimeoutException
+import pl.cuyer.rusthub.domain.exception.ServiceUnavailableException
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
 import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerStatus
+import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.model.WipeType
 import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.features.server.ServerState
@@ -90,6 +89,8 @@ import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import java.util.Locale
 import java.util.UUID
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class,
@@ -204,7 +205,8 @@ fun ServerScreen(
                 }
                 onError { error ->
                     when (error) {
-                        is NetworkUnavailableException, is TimeoutException -> Unit
+                        is NetworkUnavailableException, is TimeoutException,
+                        is ServiceUnavailableException -> Unit
                         else -> onAction(ServerAction.OnError(error.message ?: "Unknown Error"))
                     }
                 }
@@ -337,7 +339,7 @@ private fun createDetails(item: ServerInfoUi): Map<String, String> {
     val details = mutableMapOf<String, String>()
 
     item.wipe?.let { wipeInstant: Instant ->
-        val now = System.now()
+        val now = Clock.System.now()
         val duration = now - wipeInstant
         val minutesAgo = duration.inWholeMinutes
 

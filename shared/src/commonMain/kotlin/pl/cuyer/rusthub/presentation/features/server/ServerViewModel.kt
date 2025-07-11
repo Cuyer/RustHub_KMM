@@ -24,9 +24,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock.System
 import pl.cuyer.rusthub.common.BaseViewModel
-import pl.cuyer.rusthub.data.local.mapper.toServerInfo
 import pl.cuyer.rusthub.domain.model.SearchQuery
 import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerQuery
@@ -44,6 +42,7 @@ import pl.cuyer.rusthub.presentation.model.SearchQueryUi
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.presentation.model.toDomain
 import pl.cuyer.rusthub.presentation.model.toUi
+import pl.cuyer.rusthub.domain.model.toUiModel
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.Duration
@@ -51,6 +50,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.ClipboardHandler
+import kotlinx.datetime.Clock.System
 
 //TODO pomyśleć co zrobić żeby uniknąć importu z data do viewmodela (mapowanie)
 class ServerViewModel(
@@ -90,7 +90,7 @@ class ServerViewModel(
             getPagedServersUseCase(
                 searchQuery = query
             ).map { pagingData ->
-                pagingData.map { it.toServerInfo().toUi() }
+                pagingData.map { it.toUiModel() }
             }.flowOn(Dispatchers.Default)
         }.cachedIn(coroutineScope)
             .catch { e -> sendSnackbarEvent("Error occurred during fetching servers.") }
@@ -310,5 +310,4 @@ class ServerViewModel(
                 sendSnackbarEvent("Error occurred during saving filters.")
             }
         }
-    }
-}
+    }}

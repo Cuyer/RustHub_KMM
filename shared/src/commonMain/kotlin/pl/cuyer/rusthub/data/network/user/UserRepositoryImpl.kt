@@ -33,7 +33,7 @@ class UserRepositoryImpl(
 
     override fun resendConfirmation(): Flow<Result<Unit>> {
         return safeApiCall<Unit> {
-            httpClient.post(NetworkConstants.BASE_URL + "resend-confirmation")
+            httpClient.post(NetworkConstants.BASE_URL + "auth/resend-confirmation")
         }.map { result ->
             when (result) {
                 is Result.Success -> Result.Success(Unit)
