@@ -1,14 +1,14 @@
 package pl.cuyer.rusthub.domain.usecase
 
 import androidx.paging.Pager
+import androidx.paging.map
 import app.cash.paging.ExperimentalPagingApi
 import app.cash.paging.PagingConfig
 import app.cash.paging.PagingData
-import database.ServerEntity
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import pl.cuyer.rusthub.data.local.mapper.toServerInfo
 import pl.cuyer.rusthub.domain.model.ServerInfo
-import kotlinx.coroutines.flow.Flow
 import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
 import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource

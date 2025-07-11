@@ -104,7 +104,7 @@ android {
         }
         create("development") {
             dimension = "mode"
-            buildConfigField("String", "BASE_URL", "\"https://dev.api.rusthub.me/\"")
+            buildConfigField("String", "BASE_URL", "\"https://api.dev.rusthub.me/\"")
             buildConfigField("String", "PRIVACY_POLICY_URL", "\"https://dev.rusthub.me/privacy\"")
             buildConfigField("String", "TERMS_URL", "\"https://dev.rusthub.me/terms\"")
         }
