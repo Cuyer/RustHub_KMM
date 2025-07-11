@@ -46,6 +46,21 @@ android {
         }
     }
 
+    signingConfigs {
+        create("development") {
+            storeFile = rootProject.file("keystore-dev.jks")
+            storePassword = System.getenv("DEV_STORE_PASSWORD")
+            keyAlias = System.getenv("DEV_SIGNING_KEY_ALIAS")
+            keyPassword = System.getenv("DEV_SIGNING_KEY_PASSWORD")
+        }
+        create("production") {
+            storeFile = rootProject.file("keystore-prod.jks")
+            storePassword = System.getenv("PROD_STORE_PASSWORD")
+            keyAlias = System.getenv("PROD_SIGNING_KEY_ALIAS")
+            keyPassword = System.getenv("PROD_SIGNING_KEY_PASSWORD")
+        }
+    }
+
 
 
     buildTypes {
@@ -56,7 +71,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("development")
+            signingConfig = signingConfigs.getByName("production")
         }
 
         getByName("debug") {
@@ -77,7 +92,8 @@ dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(project.dependencies.platform(libs.koin.bom))
     implementation(libs.koin.compose)
-    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.compose.viewmodel)
+    implementation(libs.koin.compose.viewmodel.navigation)
     implementation(libs.coil.compose)
     implementation(libs.coil.network)
     implementation(libs.androidx.navigation)
