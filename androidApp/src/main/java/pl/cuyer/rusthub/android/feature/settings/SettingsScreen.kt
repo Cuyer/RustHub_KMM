@@ -53,6 +53,7 @@ import pl.cuyer.rusthub.presentation.features.settings.SettingsState
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.StoreNavigator
+import pl.cuyer.rusthub.util.AppInfo
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class,
@@ -372,7 +373,7 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
     Text(
         modifier = Modifier.fillMaxWidth(),
         style = MaterialTheme.typography.bodySmall,
-        text = "App version: 1.0",
+        text = "App version: ${AppInfo.versionName}",
         textAlign = TextAlign.Center
     )
 }
