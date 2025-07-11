@@ -38,7 +38,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pl.cuyer.rusthub.android.feature.auth.ConfirmEmailScreen
 import pl.cuyer.rusthub.android.feature.auth.CredentialsScreen
