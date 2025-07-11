@@ -43,7 +43,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.sql.delight.android.driver)
             implementation(project.dependencies.platform(libs.koin.bom))
-            implementation(libs.koin.android)
+            implementation(libs.koin.compose)
             implementation(libs.androidx.navigation)
             implementation(libs.androidx.work.runtime)
             implementation(libs.ktor.client.okhttp)
