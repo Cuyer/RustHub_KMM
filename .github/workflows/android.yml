@@ -18,7 +18,7 @@ jobs:
       - name: Decrypt dev keystore
         run: |
           gpg --batch --yes --passphrase "$DEV_KEYSTORE_PASSWORD" \
-          --output keystore-dev.jks keystore-dev.gpg
+          --decrypt --output keystore-dev.jks keystore-dev.gpg
       - name: Build development release
         run: ./gradlew :androidApp:assembleDevelopmentRelease
         env:
@@ -37,7 +37,7 @@ jobs:
       - name: Decrypt prod keystore
         run: |
           gpg --batch --yes --passphrase "$PROD_KEYSTORE_PASSWORD" \
-          --output keystore-prod.jks keystore-prod.gpg
+          --decrypt --output keystore-prod.jks keystore-prod.gpg
       - name: Build production release
         run: ./gradlew :androidApp:assembleProductionRelease
         env:
