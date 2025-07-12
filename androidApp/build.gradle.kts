@@ -16,7 +16,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
-        versionName = "1.0"
+        versionName = project.property("VERSION_NAME") as String
     }
     buildFeatures {
         compose = true
@@ -35,29 +35,31 @@ android {
         jvmTarget = "17"
     }
 
+    signingConfigs {
+        create("development") {
+            storeFile = rootProject.file("androidApp/keystore-dev.jks")
+            storePassword = System.getenv("DEV_STORE_PASSWORD") ?: "2f032facZ@"
+            keyAlias = System.getenv("DEV_SIGNING_KEY_ALIAS") ?: "androiddev"
+            keyPassword = System.getenv("DEV_SIGNING_KEY_PASSWORD") ?: "2f032facZ@"
+        }
+        create("production") {
+            storeFile = rootProject.file("androidApp/keystore-prod.jks")
+            storePassword = System.getenv("PROD_STORE_PASSWORD")
+            keyAlias = System.getenv("PROD_SIGNING_KEY_ALIAS")
+            keyPassword = System.getenv("PROD_SIGNING_KEY_PASSWORD")
+        }
+    }
+
     flavorDimensions += "mode"
     productFlavors {
         create("production") {
             dimension = "mode"
+            signingConfig = signingConfigs.getByName("production")
         }
         create("development") {
             dimension = "mode"
             applicationIdSuffix = ".development"
-        }
-    }
-
-    signingConfigs {
-        create("development") {
-            storeFile = rootProject.file("keystore-dev.jks")
-            storePassword = System.getenv("DEV_STORE_PASSWORD")
-            keyAlias = System.getenv("DEV_SIGNING_KEY_ALIAS")
-            keyPassword = System.getenv("DEV_SIGNING_KEY_PASSWORD")
-        }
-        create("production") {
-            storeFile = rootProject.file("keystore-prod.jks")
-            storePassword = System.getenv("PROD_STORE_PASSWORD")
-            keyAlias = System.getenv("PROD_SIGNING_KEY_ALIAS")
-            keyPassword = System.getenv("PROD_SIGNING_KEY_PASSWORD")
+            signingConfig = signingConfigs.getByName("development")
         }
     }
 
@@ -71,7 +73,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("production")
         }
 
         getByName("debug") {

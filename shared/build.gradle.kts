@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -8,6 +9,7 @@ plugins {
     alias(libs.plugins.sqlDelightGradlePlugin)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.mokoMultiplatformResources)
+    alias(libs.plugins.buildKonfig)
 }
 
 kotlin {
@@ -93,33 +95,35 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
     flavorDimensions += "mode"
+    signingConfigs {
+        create("development") {
+            storeFile = rootProject.file("androidApp/keystore-dev.jks")
+            storePassword = System.getenv("DEV_STORE_PASSWORD")
+            keyAlias = System.getenv("DEV_SIGNING_KEY_ALIAS")
+            keyPassword = System.getenv("DEV_SIGNING_KEY_PASSWORD")
+        }
+        create("production") {
+            storeFile = rootProject.file("androidApp/keystore-prod.jks")
+            storePassword = System.getenv("PROD_STORE_PASSWORD")
+            keyAlias = System.getenv("PROD_SIGNING_KEY_ALIAS")
+            keyPassword = System.getenv("PROD_SIGNING_KEY_PASSWORD")
+        }
+    }
+
     productFlavors {
         create("production") {
             dimension = "mode"
             buildConfigField("String", "BASE_URL", "\"https://api.rusthub.me/\"")
             buildConfigField("String", "PRIVACY_POLICY_URL", "\"https://rusthub.me/privacy\"")
             buildConfigField("String", "TERMS_URL", "\"https://rusthub.me/terms\"")
+            signingConfig = signingConfigs.getByName("production")
         }
         create("development") {
             dimension = "mode"
-            buildConfigField("String", "BASE_URL", "\"https://dev.api.rusthub.me/\"")
+            buildConfigField("String", "BASE_URL", "\"https://api.dev.rusthub.me/\"")
             buildConfigField("String", "PRIVACY_POLICY_URL", "\"https://dev.rusthub.me/privacy\"")
             buildConfigField("String", "TERMS_URL", "\"https://dev.rusthub.me/terms\"")
-        }
-    }
-
-    signingConfigs {
-        create("development") {
-            storeFile = rootProject.file("keystore-dev.jks")
-            storePassword = System.getenv("DEV_STORE_PASSWORD")
-            keyAlias = System.getenv("DEV_SIGNING_KEY_ALIAS")
-            keyPassword = System.getenv("DEV_SIGNING_KEY_PASSWORD")
-        }
-        create("production") {
-            storeFile = rootProject.file("keystore-prod.jks")
-            storePassword = System.getenv("PROD_STORE_PASSWORD")
-            keyAlias = System.getenv("PROD_SIGNING_KEY_ALIAS")
-            keyPassword = System.getenv("PROD_SIGNING_KEY_PASSWORD")
+            signingConfig = signingConfigs.getByName("development")
         }
     }
 
@@ -134,7 +138,6 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard.pro")
             isMinifyEnabled = false
             isJniDebuggable = false
-            signingConfig = signingConfigs.getByName("production")
         }
 
         getByName("debug") {
@@ -150,6 +153,14 @@ android {
 multiplatformResources {
     resourcesPackage.set("pl.cuyer.rusthub")
     resourcesClassName.set("SharedRes")
+}
+
+buildkonfig {
+    packageName = "pl.cuyer.rusthub"
+    exposeObjectWithName = "SharedBuildConfig"
+    defaultConfigs {
+        buildConfigField(STRING, "VERSION_NAME", project.property("VERSION_NAME") as String)
+    }
 }
 
 sqldelight {
