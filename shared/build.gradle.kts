@@ -1,6 +1,6 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
-import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -121,8 +121,8 @@ android {
         create("development") {
             dimension = "mode"
             buildConfigField("String", "BASE_URL", "\"https://api.dev.rusthub.me/\"")
-            buildConfigField("String", "PRIVACY_POLICY_URL", "\"https://dev.rusthub.me/privacy\"")
-            buildConfigField("String", "TERMS_URL", "\"https://dev.rusthub.me/terms\"")
+            buildConfigField("String", "PRIVACY_POLICY_URL", "\"http://localhost:5173/privacy\"")
+            buildConfigField("String", "TERMS_URL", "\"http://localhost:5173/terms\"")
             signingConfig = signingConfigs.getByName("development")
         }
     }
