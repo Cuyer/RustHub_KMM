@@ -99,7 +99,7 @@ fun CredentialsScreen(
                     IconButton(onClick = { onAction(CredentialsAction.OnNavigateUp) }) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Navigate up"
+                            contentDescription = SharedRes.strings.navigate_up.getString(context)
                         )
                     }
                 },
@@ -165,7 +165,7 @@ private fun CredentialsStaticContent(
             modifier = Modifier
                 .size(64.dp),
             painter = painterResource(getImageByFileName("ic_padlock").drawableResId),
-            contentDescription = "Padlock Icon",
+            contentDescription = SharedRes.strings.padlock_icon.getString(LocalContext.current),
         )
         Spacer(Modifier.height(spacing.small))
         Text(

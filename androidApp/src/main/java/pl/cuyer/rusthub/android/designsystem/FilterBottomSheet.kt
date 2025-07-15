@@ -126,8 +126,9 @@ fun FilterBottomSheet(
                             .fillMaxWidth(),
                         contentAlignment = Alignment.Center
                     ) {
+                        val context = LocalContext.current
                         Text(
-                            text = "No filters available",
+                            text = SharedRes.strings.no_filters_available.getString(context),
                             modifier = Modifier.align(Alignment.Center)
                         )
                     }

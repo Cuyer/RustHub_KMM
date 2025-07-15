@@ -89,7 +89,10 @@ fun UpgradeAccountScreen(
                 title = { },
                 navigationIcon = {
                     IconButton(onClick = { onAction(UpgradeAction.OnNavigateUp) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Navigate up")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = SharedRes.strings.navigate_up.getString(context)
+                        )
                     }
                 },
                 scrollBehavior = scrollBehavior
@@ -212,13 +215,16 @@ private fun UpgradeStaticContent(modifier: Modifier = Modifier) {
         Icon(
             modifier = Modifier.size(64.dp),
             painter = painterResource(getImageByFileName("ic_rocket").drawableResId),
-            contentDescription = "Padlock Icon"
+            contentDescription = SharedRes.strings.padlock_icon.getString(LocalContext.current)
         )
         Spacer(Modifier.size(spacing.small))
-        Text(text = "Upgrade your account", style = MaterialTheme.typography.headlineLarge)
+        Text(
+            text = SharedRes.strings.upgrade_your_account.getString(LocalContext.current),
+            style = MaterialTheme.typography.headlineLarge
+        )
         Spacer(Modifier.size(spacing.small))
         Text(
-            text = "Provide credentials or connect Google account to upgrade.",
+            text = SharedRes.strings.provide_credentials_or_connect_google_account_to_upgrade.getString(LocalContext.current),
             style = MaterialTheme.typography.bodyMedium
         )
     }
@@ -231,8 +237,8 @@ private fun UpgradeFields(state: UpgradeState, onAction: (UpgradeAction) -> Unit
             requestFocus = true,
             value = state.username,
             onValueChange = { onAction(UpgradeAction.OnUsernameChange(it)) },
-            labelText = "Username",
-            placeholderText = "Enter username",
+            labelText = SharedRes.strings.username.getString(LocalContext.current),
+            placeholderText = SharedRes.strings.enter_username.getString(LocalContext.current),
             isError = state.usernameError != null,
             errorText = state.usernameError,
             modifier = Modifier.fillMaxWidth(),
@@ -242,8 +248,8 @@ private fun UpgradeFields(state: UpgradeState, onAction: (UpgradeAction) -> Unit
         AppTextField(
             value = state.email,
             onValueChange = { onAction(UpgradeAction.OnEmailChange(it)) },
-            labelText = "E-mail",
-            placeholderText = "Enter e-mail",
+            labelText = SharedRes.strings.e_mail.getString(LocalContext.current),
+            placeholderText = SharedRes.strings.enter_e_mail.getString(LocalContext.current),
             isError = state.emailError != null,
             errorText = state.emailError,
             modifier = Modifier.fillMaxWidth(),
@@ -253,8 +259,8 @@ private fun UpgradeFields(state: UpgradeState, onAction: (UpgradeAction) -> Unit
         AppSecureTextField(
             value = state.password,
             onValueChange = { onAction(UpgradeAction.OnPasswordChange(it)) },
-            labelText = "Password",
-            placeholderText = "Enter password",
+            labelText = SharedRes.strings.password.getString(LocalContext.current),
+            placeholderText = SharedRes.strings.enter_password.getString(LocalContext.current),
             onSubmit = { onAction(UpgradeAction.OnSubmit) },
             isError = state.passwordError != null,
             errorText = state.passwordError,
