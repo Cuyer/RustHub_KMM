@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -32,6 +33,10 @@ class StartupViewModel(
     private val setEmailConfirmedUseCase: SetEmailConfirmedUseCase,
 ) : BaseViewModel() {
 
+    private val userFlow = getUserUseCase()
+        .distinctUntilChanged()
+        .shareIn(coroutineScope, SharingStarted.WhileSubscribed(5_000L), replay = 1)
+
     private val _state = MutableStateFlow(StartupState())
     val state = _state.stateIn(
         scope = coroutineScope,
@@ -45,8 +50,7 @@ class StartupViewModel(
     }
 
     private fun observeUser() {
-        getUserUseCase()
-            .distinctUntilChanged()
+        userFlow
             .onEach { user ->
                 if (user == null) {
                     updateStartDestination(null)
@@ -59,7 +63,7 @@ class StartupViewModel(
     private suspend fun initialize() {
         updateLoadingState(true)
         try {
-            val user = getUserUseCase().first()
+            val user = userFlow.first()
             Napier.i("User: $user")
             if (user != null && user.provider == AuthProvider.LOCAL) {
                 when (val result = checkEmailConfirmedUseCase().first()) {
