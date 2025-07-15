@@ -28,7 +28,8 @@ class LoginWithGoogleUseCase(
                             accessToken = accessToken,
                             refreshToken = refreshToken,
                             provider = provider,
-                            subscribed = subscribed
+                            subscribed = subscribed,
+                            emailConfirmed = true
                         )
                         tokenRefresher.clear()
                         tokenManager.currentToken()

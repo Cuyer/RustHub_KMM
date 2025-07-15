@@ -28,7 +28,8 @@ class AuthAnonymouslyUseCase(
                             accessToken = accessToken,
                             refreshToken = null,
                             provider = provider,
-                            subscribed = subscribed
+                            subscribed = subscribed,
+                            emailConfirmed = true
                         )
                         tokenRefresher.clear()
                         tokenManager.currentToken()

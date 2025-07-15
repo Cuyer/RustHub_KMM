@@ -18,6 +18,7 @@ import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.model.User
 import pl.cuyer.rusthub.domain.usecase.CheckEmailConfirmedUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
+import pl.cuyer.rusthub.domain.usecase.SetEmailConfirmedUseCase
 import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.ServerList
@@ -28,6 +29,7 @@ class StartupViewModel(
     private val snackbarController: SnackbarController,
     private val getUserUseCase: GetUserUseCase,
     private val checkEmailConfirmedUseCase: CheckEmailConfirmedUseCase,
+    private val setEmailConfirmedUseCase: SetEmailConfirmedUseCase,
 ) : BaseViewModel() {
 
     private val _state = MutableStateFlow(StartupState())
@@ -43,42 +45,19 @@ class StartupViewModel(
 
     private fun observeUser() {
         getUserUseCase()
-            .onStart {
-                updateLoadingState(true)
-            }
+            .onStart { updateLoadingState(true) }
             .onEach { user ->
                 Napier.i("User: $user")
-                if (user != null) {
-                    if (user.provider in setOf(AuthProvider.GOOGLE, AuthProvider.ANONYMOUS)) {
-                        updateStartDestination(user, true)
-                    } else {
-                        checkEmailConfirmedUseCase()
-                            .catch { showErrorSnackbar(it.message ?: "Unknown error") }
-                            .collect { result ->
-                                val confirmed = when (result) {
-                                    is Result.Success -> result.data
-                                    is Result.Error -> {
-                                        if (
-                                            result.exception is ConnectivityException ||
-                                            result.exception is ServiceUnavailableException
-                                        ) {
-                                            showErrorSnackbar(
-                                                "Could not verify e-mail confirmation due to " +
-                                                    "connectivity issues."
-                                            )
-                                            true
-                                        } else {
-                                            false
-                                        }
-                                    }
-                                    else -> false
-                                }
-                                updateStartDestination(user, confirmed)
+                if (user != null && user.provider == AuthProvider.LOCAL) {
+                    checkEmailConfirmedUseCase()
+                        .catch { showErrorSnackbar(it.message ?: "Unknown error") }
+                        .collect { result ->
+                            if (result is Result.Success) {
+                                setEmailConfirmedUseCase(result.data)
                             }
-                    }
-                } else {
-                    updateStartDestination(null, true)
+                        }
                 }
+                updateStartDestination(user)
                 updateLoadingState(false)
             }
             .catch {
@@ -92,14 +71,10 @@ class StartupViewModel(
         _state.update { it.copy(isLoading = loading) }
     }
 
-    private fun updateStartDestination(user: User?, confirmed: Boolean) {
+    private fun updateStartDestination(user: User?) {
         _state.update {
             it.copy(
-                startDestination = when {
-                    user == null -> Onboarding
-                    confirmed -> ServerList
-                    else -> ConfirmEmail
-                }
+                startDestination = if (user == null) Onboarding else ServerList
             )
         }
     }

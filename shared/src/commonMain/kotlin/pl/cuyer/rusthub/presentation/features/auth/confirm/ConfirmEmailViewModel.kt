@@ -20,8 +20,8 @@ import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.exception.TooManyRequestsException
 import pl.cuyer.rusthub.domain.usecase.CheckEmailConfirmedUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
-import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
+import pl.cuyer.rusthub.domain.usecase.SetEmailConfirmedUseCase
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
@@ -32,7 +32,7 @@ class ConfirmEmailViewModel(
     private val getUserUseCase: GetUserUseCase,
     private val resendConfirmationUseCase: ResendConfirmationUseCase,
     private val snackbarController: SnackbarController,
-    private val logoutUserUseCase: LogoutUserUseCase
+    private val setEmailConfirmedUseCase: SetEmailConfirmedUseCase,
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -49,13 +49,12 @@ class ConfirmEmailViewModel(
     private var confirmJob: Job? = null
     private var resendJob: Job? = null
 
-    private var logoutJob: Job? = null
 
     fun onAction(action: ConfirmEmailAction) {
         when (action) {
             ConfirmEmailAction.OnConfirm -> confirm()
             ConfirmEmailAction.OnResend -> resend()
-            ConfirmEmailAction.OnBack -> logout()
+            ConfirmEmailAction.OnBack -> navigateBack()
         }
     }
 
@@ -78,6 +77,7 @@ class ConfirmEmailViewModel(
                     when (result) {
                         is Result.Success -> {
                             if (result.data) {
+                                setEmailConfirmedUseCase(true)
                                 _uiEvent.send(UiEvent.Navigate(ServerList))
                             } else {
                                 showErrorSnackbar("E-mail not confirmed yet")
@@ -109,24 +109,6 @@ class ConfirmEmailViewModel(
         }
     }
 
-    private fun logout() {
-        logoutJob?.cancel()
-        logoutJob = coroutineScope.launch {
-            logoutUserUseCase()
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
-                .collectLatest { result ->
-                    when (result) {
-                        is Result.Success -> {
-                            _uiEvent.send(UiEvent.NavigateUp)
-                        }
-
-                        is Result.Error -> showErrorSnackbar("Error occurred when trying to logout")
-
-                        else -> Unit
-                    }
-                }
-        }
-    }
 
     private fun handleError(throwable: Throwable): String {
         return when (throwable) {
@@ -141,5 +123,9 @@ class ConfirmEmailViewModel(
 
     private suspend fun showErrorSnackbar(message: String) {
         snackbarController.sendEvent(SnackbarEvent(message = message))
+    }
+
+    private fun navigateBack() {
+        coroutineScope.launch { _uiEvent.send(UiEvent.NavigateUp) }
     }
 }

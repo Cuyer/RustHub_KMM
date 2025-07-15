@@ -539,14 +539,15 @@ CREATE TABLE userEntity (
   access_token  TEXT   NOT NULL,
   refresh_token TEXT,
   provider TEXT NOT NULL DEFAULT 'LOCAL',
-  subscribed INTEGER NOT NULL DEFAULT 0
+  subscribed INTEGER NOT NULL DEFAULT 0,
+  email_confirmed INTEGER NOT NULL DEFAULT 0
 );
 
 insertUser:
 INSERT INTO userEntity (
-id, email, username, access_token, refresh_token, provider, subscribed
+id, email, username, access_token, refresh_token, provider, subscribed, email_confirmed
 ) VALUES (
-  :id, :email, :username, :accessToken, :refreshToken, :provider, :subscribed
+  :id, :email, :username, :accessToken, :refreshToken, :provider, :subscribed, :emailConfirmed
 )
 ON CONFLICT(id) DO UPDATE SET
   email = excluded.email,
@@ -554,13 +555,17 @@ ON CONFLICT(id) DO UPDATE SET
   access_token  = excluded.access_token,
   refresh_token = excluded.refresh_token,
   provider = excluded.provider,
-  subscribed = excluded.subscribed;
+  subscribed = excluded.subscribed,
+  email_confirmed = excluded.email_confirmed;
 
 deleteUser:
 DELETE FROM userEntity;
 
 getUser:
 SELECT * FROM userEntity LIMIT 1;
+
+updateEmailConfirmed:
+UPDATE userEntity SET email_confirmed = CASE WHEN :confirmed THEN 1 ELSE 0 END WHERE id = :id;
 
 CREATE TABLE settingsEntity (
     id TEXT NOT NULL PRIMARY KEY,
