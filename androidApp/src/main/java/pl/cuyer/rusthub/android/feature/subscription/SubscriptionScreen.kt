@@ -137,7 +137,10 @@ fun SubscriptionScreen(
                 title = { },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Navigate up")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = SharedRes.strings.navigate_up.getString(LocalContext.current)
+                        )
                     }
                 }
             )

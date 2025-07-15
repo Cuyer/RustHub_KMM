@@ -57,7 +57,22 @@
 
 
     <string name="six_eight_days">6.8 days</string>
-    
+
+    <string name="minutes_ago">%s minutes ago</string>
+
+    <string name="hours_ago">%s hours ago</string>
+
+    <string name="days_ago">%s days ago</string>
+
+    <string name="weeks_ago">%s weeks ago</string>
+
+    <string name="in_minutes">in %s minutes</string>
+
+    <string name="in_hours">in %s hours</string>
+
+    <string name="in_days">in %s days</string>
+
+    <string name="soon">soon</string>
     
     <string name="account">Account</string>
     
@@ -616,6 +631,10 @@
     
     <string name="upgrade_your_account">Upgrade your account</string>
     <string name="temporary_account_expiration">Your temporary account expires in %s. Upgrade to keep favourites and wipe alerts.</string>
+
+    <string name="confirmation_email_sent">Confirmation email sent</string>
+
+    <string name="wait_before_resending">Please wait before resending</string>
 
     
     
