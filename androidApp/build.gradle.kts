@@ -121,6 +121,7 @@ dependencies {
     debugImplementation(libs.firebase.appcheck.debug)
     implementation(libs.firebase.performance)
     implementation(libs.google.auth)
+    implementation(libs.play.review.ktx)
     implementation(libs.androidx.credentials)
     debugImplementation(libs.compose.ui.tooling)
 }
