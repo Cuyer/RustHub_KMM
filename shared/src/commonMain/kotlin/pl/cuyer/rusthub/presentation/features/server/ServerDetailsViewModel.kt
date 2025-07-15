@@ -36,6 +36,7 @@ import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.domain.model.toUiModel
 import pl.cuyer.rusthub.presentation.navigation.Subscription
+import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
@@ -205,6 +206,12 @@ class ServerDetailsViewModel(
         }
     }
 
+    private fun navigateConfirmEmail() {
+        coroutineScope.launch {
+            _uiEvent.send(UiEvent.Navigate(ConfirmEmail))
+        }
+    }
+
     private fun showNotificationInfo(show: Boolean) {
         _state.update {
             it.copy(
@@ -241,7 +248,7 @@ class ServerDetailsViewModel(
             snackbarController.sendEvent(
                 SnackbarEvent(
                     message = "Email not confirmed",
-                    action = SnackbarAction("Resend") { resendConfirmation() }
+                    action = SnackbarAction("Resend") { navigateConfirmEmail() }
                 )
             )
         }
