@@ -615,6 +615,8 @@
     
     
     <string name="upgrade_your_account">Upgrade your account</string>
+    <string name="temporary_account_expiration">Your temporary account expires in %s. Upgrade to keep favourites and wipe alerts.</string>
+
     
     
     <string name="upkeep">Upkeep</string>

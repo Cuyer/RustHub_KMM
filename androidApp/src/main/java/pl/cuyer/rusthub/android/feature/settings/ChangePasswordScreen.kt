@@ -46,6 +46,7 @@ import pl.cuyer.rusthub.android.designsystem.AppSecureTextField
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordAction
 import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
@@ -143,7 +144,7 @@ private fun ChangePasswordScreenCompact(
                 focusManager.clearFocus()
                 onAction(ChangePasswordAction.OnChange)
             }
-        ) { Text("Change password") }
+        ) { Text(SharedRes.strings.change_password.getString(LocalContext.current)) }
     }
 }
 
@@ -181,7 +182,7 @@ private fun ChangePasswordScreenExpanded(
                     focusManager.clearFocus()
                     onAction(ChangePasswordAction.OnChange)
                 }
-            ) { Text("Change password") }
+            ) { Text(SharedRes.strings.change_password.getString(LocalContext.current)) }
         }
     }
 }
@@ -192,16 +193,16 @@ private fun ChangePasswordStaticContent(modifier: Modifier = Modifier) {
         Icon(
             modifier = Modifier.size(64.dp),
             painter = painterResource(getImageByFileName("ic_padlock").drawableResId),
-            contentDescription = "Padlock Icon"
+            contentDescription = SharedRes.strings.padlock_icon.getString(LocalContext.current)
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
-            text = "Change password",
+            text = SharedRes.strings.change_password.getString(LocalContext.current),
             style = MaterialTheme.typography.headlineLarge
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
-            text = "Enter your current password and pick a new one.",
+            text = SharedRes.strings.enter_your_current_password_and_pick_a_new_one.getString(LocalContext.current),
             style = MaterialTheme.typography.bodyMedium
         )
     }
@@ -224,8 +225,8 @@ private fun ChangePasswordFields(
             requestFocus = true,
             value = oldPassword,
             onValueChange = { onAction(ChangePasswordAction.OnOldPasswordChange(it)) },
-            labelText = "Old password",
-            placeholderText = "Enter old password",
+            labelText = SharedRes.strings.old_password.getString(LocalContext.current),
+            placeholderText = SharedRes.strings.enter_old_password.getString(LocalContext.current),
             isError = oldPasswordError != null,
             errorText = oldPasswordError,
             modifier = Modifier.fillMaxWidth(),
@@ -235,8 +236,8 @@ private fun ChangePasswordFields(
         AppSecureTextField(
             value = newPassword,
             onValueChange = { onAction(ChangePasswordAction.OnNewPasswordChange(it)) },
-            labelText = "New password",
-            placeholderText = "Enter new password",
+            labelText = SharedRes.strings.new_password.getString(LocalContext.current),
+            placeholderText = SharedRes.strings.enter_new_password.getString(LocalContext.current),
             onSubmit = {
                 focusManager.clearFocus()
                 onAction(ChangePasswordAction.OnChange)

@@ -44,6 +44,7 @@ import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.Theme
@@ -223,10 +224,10 @@ private fun PreferencesSection(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Notifications")
+            Text(SharedRes.strings.notifications.getString(context))
             Icon(
                 imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                contentDescription = "Notifications toggle"
+                contentDescription = SharedRes.strings.notifications_toggle.getString(context)
             )
         }
     }
@@ -239,8 +240,9 @@ private fun AccountSection(
     expiration: String?,
     onAction: (SettingsAction) -> Unit
 ) {
+    val context = LocalContext.current
     Text(
-        text = "Account",
+        text = SharedRes.strings.account.getString(context),
         style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(bottom = spacing.small)
     )
@@ -255,10 +257,10 @@ private fun AccountSection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Change password")
+                Text(SharedRes.strings.change_password.getString(context))
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                    contentDescription = "Change password button"
+                    contentDescription = SharedRes.strings.change_password_button.getString(context)
                 )
             }
         }
@@ -274,10 +276,10 @@ private fun AccountSection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Subscription")
+                Text(SharedRes.strings.subscription.getString(context))
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                    contentDescription = "Subscription button"
+                    contentDescription = SharedRes.strings.subscription_button.getString(context)
                 )
             }
         }
@@ -286,7 +288,7 @@ private fun AccountSection(
     if (provider == AuthProvider.ANONYMOUS) {
         expiration?.let {
             Text(
-                text = "Your temporary account expires in $it. Upgrade to keep favourites and wipe alerts.",
+                text = SharedRes.strings.temporary_account_expiration.getString(context, it),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(bottom = spacing.small)
@@ -300,10 +302,10 @@ private fun AccountSection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Upgrade account")
+                Text(SharedRes.strings.upgrade_account.getString(context))
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                    contentDescription = "Upgrade account button"
+                    contentDescription = SharedRes.strings.upgrade_account_button.getString(context)
                 )
             }
         }
@@ -316,10 +318,10 @@ private fun AccountSection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Delete account", color = MaterialTheme.colorScheme.error)
+                Text(SharedRes.strings.delete_account.getString(context), color = MaterialTheme.colorScheme.error)
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                    contentDescription = "Delete account button",
+                    contentDescription = SharedRes.strings.delete_account_button.getString(context),
                     tint = MaterialTheme.colorScheme.error
                 )
             }
