@@ -29,6 +29,7 @@ class UpgradeWithGoogleUseCase(
                             refreshToken = refreshToken,
                             provider = provider,
                             subscribed = subscribed,
+                            emailConfirmed = true,
                         )
                         tokenRefresher.clear()
                         tokenManager.currentToken()

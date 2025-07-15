@@ -26,6 +26,7 @@ class AuthDataSourceImpl(
         refreshToken: String?,
         provider: AuthProvider,
         subscribed: Boolean,
+        emailConfirmed: Boolean,
     ) {
         withContext(Dispatchers.IO) {
             queries.insertUser(
@@ -35,7 +36,8 @@ class AuthDataSourceImpl(
                 accessToken = accessToken,
                 refreshToken = refreshToken,
                 provider = provider.name,
-                subscribed = if (subscribed) 1L else 0L
+                subscribed = if (subscribed) 1L else 0L,
+                emailConfirmed = if (emailConfirmed) 1L else 0L
             )
         }
     }
@@ -56,6 +58,15 @@ class AuthDataSourceImpl(
     override suspend fun getUserOnce(): User? {
         return withContext(Dispatchers.IO) {
             queries.getUser().executeAsOneOrNull()?.toUser()
+        }
+    }
+
+    override suspend fun updateEmailConfirmed(confirmed: Boolean) {
+        withContext(Dispatchers.IO) {
+            queries.updateEmailConfirmed(
+                id = Constants.DEFAULT_KEY,
+                confirmed = confirmed
+            )
         }
     }
 

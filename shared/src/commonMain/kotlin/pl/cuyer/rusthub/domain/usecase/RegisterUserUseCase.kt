@@ -36,7 +36,8 @@ class RegisterUserUseCase(
                             username = username,
                             email = email,
                             provider = provider,
-                            subscribed = subscribed
+                            subscribed = subscribed,
+                            emailConfirmed = false
                         )
                         tokenRefresher.clear()
                         tokenManager.currentToken()

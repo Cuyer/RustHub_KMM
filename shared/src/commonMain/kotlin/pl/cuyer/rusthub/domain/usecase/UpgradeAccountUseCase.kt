@@ -29,6 +29,7 @@ class UpgradeAccountUseCase(
                             refreshToken = refreshToken,
                             provider = provider,
                             subscribed = subscribed,
+                            emailConfirmed = false,
                         )
                         tokenRefresher.clear()
                         tokenManager.currentToken()

@@ -42,7 +42,7 @@ actual val platformModule: Module = module {
     single { GoogleAuthClient(androidContext()) }
     single { PermissionsController(androidContext()) }
     viewModel {
-        StartupViewModel(get(), get(), get())
+        StartupViewModel(get(), get(), get(), get())
     }
     viewModel {
         OnboardingViewModel(
@@ -138,7 +138,7 @@ actual val platformModule: Module = module {
             getUserUseCase = get(),
             resendConfirmationUseCase = get(),
             snackbarController = get(),
-            logoutUserUseCase = get()
+            setEmailConfirmedUseCase = get()
         )
     }
     viewModel { (serverId: Long, serverName: String?) ->
@@ -146,6 +146,8 @@ actual val platformModule: Module = module {
             getServerDetailsUseCase = get(),
             toggleFavouriteUseCase = get(),
             toggleSubscriptionUseCase = get(),
+            getUserUseCase = get(),
+            resendConfirmationUseCase = get(),
             permissionsController = get(),
             serverName = serverName,
             serverId = serverId,

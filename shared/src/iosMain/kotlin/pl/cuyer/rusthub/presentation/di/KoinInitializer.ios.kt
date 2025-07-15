@@ -17,6 +17,7 @@ import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
+import pl.cuyer.rusthub.domain.usecase.SetEmailConfirmedUseCase
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
 import pl.cuyer.rusthub.util.StoreNavigator
@@ -37,13 +38,14 @@ actual val platformModule: Module = module {
     single { StoreNavigator() }
     single { GoogleAuthClient() }
     single { PermissionsController() }
-    factory { StartupViewModel(get(), get()) }
+    factory { StartupViewModel(get(), get(), get(), get()) }
     factory {
         ConfirmEmailViewModel(
             checkEmailConfirmedUseCase = get(),
             getUserUseCase = get(),
             resendConfirmationUseCase = get(),
             snackbarController = get(),
+            setEmailConfirmedUseCase = get(),
         )
     }
     factory {

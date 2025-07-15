@@ -30,6 +30,8 @@ import pl.cuyer.rusthub.domain.exception.SubscriptionLimitException
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleSubscriptionUseCase
+import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
+import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.domain.model.toUiModel
 import pl.cuyer.rusthub.presentation.navigation.Subscription
@@ -37,6 +39,7 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.ShareHandler
 
@@ -47,6 +50,8 @@ class ServerDetailsViewModel(
     private val getServerDetailsUseCase: GetServerDetailsUseCase,
     private val toggleFavouriteUseCase: ToggleFavouriteUseCase,
     private val toggleSubscriptionUseCase: ToggleSubscriptionUseCase,
+    private val getUserUseCase: GetUserUseCase,
+    private val resendConfirmationUseCase: ResendConfirmationUseCase,
     private val permissionsController: PermissionsController,
     private val serverName: String?,
     private val serverId: Long?
@@ -59,6 +64,7 @@ class ServerDetailsViewModel(
         .onStart {
             assignInitialData()
             assignInitialServerDetailsJob()
+            observeUser()
         }
         .stateIn(
             scope = coroutineScope,
@@ -69,6 +75,7 @@ class ServerDetailsViewModel(
     private var toggleJob: Job? = null
     private var subscriptionJob: Job? = null
     private var serverDetailsJob: Job? = null
+    private var emailConfirmed: Boolean = true
 
     fun onAction(action: ServerDetailsAction) {
         when (action) {
@@ -97,6 +104,12 @@ class ServerDetailsViewModel(
         }
     }
 
+    private fun observeUser() {
+        getUserUseCase()
+            .onEach { user -> emailConfirmed = user?.emailConfirmed == true }
+            .launchIn(coroutineScope)
+    }
+
     private fun saveIpToClipboard(ipAddress: String) {
         clipboardHandler.copyToClipboard("Server address", "client.connect $ipAddress")
         coroutineScope.launch {
@@ -119,6 +132,11 @@ class ServerDetailsViewModel(
         val id = state.value.serverId ?: return
         val details = state.value.details ?: return
         val add = details.isFavorite != true
+
+        if (!emailConfirmed) {
+            showUnconfirmedSnackbar()
+            return
+        }
 
         toggleJob?.cancel()
 
@@ -205,6 +223,10 @@ class ServerDetailsViewModel(
 
     private fun handleSubscribeAction() {
         coroutineScope.launch {
+            if (!emailConfirmed) {
+                showUnconfirmedSnackbar()
+                return@launch
+            }
             try {
                 permissionsController.providePermission(Permission.REMOTE_NOTIFICATION)
                 toggleSubscription()
@@ -220,6 +242,29 @@ class ServerDetailsViewModel(
         snackbarController.sendEvent(
             SnackbarEvent(message = message, action = null)
         )
+    }
+
+    private fun showUnconfirmedSnackbar() {
+        coroutineScope.launch {
+            snackbarController.sendEvent(
+                SnackbarEvent(
+                    message = "Email not confirmed",
+                    action = SnackbarAction("Resend") { resendConfirmation() }
+                )
+            )
+        }
+    }
+
+    private fun resendConfirmation() {
+        coroutineScope.launch {
+            resendConfirmationUseCase()
+                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .collectLatest { result ->
+                    if (result is Result.Success) {
+                        snackbarController.sendEvent(SnackbarEvent("Confirmation email sent"))
+                    }
+                }
+        }
     }
 
 
