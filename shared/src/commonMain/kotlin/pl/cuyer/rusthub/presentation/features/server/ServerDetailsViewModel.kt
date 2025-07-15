@@ -159,7 +159,6 @@ class ServerDetailsViewModel(
                             is FavoriteLimitException -> navigateSubscription()
                             else -> showErrorSnackbar("Error occurred when trying to ${if (add) "add" else "remove"} server from favourites")
                         }
-                        Result.Loading -> Unit
                     }
                 }
         }
@@ -193,7 +192,6 @@ class ServerDetailsViewModel(
                             is SubscriptionLimitException -> navigateSubscription()
                             else -> showErrorSnackbar("Error occurred when trying to ${if (subscribed) "subscribe" else "unsubscribe"} from notifications")
                         }
-                        Result.Loading -> Unit
                     }
                 }
         }

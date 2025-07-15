@@ -52,7 +52,6 @@ class ToggleFavouriteUseCase(
                     }
                 }
 
-                Result.Loading -> Unit
             }
         }
     }

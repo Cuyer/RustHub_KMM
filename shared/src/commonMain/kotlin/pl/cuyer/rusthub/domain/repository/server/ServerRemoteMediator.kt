@@ -57,7 +57,7 @@ class ServerRemoteMediator(
                 query,
                 searchQuery
             )
-                .first { it !is Result.Loading }) {
+                .first()) {
                 is Result.Error -> {
                     return if (
                         result.exception is ConnectivityException ||
@@ -91,7 +91,6 @@ class ServerRemoteMediator(
                     MediatorResult.Success(endOfPaginationReached = end)
                 }
 
-                Result.Loading -> MediatorResult.Success(endOfPaginationReached = false)
             }
         } catch (e: Exception) {
             if (e is ConnectivityException || e is ServiceUnavailableException) {
