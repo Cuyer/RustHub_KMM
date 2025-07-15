@@ -22,6 +22,9 @@ class SettingsController(
     private val _language = MutableStateFlow(Language.ENGLISH)
     val language: StateFlow<Language> = _language
 
+    private val _biometricsEnabled = MutableStateFlow(false)
+    val biometricsEnabled: StateFlow<Boolean> = _biometricsEnabled
+
     init {
         scope.launch {
             getSettingsUseCase().collect { settings ->
@@ -32,6 +35,9 @@ class SettingsController(
                     if (_language.value != it.language) {
                         _language.value = it.language
                         updateAppLanguage(it.language)
+                    }
+                    if (_biometricsEnabled.value != it.biometricsEnabled) {
+                        _biometricsEnabled.value = it.biometricsEnabled
                     }
                 }
             }

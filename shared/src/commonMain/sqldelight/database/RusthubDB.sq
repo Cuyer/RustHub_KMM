@@ -570,15 +570,17 @@ UPDATE userEntity SET email_confirmed = CASE WHEN :confirmed THEN 1 ELSE 0 END W
 CREATE TABLE settingsEntity (
     id TEXT NOT NULL PRIMARY KEY,
     theme TEXT AS ThemeEntity,
-    language TEXT AS LanguageEntity
+    language TEXT AS LanguageEntity,
+    biometrics_enabled INTEGER NOT NULL DEFAULT 0
 );
 
 upsertSettings:
-INSERT INTO settingsEntity (id, theme, language)
-VALUES (:id, :theme, :language)
+INSERT INTO settingsEntity (id, theme, language, biometrics_enabled)
+VALUES (:id, :theme, :language, :biometrics_enabled)
 ON CONFLICT(id) DO UPDATE SET
     theme = excluded.theme,
-    language = excluded.language;
+    language = excluded.language,
+    biometrics_enabled = excluded.biometrics_enabled;
 
 getSettings:
 SELECT * FROM settingsEntity WHERE id = ?;
