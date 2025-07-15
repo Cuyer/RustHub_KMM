@@ -32,6 +32,7 @@ import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.InAppUpdateManager
+import pl.cuyer.rusthub.util.BiometricAuthenticator
 import kotlinx.coroutines.runBlocking
 import pl.cuyer.rusthub.BuildConfig
 
@@ -57,6 +58,7 @@ actual val platformModule: Module = module {
     single { ReviewRequester(androidContext()) }
     single { StoreNavigator(androidContext()) }
     single { GoogleAuthClient(androidContext()) }
+    single { BiometricAuthenticator(androidContext()) }
     single { PermissionsController(androidContext()) }
     viewModel {
         StartupViewModel(get(), get(), get(), get())
