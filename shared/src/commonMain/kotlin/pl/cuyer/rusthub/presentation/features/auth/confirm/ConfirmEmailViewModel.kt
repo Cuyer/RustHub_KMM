@@ -105,7 +105,6 @@ class ConfirmEmailViewModel(
                             SnackbarEvent("Confirmation email sent")
                         )
                         is Result.Error -> showErrorSnackbar(handleError(result.exception))
-                        else -> Unit
                     }
                 }
         }

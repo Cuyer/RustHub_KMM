@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -106,6 +107,7 @@ class ServerDetailsViewModel(
 
     private fun observeUser() {
         getUserUseCase()
+            .distinctUntilChanged()
             .onEach { user -> emailConfirmed = user?.emailConfirmed == true }
             .launchIn(coroutineScope)
     }
@@ -258,8 +260,11 @@ class ServerDetailsViewModel(
             resendConfirmationUseCase()
                 .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
                 .collectLatest { result ->
-                    if (result is Result.Success) {
-                        snackbarController.sendEvent(SnackbarEvent("Confirmation email sent"))
+                    when (result) {
+                        is Result.Success -> snackbarController.sendEvent(
+                            SnackbarEvent("Confirmation email sent")
+                        )
+                        is Result.Error -> showErrorSnackbar(result.exception.message ?: "Unknown error")
                     }
                 }
         }
