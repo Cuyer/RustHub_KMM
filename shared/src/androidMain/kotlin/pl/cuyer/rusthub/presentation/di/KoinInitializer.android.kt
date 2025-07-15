@@ -9,6 +9,7 @@ import pl.cuyer.rusthub.data.local.DatabaseDriverFactory
 import pl.cuyer.rusthub.data.network.HttpClientFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.AuthProvider
+import pl.cuyer.rusthub.util.AppCheckTokenProvider
 import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
@@ -31,7 +32,8 @@ import pl.cuyer.rusthub.util.TokenRefresher
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory(androidContext()).create() }
-    single { HttpClientFactory(get(), get()).create() }
+    single { AppCheckTokenProvider() }
+    single { HttpClientFactory(get(), get(), get()).create() }
     single { TokenRefresher(get()) }
     single { ClipboardHandler(get()) }
     single { ShareHandler(get()) }

@@ -14,6 +14,10 @@ import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepos
 import pl.cuyer.rusthub.util.MessagingTokenManager
 import pl.cuyer.rusthub.util.NotificationPresenter
 import pl.cuyer.rusthub.work.CustomWorkerFactory
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
+import pl.cuyer.rusthub.BuildConfig
 
 class RustHubApplication : Application(), Configuration.Provider {
 
@@ -26,6 +30,12 @@ class RustHubApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+        val factory = if (BuildConfig.DEBUG) {
+            DebugAppCheckProviderFactory.getInstance()
+        } else {
+            PlayIntegrityAppCheckProviderFactory.getInstance()
+        }
+        FirebaseAppCheck.getInstance().installAppCheckProviderFactory(factory)
         initKoin {
             androidContext(this@RustHubApplication)
             androidLogger()
