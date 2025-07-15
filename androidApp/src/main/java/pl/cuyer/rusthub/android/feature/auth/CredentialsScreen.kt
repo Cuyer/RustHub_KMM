@@ -49,6 +49,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppSecureTextField
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
@@ -246,7 +247,7 @@ private fun CredentialsScreenCompact(
                 modifier = Modifier
                     .imePadding()
                     .fillMaxWidth()
-            ) { Text(SharedRes.strings.`continue`.getString(LocalContext.current)) }
+            ) { Text(SharedRes.strings.continue_further.getString(LocalContext.current)) }
         }
     }
 }
@@ -304,7 +305,7 @@ private fun CredentialsScreenExpanded(
                     modifier = Modifier
                         .imePadding()
                         .fillMaxWidth()
-                ) { Text(SharedRes.strings.`continue`.getString(LocalContext.current)) }
+                ) { Text(SharedRes.strings.continue_further.getString(LocalContext.current)) }
             }
         }
     }

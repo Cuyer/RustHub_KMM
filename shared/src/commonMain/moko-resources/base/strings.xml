@@ -48,21 +48,15 @@
     
     
     <string name="days"> days</string>
-    
-    
-    <string name="2f">%.2f</string>
-    
-    
-    <string name="3_max">3 max</string>
-    
-    
-    <string name="4hrs_ago">4hrs ago</string>
-    
-    
-    <string name="6_8_days">6.8 days</string>
-    
-    
-    <string name="b_i_u_t">&lt;(/?)(b|i|u|t)&gt;</string>
+
+
+    <string name="three_max">3 max</string>
+
+
+    <string name="four_hours_ago">4hrs ago</string>
+
+
+    <string name="six_eight_days">6.8 days</string>
     
     
     <string name="account">Account</string>
@@ -147,9 +141,9 @@
     
     
     <string name="confirmed">Confirmed</string>
-    
-    
-    <string name="continue">Continue</string>
+
+
+    <string name="continue_further">Continue</string>
     
     
     <string name="continue_as_guest">Continue as Guest</string>
@@ -246,9 +240,9 @@
     
     
     <string name="enter_your_username">Enter your username</string>
-    
-    
-    <string name="false">False</string>
+
+
+    <string name="false_str">False</string>
     
     
     <string name="favourites">Favourites</string>
@@ -579,9 +573,9 @@
     
     
     <string name="this_rust_hub_account_is_already_connected_with_social_account">This Rust Hub account is already connected with social account.</string>
-    
-    
-    <string name="true">True</string>
+
+
+    <string name="true_str">True</string>
     
     
     <string name="turn_off_notifications">Turn off notifications</string>
@@ -591,6 +585,8 @@
     
     
     <string name="twopane">TwoPane</string>
+
+    <string name="or_str">or</string>
     
     
     <string name="unknown_error">Unknown Error</string>

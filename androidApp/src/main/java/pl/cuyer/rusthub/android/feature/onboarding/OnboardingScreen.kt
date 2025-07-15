@@ -77,11 +77,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation3.runtime.NavKey
+import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppOutlinedButton
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
@@ -365,7 +367,7 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
             horizontalArrangement = Arrangement.spacedBy(spacing.small)
         ) {
             HorizontalDivider(modifier = Modifier.weight(1f))
-            Text(SharedRes.strings.or.getString(context))
+            Text(SharedRes.strings.or_str.getString(context))
             HorizontalDivider(modifier = Modifier.weight(1f))
         }
 
