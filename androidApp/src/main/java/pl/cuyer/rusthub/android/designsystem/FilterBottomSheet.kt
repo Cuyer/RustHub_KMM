@@ -18,6 +18,7 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
@@ -49,6 +50,7 @@ import kotlinx.serialization.json.Json
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.features.server.ServerState
@@ -65,6 +67,7 @@ fun FilterBottomSheet(
     onDismissAndRefresh: () -> Unit,
     onAction: (ServerAction) -> Unit
 ) {
+    val context = LocalContext.current
     val json = koinInject<Json>()
     val filterUiSaver = remember {
         Saver<FilterUi?, String>(
@@ -153,7 +156,7 @@ fun FilterBottomSheet(
                                     .fillMaxWidth()
                                     .padding(horizontal = spacing.large)
                             ) {
-                                Text("Apply Filters")
+                                Text(SharedRes.strings.apply_filters.getString(context))
                             }
                             AppOutlinedButton(
                                 colors = ButtonDefaults.outlinedButtonColors().copy(
@@ -168,7 +171,7 @@ fun FilterBottomSheet(
                                     .padding(vertical = spacing.small, horizontal = spacing.large)
                             ) {
                                 Text(
-                                    text = "Reset Filters",
+                                    text = SharedRes.strings.reset_filters.getString(context),
                                 )
                             }
                         }

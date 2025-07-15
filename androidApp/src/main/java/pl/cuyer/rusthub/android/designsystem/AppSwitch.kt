@@ -14,6 +14,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.platform.LocalContext
+import pl.cuyer.rusthub.SharedRes
 
 @Composable
 fun AppSwitch(
@@ -21,8 +23,9 @@ fun AppSwitch(
     onCheckedChange: (Boolean) -> Unit
 ) {
     var checked by remember(isChecked) { mutableStateOf(isChecked) }
+    val context = LocalContext.current
     Switch(
-        modifier = Modifier.semantics { contentDescription = "Demo with icon" },
+        modifier = Modifier.semantics { contentDescription = SharedRes.strings.demo_with_icon.getString(context) },
         checked = checked,
         onCheckedChange = {
             checked = it

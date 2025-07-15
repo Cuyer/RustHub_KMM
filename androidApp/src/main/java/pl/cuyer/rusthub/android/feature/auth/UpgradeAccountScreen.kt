@@ -52,6 +52,7 @@ import pl.cuyer.rusthub.android.designsystem.AppTextField
 import pl.cuyer.rusthub.android.designsystem.SignProviderButton
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeAction
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeState
@@ -133,21 +134,21 @@ private fun UpgradeScreenCompact(state: UpgradeState, onAction: (UpgradeAction) 
             modifier = Modifier
                 .imePadding()
                 .fillMaxWidth()
-        ) { Text("Upgrade") }
+        ) { Text(SharedRes.strings.upgrade.getString(context)) }
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(spacing.small)
         ) {
             HorizontalDivider(modifier = Modifier.weight(1f))
-            Text("or")
+            Text(SharedRes.strings.or_str.getString(context))
             HorizontalDivider(modifier = Modifier.weight(1f))
         }
 
         SignProviderButton(
             image = getImageByFileName("ic_google").drawableResId,
-            contentDescription = "Google logo",
-            text = "Upgrade with Google",
+            contentDescription = SharedRes.strings.google_logo.getString(context),
+            text = SharedRes.strings.upgrade_with_google.getString(context),
             modifier = Modifier.fillMaxWidth(),
             isLoading = state.googleLoading,
             backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
@@ -181,21 +182,21 @@ private fun UpgradeScreenExpanded(state: UpgradeState, onAction: (UpgradeAction)
                 modifier = Modifier
                     .imePadding()
                     .fillMaxWidth()
-            ) { Text("Upgrade") }
+            ) { Text(SharedRes.strings.upgrade.getString(context)) }
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(spacing.small)
             ) {
                 HorizontalDivider(modifier = Modifier.weight(1f))
-                Text("or")
+                Text(SharedRes.strings.or_str.getString(context))
                 HorizontalDivider(modifier = Modifier.weight(1f))
             }
 
             SignProviderButton(
                 image = getImageByFileName("ic_google").drawableResId,
-                contentDescription = "Google logo",
-                text = "Upgrade with Google",
+                contentDescription = SharedRes.strings.google_logo.getString(context),
+                text = SharedRes.strings.upgrade_with_google.getString(context),
                 modifier = Modifier.fillMaxWidth(),
                 isLoading = state.googleLoading,
                 backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,

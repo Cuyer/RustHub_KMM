@@ -327,7 +327,9 @@ private fun SubscriptionMainContent(
     }
     AppButton(
         modifier = Modifier.fillMaxWidth(),
-        onClick = {}) { Text("Subscribe to ${selectedPlan.label} plan") }
+        onClick = {}) {
+        Text(SharedRes.strings.subscribe_to_plan.getString(context, selectedPlan.label))
+    }
     AppTextButton(onClick = onNavigateUp) {
         Text(SharedRes.strings.not_now.getString(context))
     }
@@ -354,7 +356,10 @@ private fun ComparisonSection() {
         verticalArrangement = Arrangement.spacedBy(spacing.medium),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Need to compare?", style = MaterialTheme.typography.titleMedium)
+        Text(
+            SharedRes.strings.need_to_compare.getString(context),
+            style = MaterialTheme.typography.titleMedium
+        )
 
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -387,8 +392,8 @@ private fun ComparisonSection() {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Add notifications", modifier = Modifier.weight(0.5f))
-                Text("3 max", modifier = Modifier.weight(0.25f), textAlign = TextAlign.Center)
+                Text(SharedRes.strings.add_notifications.getString(context), modifier = Modifier.weight(0.5f))
+                Text(SharedRes.strings.three_max.getString(context), modifier = Modifier.weight(0.25f), textAlign = TextAlign.Center)
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
@@ -402,8 +407,8 @@ private fun ComparisonSection() {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Add to favourites", modifier = Modifier.weight(0.5f))
-                Text("3 max", modifier = Modifier.weight(0.25f), textAlign = TextAlign.Center)
+                Text(SharedRes.strings.add_to_favourites.getString(context), modifier = Modifier.weight(0.5f))
+                Text(SharedRes.strings.three_max.getString(context), modifier = Modifier.weight(0.25f), textAlign = TextAlign.Center)
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,

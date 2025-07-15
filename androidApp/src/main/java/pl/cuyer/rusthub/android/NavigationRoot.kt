@@ -22,6 +22,8 @@ import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItem
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.ui.platform.LocalContext
+import pl.cuyer.rusthub.SharedRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -301,6 +303,7 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
 
     val current = backStack.lastOrNull()
     val showNav = current is ServerList || current is ServerDetails || current is Settings
+    val context = LocalContext.current
 
     if (showNav) {
         NavigationSuiteScaffold(
@@ -316,8 +319,13 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                             }
                         }
                     },
-                    icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Servers") },
-                    label = { Text("Servers") }
+                    icon = {
+                        Icon(
+                            Icons.AutoMirrored.Filled.List,
+                            contentDescription = SharedRes.strings.servers.getString(context)
+                        )
+                    },
+                    label = { Text(SharedRes.strings.servers.getString(context)) }
                 )
                 NavigationSuiteItem(
                     selected = current is Settings,
@@ -326,8 +334,13 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                             backStack.add(Settings)
                         }
                     },
-                    icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
-                    label = { Text("Settings") }
+                    icon = {
+                        Icon(
+                            Icons.Default.Settings,
+                            contentDescription = SharedRes.strings.settings.getString(context)
+                        )
+                    },
+                    label = { Text(SharedRes.strings.settings.getString(context)) }
                 )
             },
             content = {
