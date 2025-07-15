@@ -220,7 +220,7 @@ fun ServerScreen(
                         onPagingItems(key = { it.id ?: UUID.randomUUID() }) { item ->
                             val interactionSource = remember { MutableInteractionSource() }
                             val labels by rememberUpdatedState(createLabels(item))
-                            val details by rememberUpdatedState(createDetails(item))
+                            val details by rememberUpdatedState(createDetails(item, context))
                             ServerListItem(
                                 modifier = Modifier
                                     .animateItem()
@@ -339,7 +339,7 @@ private fun ServerFilterChips(
 }
 
 
-private fun createDetails(item: ServerInfoUi): Map<String, String> {
+private fun createDetails(item: ServerInfoUi, context: Context): Map<String, String> {
     val details = mutableMapOf<String, String>()
 
     item.wipe?.let { wipeInstant: Instant ->
@@ -348,22 +348,39 @@ private fun createDetails(item: ServerInfoUi): Map<String, String> {
         val minutesAgo = duration.inWholeMinutes
 
         val parsedTimeAgo = when (minutesAgo) {
-            in 0..60 -> "$minutesAgo minutes ago"
-            in 61..1440 -> "${minutesAgo / 60} hours ago"
-            in 1441..10080 -> "${minutesAgo / 1440} days ago"
-            else -> "${minutesAgo / 10080} weeks ago"
+            in 0..60 ->
+                context.getString(SharedRes.strings.minutes_ago.resourceId, minutesAgo)
+            in 61..1440 ->
+                context.getString(SharedRes.strings.hours_ago.resourceId, minutesAgo / 60)
+            in 1441..10080 ->
+                context.getString(SharedRes.strings.days_ago.resourceId, minutesAgo / 1440)
+            else ->
+                context.getString(SharedRes.strings.weeks_ago.resourceId, minutesAgo / 10080)
         }
 
-        details["Wipe"] = parsedTimeAgo
+        details[context.getString(SharedRes.strings.wipe.resourceId).trim()] = parsedTimeAgo
     }
 
-    item.ranking?.let { details["Ranking"] = it.toInt().toString() }
-    item.cycle?.let {
-        details["Cycle"] = "~ " + String.format(Locale.getDefault(), "%.2f", it) + " days"
+    item.ranking?.let {
+        details[context.getString(SharedRes.strings.ranking.resourceId)] = it.toInt().toString()
     }
-    item.serverCapacity?.let { details["Players"] = "${item.playerCount ?: 0}/${it}" }
-    item.mapName?.let { details["Map"] = it.name }
-    item.modded?.let { details["Modded"] = if (it) "Yes" else "No" }
+    item.cycle?.let {
+        val cycleValue = "~ " + String.format(Locale.getDefault(), "%.2f", it) +
+            " " + context.getString(SharedRes.strings.days.resourceId).trim()
+        details[context.getString(SharedRes.strings.cycle.resourceId)] = cycleValue
+    }
+    item.serverCapacity?.let {
+        details[context.getString(SharedRes.strings.players.resourceId)] =
+            "${item.playerCount ?: 0}/$it"
+    }
+    item.mapName?.let {
+        details[context.getString(SharedRes.strings.map.resourceId)] = it.name
+    }
+    item.modded?.let {
+        details[context.getString(SharedRes.strings.modded.resourceId)] =
+            if (it) context.getString(SharedRes.strings.yes.resourceId)
+            else context.getString(SharedRes.strings.no.resourceId)
+    }
 
     return details
 }

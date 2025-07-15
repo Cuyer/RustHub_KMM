@@ -283,7 +283,7 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                         entry<Terms> {
                             PrivacyPolicyScreen(
                                 url = Constants.TERMS_URL,
-                                title = "Terms & conditions",
+                                title = SharedRes.strings.terms_conditions.getString(LocalContext.current),
                                 onNavigateUp = { backStack.removeLastOrNull() }
                             )
                         }
