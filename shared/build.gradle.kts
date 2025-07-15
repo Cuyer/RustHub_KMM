@@ -61,6 +61,9 @@ kotlin {
             implementation(libs.androidx.credentials)
             implementation(libs.google.identity)
             implementation(libs.kotlin.coroutines.play.services)
+            implementation(libs.google.play.app.update)
+            implementation(libs.google.play.app.update.ktx)
+            implementation(libs.play.review.ktx)
         }
         commonMain.dependencies {
             implementation(project.dependencies.platform(libs.koin.bom))

@@ -6,13 +6,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult
-import io.github.aakira.napier.Napier
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
-import com.google.android.play.core.appupdate.ktx.startUpdateFlowForResult
+import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -55,7 +55,7 @@ actual class InAppUpdateManager actual constructor(
         if (launcher == null) {
             launcher = activity.registerForActivityResult(StartIntentSenderForResult()) { result ->
                 if (result.resultCode != Activity.RESULT_OK) {
-                    Napier.d("In-app update flow failed: ${'$'}{result.resultCode}")
+                    Napier.d("In-app update flow failed: ${result.resultCode}")
                     if (immediateInProgress) {
                         currentActivity?.finishAffinity()
                     }
@@ -84,25 +84,27 @@ actual class InAppUpdateManager actual constructor(
         appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
             when {
                 info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
-                    info.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE) -> {
+                        info.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE) -> {
                     immediateInProgress = true
+                    val options = AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
                     launcher?.let {
                         appUpdateManager.startUpdateFlowForResult(
                             info,
-                            AppUpdateType.IMMEDIATE,
-                            it
+                            it,
+                            options
                         )
                     }
                 }
                 info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
-                    info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE) -> {
+                        info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE) -> {
                     immediateInProgress = false
                     registerListener()
+                    val options = AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()
                     launcher?.let {
                         appUpdateManager.startUpdateFlowForResult(
                             info,
-                            AppUpdateType.FLEXIBLE,
-                            it
+                            it,
+                            options
                         )
                     }
                 }
@@ -116,13 +118,14 @@ actual class InAppUpdateManager actual constructor(
         appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
             when {
                 info.updateAvailability() ==
-                    UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS -> {
+                        UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS -> {
                     immediateInProgress = true
+                    val options = AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
                     launcher?.let {
                         appUpdateManager.startUpdateFlowForResult(
                             info,
-                            AppUpdateType.IMMEDIATE,
-                            it
+                            it,
+                            options
                         )
                     }
                 }
@@ -141,13 +144,12 @@ actual class InAppUpdateManager actual constructor(
                     }
                 }
                 info.installStatus() != InstallStatus.DOWNLOADED &&
-                    info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
-                    info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE) -> {
+                        info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
+                        info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE) -> {
                     immediateInProgress = false
                     registerListener()
                 }
             }
         }
     }
-
 }
