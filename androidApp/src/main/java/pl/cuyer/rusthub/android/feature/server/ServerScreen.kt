@@ -219,7 +219,7 @@ fun ServerScreen(
                     ) {
                         onPagingItems(key = { it.id ?: UUID.randomUUID() }) { item ->
                             val interactionSource = remember { MutableInteractionSource() }
-                            val labels by rememberUpdatedState(createLabels(item))
+                            val labels by rememberUpdatedState(createLabels(item, context))
                             val details by rememberUpdatedState(createDetails(item, context))
                             ServerListItem(
                                 modifier = Modifier
@@ -385,7 +385,7 @@ private fun createDetails(item: ServerInfoUi, context: Context): Map<String, Str
     return details
 }
 
-private fun createLabels(item: ServerInfoUi): List<Label> {
+private fun createLabels(item: ServerInfoUi, context: Context): List<Label> {
     val labels = mutableListOf<Label>()
 
     item.wipeSchedule?.let {
@@ -394,11 +394,18 @@ private fun createLabels(item: ServerInfoUi): List<Label> {
     item.difficulty?.let {
         labels.add(Label(text = it.name))
     }
-    if (item.isOfficial == true) labels.add(Label(text = "Official"))
+    if (item.isOfficial == true) {
+        labels.add(Label(text = SharedRes.strings.official.getString(context)))
+    }
 
     item.wipeType?.let {
         if (it != WipeType.UNKNOWN) {
-            labels.add(Label(text = it.name + " Wipe"))
+            labels.add(
+                Label(
+                    text = it.name + " " +
+                        SharedRes.strings.wipe.getString(context)
+                )
+            )
         }
     }
 
