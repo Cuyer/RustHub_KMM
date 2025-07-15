@@ -151,7 +151,7 @@ private fun DeleteAccountScreenCompact(
                 focusManager.clearFocus()
                 onAction(DeleteAccountAction.OnDelete)
             }
-        ) { Text("Delete account") }
+        ) { Text(SharedRes.strings.delete_account.getString(LocalContext.current)) }
     }
 }
 
@@ -189,7 +189,7 @@ private fun DeleteAccountScreenExpanded(
                     focusManager.clearFocus()
                     onAction(DeleteAccountAction.OnDelete)
                 }
-            ) { Text("Delete account") }
+            ) { Text(SharedRes.strings.delete_account.getString(LocalContext.current)) }
         }
     }
 }
@@ -200,16 +200,16 @@ private fun DeleteAccountStaticContent(modifier: Modifier = Modifier) {
         Icon(
             modifier = Modifier.size(64.dp),
             painter = painterResource(getImageByFileName("ic_bin").drawableResId),
-            contentDescription = "Delete Icon"
+            contentDescription = SharedRes.strings.delete_account_button.getString(LocalContext.current)
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
-            text = "Delete account",
+            text = SharedRes.strings.delete_account.getString(LocalContext.current),
             style = MaterialTheme.typography.headlineLarge
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
-            text = "Deleting your account is irreversible. All your data will be removed.",
+            text = SharedRes.strings.deleting_your_account_is_irreversible_all_your_data_will_be_removed.getString(LocalContext.current),
             style = MaterialTheme.typography.bodyMedium
         )
     }
