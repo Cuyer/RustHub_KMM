@@ -26,6 +26,7 @@ import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
 import pl.cuyer.rusthub.util.ShareHandler
+import pl.cuyer.rusthub.util.ReviewRequester
 import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
@@ -53,6 +54,7 @@ actual val platformModule: Module = module {
     single { SubscriptionSyncScheduler(get()) }
     single { MessagingTokenScheduler(get()) }
     single { InAppUpdateManager(androidContext(), get()) }
+    single { ReviewRequester(androidContext()) }
     single { StoreNavigator(androidContext()) }
     single { GoogleAuthClient(androidContext()) }
     single { PermissionsController(androidContext()) }
@@ -168,7 +170,8 @@ actual val platformModule: Module = module {
             serverId = serverId,
             clipboardHandler = get(),
             snackbarController = get(),
-            shareHandler = get()
+            shareHandler = get(),
+            reviewRequester = get()
         )
     }
 }

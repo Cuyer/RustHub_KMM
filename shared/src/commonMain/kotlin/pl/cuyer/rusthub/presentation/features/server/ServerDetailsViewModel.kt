@@ -44,11 +44,13 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.ShareHandler
+import pl.cuyer.rusthub.util.ReviewRequester
 
 class ServerDetailsViewModel(
     private val clipboardHandler: ClipboardHandler,
     private val snackbarController: SnackbarController,
     private val shareHandler: ShareHandler,
+    private val reviewRequester: ReviewRequester,
     private val getServerDetailsUseCase: GetServerDetailsUseCase,
     private val toggleFavouriteUseCase: ToggleFavouriteUseCase,
     private val toggleSubscriptionUseCase: ToggleSubscriptionUseCase,
@@ -157,6 +159,9 @@ class ServerDetailsViewModel(
                                     duration = Duration.SHORT
                                 )
                             )
+                            if (add) {
+                                reviewRequester.requestReview()
+                            }
                         }
                         is Result.Error -> when (result.exception) {
                             is FavoriteLimitException -> navigateSubscription()
@@ -190,6 +195,9 @@ class ServerDetailsViewModel(
                                     duration = Duration.SHORT
                                 )
                             )
+                            if (subscribed) {
+                                reviewRequester.requestReview()
+                            }
                         }
                         is Result.Error -> when (result.exception) {
                             is SubscriptionLimitException -> navigateSubscription()

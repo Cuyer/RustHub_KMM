@@ -21,6 +21,7 @@ import pl.cuyer.rusthub.domain.usecase.SetEmailConfirmedUseCase
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
 import pl.cuyer.rusthub.util.StoreNavigator
+import pl.cuyer.rusthub.util.ReviewRequester
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
@@ -39,6 +40,7 @@ actual val platformModule: Module = module {
     single { SubscriptionSyncScheduler() }
     single { MessagingTokenScheduler() }
     single { InAppUpdateManager() }
+    single { ReviewRequester() }
     single { StoreNavigator() }
     single { GoogleAuthClient() }
     single { PermissionsController() }
