@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -31,6 +32,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
+import pl.cuyer.rusthub.SharedRes
 
 @Composable
 fun AppSecureTextField(
@@ -89,13 +91,18 @@ fun AppSecureTextField(
             Crossfade(targetState = value.isNotEmpty()) { hasText ->
                 if (hasText) {
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        val context = LocalContext.current
                         Crossfade(
                             targetState = passwordVisible,
-                            label = "Show or hide password"
+                            label = SharedRes.strings.show_or_hide_password.getString(context)
                         ) { isVisible ->
                             Icon(
                                 imageVector = if (isVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                                contentDescription = if (isVisible) "Hide password" else "Show password"
+                                contentDescription = if (isVisible) {
+                                    SharedRes.strings.hide_password.getString(context)
+                                } else {
+                                    SharedRes.strings.show_password.getString(context)
+                                }
                             )
                         }
                     }

@@ -56,6 +56,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import pl.cuyer.rusthub.SharedRes
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.android.theme.RustHubTheme
@@ -99,7 +100,7 @@ fun RustSearchBarTopAppBar(
                     onSearchTriggered()
                 }
             },
-            placeholder = { Text("Search servers...") },
+            placeholder = { Text(SharedRes.strings.search_servers.getString(context)) },
             leadingIcon = {
                 if (searchBarState.currentValue == SearchBarValue.Expanded) {
                     IconButton(
@@ -109,17 +110,26 @@ fun RustSearchBarTopAppBar(
                             }
                         }
                     ) {
-                        Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Default.ArrowBack,
+                            contentDescription = SharedRes.strings.back.getString(context)
+                        )
                     }
                 } else {
-                    Icon(Icons.Default.Search, contentDescription = "Search")
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = SharedRes.strings.search.getString(context)
+                    )
                 }
             },
             trailingIcon = {
                 Row {
                     if (textFieldState.text.isNotEmpty()) {
                         IconButton(onClick = { textFieldState.setTextAndPlaceCursorAtEnd("") }) {
-                            Icon(Icons.Default.Close, contentDescription = "Clear")
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = SharedRes.strings.clear.getString(context)
+                            )
                         }
                     }
                     AnimatedVisibility(
@@ -142,7 +152,10 @@ fun RustSearchBarTopAppBar(
                         visible = searchBarState.currentValue == SearchBarValue.Collapsed && textFieldState.text.isEmpty()
                     ) {
                         IconButton(onClick = onOpenFilters) {
-                            Icon(Icons.Default.FilterList, contentDescription = "Open Filters")
+                            Icon(
+                                Icons.Default.FilterList,
+                                contentDescription = SharedRes.strings.open_filters.getString(context)
+                            )
                         }
                     }
                 }
@@ -169,7 +182,7 @@ fun RustSearchBarTopAppBar(
                             modifier = Modifier
                                 .animateItem()
                                 .padding(spacing.medium),
-                            text = "Recent searches"
+                            text = SharedRes.strings.recent_searches.getString(context)
                         )
                     }
                 }
@@ -188,7 +201,7 @@ fun RustSearchBarTopAppBar(
                         ) {
                             Icon(
                                 Icons.Default.Delete,
-                                contentDescription = "Delete",
+                                contentDescription = SharedRes.strings.delete.getString(context),
                                 tint = MaterialTheme.colorScheme.onError
                             )
                         }
@@ -232,7 +245,7 @@ fun RustSearchBarTopAppBar(
                                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                         ) {
-                            Text("Clear search history")
+                            Text(SharedRes.strings.clear_search_history.getString(context))
                         }
                     }
                 }

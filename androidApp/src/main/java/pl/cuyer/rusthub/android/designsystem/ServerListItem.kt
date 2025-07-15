@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -36,6 +37,7 @@ import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.Theme
+import pl.cuyer.rusthub.SharedRes
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -47,6 +49,7 @@ fun ServerListItem(
     labels: List<Label>,
     details: Map<String, String>
 ) {
+    val context = LocalContext.current
     ElevatedCard(
         shape = RectangleShape,
         modifier = modifier
@@ -91,7 +94,7 @@ fun ServerListItem(
                         modifier = modifier
                             .size(24.dp),
                         painter = painterResource(flag),
-                        contentDescription = "Server flag",
+                        contentDescription = SharedRes.strings.server_flag.getString(context),
                         contentScale = ContentScale.Fit
                     )
                 }

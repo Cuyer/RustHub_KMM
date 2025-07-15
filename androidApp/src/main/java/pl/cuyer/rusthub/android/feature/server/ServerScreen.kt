@@ -55,6 +55,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import pl.cuyer.rusthub.SharedRes
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
@@ -319,17 +320,17 @@ private fun ServerFilterChips(
         FilterChip(
             selected = selected == ServerFilter.ALL,
             onClick = { onSelectedChange(ServerFilter.ALL) },
-            label = { Text("All") }
+            label = { Text(SharedRes.strings.all.getString(context)) }
         )
         FilterChip(
             selected = selected == ServerFilter.FAVOURITES,
             onClick = { onSelectedChange(ServerFilter.FAVOURITES) },
-            label = { Text("Favourites") }
+            label = { Text(SharedRes.strings.favourites.getString(context)) }
         )
         FilterChip(
             selected = selected == ServerFilter.SUBSCRIBED,
             onClick = { onSelectedChange(ServerFilter.SUBSCRIBED) },
-            label = { Text("Subscribed") }
+            label = { Text(SharedRes.strings.subscribed.getString(context)) }
         )
     }
 }

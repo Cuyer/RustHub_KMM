@@ -549,6 +549,8 @@
     
     
     <string name="subscribed">Subscribed</string>
+
+    <string name="subscribe_to_plan">Subscribe to %s plan</string>
     
     
     <string name="subscription">Subscription</string>

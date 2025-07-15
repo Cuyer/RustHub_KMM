@@ -65,6 +65,8 @@ import pl.cuyer.rusthub.android.designsystem.ServerDetail
 import pl.cuyer.rusthub.android.designsystem.ServerWebsite
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.SharedRes
+import androidx.compose.ui.platform.LocalContext
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
@@ -87,6 +89,7 @@ fun ServerDetailsScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val lazyListState = rememberLazyListState()
     val state = stateProvider().value
+    val context = LocalContext.current
 
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
@@ -166,7 +169,7 @@ fun ServerDetailsScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Share") },
+                            text = { Text(SharedRes.strings.share.getString(context)) },
                             onClick = {
                                 expanded = false
                                 onAction(ServerDetailsAction.OnShare)
