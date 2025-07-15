@@ -1,20 +1,25 @@
 package pl.cuyer.rusthub.data.local
 
 import android.content.Context
+import android.util.Base64
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import database.FiltersEntity
 import database.ServerEntity
+import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
 
 actual class DatabaseDriverFactory(
-    private val context: Context
+    private val context: Context,
+    private val passphrase: String
 ) {
     actual fun create(): RustHubDatabase {
+        val factory = SupportOpenHelperFactory(Base64.decode(passphrase, Base64.NO_WRAP))
         val driver = AndroidSqliteDriver(
             schema = RustHubDatabase.Schema,
             context = context,
-            name = "RustHubDatabase.db"
+            name = "RustHubDatabase.db",
+            factory = factory
         )
 
         return RustHubDatabase.Companion(

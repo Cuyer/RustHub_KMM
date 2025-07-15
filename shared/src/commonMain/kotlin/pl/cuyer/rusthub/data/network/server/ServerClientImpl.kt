@@ -51,7 +51,6 @@ class ServerClientImpl(
             when (result) {
                 is Result.Success -> Result.Success(result.data.toDomain())
                 is Result.Error -> Result.Error(result.exception)
-                Result.Loading -> Result.Loading
             }
         }
     }

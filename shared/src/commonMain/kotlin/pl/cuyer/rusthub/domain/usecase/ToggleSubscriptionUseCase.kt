@@ -48,7 +48,6 @@ class ToggleSubscriptionUseCase(
                         else -> send(Result.Error(result.exception))
                     }
                 }
-                Result.Loading -> Unit
             }
         }
     }

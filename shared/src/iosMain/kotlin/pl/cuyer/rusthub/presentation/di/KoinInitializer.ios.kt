@@ -17,6 +17,7 @@ import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
+import pl.cuyer.rusthub.domain.usecase.SetEmailConfirmedUseCase
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
 import pl.cuyer.rusthub.util.StoreNavigator
@@ -24,10 +25,12 @@ import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.ShareHandler
+import pl.cuyer.rusthub.util.AppCheckTokenProvider
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
-    single { HttpClientFactory(get(), get()).create() }
+    single { AppCheckTokenProvider() }
+    single { HttpClientFactory(get(), get(), get()).create() }
     single { TokenRefresher(get()) }
     single { ClipboardHandler() }
     single { ShareHandler() }
@@ -37,13 +40,14 @@ actual val platformModule: Module = module {
     single { StoreNavigator() }
     single { GoogleAuthClient() }
     single { PermissionsController() }
-    factory { StartupViewModel(get(), get()) }
+    factory { StartupViewModel(get(), get(), get(), get()) }
     factory {
         ConfirmEmailViewModel(
             checkEmailConfirmedUseCase = get(),
             getUserUseCase = get(),
             resendConfirmationUseCase = get(),
             snackbarController = get(),
+            setEmailConfirmedUseCase = get(),
         )
     }
     factory {

@@ -1,5 +1,5 @@
 [versions]
-agp = "8.12.0-alpha08"
+agp = "8.11.0"
 android-compileSdk = "36"
 android-minSdk = "30"
 android-targetSdk = "36"
@@ -37,6 +37,10 @@ buildkonfig = "0.17.1"
 google-auth = "21.3.0"
 credential = "1.6.0-alpha03"
 identity = "1.1.1"
+certificate-transparency = "2.7.1"
+datastore = "1.1.7"
+security-crypto = "1.1.0-beta01"
+sqlcipher = "4.9.0"
 
 [libraries]
 
@@ -81,6 +85,8 @@ firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 firebase-performance = { module = "com.google.firebase:firebase-perf" }
+firebase-appcheck-playintegrity = { module = "com.google.firebase:firebase-appcheck-playintegrity" }
+firebase-appcheck-debug = { module = "com.google.firebase:firebase-appcheck-debug" }
 
 #KOTLIN
 kotlin-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
@@ -110,6 +116,10 @@ androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-p
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splash-screen" }
 androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credential" }
+androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "security-crypto" }
+sqlcipher-android = { module = "net.zetetic:sqlcipher-android", version.ref = "sqlcipher" }
 
 #PAGING3
 paging = { group = "app.cash.paging", name = "paging-common", version.ref = "paging" }
@@ -128,6 +138,7 @@ moko-permissions-compose = { module = "dev.icerock.moko:permissions-compose", ve
 moko-permissions-notifications = { module = "dev.icerock.moko:permissions-notifications", version.ref = "moko-permissions" }
 google-identity = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "identity" }
 google-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "google-auth" }
+certificate-transparency = { module = "com.appmattus.certificatetransparency:certificatetransparency-android", version.ref = "certificate-transparency" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

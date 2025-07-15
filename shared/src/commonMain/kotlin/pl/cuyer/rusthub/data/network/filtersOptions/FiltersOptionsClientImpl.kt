@@ -24,7 +24,6 @@ class FiltersOptionsClientImpl(
             when (result) {
                 is Result.Success -> Result.Success(result.data.toDomain())
                 is Result.Error -> result
-                is Result.Loading -> Result.Loading
             }
         }
     }

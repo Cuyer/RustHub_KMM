@@ -12,10 +12,13 @@ interface AuthDataSource {
         refreshToken: String?,
         provider: AuthProvider,
         subscribed: Boolean,
+        emailConfirmed: Boolean,
     )
 
     suspend fun deleteUser()
     fun getUser(): Flow<User?>
+
+    suspend fun updateEmailConfirmed(confirmed: Boolean)
 
     suspend fun getUserOnce(): User?
 }

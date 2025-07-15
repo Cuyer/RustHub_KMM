@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.presentation.di
 
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
+import pl.cuyer.rusthub.util.BuildType
 import kotlinx.serialization.json.Json
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -64,6 +65,7 @@ import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
 import pl.cuyer.rusthub.domain.usecase.RequestPasswordResetUseCase
 import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
+import pl.cuyer.rusthub.domain.usecase.SetEmailConfirmedUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
@@ -128,6 +130,7 @@ val appModule = module {
     single { CheckUserExistsUseCase(get()) }
     single { CheckEmailConfirmedUseCase(get()) }
     single { ResendConfirmationUseCase(get()) }
+    single { SetEmailConfirmedUseCase(get()) }
     single { GetUserUseCase(get()) }
     single { LogoutUserUseCase(get(), get(), get()) }
     single { DeleteAccountUseCase(get(), get(), get()) }
@@ -145,7 +148,9 @@ val appModule = module {
 expect val platformModule: Module
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
-    Napier.base(DebugAntilog())
+    if (BuildType.isDebug) {
+        Napier.base(DebugAntilog())
+    }
     appDeclaration()
     modules(appModule, platformModule)
 }

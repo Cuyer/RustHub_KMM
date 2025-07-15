@@ -6,9 +6,11 @@ import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import pl.cuyer.rusthub.data.local.DatabaseDriverFactory
+import pl.cuyer.rusthub.data.local.DatabasePassphraseProvider
 import pl.cuyer.rusthub.data.network.HttpClientFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.AuthProvider
+import pl.cuyer.rusthub.util.AppCheckTokenProvider
 import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
@@ -28,10 +30,16 @@ import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
+import kotlinx.coroutines.runBlocking
 
 actual val platformModule: Module = module {
-    single<RustHubDatabase> { DatabaseDriverFactory(androidContext()).create() }
-    single { HttpClientFactory(get(), get()).create() }
+    single { DatabasePassphraseProvider(androidContext()) }
+    single<RustHubDatabase> {
+        val passphrase = runBlocking { get<DatabasePassphraseProvider>().getPassphrase() }
+        DatabaseDriverFactory(androidContext(), passphrase).create()
+    }
+    single { AppCheckTokenProvider() }
+    single { HttpClientFactory(get(), get(), get()).create() }
     single { TokenRefresher(get()) }
     single { ClipboardHandler(get()) }
     single { ShareHandler(get()) }
@@ -42,7 +50,7 @@ actual val platformModule: Module = module {
     single { GoogleAuthClient(androidContext()) }
     single { PermissionsController(androidContext()) }
     viewModel {
-        StartupViewModel(get(), get(), get())
+        StartupViewModel(get(), get(), get(), get())
     }
     viewModel {
         OnboardingViewModel(
@@ -138,7 +146,7 @@ actual val platformModule: Module = module {
             getUserUseCase = get(),
             resendConfirmationUseCase = get(),
             snackbarController = get(),
-            logoutUserUseCase = get()
+            setEmailConfirmedUseCase = get()
         )
     }
     viewModel { (serverId: Long, serverName: String?) ->
@@ -146,6 +154,8 @@ actual val platformModule: Module = module {
             getServerDetailsUseCase = get(),
             toggleFavouriteUseCase = get(),
             toggleSubscriptionUseCase = get(),
+            getUserUseCase = get(),
+            resendConfirmationUseCase = get(),
             permissionsController = get(),
             serverName = serverName,
             serverId = serverId,

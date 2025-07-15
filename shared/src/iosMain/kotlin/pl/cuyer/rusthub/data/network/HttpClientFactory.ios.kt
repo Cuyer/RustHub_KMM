@@ -25,6 +25,9 @@ import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.data.network.auth.model.RefreshRequest
 import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
+import pl.cuyer.rusthub.data.network.AppCheckPlugin
+import pl.cuyer.rusthub.util.AppCheckTokenProvider
+import pl.cuyer.rusthub.util.BuildType
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import platform.Foundation.NSLocale
@@ -33,7 +36,8 @@ import platform.Foundation.languageCode
 
 actual class HttpClientFactory actual constructor(
     private val json: Json,
-    private val authDataSource: AuthDataSource
+    private val authDataSource: AuthDataSource,
+    private val appCheckTokenProvider: AppCheckTokenProvider
 ) {
     actual fun create(): HttpClient {
         return HttpClient(Darwin) {
@@ -58,13 +62,15 @@ actual class HttpClientFactory actual constructor(
 
                         if (response.status.isSuccess()) {
                             val newTokens: TokenPairDto = response.body()
+                            val confirmed = authDataSource.getUserOnce()?.emailConfirmed ?: false
                             authDataSource.insertUser(
                                 email = newTokens.email,
                                 username = newTokens.username,
                                 accessToken = newTokens.accessToken,
                                 refreshToken = newTokens.refreshToken,
                                 provider = AuthProvider.valueOf(newTokens.provider),
-                                subscribed = newTokens.subscribed
+                                subscribed = newTokens.subscribed,
+                                emailConfirmed = confirmed
                             )
                             BearerTokens(newTokens.accessToken, newTokens.refreshToken)
                         } else null
@@ -75,9 +81,15 @@ actual class HttpClientFactory actual constructor(
                     }
                 }
             }
-            install(Logging) {
-                logger = Logger.DEFAULT
-                level = LogLevel.ALL
+            if (BuildType.isDebug) {
+                install(Logging) {
+                    logger = Logger.DEFAULT
+                    level = LogLevel.ALL
+                }
+            }
+
+            install(AppCheckPlugin) {
+                provider = appCheckTokenProvider
             }
 
             defaultRequest {

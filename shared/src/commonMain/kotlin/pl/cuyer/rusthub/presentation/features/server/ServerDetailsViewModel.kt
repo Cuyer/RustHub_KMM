@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -30,13 +31,17 @@ import pl.cuyer.rusthub.domain.exception.SubscriptionLimitException
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleSubscriptionUseCase
+import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
+import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.domain.model.toUiModel
 import pl.cuyer.rusthub.presentation.navigation.Subscription
+import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.ShareHandler
 
@@ -47,6 +52,8 @@ class ServerDetailsViewModel(
     private val getServerDetailsUseCase: GetServerDetailsUseCase,
     private val toggleFavouriteUseCase: ToggleFavouriteUseCase,
     private val toggleSubscriptionUseCase: ToggleSubscriptionUseCase,
+    private val getUserUseCase: GetUserUseCase,
+    private val resendConfirmationUseCase: ResendConfirmationUseCase,
     private val permissionsController: PermissionsController,
     private val serverName: String?,
     private val serverId: Long?
@@ -59,6 +66,7 @@ class ServerDetailsViewModel(
         .onStart {
             assignInitialData()
             assignInitialServerDetailsJob()
+            observeUser()
         }
         .stateIn(
             scope = coroutineScope,
@@ -69,6 +77,7 @@ class ServerDetailsViewModel(
     private var toggleJob: Job? = null
     private var subscriptionJob: Job? = null
     private var serverDetailsJob: Job? = null
+    private var emailConfirmed: Boolean = true
 
     fun onAction(action: ServerDetailsAction) {
         when (action) {
@@ -97,6 +106,13 @@ class ServerDetailsViewModel(
         }
     }
 
+    private fun observeUser() {
+        getUserUseCase()
+            .distinctUntilChanged()
+            .onEach { user -> emailConfirmed = user?.emailConfirmed == true }
+            .launchIn(coroutineScope)
+    }
+
     private fun saveIpToClipboard(ipAddress: String) {
         clipboardHandler.copyToClipboard("Server address", "client.connect $ipAddress")
         coroutineScope.launch {
@@ -120,11 +136,16 @@ class ServerDetailsViewModel(
         val details = state.value.details ?: return
         val add = details.isFavorite != true
 
+        if (!emailConfirmed) {
+            showUnconfirmedSnackbar()
+            return
+        }
+
         toggleJob?.cancel()
 
         toggleJob = coroutineScope.launch {
             toggleFavouriteUseCase(id, add)
-                .catch { e -> showErrorSnackbar("Error occurred when trying to ${if (add) "add" else "remove"} server from favourites") }
+                .catch { e -> showErrorSnackbar("Error occurred when trying to ${if (add) "add" else "remove"} server ${if (add) "to" else "from"} favourites") }
                 .collectLatest { result ->
                     ensureActive()
                     when (result) {
@@ -132,16 +153,15 @@ class ServerDetailsViewModel(
                             serverDetailsJob = observeServerDetails(id)
                             snackbarController.sendEvent(
                                 event = SnackbarEvent(
-                                    message = if (add) "Added ${state.value.serverId} to favourites" else "Removed ${state.value.serverId} from favourites",
+                                    message = if (add) "Added ${state.value.serverName} to favourites" else "Removed ${state.value.serverName} from favourites",
                                     duration = Duration.SHORT
                                 )
                             )
                         }
                         is Result.Error -> when (result.exception) {
                             is FavoriteLimitException -> navigateSubscription()
-                            else -> showErrorSnackbar("Error occurred when trying to ${if (add) "add" else "remove"} server from favourites")
+                            else -> showErrorSnackbar("Error occurred when trying to ${if (add) "add" else "remove"} server ${if (add) "to" else "from"} favourites")
                         }
-                        Result.Loading -> Unit
                     }
                 }
         }
@@ -157,7 +177,7 @@ class ServerDetailsViewModel(
         subscriptionJob = coroutineScope.launch {
             toggleSubscriptionUseCase(id, subscribed)
                 .catch { e ->
-                    showErrorSnackbar("Error occurred when trying to ${if (subscribed) "subscribe" else "unsubscribe"} from notifications")
+                    showErrorSnackbar("Error occurred when trying to ${if (subscribed) "subscribe to" else "unsubscribe from"} notifications")
                 }
                 .collectLatest { result ->
                     ensureActive()
@@ -173,25 +193,22 @@ class ServerDetailsViewModel(
                         }
                         is Result.Error -> when (result.exception) {
                             is SubscriptionLimitException -> navigateSubscription()
-                            else -> showErrorSnackbar("Error occurred when trying to ${if (subscribed) "subscribe" else "unsubscribe"} from notifications")
+                            else -> showErrorSnackbar("Error occurred when trying to ${if (subscribed) "subscribe to" else "unsubscribe from"} notifications")
                         }
-                        Result.Loading -> Unit
                     }
                 }
-        }
-    }
-
-    private fun showSubscriptionDialog(show: Boolean) {
-        _state.update {
-            it.copy(
-                showSubscriptionDialog = show
-            )
         }
     }
 
     private fun navigateSubscription() {
         coroutineScope.launch {
             _uiEvent.send(UiEvent.Navigate(Subscription))
+        }
+    }
+
+    private fun navigateConfirmEmail() {
+        coroutineScope.launch {
+            _uiEvent.send(UiEvent.Navigate(ConfirmEmail))
         }
     }
 
@@ -205,6 +222,10 @@ class ServerDetailsViewModel(
 
     private fun handleSubscribeAction() {
         coroutineScope.launch {
+            if (!emailConfirmed) {
+                showUnconfirmedSnackbar()
+                return@launch
+            }
             try {
                 permissionsController.providePermission(Permission.REMOTE_NOTIFICATION)
                 toggleSubscription()
@@ -220,6 +241,32 @@ class ServerDetailsViewModel(
         snackbarController.sendEvent(
             SnackbarEvent(message = message, action = null)
         )
+    }
+
+    private fun showUnconfirmedSnackbar() {
+        coroutineScope.launch {
+            snackbarController.sendEvent(
+                SnackbarEvent(
+                    message = "Email not confirmed",
+                    action = SnackbarAction("Resend") { navigateConfirmEmail() }
+                )
+            )
+        }
+    }
+
+    private fun resendConfirmation() {
+        coroutineScope.launch {
+            resendConfirmationUseCase()
+                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .collectLatest { result ->
+                    when (result) {
+                        is Result.Success -> snackbarController.sendEvent(
+                            SnackbarEvent("Confirmation email sent")
+                        )
+                        is Result.Error -> showErrorSnackbar(result.exception.message ?: "Unknown error")
+                    }
+                }
+        }
     }
 
 

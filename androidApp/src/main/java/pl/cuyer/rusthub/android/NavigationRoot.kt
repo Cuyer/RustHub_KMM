@@ -247,12 +247,7 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                                     backStack.clear()
                                     backStack.add(dest)
                                 },
-                                onNavigateUp = {
-                                    if (backStack.isNotEmpty()) {
-                                        backStack.clear()
-                                    }
-                                    backStack.add(Onboarding)
-                                }
+                                onNavigateUp = { backStack.removeLastOrNull() }
                             )
                         }
                         entry<ResetPassword> { key ->
