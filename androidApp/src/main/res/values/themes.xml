@@ -1,0 +1,23 @@
+<resources>
+
+    <!-- Allows us to override night specific attributes in the
+         values-night folder. -->
+    <style name="NightAdjusted.Theme.RustHub" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- The final theme we use -->
+    <style name="Theme.RustHub" parent="NightAdjusted.Theme.RustHub">
+        <item name="android:forceDarkAllowed">false</item>
+    </style>
+
+    <style name="NightAdjusted.Theme.Splash" parent="Theme.SplashScreen">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+
+    <style name="Theme.RustHub.Splash" parent="NightAdjusted.Theme.Splash">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/rusthub_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.RustHub</item>
+    </style>
+
+</resources>
