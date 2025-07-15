@@ -32,6 +32,7 @@ import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.InAppUpdateManager
+import pl.cuyer.rusthub.util.StringProvider
 import kotlinx.coroutines.runBlocking
 import pl.cuyer.rusthub.BuildConfig
 
@@ -57,9 +58,10 @@ actual val platformModule: Module = module {
     single { ReviewRequester(androidContext()) }
     single { StoreNavigator(androidContext()) }
     single { GoogleAuthClient(androidContext()) }
+    single { StringProvider(androidContext()) }
     single { PermissionsController(androidContext()) }
     viewModel {
-        StartupViewModel(get(), get(), get(), get())
+        StartupViewModel(get(), get(), get(), get(), get())
     }
     viewModel {
         OnboardingViewModel(
@@ -111,7 +113,8 @@ actual val platformModule: Module = module {
             getUserUseCase = get(),
             permissionsController = get(),
             googleAuthClient = get(),
-            snackbarController = get()
+            snackbarController = get(),
+            stringProvider = get()
         )
     }
     viewModel {

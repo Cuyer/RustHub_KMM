@@ -25,12 +25,15 @@ import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.util.StringProvider
 
 class StartupViewModel(
     private val snackbarController: SnackbarController,
     private val getUserUseCase: GetUserUseCase,
     private val checkEmailConfirmedUseCase: CheckEmailConfirmedUseCase,
     private val setEmailConfirmedUseCase: SetEmailConfirmedUseCase,
+    private val stringProvider: StringProvider,
 ) : BaseViewModel() {
 
     private val userFlow = getUserUseCase()
@@ -56,7 +59,9 @@ class StartupViewModel(
                     updateStartDestination(null)
                 }
             }
-            .catch { showErrorSnackbar("Error occurred during fetching user data.") }
+            .catch {
+                showErrorSnackbar(stringProvider.get(SharedRes.strings.fetch_user_error))
+            }
             .launchIn(coroutineScope)
     }
 
@@ -68,12 +73,14 @@ class StartupViewModel(
             if (user != null && user.provider == AuthProvider.LOCAL) {
                 when (val result = checkEmailConfirmedUseCase().first()) {
                     is Result.Success -> setEmailConfirmedUseCase(result.data)
-                    is Result.Error -> showErrorSnackbar(result.exception.message ?: "Unknown error")
+                    is Result.Error -> showErrorSnackbar(
+                        result.exception.message ?: stringProvider.get(SharedRes.strings.error_unknown)
+                    )
                 }
             }
             updateStartDestination(user)
         } catch (e: Exception) {
-            showErrorSnackbar("Error occurred during fetching user data.")
+            showErrorSnackbar(stringProvider.get(SharedRes.strings.fetch_user_error))
             updateStartDestination(null)
         } finally {
             updateLoadingState(false)

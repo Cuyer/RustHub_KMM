@@ -27,6 +27,7 @@ import pl.cuyer.rusthub.domain.model.User
 import pl.cuyer.rusthub.domain.usecase.GetSettingsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
@@ -40,6 +41,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.anonymousAccountExpiresIn
 import pl.cuyer.rusthub.util.formatExpiration
+import pl.cuyer.rusthub.util.StringProvider
 
 class SettingsViewModel(
     private val getSettingsUseCase: GetSettingsUseCase,
@@ -48,7 +50,8 @@ class SettingsViewModel(
     private val getUserUseCase: GetUserUseCase,
     private val permissionsController: PermissionsController,
     private val googleAuthClient: GoogleAuthClient,
-    private val snackbarController: SnackbarController
+    private val snackbarController: SnackbarController,
+    private val stringProvider: StringProvider
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -153,7 +156,11 @@ class SettingsViewModel(
             logoutUserUseCase()
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catch { e ->
+                    showErrorSnackbar(
+                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
+                    )
+                }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
@@ -163,7 +170,7 @@ class SettingsViewModel(
                             _uiEvent.send(UiEvent.Navigate(Onboarding))
                         }
 
-                        is Result.Error -> showErrorSnackbar("Error occurred when trying to logout")
+                        is Result.Error -> showErrorSnackbar(stringProvider.get(SharedRes.strings.logout_error))
 
                         else -> Unit
                     }
