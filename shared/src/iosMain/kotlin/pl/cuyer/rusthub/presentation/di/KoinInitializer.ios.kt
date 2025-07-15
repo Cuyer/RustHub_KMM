@@ -27,6 +27,7 @@ import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.ShareHandler
 import pl.cuyer.rusthub.util.InAppUpdateManager
+import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.AppCheckTokenProvider
 
 actual val platformModule: Module = module {
@@ -43,8 +44,9 @@ actual val platformModule: Module = module {
     single { ReviewRequester() }
     single { StoreNavigator() }
     single { GoogleAuthClient() }
+    single { StringProvider() }
     single { PermissionsController() }
-    factory { StartupViewModel(get(), get(), get(), get()) }
+    factory { StartupViewModel(get(), get(), get(), get(), get()) }
     factory {
         ConfirmEmailViewModel(
             checkEmailConfirmedUseCase = get(),
@@ -88,7 +90,9 @@ actual val platformModule: Module = module {
             logoutUserUseCase = get(),
             getUserUseCase = get(),
             permissionsController = get(),
-            googleAuthClient = get()
+            googleAuthClient = get(),
+            snackbarController = get(),
+            stringProvider = get()
         )
     }
     factory {

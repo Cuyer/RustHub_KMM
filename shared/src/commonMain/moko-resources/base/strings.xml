@@ -11,4 +11,7 @@
     <string name="wipe_notification_body">%1$s is going to be full wiped at %2$s!</string>
     <string name="map_wipe_notification_title">Map wipe</string>
     <string name="wipe_notification_title">Full wipe</string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="logout_error">Error occurred when trying to logout</string>
+    <string name="fetch_user_error">Error occurred during fetching user data.</string>
 </resources>
