@@ -25,6 +25,8 @@ import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.data.network.auth.model.RefreshRequest
 import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
+import pl.cuyer.rusthub.data.network.AppCheckPlugin
+import pl.cuyer.rusthub.util.AppCheckTokenProvider
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import java.util.Locale
@@ -35,7 +37,8 @@ fun HttpClient.clearBearerToken() {
 
 actual class HttpClientFactory actual constructor(
     private val json: Json,
-    private val authDataSource: AuthDataSource
+    private val authDataSource: AuthDataSource,
+    private val appCheckTokenProvider: AppCheckTokenProvider
 ) {
 
     actual fun create(): HttpClient {
@@ -82,6 +85,10 @@ actual class HttpClientFactory actual constructor(
             install(Logging) {
                 logger = Logger.SIMPLE
                 level = LogLevel.ALL
+            }
+
+            install(AppCheckPlugin) {
+                provider = appCheckTokenProvider
             }
 
             defaultRequest {
