@@ -27,6 +27,7 @@ import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
 import pl.cuyer.rusthub.data.network.AppCheckPlugin
 import pl.cuyer.rusthub.util.AppCheckTokenProvider
+import pl.cuyer.rusthub.util.BuildType
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import platform.Foundation.NSLocale
@@ -80,9 +81,11 @@ actual class HttpClientFactory actual constructor(
                     }
                 }
             }
-            install(Logging) {
-                logger = Logger.DEFAULT
-                level = LogLevel.ALL
+            if (BuildType.isDebug) {
+                install(Logging) {
+                    logger = Logger.DEFAULT
+                    level = LogLevel.ALL
+                }
             }
 
             install(AppCheckPlugin) {
