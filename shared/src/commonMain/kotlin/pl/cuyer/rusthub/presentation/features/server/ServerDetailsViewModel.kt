@@ -144,7 +144,7 @@ class ServerDetailsViewModel(
 
         toggleJob = coroutineScope.launch {
             toggleFavouriteUseCase(id, add)
-                .catch { e -> showErrorSnackbar("Error occurred when trying to ${if (add) "add" else "remove"} server from favourites") }
+                .catch { e -> showErrorSnackbar("Error occurred when trying to ${if (add) "add" else "remove"} server ${if (add) "to" else "from"} favourites") }
                 .collectLatest { result ->
                     ensureActive()
                     when (result) {
@@ -152,14 +152,14 @@ class ServerDetailsViewModel(
                             serverDetailsJob = observeServerDetails(id)
                             snackbarController.sendEvent(
                                 event = SnackbarEvent(
-                                    message = if (add) "Added ${state.value.serverId} to favourites" else "Removed ${state.value.serverId} from favourites",
+                                    message = if (add) "Added ${state.value.serverName} to favourites" else "Removed ${state.value.serverName} from favourites",
                                     duration = Duration.SHORT
                                 )
                             )
                         }
                         is Result.Error -> when (result.exception) {
                             is FavoriteLimitException -> navigateSubscription()
-                            else -> showErrorSnackbar("Error occurred when trying to ${if (add) "add" else "remove"} server from favourites")
+                            else -> showErrorSnackbar("Error occurred when trying to ${if (add) "add" else "remove"} server ${if (add) "to" else "from"} favourites")
                         }
                     }
                 }
@@ -176,7 +176,7 @@ class ServerDetailsViewModel(
         subscriptionJob = coroutineScope.launch {
             toggleSubscriptionUseCase(id, subscribed)
                 .catch { e ->
-                    showErrorSnackbar("Error occurred when trying to ${if (subscribed) "subscribe" else "unsubscribe"} from notifications")
+                    showErrorSnackbar("Error occurred when trying to ${if (subscribed) "subscribe to" else "unsubscribe from"} notifications")
                 }
                 .collectLatest { result ->
                     ensureActive()
@@ -192,18 +192,10 @@ class ServerDetailsViewModel(
                         }
                         is Result.Error -> when (result.exception) {
                             is SubscriptionLimitException -> navigateSubscription()
-                            else -> showErrorSnackbar("Error occurred when trying to ${if (subscribed) "subscribe" else "unsubscribe"} from notifications")
+                            else -> showErrorSnackbar("Error occurred when trying to ${if (subscribed) "subscribe to" else "unsubscribe from"} notifications")
                         }
                     }
                 }
-        }
-    }
-
-    private fun showSubscriptionDialog(show: Boolean) {
-        _state.update {
-            it.copy(
-                showSubscriptionDialog = show
-            )
         }
     }
 
