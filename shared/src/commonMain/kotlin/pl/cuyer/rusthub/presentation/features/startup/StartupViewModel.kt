@@ -4,6 +4,7 @@ import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -39,17 +40,19 @@ class StartupViewModel(
     )
 
     init {
+        observeUser()
         coroutineScope.launch { initialize() }
     }
 
     private fun observeUser() {
         getUserUseCase()
+            .distinctUntilChanged()
             .onEach { user ->
                 if (user == null) {
                     updateStartDestination(null)
                 }
             }
-            .catch { showErrorSnackbar("Error occurred during fetching data about the user.") }
+            .catch { showErrorSnackbar("Error occurred during fetching user data.") }
             .launchIn(coroutineScope)
     }
 
@@ -66,10 +69,10 @@ class StartupViewModel(
             }
             updateStartDestination(user)
         } catch (e: Exception) {
-            showErrorSnackbar("Error occurred during fetching data about the user.")
+            showErrorSnackbar("Error occurred during fetching user data.")
+            updateStartDestination(null)
         } finally {
             updateLoadingState(false)
-            observeUser()
         }
     }
 
