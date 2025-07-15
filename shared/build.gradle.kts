@@ -49,6 +49,7 @@ kotlin {
             implementation(libs.androidx.navigation)
             implementation(libs.androidx.work.runtime)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.certificate.transparency)
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.messaging)
             implementation(libs.firebase.appcheck.playintegrity)
