@@ -38,7 +38,9 @@ class RustHubApplication : Application(), Configuration.Provider {
         FirebaseAppCheck.getInstance().installAppCheckProviderFactory(factory)
         initKoin {
             androidContext(this@RustHubApplication)
-            androidLogger()
+            if (BuildConfig.DEBUG) {
+                androidLogger()
+            }
             modules(appModule, platformModule)
         }
         NotificationPresenter(this).createDefaultChannels()
