@@ -22,8 +22,8 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 
-actual class InAppUpdateManager actual constructor(
-    private val context: Context,
+actual class InAppUpdateManager(
+    context: Context,
     private val snackbarController: SnackbarController
 ) {
     private val appUpdateManager = AppUpdateManagerFactory.create(context)
