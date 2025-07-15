@@ -30,6 +30,7 @@ import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
+import pl.cuyer.rusthub.util.InAppUpdateManager
 import kotlinx.coroutines.runBlocking
 import pl.cuyer.rusthub.BuildConfig
 
@@ -51,6 +52,7 @@ actual val platformModule: Module = module {
     single { SyncScheduler(get()) }
     single { SubscriptionSyncScheduler(get()) }
     single { MessagingTokenScheduler(get()) }
+    single { InAppUpdateManager(androidContext(), get()) }
     single { StoreNavigator(androidContext()) }
     single { GoogleAuthClient(androidContext()) }
     single { PermissionsController(androidContext()) }

@@ -16,10 +16,12 @@ import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.presentation.settings.SettingsController
 import pl.cuyer.rusthub.presentation.ui.Colors
+import pl.cuyer.rusthub.util.InAppUpdateManager
 
 class MainActivity : ComponentActivity() {
     private val startupViewModel: StartupViewModel by viewModel()
     private val settingsController: SettingsController by inject()
+    private val inAppUpdateManager: InAppUpdateManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
@@ -39,6 +41,8 @@ class MainActivity : ComponentActivity() {
         )
 
         super.onCreate(savedInstanceState)
+
+        inAppUpdateManager.check(this)
 
         setContent {
             val state = startupViewModel.state.collectAsStateWithLifecycle()
@@ -71,6 +75,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        inAppUpdateManager.onResume(this)
     }
 }
 
