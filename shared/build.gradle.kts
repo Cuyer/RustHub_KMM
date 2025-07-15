@@ -44,6 +44,9 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.sql.delight.android.driver)
+            implementation(libs.sqlcipher.android)
+            implementation(libs.androidx.datastore.preferences)
+            implementation(libs.androidx.security.crypto)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.compose)
             implementation(libs.androidx.navigation)
