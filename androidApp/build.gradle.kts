@@ -123,5 +123,7 @@ dependencies {
     implementation(libs.google.auth)
     implementation(libs.play.review.ktx)
     implementation(libs.androidx.credentials)
+    implementation(libs.google.play.app.update)
+    implementation(libs.google.play.app.update.ktx)
     debugImplementation(libs.compose.ui.tooling)
 }

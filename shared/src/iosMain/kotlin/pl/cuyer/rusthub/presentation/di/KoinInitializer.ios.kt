@@ -26,6 +26,7 @@ import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.ShareHandler
+import pl.cuyer.rusthub.util.InAppUpdateManager
 import pl.cuyer.rusthub.util.AppCheckTokenProvider
 
 actual val platformModule: Module = module {
@@ -38,6 +39,7 @@ actual val platformModule: Module = module {
     single { SyncScheduler() }
     single { SubscriptionSyncScheduler() }
     single { MessagingTokenScheduler() }
+    single { InAppUpdateManager() }
     single { ReviewRequester() }
     single { StoreNavigator() }
     single { GoogleAuthClient() }

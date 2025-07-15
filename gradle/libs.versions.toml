@@ -41,6 +41,7 @@ certificate-transparency = "2.7.1"
 datastore = "1.1.7"
 security-crypto = "1.1.0-beta01"
 sqlcipher = "4.9.0"
+playcore = "2.1.0"
 play-review = "2.0.1"
 
 [libraries]
@@ -141,6 +142,8 @@ google-identity = { module = "com.google.android.libraries.identity.googleid:goo
 google-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "google-auth" }
 play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "play-review" }
 certificate-transparency = { module = "com.appmattus.certificatetransparency:certificatetransparency-android", version.ref = "certificate-transparency" }
+google-play-app-update = { module = "com.google.android.play:app-update", version.ref = "playcore" }
+google-play-app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.ref = "playcore" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
