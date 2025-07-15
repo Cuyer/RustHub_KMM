@@ -143,7 +143,7 @@ private fun ResetPasswordScreenCompact(
                 focusManager.clearFocus()
                 onAction(ResetPasswordAction.OnSend)
             }
-        ) { Text("Send email") }
+        ) { Text(SharedRes.strings.send_email.getString(LocalContext.current)) }
     }
 }
 
@@ -179,7 +179,7 @@ private fun ResetPasswordScreenExpanded(
                     focusManager.clearFocus()
                     onAction(ResetPasswordAction.OnSend)
                 }
-            ) { Text("Send email") }
+            ) { Text(SharedRes.strings.send_email.getString(LocalContext.current)) }
         }
     }
 }
@@ -190,16 +190,16 @@ private fun ResetPasswordStaticContent(modifier: Modifier = Modifier) {
         Icon(
             modifier = Modifier.size(64.dp),
             painter = painterResource(getImageByFileName("ic_padlock").drawableResId),
-            contentDescription = "Forgot password icon"
+            contentDescription = SharedRes.strings.forgot_password_icon.getString(LocalContext.current)
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
-            text = "Reset password",
+            text = SharedRes.strings.reset_password.getString(LocalContext.current),
             style = MaterialTheme.typography.headlineLarge
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
-            text = "Enter your e-mail to receive password reset link.",
+            text = SharedRes.strings.enter_your_e_mail_to_receive_password_reset_link.getString(LocalContext.current),
             style = MaterialTheme.typography.bodyMedium
         )
     }
@@ -215,8 +215,8 @@ private fun ResetPasswordField(
         requestFocus = true,
         value = email,
         onValueChange = { onAction(ResetPasswordAction.OnEmailChange(it)) },
-        labelText = "E-mail",
-        placeholderText = "Enter your e-mail",
+        labelText = SharedRes.strings.e_mail.getString(LocalContext.current),
+        placeholderText = SharedRes.strings.enter_your_e_mail.getString(LocalContext.current),
         keyboardType = KeyboardType.Email,
         imeAction = if (email.isNotBlank()) ImeAction.Send else ImeAction.Done,
         onSubmit = { onAction(ResetPasswordAction.OnSend) },

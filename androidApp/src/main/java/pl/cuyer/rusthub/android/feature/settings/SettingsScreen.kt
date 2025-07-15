@@ -196,19 +196,20 @@ private fun PreferencesSection(
     language: Language,
     onAction: (SettingsAction) -> Unit
 ) {
+    val context = LocalContext.current
     Text(
-        text = "Preferences",
+        text = SharedRes.strings.preferences.getString(context),
         style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(bottom = spacing.small)
     )
     AppExposedDropdownMenu(
-        label = "Theme",
+        label = SharedRes.strings.theme.getString(context),
         options = Theme.entries.map { it.displayName },
         selectedValue = Theme.entries.indexOf(theme),
         onSelectionChanged = { onAction(SettingsAction.OnThemeChange(Theme.entries[it])) }
     )
     AppExposedDropdownMenu(
-        label = "Language",
+        label = SharedRes.strings.language.getString(context),
         options = Language.entries.map { it.displayName },
         selectedValue = Language.entries.indexOf(language),
         onSelectionChanged = { onAction(SettingsAction.OnLanguageChange(Language.entries[it])) }
@@ -330,8 +331,9 @@ private fun AccountSection(
 
 private fun OtherSection(onAction: (SettingsAction) -> Unit) {
     val storeNavigator = koinInject<StoreNavigator>()
+    val context = LocalContext.current
     Text(
-        text = "Other",
+        text = SharedRes.strings.other.getString(context),
         style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(bottom = spacing.small)
     )
@@ -345,10 +347,10 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Privacy policy")
+            Text(SharedRes.strings.privacy_policy.getString(context))
             Icon(
                 imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                contentDescription = "Privacy policy button"
+                contentDescription = SharedRes.strings.privacy_policy_button.getString(context)
             )
         }
     }
@@ -362,10 +364,10 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Rate application")
+            Text(SharedRes.strings.rate_application.getString(context))
             Icon(
                 imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                contentDescription = "Rate application button"
+                contentDescription = SharedRes.strings.rate_application_button.getString(context)
             )
         }
     }
@@ -373,7 +375,7 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
     Text(
         modifier = Modifier.fillMaxWidth(),
         style = MaterialTheme.typography.bodySmall,
-        text = "App version: ${AppInfo.versionName}",
+        text = "${SharedRes.strings.app_version.getString(context)}: ${AppInfo.versionName}",
         textAlign = TextAlign.Center
     )
 }
@@ -381,8 +383,9 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
 @Composable
 private fun GreetingSection(username: String?) {
     if (username != null) {
+        val context = LocalContext.current
         Text(
-            text = "Hello $username!",
+            text = SharedRes.strings.hello_username.getString(context, username),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.headlineSmall,

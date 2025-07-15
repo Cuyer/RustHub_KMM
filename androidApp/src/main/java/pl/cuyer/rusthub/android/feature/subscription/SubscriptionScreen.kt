@@ -78,39 +78,40 @@ import pl.cuyer.rusthub.common.getImageByFileName
 private data class Benefit(
     @DrawableRes
     val image: Int,
-    val title: String,
-    val desc: String
+    val title: StringResource,
+    val desc: StringResource
 )
 
 private val benefits = listOf(
     Benefit(
         getImageByFileName("il_rusthub_pro").drawableResId,
-        "Full Access",
-        "Get access to all PRO features "
+        SharedRes.strings.full_access,
+        SharedRes.strings.get_access_to_all_pro_features
     ),
     Benefit(
         getImageByFileName("il_unlimited_favourites").drawableResId,
-        "Unlimited favourites",
-        "Save as many servers as you like."
+        SharedRes.strings.unlimited_favourites,
+        SharedRes.strings.save_as_many_servers_as_you_like
     ),
     Benefit(
         getImageByFileName("il_unlimited_notifications").drawableResId,
-        "Unlimited notifications",
-        "Get notified about all your servers."
+        SharedRes.strings.unlimited_notifications,
+        SharedRes.strings.get_notified_about_all_your_servers
     ),
     Benefit(
         getImageByFileName("il_support_development").drawableResId,
-        "Support development",
-        "Help us keep improving Rust Hub."
+        SharedRes.strings.support_development,
+        SharedRes.strings.help_us_keep_improving_rust_hub
     )
 )
 
-private enum class Plan(val label: String, val billed: String) {
+private enum class Plan(val label: StringResource, val billed: StringResource) {
     MONTHLY(
-        "Monthly",
-        billed = "Billed monthly"
+        SharedRes.strings.monthly,
+        billed = SharedRes.strings.billed_monthly,
     ),
-    YEARLY("Yearly", billed = "Billed yearly"), LIFETIME("Lifetime", billed = "Pay once")
+    YEARLY(SharedRes.strings.yearly, billed = SharedRes.strings.billed_yearly),
+    LIFETIME(SharedRes.strings.lifetime, billed = SharedRes.strings.pay_once)
 }
 
 @OptIn(
@@ -255,9 +256,9 @@ private fun SubscriptionMainContent(
                 painter = painterResource(benefit.image),
                 contentDescription = null
             )
-            Text(benefit.title, style = MaterialTheme.typography.titleMedium)
+            Text(benefit.title.getString(context), style = MaterialTheme.typography.titleMedium)
             Text(
-                benefit.desc,
+                benefit.desc.getString(context),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -312,13 +313,13 @@ private fun SubscriptionMainContent(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "PRO",
+                        SharedRes.strings.pro.getString(context),
                         style = MaterialTheme.typography.titleMedium,
                         color = Color(0xFFFDDA0D)
                     )
-                    Text(plan.label, style = MaterialTheme.typography.titleMedium)
+                    Text(plan.label.getString(context), style = MaterialTheme.typography.titleMedium)
                     Text(
-                        plan.billed,
+                        plan.billed.getString(context),
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Thin)
                     )
                 }
@@ -328,7 +329,7 @@ private fun SubscriptionMainContent(
     AppButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = {}) {
-        Text(SharedRes.strings.subscribe_to_plan.getString(context, selectedPlan.label))
+        Text(SharedRes.strings.subscribe_to_plan.getString(context, selectedPlan.label.getString(context)))
     }
     AppTextButton(onClick = onNavigateUp) {
         Text(SharedRes.strings.not_now.getString(context))
@@ -373,13 +374,13 @@ private fun ComparisonSection() {
             ) {
                 Text("", modifier = Modifier.weight(0.5f))
                 Text(
-                    "Free",
+                    SharedRes.strings.free.getString(context),
                     modifier = Modifier.weight(0.25f),
                     style = MaterialTheme.typography.titleSmall,
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    "PRO",
+                    SharedRes.strings.pro.getString(context),
                     modifier = Modifier.weight(0.25f),
                     style = MaterialTheme.typography.titleSmall,
                     color = Color(0xFFFDDA0D),

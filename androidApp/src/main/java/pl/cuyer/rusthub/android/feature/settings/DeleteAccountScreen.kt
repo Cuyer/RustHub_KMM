@@ -232,8 +232,8 @@ private fun DeleteAccountFields(
             AppSecureTextField(
                 value = password,
                 onValueChange = { onAction(DeleteAccountAction.OnPasswordChange(it)) },
-                labelText = "Password",
-                placeholderText = "Enter your password",
+                labelText = SharedRes.strings.password.getString(LocalContext.current),
+                placeholderText = SharedRes.strings.enter_your_password.getString(LocalContext.current),
                 onSubmit = {
                     focusManager.clearFocus()
                     onAction(DeleteAccountAction.OnDelete)

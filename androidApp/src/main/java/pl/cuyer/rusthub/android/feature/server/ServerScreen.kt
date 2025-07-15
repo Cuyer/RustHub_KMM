@@ -208,7 +208,7 @@ fun ServerScreen(
                     when (error) {
                         is NetworkUnavailableException, is TimeoutException,
                         is ServiceUnavailableException -> Unit
-                        else -> onAction(ServerAction.OnError(error.message ?: "Unknown Error"))
+                        else -> onAction(ServerAction.OnError(error.message ?: SharedRes.strings.unknown_error.getString(context)))
                     }
                 }
                 onSuccess { items ->
@@ -300,7 +300,10 @@ fun ServerScreen(
                         }
                     }
                 ) {
-                    Icon(Icons.Default.ArrowUpward, contentDescription = "Scroll to top")
+                    Icon(
+                        Icons.Default.ArrowUpward,
+                        contentDescription = SharedRes.strings.scroll_to_top.getString(context)
+                    )
                 }
             }
         }

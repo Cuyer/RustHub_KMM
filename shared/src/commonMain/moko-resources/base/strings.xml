@@ -142,6 +142,8 @@
     
     <string name="confirmed">Confirmed</string>
 
+    <string name="confirmation_sent_message">We have sent a confirmation link to %s. After confirming, press the button below.</string>
+
 
     <string name="continue_further">Continue</string>
     
@@ -667,6 +669,8 @@
     
     
     <string name="your_gateway_to_the_rust_server_world">Your gateway to the Rust server world</string>
+
+    <string name="hello_username">Hello %s!</string>
     
 
 </resources>

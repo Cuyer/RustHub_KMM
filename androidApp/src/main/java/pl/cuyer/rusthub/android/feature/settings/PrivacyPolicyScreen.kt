@@ -14,11 +14,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import pl.cuyer.rusthub.SharedRes
 import androidx.compose.ui.viewinterop.AndroidView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrivacyPolicyScreen(url: String, onNavigateUp: () -> Unit, title: String = "Privacy policy") {
+fun PrivacyPolicyScreen(url: String, onNavigateUp: () -> Unit, title: String = SharedRes.strings.privacy_policy.getString(LocalContext.current)) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -27,7 +29,7 @@ fun PrivacyPolicyScreen(url: String, onNavigateUp: () -> Unit, title: String = "
                     IconButton(onClick = onNavigateUp) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Navigate up"
+                            contentDescription = SharedRes.strings.navigate_up.getString(LocalContext.current)
                         )
                     }
                 }
