@@ -10,7 +10,6 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onStart
 import kotlinx.io.IOException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -60,13 +59,9 @@ abstract class BaseApiResponse(
                 }
                 emit(Result.Error(exception))
             }
-        }.onStart {
-            emit(loading())
         }.catch { e ->
             emit(error(parseConnectivityException(e)))
         }
-
-    fun loading(): Result.Loading = Result.Loading
     fun <T> success(success: T): Result.Success<T> = Result.Success(success)
     fun <T> error(exception: Throwable): Result<T> =
         Result.Error(exception = exception)

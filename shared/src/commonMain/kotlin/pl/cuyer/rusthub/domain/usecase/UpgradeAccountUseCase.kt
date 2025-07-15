@@ -38,8 +38,6 @@ class UpgradeAccountUseCase(
                 }
 
                 is Result.Error -> send(Result.Error(result.exception))
-
-                is Result.Loading -> send(Result.Loading)
             }
         }
     }

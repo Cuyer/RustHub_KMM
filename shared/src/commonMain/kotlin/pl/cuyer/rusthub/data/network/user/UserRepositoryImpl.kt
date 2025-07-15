@@ -26,7 +26,6 @@ class UserRepositoryImpl(
             when (result) {
                 is Result.Success -> Result.Success(result.data.emailConfirmed)
                 is Result.Error -> result
-                is Result.Loading -> Result.Loading
             }
         }
     }
@@ -38,7 +37,6 @@ class UserRepositoryImpl(
             when (result) {
                 is Result.Success -> Result.Success(Unit)
                 is Result.Error -> result
-                Result.Loading -> Result.Loading
             }
         }
     }
