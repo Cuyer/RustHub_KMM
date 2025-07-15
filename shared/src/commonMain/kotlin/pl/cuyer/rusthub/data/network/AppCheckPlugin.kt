@@ -1,7 +1,6 @@
 package pl.cuyer.rusthub.data.network
 
 import io.ktor.client.plugins.api.createClientPlugin
-import io.ktor.client.plugins.api.onRequest
 import pl.cuyer.rusthub.util.AppCheckTokenProvider
 
 const val APP_CHECK_HEADER = "X-Firebase-AppCheck"
