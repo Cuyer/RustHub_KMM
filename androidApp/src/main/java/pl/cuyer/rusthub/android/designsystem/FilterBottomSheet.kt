@@ -97,7 +97,7 @@ fun FilterBottomSheet(
         }
     ) {
         Text(
-            text = "Filter Options",
+            text = SharedRes.strings.filter_options.getString(context),
             style = MaterialTheme.typography.titleLargeEmphasized,
             modifier = Modifier
                 .padding(start = spacing.medium, end = spacing.medium, bottom = spacing.medium)
@@ -249,7 +249,7 @@ fun FilterBottomSheetContent(
                 ),
                 placeholder = {
                     Text(
-                        text = "Enter a number"
+                        text = SharedRes.strings.enter_a_number.getString(context)
                     )
                 }
             )

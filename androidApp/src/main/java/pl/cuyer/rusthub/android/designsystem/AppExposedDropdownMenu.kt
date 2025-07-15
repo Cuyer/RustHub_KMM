@@ -22,9 +22,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
+import pl.cuyer.rusthub.SharedRes
 
 @OptIn(ExperimentalMaterial3Api::class)
 
@@ -38,6 +40,7 @@ fun AppExposedDropdownMenu(
     var expanded by remember { mutableStateOf(false) }
     val textFieldState = rememberTextFieldState(options.getOrElse(selectedValue ?: -1) { "" })
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
 
     LaunchedEffect(selectedValue) {
         textFieldState.setTextAndPlaceCursorAtEnd(options.getOrElse(selectedValue ?: -1) { "" })
@@ -79,7 +82,7 @@ fun AppExposedDropdownMenu(
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                     trailingIcon = {
                         Flag.fromDisplayName(option)?.let { flag ->
-                            if (label != "Region") {
+                            if (label != SharedRes.strings.region.getString(context)) {
                                 Image(
                                     painter = painterResource(flag.toDrawable()),
                                     contentDescription = null,

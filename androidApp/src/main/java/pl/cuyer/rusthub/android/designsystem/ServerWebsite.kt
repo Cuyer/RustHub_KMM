@@ -8,16 +8,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
 import pl.cuyer.rusthub.android.theme.Spacing
+import pl.cuyer.rusthub.SharedRes
 
 @Composable
 fun ServerWebsite(
     website: String,
     modifier: Modifier = Modifier,
     spacing: Spacing,
-    label: String = "Website",
+    label: String = SharedRes.strings.website.getString(LocalContext.current),
     alias: String? = null,
     labelColor: Color = MaterialTheme.colorScheme.onSurface,
     urlColor: Color = MaterialTheme.colorScheme.primary
