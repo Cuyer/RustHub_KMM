@@ -326,15 +326,21 @@ private fun SubscriptionMainContent(
     AppButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = {}) { Text("Subscribe to ${selectedPlan.label} plan") }
-    AppTextButton(onClick = onNavigateUp) { Text("Not now") }
+    AppTextButton(onClick = onNavigateUp) {
+        Text(SharedRes.strings.not_now.getString(context))
+    }
     Text(
         textAlign = TextAlign.Center,
-        text = "Cancel your subscription at any time.\n\nSubscriptions will automatically renew unless canceled within 24-hours before the end of the current period. You can cancel anytime through your Google Play Store settings.\nRust Hub Pro Lifetime is a one time in-app purchase",
+        text = SharedRes.strings.subscription_disclaimer.getString(context),
         style = MaterialTheme.typography.bodySmall
     )
     Row(horizontalArrangement = Arrangement.spacedBy(spacing.medium)) {
-        AppTextButton(onClick = onPrivacyPolicy) { Text("Privacy policy") }
-        AppTextButton(onClick = onTerms) { Text("Terms & conditions") }
+        AppTextButton(onClick = onPrivacyPolicy) {
+            Text(SharedRes.strings.privacy_policy.getString(context))
+        }
+        AppTextButton(onClick = onTerms) {
+            Text(SharedRes.strings.terms_conditions.getString(context))
+        }
     }
 }
 
@@ -411,20 +417,24 @@ private fun ComparisonSection() {
 @OptIn(ExperimentalAnimationApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 private fun FaqSection() {
+    val context = LocalContext.current
     val faqs = listOf(
-        "What does Rust Hub Pro include?" to "Rust Hub Pro includes unlimited favourite servers and unlimited notifications.",
-        "Is Rust Hub Pro a one-time payment or will it renew automatically?" to "The Rust Hub Pro monthly and yearly plans are subscriptions that renew automatically at the end of your subscription term to avoid any interruption to your service. If you cancel your subscription, you will continue to have access to Rust Hub Pro until your subscription expires. The Rust Hub Pro Lifetime plan is a one time purchase.",
-        "Can I cancel my subscription anytime?" to "Yes, you can cancel your Rust Hub Pro monthly or yearly subscription whenever you want! You will continue to have access to Rust Hub Pro until your subscription expires.",
-        "Can I switch subscription plans?" to "Yes, absolutely. You are able to change subscription plans at any time through the Subscription tab in Rust Hub settings.",
-        "What happens if i switch devices or platforms?" to "You can sign into your account across platforms with the same user name and password. The subscription is connected to your account, not the platform you are using. You can be signed into two different devices simultaneously and even two different platforms at the same time.",
-        "How does Rust Hub Pro Lifetime plan work?" to "The Rust Hub Pro Lifetime plan  is a one time purchase. You will have access to Rust Hub Pro forever.\n\nIf you are already subscribed to a monthly or yearly plan and want to switch to a lifetime plan, make sure to cancel your monthly or yearly subscription after you purchase the lifetime plan to avoid any recurring charges."
+        SharedRes.strings.faq_include_question.getString(context) to SharedRes.strings.faq_include_answer.getString(context),
+        SharedRes.strings.faq_renew_question.getString(context) to SharedRes.strings.faq_renew_answer.getString(context),
+        SharedRes.strings.faq_cancel_question.getString(context) to SharedRes.strings.faq_cancel_answer.getString(context),
+        SharedRes.strings.faq_switch_plan_question.getString(context) to SharedRes.strings.faq_switch_plan_answer.getString(context),
+        SharedRes.strings.faq_devices_question.getString(context) to SharedRes.strings.faq_devices_answer.getString(context),
+        SharedRes.strings.faq_lifetime_question.getString(context) to SharedRes.strings.faq_lifetime_answer.getString(context)
     )
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
-        Text("Any questions?", style = MaterialTheme.typography.titleMedium)
+        Text(
+            SharedRes.strings.any_questions.getString(context),
+            style = MaterialTheme.typography.titleMedium
+        )
         Spacer(modifier = Modifier.height(spacing.medium))
         faqs.forEach { (q, a) ->
             var expanded by remember { mutableStateOf(false) }
