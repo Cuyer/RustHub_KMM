@@ -6,7 +6,7 @@ import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import database.FiltersEntity
 import database.ServerEntity
-import net.zetetic.sqlcipher.SupportFactory
+import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
 
 actual class DatabaseDriverFactory(
@@ -14,7 +14,7 @@ actual class DatabaseDriverFactory(
     private val passphrase: String
 ) {
     actual fun create(): RustHubDatabase {
-        val factory = SupportFactory(Base64.decode(passphrase, Base64.NO_WRAP))
+        val factory = SupportOpenHelperFactory(Base64.decode(passphrase, Base64.NO_WRAP))
         val driver = AndroidSqliteDriver(
             schema = RustHubDatabase.Schema,
             context = context,
