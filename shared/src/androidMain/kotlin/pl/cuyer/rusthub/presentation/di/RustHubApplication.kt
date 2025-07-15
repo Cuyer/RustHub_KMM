@@ -18,6 +18,13 @@ import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import pl.cuyer.rusthub.BuildConfig
+import android.os.Build
+import com.appmattus.certificatetransparency.installCertificateTransparencyProvider
+import com.appmattus.certificatetransparency.BasicAndroidCTLogger
+
+private fun needCtProvider(): Boolean {
+    return Build.VERSION.SDK_INT < 36
+}
 
 class RustHubApplication : Application(), Configuration.Provider {
 
@@ -30,6 +37,11 @@ class RustHubApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+        if (needCtProvider()) {
+            installCertificateTransparencyProvider {
+                logger = BasicAndroidCTLogger(BuildConfig.DEBUG)
+            }
+        }
         val factory = if (BuildConfig.DEBUG) {
             DebugAppCheckProviderFactory.getInstance()
         } else {
