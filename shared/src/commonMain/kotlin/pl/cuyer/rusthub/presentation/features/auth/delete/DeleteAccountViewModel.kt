@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -59,6 +60,7 @@ class DeleteAccountViewModel(
 
     private fun observeUser() {
         getUserUseCase()
+            .distinctUntilChanged()
             .onEach { user -> _state.update { it.copy(provider = user?.provider) } }
             .launchIn(coroutineScope)
     }
