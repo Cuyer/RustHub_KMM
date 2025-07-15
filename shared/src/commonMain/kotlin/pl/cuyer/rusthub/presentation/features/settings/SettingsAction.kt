@@ -15,5 +15,4 @@ sealed interface SettingsAction {
     data object OnPrivacyPolicy : SettingsAction
     data object OnDeleteAccount : SettingsAction
     data object OnUpgradeAccount : SettingsAction
-    data class OnBiometricsChange(val enabled: Boolean) : SettingsAction
 }

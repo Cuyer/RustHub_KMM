@@ -106,7 +106,6 @@ fun SettingsScreen(
                 SettingsScreenExpanded(
                     theme = state.value.theme,
                     language = state.value.language,
-                    biometricsEnabled = state.value.biometricsEnabled,
                     username = state.value.username,
                     provider = state.value.provider,
                     subscribed = state.value.subscribed,
@@ -119,7 +118,6 @@ fun SettingsScreen(
                         .verticalScroll(rememberScrollState()),
                     theme = state.value.theme,
                     language = state.value.language,
-                    biometricsEnabled = state.value.biometricsEnabled,
                     username = state.value.username,
                     provider = state.value.provider,
                     subscribed = state.value.subscribed,
@@ -137,7 +135,6 @@ private fun SettingsScreenCompact(
     username: String?,
     theme: Theme,
     language: Language,
-    biometricsEnabled: Boolean,
     provider: AuthProvider?,
     subscribed: Boolean,
     expiration: String?,
@@ -148,7 +145,7 @@ private fun SettingsScreenCompact(
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
         GreetingSection(username)
-        PreferencesSection(theme, language, biometricsEnabled, onAction)
+        PreferencesSection(theme, language, onAction)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
         AccountSection(provider, subscribed, expiration, onAction)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
@@ -162,7 +159,6 @@ private fun SettingsScreenExpanded(
     username: String?,
     theme: Theme,
     language: Language,
-    biometricsEnabled: Boolean,
     provider: AuthProvider?,
     subscribed: Boolean,
     expiration: String?,
@@ -179,7 +175,7 @@ private fun SettingsScreenExpanded(
             verticalArrangement = Arrangement.spacedBy(spacing.medium)
         ) {
             GreetingSection(username)
-            PreferencesSection(theme, language, biometricsEnabled, onAction)
+            PreferencesSection(theme, language, onAction)
             HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
             AccountSection(provider, subscribed, expiration, onAction)
         }
@@ -198,7 +194,6 @@ private fun SettingsScreenExpanded(
 private fun PreferencesSection(
     theme: Theme,
     language: Language,
-    biometricsEnabled: Boolean,
     onAction: (SettingsAction) -> Unit
 ) {
     Text(
@@ -217,11 +212,6 @@ private fun PreferencesSection(
         options = Language.entries.map { it.displayName },
         selectedValue = Language.entries.indexOf(language),
         onSelectionChanged = { onAction(SettingsAction.OnLanguageChange(Language.entries[it])) }
-    )
-    SwitchWithText(
-        text = "Use biometrics",
-        isChecked = biometricsEnabled,
-        onCheckedChange = { onAction(SettingsAction.OnBiometricsChange(it)) }
     )
     AppTextButton(
         onClick = { onAction(SettingsAction.OnNotificationsClick) }

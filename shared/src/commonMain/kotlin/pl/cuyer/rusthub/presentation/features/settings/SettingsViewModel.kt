@@ -80,7 +80,6 @@ class SettingsViewModel(
             SettingsAction.OnPrivacyPolicy -> openPrivacyPolicy()
             SettingsAction.OnDeleteAccount -> navigateDeleteAccount()
             SettingsAction.OnUpgradeAccount -> navigateUpgrade()
-            is SettingsAction.OnBiometricsChange -> updateBiometrics(action.enabled)
         }
     }
 
@@ -91,11 +90,6 @@ class SettingsViewModel(
 
     private fun updateLanguage(language: Language) {
         _state.update { it.copy(language = language) }
-        save()
-    }
-
-    private fun updateBiometrics(enabled: Boolean) {
-        _state.update { it.copy(biometricsEnabled = enabled) }
         save()
     }
 
@@ -144,23 +138,13 @@ class SettingsViewModel(
     }
 
     private fun save() {
-        val settings = Settings(
-            state.value.theme,
-            state.value.language,
-            state.value.biometricsEnabled
-        )
+        val settings = Settings(state.value.theme, state.value.language)
         coroutineScope.launch { saveSettingsUseCase(settings) }
     }
 
     private fun updateFromSettings(settings: Settings) {
         Napier.d("Update from settings $settings")
-        _state.update {
-            it.copy(
-                theme = settings.theme,
-                language = settings.language,
-                biometricsEnabled = settings.biometricsEnabled
-            )
-        }
+        _state.update { it.copy(theme = settings.theme, language = settings.language) }
     }
 
     private fun logout() {

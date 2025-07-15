@@ -31,8 +31,7 @@ class SettingsDataSourceImpl(
             queries.upsertSettings(
                 id = DEFAULT_KEY,
                 theme = settings.theme.toEntity(),
-                language = settings.language.toEntity(),
-                biometrics_enabled = if (settings.biometricsEnabled) 1L else 0L
+                language = settings.language.toEntity()
             )
         }
     }

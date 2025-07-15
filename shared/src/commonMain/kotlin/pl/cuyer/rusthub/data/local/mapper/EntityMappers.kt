@@ -202,6 +202,5 @@ fun Language?.toEntity(): LanguageEntity? = this?.let { LanguageEntity.valueOf(i
 
 fun SettingsEntity.toSettings(): Settings = Settings(
     theme = theme.toDomain() ?: Theme.SYSTEM,
-    language = language.toDomain() ?: Language.ENGLISH,
-    biometricsEnabled = biometrics_enabled == 1L
+    language = language.toDomain() ?: Language.ENGLISH
 )

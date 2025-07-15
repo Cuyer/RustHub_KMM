@@ -19,7 +19,6 @@ import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
 import pl.cuyer.rusthub.domain.usecase.SetEmailConfirmedUseCase
 import pl.cuyer.rusthub.util.GoogleAuthClient
-import pl.cuyer.rusthub.util.BiometricAuthenticator
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
 import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.ReviewRequester
@@ -44,7 +43,6 @@ actual val platformModule: Module = module {
     single { ReviewRequester() }
     single { StoreNavigator() }
     single { GoogleAuthClient() }
-    single { BiometricAuthenticator() }
     single { PermissionsController() }
     factory { StartupViewModel(get(), get(), get(), get()) }
     factory {
