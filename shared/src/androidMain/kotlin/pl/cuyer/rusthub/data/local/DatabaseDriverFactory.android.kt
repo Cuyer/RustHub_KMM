@@ -14,6 +14,7 @@ actual class DatabaseDriverFactory(
     private val passphrase: String
 ) {
     actual fun create(): RustHubDatabase {
+        System.loadLibrary("sqlcipher")
         val factory = SupportOpenHelperFactory(Base64.decode(passphrase, Base64.NO_WRAP))
         val driver = AndroidSqliteDriver(
             schema = RustHubDatabase.Schema,
