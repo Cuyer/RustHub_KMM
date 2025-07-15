@@ -7,8 +7,8 @@ import java.util.Locale
 
 actual fun updateAppLanguage(language: Language) {
     val locale = when (language) {
-        Language.ENGLISH -> Locale("en")
-        Language.POLISH -> Locale("pl")
+        Language.ENGLISH -> Locale.forLanguageTag("en")
+        Language.POLISH -> Locale.forLanguageTag("pl")
     }
     Locale.setDefault(locale)
     val locales = LocaleListCompat.forLanguageTags(locale.toLanguageTag())
