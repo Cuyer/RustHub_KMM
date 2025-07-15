@@ -31,12 +31,17 @@ import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
 import kotlinx.coroutines.runBlocking
+import pl.cuyer.rusthub.BuildConfig
 
 actual val platformModule: Module = module {
     single { DatabasePassphraseProvider(androidContext()) }
     single<RustHubDatabase> {
-        val passphrase = runBlocking { get<DatabasePassphraseProvider>().getPassphrase() }
-        DatabaseDriverFactory(androidContext(), passphrase).create()
+        if (BuildConfig.USE_ENCRYPTED_DB) {
+            val passphrase = runBlocking { get<DatabasePassphraseProvider>().getPassphrase() }
+            DatabaseDriverFactory(androidContext(), passphrase).create()
+        } else {
+            DatabaseDriverFactory(androidContext()).create()
+        }
     }
     single { AppCheckTokenProvider() }
     single { HttpClientFactory(get(), get(), get()).create() }
@@ -165,3 +170,4 @@ actual val platformModule: Module = module {
         )
     }
 }
+
