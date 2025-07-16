@@ -3,7 +3,6 @@ package pl.cuyer.rusthub.presentation.model
 import pl.cuyer.rusthub.domain.model.Order
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.model.ServerFilter
-import pl.cuyer.rusthub.domain.model.displayName
 
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.util.StringProvider
@@ -20,7 +19,7 @@ fun ServerQuery?.toUi(
     ranking: Int
 ): FilterUi {
 
-    val order = Order.entries.map { it.displayName }
+    val order = Order.entries.map { it.displayName(stringProvider) }
 
     return FilterUi(
         lists = listOf(
@@ -52,7 +51,7 @@ fun ServerQuery?.toUi(
             Triple(
                 stringProvider.get(SharedRes.strings.order),
                 order,
-                order.indexOf(this?.order?.displayName)
+                order.indexOf(this?.order?.displayName(stringProvider))
             )
         ),
         checkboxes = listOf(
