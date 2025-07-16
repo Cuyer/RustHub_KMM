@@ -43,6 +43,8 @@ import androidx.compose.material3.SearchBarState
 import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopSearchBar
 import androidx.compose.material3.rememberSearchBarState
@@ -56,6 +58,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.RectangleShape
 import pl.cuyer.rusthub.SharedRes
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
@@ -209,21 +212,25 @@ fun RustSearchBarTopAppBar(
                     onDismiss = { if (it == SwipeToDismissBoxValue.EndToStart) onDelete(item.query) },
                     enableDismissFromStartToEnd = false
                 ) {
-                    Text(
-                        text = item.query,
+                    ElevatedCard(
+                        onClick = {
+                            textFieldState.setTextAndPlaceCursorAtEnd(item.query)
+                            coroutineScope.launch {
+                                searchBarState.animateToCollapsed()
+                                onSearchTriggered()
+                            }
+                        },
                         modifier = Modifier
                             .animateItem()
-                            .fillMaxWidth()
-                            .clickable {
-                                textFieldState.setTextAndPlaceCursorAtEnd(item.query)
-                                coroutineScope.launch {
-                                    searchBarState.animateToCollapsed()
-                                    onSearchTriggered()
-                                }
-                            }
-                            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                            .padding(spacing.medium)
-                    )
+                            .fillMaxWidth(),
+                        shape = RectangleShape,
+                        colors = CardDefaults.elevatedCardColors()
+                    ) {
+                        Text(
+                            text = item.query,
+                            modifier = Modifier.padding(spacing.medium)
+                        )
+                    }
                 }
             }
             item {
