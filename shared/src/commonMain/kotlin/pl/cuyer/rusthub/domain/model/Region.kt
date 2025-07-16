@@ -20,11 +20,11 @@ enum class Region {
 
 fun Region.displayName(stringProvider: StringProvider): String =
     when (this) {
-        ASIA -> stringProvider.get(SharedRes.strings.asia)
-        EUROPE -> stringProvider.get(SharedRes.strings.europe)
-        AMERICA -> stringProvider.get(SharedRes.strings.america)
-        AFRICA -> stringProvider.get(SharedRes.strings.africa)
-        SOUTH_AMERICA -> stringProvider.get(SharedRes.strings.south_america)
-        OCEANIA -> stringProvider.get(SharedRes.strings.oceania)
-        AUSTRALIA -> stringProvider.get(SharedRes.strings.australia)
+        Region.ASIA -> stringProvider.get(SharedRes.strings.asia)
+        Region.EUROPE -> stringProvider.get(SharedRes.strings.europe)
+        Region.AMERICA -> stringProvider.get(SharedRes.strings.america)
+        Region.AFRICA -> stringProvider.get(SharedRes.strings.africa)
+        Region.SOUTH_AMERICA -> stringProvider.get(SharedRes.strings.south_america)
+        Region.OCEANIA -> stringProvider.get(SharedRes.strings.oceania)
+        Region.AUSTRALIA -> stringProvider.get(SharedRes.strings.australia)
     }
