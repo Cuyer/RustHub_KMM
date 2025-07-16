@@ -27,7 +27,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -137,17 +136,9 @@ private fun ConfirmEmailScreenCompact(state: ConfirmEmailState, onAction: (Confi
                 .fillMaxWidth()
         ) { Text("Confirmed") }
         AppTextButton(
-            onClick = { onAction(ConfirmEmailAction.OnResend) },
-            enabled = !state.resendLoading
+            onClick = { onAction(ConfirmEmailAction.OnResend) }
         ) {
-            if (state.resendLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(16.dp),
-                    strokeWidth = 2.dp
-                )
-            } else {
-                Text("Resend email")
-            }
+            Text("Resend email")
         }
     }
 }
@@ -176,18 +167,8 @@ private fun ConfirmEmailScreenExpanded(state: ConfirmEmailState, onAction: (Conf
                     .imePadding()
                     .fillMaxWidth()
             ) { Text("Confirmed") }
-            AppTextButton(
-                onClick = { onAction(ConfirmEmailAction.OnResend) },
-                enabled = !state.resendLoading
-            ) {
-                if (state.resendLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(16.dp),
-                        strokeWidth = 2.dp
-                    )
-                } else {
-                    Text("Resend email")
-                }
+            AppTextButton(onClick = { onAction(ConfirmEmailAction.OnResend) }) {
+                Text("Resend email")
             }
         }
     }
