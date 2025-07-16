@@ -28,6 +28,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -60,7 +62,7 @@ import pl.cuyer.rusthub.util.StringProvider
 @OptIn(
     ExperimentalMaterial3WindowSizeClassApi::class,
     ExperimentalMaterial3Api::class,
-    ExperimentalSharedTransitionApi::class,
+    ExperimentalSharedTransitionApi::class, ExperimentalMaterial3ExpressiveApi::class,
 )
 @Composable
 fun ConfirmEmailScreen(
@@ -112,8 +114,12 @@ fun ConfirmEmailScreen(
                     .fillMaxSize()
                     .padding(innerPadding)
                     .animateBounds(this)
-                    .clickable(interactionSource, null) { focusManager.clearFocus() }
+                    .clickable(interactionSource, null) { focusManager.clearFocus() },
+                contentAlignment = Alignment.Center
             ) {
+                if (state.value.resendLoading) {
+                    LoadingIndicator()
+                }
                 if (isTabletMode) {
                     ConfirmEmailScreenExpanded(state.value, onAction)
                 } else {
@@ -124,8 +130,12 @@ fun ConfirmEmailScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun ConfirmEmailScreenCompact(state: ConfirmEmailState, onAction: (ConfirmEmailAction) -> Unit) {
+private fun ConfirmEmailScreenCompact(
+    state: ConfirmEmailState,
+    onAction: (ConfirmEmailAction) -> Unit
+) {
     val context = LocalContext.current
     Column(
         modifier = Modifier
@@ -145,22 +155,18 @@ private fun ConfirmEmailScreenCompact(state: ConfirmEmailState, onAction: (Confi
         ) { Text(SharedRes.strings.confirmed.getString(context)) }
         AppTextButton(
             onClick = { onAction(ConfirmEmailAction.OnResend) },
-            enabled = !state.resendLoading
         ) {
-            if (state.resendLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(16.dp),
-                    strokeWidth = 2.dp
-                )
-            } else {
-           Text(SharedRes.strings.resend_email.getString(context))
-            }
+            Text(SharedRes.strings.resend_email.getString(context))
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun ConfirmEmailScreenExpanded(state: ConfirmEmailState, onAction: (ConfirmEmailAction) -> Unit) {
+private fun ConfirmEmailScreenExpanded(
+    state: ConfirmEmailState,
+    onAction: (ConfirmEmailAction) -> Unit
+) {
     val context = LocalContext.current
     Row(
         modifier = Modifier
@@ -185,18 +191,10 @@ private fun ConfirmEmailScreenExpanded(state: ConfirmEmailState, onAction: (Conf
                     .fillMaxWidth()
             ) { Text(SharedRes.strings.confirmed.getString(context)) }
             AppTextButton(
-                onClick = { onAction(ConfirmEmailAction.OnResend) },
-                enabled = !state.resendLoading
+                onClick = { onAction(ConfirmEmailAction.OnResend) }
             ) {
-                if (state.resendLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(16.dp),
-                        strokeWidth = 2.dp
-                    )
-                } else {
-                    Text(SharedRes.strings.resend_email.getString(context))
-                }
-            )
+                Text(SharedRes.strings.resend_email.getString(context))
+            }
         }
     }
 }
