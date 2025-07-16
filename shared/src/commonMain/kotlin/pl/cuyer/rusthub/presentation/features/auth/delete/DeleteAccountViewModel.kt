@@ -25,6 +25,8 @@ import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 
 class DeleteAccountViewModel(
@@ -32,6 +34,7 @@ class DeleteAccountViewModel(
     private val snackbarController: SnackbarController,
     private val passwordValidator: PasswordValidator,
     private val getUserUseCase: GetUserUseCase,
+    private val stringProvider: StringProvider,
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -72,16 +75,25 @@ class DeleteAccountViewModel(
                 deleteAccountUseCase("")
                     .onStart { updateLoading(true) }
                     .onCompletion { updateLoading(false) }
-                    .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                    .catch { e ->
+                        showErrorSnackbar(
+                            e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
+                        )
+                    }
                     .collectLatest { result ->
                         when (result) {
                             is Result.Success -> {
                                 snackbarController.sendEvent(
-                                    SnackbarEvent(message = "Account deleted successfully")
+                                    SnackbarEvent(
+                                        message = stringProvider.get(SharedRes.strings.account_deleted_successfully)
+                                    )
                                 )
                                 _uiEvent.send(UiEvent.Navigate(Onboarding))
                             }
-                            is Result.Error -> showErrorSnackbar(result.exception.message ?: "Unable to delete account")
+                            is Result.Error -> showErrorSnackbar(
+                                result.exception.message
+                                    ?: stringProvider.get(SharedRes.strings.unable_to_delete_account)
+                            )
                             else -> Unit
                         }
                     }
@@ -97,23 +109,34 @@ class DeleteAccountViewModel(
             }
             if (!passwordResult.isValid) {
                 snackbarController.sendEvent(
-                    SnackbarEvent(message = "Please correct the errors above and try again.")
+                    SnackbarEvent(
+                        message = stringProvider.get(SharedRes.strings.correct_errors_try_again)
+                    )
                 )
                 return@launch
             }
             deleteAccountUseCase(password)
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catch { e ->
+                    showErrorSnackbar(
+                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
+                    )
+                }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
                             snackbarController.sendEvent(
-                                SnackbarEvent(message = "Account deleted successfully")
+                                SnackbarEvent(
+                                    message = stringProvider.get(SharedRes.strings.account_deleted_successfully)
+                                )
                             )
                             _uiEvent.send(UiEvent.Navigate(Onboarding))
                         }
-                        is Result.Error -> showErrorSnackbar(result.exception.message ?: "Unable to delete account")
+                        is Result.Error -> showErrorSnackbar(
+                            result.exception.message
+                                ?: stringProvider.get(SharedRes.strings.unable_to_delete_account)
+                        )
                         else -> Unit
                     }
                 }

@@ -27,6 +27,8 @@ import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.util.StringProvider
 
 class ConfirmEmailViewModel(
     private val checkEmailConfirmedUseCase: CheckEmailConfirmedUseCase,
@@ -34,6 +36,7 @@ class ConfirmEmailViewModel(
     private val resendConfirmationUseCase: ResendConfirmationUseCase,
     private val snackbarController: SnackbarController,
     private val setEmailConfirmedUseCase: SetEmailConfirmedUseCase,
+    private val stringProvider: StringProvider,
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -74,7 +77,11 @@ class ConfirmEmailViewModel(
             checkEmailConfirmedUseCase()
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catch { e ->
+                    showErrorSnackbar(
+                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
+                    )
+                }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
@@ -82,10 +89,15 @@ class ConfirmEmailViewModel(
                                 setEmailConfirmedUseCase(true)
                                 _uiEvent.send(UiEvent.Navigate(ServerList))
                             } else {
-                                showErrorSnackbar("E-mail not confirmed yet")
+                                showErrorSnackbar(
+                                    stringProvider.get(SharedRes.strings.email_not_confirmed_yet)
+                                )
                             }
                         }
-                        is Result.Error -> showErrorSnackbar(result.exception.message ?: "Unable to verify email")
+                        is Result.Error -> showErrorSnackbar(
+                            result.exception.message
+                                ?: stringProvider.get(SharedRes.strings.unable_to_verify_email)
+                        )
                         else -> Unit
                     }
                 }
@@ -102,7 +114,9 @@ class ConfirmEmailViewModel(
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> snackbarController.sendEvent(
-                            SnackbarEvent("Confirmation email sent")
+                            SnackbarEvent(
+                                stringProvider.get(SharedRes.strings.confirmation_email_sent)
+                            )
                         )
                         is Result.Error -> showErrorSnackbar(handleError(result.exception))
                     }
@@ -113,8 +127,8 @@ class ConfirmEmailViewModel(
 
     private fun handleError(throwable: Throwable): String {
         return when (throwable) {
-            is TooManyRequestsException -> "Please wait before resending"
-            else -> throwable.message ?: "Unknown error"
+            is TooManyRequestsException -> stringProvider.get(SharedRes.strings.wait_before_resending)
+            else -> throwable.message ?: stringProvider.get(SharedRes.strings.error_unknown)
         }
     }
 

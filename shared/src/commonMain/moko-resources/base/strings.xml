@@ -708,6 +708,40 @@
     <string name="username_too_short">Username too short</string>
 
     <string name="correct_errors_try_again">Please correct the errors above and try again.</string>
+
+    <string name="account_deleted_successfully">Account deleted successfully</string>
+
+    <string name="unable_to_delete_account">Unable to delete account</string>
+
+    <string name="reset_email_sent">Reset email sent</string>
+
+    <string name="unable_to_send_reset_email">Unable to send reset email</string>
+
+    <string name="password_changed_successfully">Password changed successfully</string>
+
+    <string name="unable_to_change_password">Unable to change password</string>
+
+    <string name="account_upgraded_successfully">Account has been upgraded successfully!</string>
+
+    <string name="unable_to_upgrade_account">Unable to upgrade account</string>
+
+    <string name="google_sign_in_failed">Google sign in failed</string>
+
+    <string name="error_google_sign_in">Error occurred during Google sign in</string>
+
+    <string name="unable_to_get_client_id">Unable to get client id</string>
+
+    <string name="error_creating_guest_account">Error occurred during creating guest account.</string>
+
+    <string name="provided_credentials_incorrect">Provided credentials are incorrect.</string>
+
+    <string name="user_already_exists">User already exists.</string>
+
+    <string name="auth_error">Error occurred during authentication</string>
+
+    <string name="unable_to_verify_email">Unable to verify email</string>
+
+    <string name="email_not_confirmed_yet">E-mail not confirmed yet</string>
     
 
 </resources>
