@@ -71,7 +71,8 @@ actual val platformModule: Module = module {
             getGoogleClientIdUseCase = get(),
             googleAuthClient = get(),
             snackbarController = get(),
-            emailValidator = get()
+            emailValidator = get(),
+            stringProvider = get()
         )
     }
     viewModel { (email: String, exists: Boolean, provider: AuthProvider?) ->
@@ -89,6 +90,7 @@ actual val platformModule: Module = module {
             loginWithGoogleUseCase = get(),
             getGoogleClientIdUseCase = get(),
             googleAuthClient = get()
+            , stringProvider = get()
         )
     }
     viewModel {
@@ -123,7 +125,8 @@ actual val platformModule: Module = module {
             deleteAccountUseCase = get(),
             snackbarController = get(),
             passwordValidator = get(),
-            getUserUseCase = get()
+            getUserUseCase = get(),
+            stringProvider = get()
         )
     }
     viewModel {
@@ -131,6 +134,7 @@ actual val platformModule: Module = module {
             changePasswordUseCase = get(),
             snackbarController = get(),
             passwordValidator = get(),
+            stringProvider = get(),
         )
     }
     viewModel { (email: String) ->
@@ -138,7 +142,8 @@ actual val platformModule: Module = module {
             email = email,
             requestPasswordResetUseCase = get(),
             snackbarController = get(),
-            emailValidator = get()
+            emailValidator = get(),
+            stringProvider = get()
         )
     }
     viewModel {
@@ -150,7 +155,8 @@ actual val platformModule: Module = module {
             snackbarController = get(),
             usernameValidator = get(),
             passwordValidator = get(),
-            emailValidator = get()
+            emailValidator = get(),
+            stringProvider = get()
         )
     }
     viewModel {
@@ -159,7 +165,8 @@ actual val platformModule: Module = module {
             getUserUseCase = get(),
             resendConfirmationUseCase = get(),
             snackbarController = get(),
-            setEmailConfirmedUseCase = get()
+            setEmailConfirmedUseCase = get(),
+            stringProvider = get()
         )
     }
     viewModel { (serverId: Long, serverName: String?) ->

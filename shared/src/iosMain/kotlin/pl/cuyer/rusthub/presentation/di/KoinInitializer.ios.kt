@@ -54,6 +54,7 @@ actual val platformModule: Module = module {
             resendConfirmationUseCase = get(),
             snackbarController = get(),
             setEmailConfirmedUseCase = get(),
+            stringProvider = get(),
         )
     }
     factory {
@@ -64,9 +65,8 @@ actual val platformModule: Module = module {
             getGoogleClientIdUseCase = get(),
             googleAuthClient = get(),
             snackbarController = get(),
-            loginWithGoogleUseCase = get(),
-            getGoogleClientIdUseCase = get(),
-            googleAuthClient = get()
+            emailValidator = get(),
+            stringProvider = get()
         )
     }
     factory { (email: String, exists: Boolean, provider: AuthProvider?) ->
@@ -80,7 +80,8 @@ actual val platformModule: Module = module {
             getUserUseCase = get(),
             snackbarController = get(),
             passwordValidator = get(),
-            usernameValidator = get()
+            usernameValidator = get(),
+            stringProvider = get()
         )
     }
     factory {
@@ -100,7 +101,8 @@ actual val platformModule: Module = module {
             deleteAccountUseCase = get(),
             snackbarController = get(),
             passwordValidator = get(),
-            getUserUseCase = get()
+            getUserUseCase = get(),
+            stringProvider = get()
         )
     }
     factory {
@@ -108,6 +110,7 @@ actual val platformModule: Module = module {
             changePasswordUseCase = get(),
             snackbarController = get(),
             passwordValidator = get(),
+            stringProvider = get(),
         )
     }
     factory { (email: String) ->
@@ -115,7 +118,8 @@ actual val platformModule: Module = module {
             email = email,
             requestPasswordResetUseCase = get(),
             snackbarController = get(),
-            emailValidator = get()
+            emailValidator = get(),
+            stringProvider = get()
         )
     }
     factory {
@@ -127,7 +131,8 @@ actual val platformModule: Module = module {
             snackbarController = get(),
             usernameValidator = get(),
             passwordValidator = get(),
-            emailValidator = get()
+            emailValidator = get(),
+            stringProvider = get()
         )
     }
 }

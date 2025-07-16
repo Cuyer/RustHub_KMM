@@ -34,6 +34,8 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
 import pl.cuyer.rusthub.util.validator.ValidationResult
@@ -51,7 +53,8 @@ class CredentialsViewModel(
     private val usernameValidator: UsernameValidator,
     private val loginWithGoogleUseCase: LoginWithGoogleUseCase,
     private val getGoogleClientIdUseCase: GetGoogleClientIdUseCase,
-    private val googleAuthClient: GoogleAuthClient
+    private val googleAuthClient: GoogleAuthClient,
+    private val stringProvider: StringProvider
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -102,7 +105,11 @@ class CredentialsViewModel(
             }
             _state.update { it.copy(passwordError = passwordResult.errorMessage, usernameError = usernameResult.errorMessage) }
             if (!passwordResult.isValid || !usernameResult.isValid) {
-                snackbarController.sendEvent(SnackbarEvent("Please correct the errors above and try again."))
+                snackbarController.sendEvent(
+                    SnackbarEvent(
+                        stringProvider.get(SharedRes.strings.correct_errors_try_again)
+                    )
+                )
                 return@launch
             }
             val currentEmail = _state.value.email
@@ -113,7 +120,11 @@ class CredentialsViewModel(
             }
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catch { e ->
+                    showErrorSnackbar(
+                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
+                    )
+                }
                 .collectLatest { result ->
                     ensureActive()
                     when (result) {
@@ -131,7 +142,11 @@ class CredentialsViewModel(
             getGoogleClientIdUseCase()
                 .onStart { updateGoogleLoading(true) }
                 .onCompletion { updateGoogleLoading(false) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catch { e ->
+                    showErrorSnackbar(
+                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
+                    )
+                }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
@@ -139,11 +154,14 @@ class CredentialsViewModel(
                             if (token != null) {
                                 loginWithGoogleToken(token)
                             } else {
-                                showErrorSnackbar("Google sign in failed")
+                                showErrorSnackbar(
+                                    stringProvider.get(SharedRes.strings.google_sign_in_failed)
+                                )
                             }
                         }
                         is Result.Error -> showErrorSnackbar(
-                            result.exception.message ?: "Unable to get client id"
+                            result.exception.message
+                                ?: stringProvider.get(SharedRes.strings.unable_to_get_client_id)
                         )
                         else -> Unit
                     }
@@ -157,12 +175,18 @@ class CredentialsViewModel(
             loginWithGoogleUseCase(token)
                 .onStart { updateGoogleLoading(true) }
                 .onCompletion { updateGoogleLoading(false) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catch { e ->
+                    showErrorSnackbar(
+                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
+                    )
+                }
                 .collectLatest { result ->
                     ensureActive()
                     when (result) {
                         is Result.Success -> navigate(ServerList)
-                        is Result.Error -> showErrorSnackbar("Error occurred during Google sign in")
+                        is Result.Error -> showErrorSnackbar(
+                            stringProvider.get(SharedRes.strings.error_google_sign_in)
+                        )
                         else -> Unit
                     }
                 }
@@ -187,7 +211,10 @@ class CredentialsViewModel(
                 }
 
                 is Result.Error -> {
-                    showErrorSnackbar(result.exception.message ?: "Unable to verify email")
+                    showErrorSnackbar(
+                        result.exception.message
+                            ?: stringProvider.get(SharedRes.strings.unable_to_verify_email)
+                    )
                 }
 
                 else -> Unit
@@ -203,9 +230,13 @@ class CredentialsViewModel(
 
     private fun handleError(exception: Throwable) {
         when (exception) {
-            is InvalidCredentialsException -> showErrorSnackbar("Provided credentials are incorrect.")
-            is UserAlreadyExistsException -> showErrorSnackbar("User already exists.")
-            else -> showErrorSnackbar("Error occurred during authentication")
+            is InvalidCredentialsException -> showErrorSnackbar(
+                stringProvider.get(SharedRes.strings.provided_credentials_incorrect)
+            )
+            is UserAlreadyExistsException -> showErrorSnackbar(
+                stringProvider.get(SharedRes.strings.user_already_exists)
+            )
+            else -> showErrorSnackbar(stringProvider.get(SharedRes.strings.auth_error))
         }
     }
 

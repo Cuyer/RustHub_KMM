@@ -22,6 +22,8 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.validator.EmailValidator
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
@@ -35,6 +37,7 @@ class UpgradeViewModel(
     private val usernameValidator: UsernameValidator,
     private val passwordValidator: PasswordValidator,
     private val emailValidator: EmailValidator,
+    private val stringProvider: StringProvider,
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -91,26 +94,33 @@ class UpgradeViewModel(
             }
             if (!usernameResult.isValid || !passwordResult.isValid || !emailResult.isValid) {
                 snackbarController.sendEvent(
-                    SnackbarEvent("Please correct the errors above and try again.")
+                    SnackbarEvent(
+                        stringProvider.get(SharedRes.strings.correct_errors_try_again)
+                    )
                 )
                 return@launch
             }
             upgradeAccountUseCase(_state.value.username, _state.value.email, _state.value.password)
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catch { e ->
+                    showErrorSnackbar(
+                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
+                    )
+                }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
                             snackbarController.sendEvent(
                                 SnackbarEvent(
-                                    "Account has been upgraded successfully!"
+                                    stringProvider.get(SharedRes.strings.account_upgraded_successfully)
                                 )
                             )
                             _uiEvent.send(UiEvent.NavigateUp)
                         }
                         is Result.Error -> showErrorSnackbar(
-                            result.exception.message ?: "Unable to upgrade account"
+                            result.exception.message
+                                ?: stringProvider.get(SharedRes.strings.unable_to_upgrade_account)
                         )
                         else -> Unit
                     }
@@ -124,7 +134,11 @@ class UpgradeViewModel(
             getGoogleClientIdUseCase()
                 .onStart { updateGoogleLoading(true) }
                 .onCompletion { updateGoogleLoading(false) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catch { e ->
+                    showErrorSnackbar(
+                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
+                    )
+                }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
@@ -132,11 +146,14 @@ class UpgradeViewModel(
                             if (token != null) {
                                 upgradeWithGoogleToken(token)
                             } else {
-                                showErrorSnackbar("Google sign in failed")
+                                showErrorSnackbar(
+                                    stringProvider.get(SharedRes.strings.google_sign_in_failed)
+                                )
                             }
                         }
                         is Result.Error -> showErrorSnackbar(
-                            result.exception.message ?: "Unable to get client id"
+                            result.exception.message
+                                ?: stringProvider.get(SharedRes.strings.unable_to_get_client_id)
                         )
                         else -> Unit
                     }
@@ -150,17 +167,24 @@ class UpgradeViewModel(
             upgradeWithGoogleUseCase(token)
                 .onStart { updateGoogleLoading(true) }
                 .onCompletion { updateGoogleLoading(false) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catch { e ->
+                    showErrorSnackbar(
+                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
+                    )
+                }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
                             snackbarController.sendEvent(
-                                SnackbarEvent("Account has been upgraded successfully!")
+                                SnackbarEvent(
+                                    stringProvider.get(SharedRes.strings.account_upgraded_successfully)
+                                )
                             )
                             navigateUp()
                         }
                         is Result.Error -> showErrorSnackbar(
-                            result.exception.message ?: "Unable to upgrade account"
+                            result.exception.message
+                                ?: stringProvider.get(SharedRes.strings.unable_to_upgrade_account)
                         )
                         else -> Unit
                     }

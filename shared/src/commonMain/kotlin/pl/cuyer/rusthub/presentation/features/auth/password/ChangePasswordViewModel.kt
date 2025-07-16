@@ -19,12 +19,15 @@ import pl.cuyer.rusthub.domain.usecase.ChangePasswordUseCase
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 
 class ChangePasswordViewModel(
     private val changePasswordUseCase: ChangePasswordUseCase,
     private val snackbarController: SnackbarController,
     private val passwordValidator: PasswordValidator,
+    private val stringProvider: StringProvider,
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -69,23 +72,34 @@ class ChangePasswordViewModel(
             }
             if (!oldResult.isValid || !newResult.isValid) {
                 snackbarController.sendEvent(
-                    SnackbarEvent(message = "Please correct the errors above and try again.")
+                    SnackbarEvent(
+                        message = stringProvider.get(SharedRes.strings.correct_errors_try_again)
+                    )
                 )
                 return@launch
             }
             changePasswordUseCase(oldPassword, newPassword)
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catch { e ->
+                    showErrorSnackbar(
+                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
+                    )
+                }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
                             snackbarController.sendEvent(
-                                SnackbarEvent(message = "Password changed successfully")
+                                SnackbarEvent(
+                                    message = stringProvider.get(SharedRes.strings.password_changed_successfully)
+                                )
                             )
                             _uiEvent.send(UiEvent.NavigateUp)
                         }
-                        is Result.Error -> showErrorSnackbar(result.exception.message ?: "Unable to change password")
+                        is Result.Error -> showErrorSnackbar(
+                            result.exception.message
+                                ?: stringProvider.get(SharedRes.strings.unable_to_change_password)
+                        )
                         else -> Unit
                     }
                 }
