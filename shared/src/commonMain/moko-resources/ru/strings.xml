@@ -199,6 +199,9 @@
     <string name="faq_lifetime_answer">План Rust Hub Pro Lifetime — единоразовая покупка. Доступ к Rust Hub Pro навсегда. Если у вас уже есть месячная или годовая подписка и вы хотите перейти на Lifetime, не забудьте отменить предыдущую подписку, чтобы избежать двойных списаний.</string>
     <string name="faq_renew_answer">Месячные и годовые планы Rust Hub Pro — это подписки с автопродлением. После отмены подписки вы пользуетесь сервисом до конца оплаченного периода. Lifetime — это разовая покупка.</string>
     <string name="theme">Тема</string>
+    <string name="light">Светлая</string>
+    <string name="dark">Тёмная</string>
+    <string name="system">Системная</string>
     <string name="this_rust_hub_account_is_already_connected_with_social_account">Этот аккаунт Rust Hub уже привязан к другому соц. аккаунту.</string>
     <string name="true_str">Да</string>
     <string name="turn_off_notifications">Отключить уведомления</string>

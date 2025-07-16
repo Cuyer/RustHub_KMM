@@ -200,6 +200,9 @@
     <string name="faq_lifetime_answer">The Rust Hub Pro Lifetime plan is a one time purchase. You will have access to Rust Hub Pro forever.\n\nIf you are already subscribed to a monthly or yearly plan and want to switch to a lifetime plan, make sure to cancel your monthly or yearly subscription after you purchase the lifetime plan to avoid any recurring charges.</string>
     <string name="faq_renew_answer">The Rust Hub Pro monthly and yearly plans are subscriptions that renew automatically at the end of your subscription term to avoid any interruption to your service. If you cancel your subscription, you will continue to have access to Rust Hub Pro until your subscription expires. The Rust Hub Pro Lifetime plan is a one time purchase.</string>
     <string name="theme">Theme</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="system">System</string>
     <string name="this_rust_hub_account_is_already_connected_with_social_account">This Rust Hub account is already connected with a social account.</string>
     <string name="true_str">True</string>
     <string name="turn_off_notifications">Turn off notifications</string>
