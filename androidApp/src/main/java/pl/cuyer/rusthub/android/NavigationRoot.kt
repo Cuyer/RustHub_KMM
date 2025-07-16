@@ -22,13 +22,12 @@ import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItem
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
-import androidx.compose.ui.platform.LocalContext
-import pl.cuyer.rusthub.SharedRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -42,6 +41,7 @@ import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.feature.auth.ConfirmEmailScreen
 import pl.cuyer.rusthub.android.feature.auth.CredentialsScreen
 import pl.cuyer.rusthub.android.feature.auth.ResetPasswordScreen
@@ -55,7 +55,6 @@ import pl.cuyer.rusthub.android.feature.settings.PrivacyPolicyScreen
 import pl.cuyer.rusthub.android.feature.settings.SettingsScreen
 import pl.cuyer.rusthub.android.feature.subscription.SubscriptionScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
-import pl.cuyer.rusthub.common.Constants
 import pl.cuyer.rusthub.common.Urls
 import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
@@ -73,12 +72,12 @@ import pl.cuyer.rusthub.presentation.navigation.Credentials
 import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
-import pl.cuyer.rusthub.presentation.navigation.Subscription
-import pl.cuyer.rusthub.presentation.navigation.Terms
 import pl.cuyer.rusthub.presentation.navigation.ResetPassword
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.Settings
+import pl.cuyer.rusthub.presentation.navigation.Subscription
+import pl.cuyer.rusthub.presentation.navigation.Terms
 import pl.cuyer.rusthub.presentation.navigation.UpgradeAccount
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
@@ -122,6 +121,7 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
 
     @Composable
     fun AppScaffold(modifier: Modifier = Modifier) {
+        val context = LocalContext.current
         Scaffold(
             modifier = modifier
                 .fillMaxSize(),
@@ -284,7 +284,7 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                         entry<Terms> {
                             PrivacyPolicyScreen(
                                 url = Urls.TERMS_URL,
-                                title = SharedRes.strings.terms_conditions.getString(LocalContext.current),
+                                title = SharedRes.strings.terms_conditions.getString(context),
                                 onNavigateUp = { backStack.removeLastOrNull() }
                             )
                         }
@@ -304,13 +304,14 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
 
     val current = backStack.lastOrNull()
     val showNav = current is ServerList || current is ServerDetails || current is Settings
-    val context = LocalContext.current
+
 
     if (showNav) {
         NavigationSuiteScaffold(
             modifier = Modifier
                 .navigationBarsPadding(),
             navigationItems = {
+                val context = LocalContext.current
                 NavigationSuiteItem(
                     selected = current is ServerList || current is ServerDetails,
                     onClick = {

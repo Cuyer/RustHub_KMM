@@ -46,13 +46,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppSecureTextField
 import pl.cuyer.rusthub.android.designsystem.AppTextField
 import pl.cuyer.rusthub.android.designsystem.SignProviderButton
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
-import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeAction
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeState
@@ -213,20 +213,23 @@ private fun UpgradeScreenExpanded(state: UpgradeState, onAction: (UpgradeAction)
 
 @Composable
 private fun UpgradeStaticContent(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     Column(modifier = modifier.fillMaxWidth()) {
         Icon(
             modifier = Modifier.size(64.dp),
             painter = painterResource(getImageByFileName("ic_rocket").drawableResId),
-            contentDescription = SharedRes.strings.padlock_icon.getString(LocalContext.current)
+            contentDescription = SharedRes.strings.padlock_icon.getString(context)
         )
         Spacer(Modifier.size(spacing.small))
         Text(
-            text = SharedRes.strings.upgrade_your_account.getString(LocalContext.current),
+            text = SharedRes.strings.upgrade_your_account.getString(context),
             style = MaterialTheme.typography.headlineLarge
         )
         Spacer(Modifier.size(spacing.small))
         Text(
-            text = SharedRes.strings.provide_credentials_or_connect_google_account_to_upgrade.getString(LocalContext.current),
+            text = SharedRes.strings.provide_credentials_or_connect_google_account_to_upgrade.getString(
+                context
+            ),
             style = MaterialTheme.typography.bodyMedium
         )
     }
@@ -234,13 +237,14 @@ private fun UpgradeStaticContent(modifier: Modifier = Modifier) {
 
 @Composable
 private fun UpgradeFields(state: UpgradeState, onAction: (UpgradeAction) -> Unit) {
+    val context = LocalContext.current
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(spacing.small)) {
         AppTextField(
             requestFocus = true,
             value = state.username,
             onValueChange = { onAction(UpgradeAction.OnUsernameChange(it)) },
-            labelText = SharedRes.strings.username.getString(LocalContext.current),
-            placeholderText = SharedRes.strings.enter_username.getString(LocalContext.current),
+            labelText = SharedRes.strings.username.getString(context),
+            placeholderText = SharedRes.strings.enter_username.getString(context),
             isError = state.usernameError != null,
             errorText = state.usernameError,
             modifier = Modifier.fillMaxWidth(),
@@ -250,8 +254,8 @@ private fun UpgradeFields(state: UpgradeState, onAction: (UpgradeAction) -> Unit
         AppTextField(
             value = state.email,
             onValueChange = { onAction(UpgradeAction.OnEmailChange(it)) },
-            labelText = SharedRes.strings.e_mail.getString(LocalContext.current),
-            placeholderText = SharedRes.strings.enter_e_mail.getString(LocalContext.current),
+            labelText = SharedRes.strings.e_mail.getString(context),
+            placeholderText = SharedRes.strings.enter_your_e_mail.getString(context),
             isError = state.emailError != null,
             errorText = state.emailError,
             modifier = Modifier.fillMaxWidth(),
@@ -261,8 +265,8 @@ private fun UpgradeFields(state: UpgradeState, onAction: (UpgradeAction) -> Unit
         AppSecureTextField(
             value = state.password,
             onValueChange = { onAction(UpgradeAction.OnPasswordChange(it)) },
-            labelText = SharedRes.strings.password.getString(LocalContext.current),
-            placeholderText = SharedRes.strings.enter_password.getString(LocalContext.current),
+            labelText = SharedRes.strings.password.getString(context),
+            placeholderText = SharedRes.strings.enter_password.getString(context),
             onSubmit = { onAction(UpgradeAction.OnSubmit) },
             isError = state.passwordError != null,
             errorText = state.passwordError,

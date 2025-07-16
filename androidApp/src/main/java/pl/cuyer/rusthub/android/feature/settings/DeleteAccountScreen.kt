@@ -197,20 +197,23 @@ private fun DeleteAccountScreenExpanded(
 
 @Composable
 private fun DeleteAccountStaticContent(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     Column(modifier = modifier.fillMaxWidth()) {
         Icon(
             modifier = Modifier.size(64.dp),
             painter = painterResource(getImageByFileName("ic_bin").drawableResId),
-            contentDescription = SharedRes.strings.delete_account_button.getString(LocalContext.current)
+            contentDescription = SharedRes.strings.delete_account_button.getString(context)
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
-            text = SharedRes.strings.delete_account.getString(LocalContext.current),
+            text = SharedRes.strings.delete_account.getString(context),
             style = MaterialTheme.typography.headlineLarge
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
-            text = SharedRes.strings.deleting_your_account_is_irreversible_all_your_data_will_be_removed.getString(LocalContext.current),
+            text = SharedRes.strings.deleting_your_account_is_irreversible_all_your_data_will_be_removed.getString(
+                context
+            ),
             style = MaterialTheme.typography.bodyMedium
         )
     }
@@ -223,6 +226,7 @@ private fun DeleteAccountFields(
     passwordError: String?,
     onAction: (DeleteAccountAction) -> Unit
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(spacing.small)
@@ -232,8 +236,8 @@ private fun DeleteAccountFields(
             AppSecureTextField(
                 value = password,
                 onValueChange = { onAction(DeleteAccountAction.OnPasswordChange(it)) },
-                labelText = SharedRes.strings.password.getString(LocalContext.current),
-                placeholderText = SharedRes.strings.enter_your_password.getString(LocalContext.current),
+                labelText = SharedRes.strings.password.getString(context),
+                placeholderText = SharedRes.strings.enter_your_password.getString(context),
                 onSubmit = {
                     focusManager.clearFocus()
                     onAction(DeleteAccountAction.OnDelete)

@@ -41,12 +41,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppSecureTextField
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
-import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordAction
 import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
@@ -189,20 +189,23 @@ private fun ChangePasswordScreenExpanded(
 
 @Composable
 private fun ChangePasswordStaticContent(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     Column(modifier = modifier.fillMaxWidth()) {
         Icon(
             modifier = Modifier.size(64.dp),
             painter = painterResource(getImageByFileName("ic_padlock").drawableResId),
-            contentDescription = SharedRes.strings.padlock_icon.getString(LocalContext.current)
+            contentDescription = SharedRes.strings.padlock_icon.getString(context)
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
-            text = SharedRes.strings.change_password.getString(LocalContext.current),
+            text = SharedRes.strings.change_password.getString(context),
             style = MaterialTheme.typography.headlineLarge
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
-            text = SharedRes.strings.enter_your_current_password_and_pick_a_new_one.getString(LocalContext.current),
+            text = SharedRes.strings.enter_your_current_password_and_pick_a_new_one.getString(
+                context
+            ),
             style = MaterialTheme.typography.bodyMedium
         )
     }
@@ -216,6 +219,7 @@ private fun ChangePasswordFields(
     newPasswordError: String?,
     onAction: (ChangePasswordAction) -> Unit
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(spacing.small)
@@ -225,8 +229,8 @@ private fun ChangePasswordFields(
             requestFocus = true,
             value = oldPassword,
             onValueChange = { onAction(ChangePasswordAction.OnOldPasswordChange(it)) },
-            labelText = SharedRes.strings.old_password.getString(LocalContext.current),
-            placeholderText = SharedRes.strings.enter_old_password.getString(LocalContext.current),
+            labelText = SharedRes.strings.old_password.getString(context),
+            placeholderText = SharedRes.strings.enter_old_password.getString(context),
             isError = oldPasswordError != null,
             errorText = oldPasswordError,
             modifier = Modifier.fillMaxWidth(),
@@ -236,8 +240,8 @@ private fun ChangePasswordFields(
         AppSecureTextField(
             value = newPassword,
             onValueChange = { onAction(ChangePasswordAction.OnNewPasswordChange(it)) },
-            labelText = SharedRes.strings.new_password.getString(LocalContext.current),
-            placeholderText = SharedRes.strings.enter_new_password.getString(LocalContext.current),
+            labelText = SharedRes.strings.new_password.getString(context),
+            placeholderText = SharedRes.strings.enter_new_password.getString(context),
             onSubmit = {
                 focusManager.clearFocus()
                 onAction(ChangePasswordAction.OnChange)

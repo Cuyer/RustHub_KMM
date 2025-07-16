@@ -410,19 +410,20 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
 
 @Composable
 private fun HeaderSection() {
+    val context = LocalContext.current
     Image(
         painter = painterResource(id = getImageByFileName("rusthub_logo").drawableResId),
-        contentDescription = SharedRes.strings.application_logo.getString(LocalContext.current)
+        contentDescription = SharedRes.strings.application_logo.getString(context)
     )
 
     Text(
-        text = SharedRes.strings.welcome_to_rusthub.getString(LocalContext.current),
+        text = SharedRes.strings.welcome_to_rusthub.getString(context),
         style = MaterialTheme.typography.headlineLarge,
         textAlign = TextAlign.Center
     )
 
     Text(
-        text = SharedRes.strings.your_gateway_to_the_rust_server_world.getString(LocalContext.current),
+        text = SharedRes.strings.your_gateway_to_the_rust_server_world.getString(context),
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         textAlign = TextAlign.Center
@@ -446,6 +447,7 @@ private fun ActionButtons(
 
 @Composable
 private fun FeatureItem(icon: ImageVector, title: StringResource, description: StringResource) {
+    val context = LocalContext.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
@@ -455,7 +457,6 @@ private fun FeatureItem(icon: ImageVector, title: StringResource, description: S
             modifier = Modifier.size(40.dp),
             contentAlignment = Alignment.Center
         ) {
-            val context = LocalContext.current
             Icon(
                 imageVector = icon,
                 contentDescription = title.getString(context),
@@ -466,7 +467,6 @@ private fun FeatureItem(icon: ImageVector, title: StringResource, description: S
         Spacer(modifier = Modifier.width(spacing.xmedium))
 
         Column {
-            val context = LocalContext.current
             Text(text = title.getString(context), style = MaterialTheme.typography.titleMedium)
             Text(
                 text = description.getString(context),

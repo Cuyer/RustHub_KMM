@@ -187,20 +187,23 @@ private fun ResetPasswordScreenExpanded(
 
 @Composable
 private fun ResetPasswordStaticContent(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     Column(modifier = modifier.fillMaxWidth()) {
         Icon(
             modifier = Modifier.size(64.dp),
             painter = painterResource(getImageByFileName("ic_padlock").drawableResId),
-            contentDescription = SharedRes.strings.forgot_password_icon.getString(LocalContext.current)
+            contentDescription = SharedRes.strings.forgot_password_icon.getString(context)
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
-            text = SharedRes.strings.reset_password.getString(LocalContext.current),
+            text = SharedRes.strings.reset_password.getString(context),
             style = MaterialTheme.typography.headlineLarge
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
-            text = SharedRes.strings.enter_your_e_mail_to_receive_password_reset_link.getString(LocalContext.current),
+            text = SharedRes.strings.enter_your_e_mail_to_receive_password_reset_link.getString(
+                context
+            ),
             style = MaterialTheme.typography.bodyMedium
         )
     }
@@ -212,12 +215,13 @@ private fun ResetPasswordField(
     emailError: String?,
     onAction: (ResetPasswordAction) -> Unit
 ) {
+    val context = LocalContext.current
     AppTextField(
         requestFocus = true,
         value = email,
         onValueChange = { onAction(ResetPasswordAction.OnEmailChange(it)) },
-        labelText = SharedRes.strings.e_mail.getString(LocalContext.current),
-        placeholderText = SharedRes.strings.enter_your_e_mail.getString(LocalContext.current),
+        labelText = SharedRes.strings.e_mail.getString(context),
+        placeholderText = SharedRes.strings.enter_your_e_mail.getString(context),
         keyboardType = KeyboardType.Email,
         imeAction = if (email.isNotBlank()) ImeAction.Send else ImeAction.Done,
         onSubmit = { onAction(ResetPasswordAction.OnSend) },

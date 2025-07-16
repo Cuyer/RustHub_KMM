@@ -157,6 +157,7 @@ private fun CredentialsStaticContent(
     userExists: Boolean,
     provider: AuthProvider?
 ) {
+    val context = LocalContext.current
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -165,31 +166,37 @@ private fun CredentialsStaticContent(
             modifier = Modifier
                 .size(64.dp),
             painter = painterResource(getImageByFileName("ic_padlock").drawableResId),
-            contentDescription = SharedRes.strings.padlock_icon.getString(LocalContext.current),
+            contentDescription = SharedRes.strings.padlock_icon.getString(context),
         )
         Spacer(Modifier.height(spacing.small))
         Text(
             text = if (userExists) {
-                SharedRes.strings.welcome_back.getString(LocalContext.current)
+                SharedRes.strings.welcome_back.getString(context)
             } else {
-                SharedRes.strings.create_new_account.getString(LocalContext.current)
+                SharedRes.strings.create_new_account.getString(context)
             },
             style = MaterialTheme.typography.headlineLarge
         )
         if (userExists && provider != AuthProvider.GOOGLE) {
             Text(
-                text = SharedRes.strings.enter_your_password.getString(LocalContext.current),
+                text = SharedRes.strings.enter_your_password.getString(context),
                 style = MaterialTheme.typography.headlineLarge
             )
         }
         Spacer(Modifier.height(spacing.small))
         Text(
             text = if (userExists && provider == AuthProvider.GOOGLE) {
-                SharedRes.strings.this_rust_hub_account_is_already_connected_with_social_account.getString(LocalContext.current)
+                SharedRes.strings.this_rust_hub_account_is_already_connected_with_social_account.getString(
+                    context
+                )
             } else if (userExists) {
-                SharedRes.strings.use_your_password_to_sign_in_to_an_existing_account.getString(LocalContext.current)
+                SharedRes.strings.use_your_password_to_sign_in_to_an_existing_account.getString(
+                    context
+                )
             } else {
-                SharedRes.strings.protect_your_account_by_providing_a_strong_password.getString(LocalContext.current)
+                SharedRes.strings.protect_your_account_by_providing_a_strong_password.getString(
+                    context
+                )
             },
             style = MaterialTheme.typography.bodyMedium
         )
@@ -326,8 +333,8 @@ private fun CredentialsFields(
         modifier = Modifier
             .fillMaxWidth()
     ) {
+        val context = LocalContext.current
         if (userExists && provider == AuthProvider.GOOGLE) {
-            val context = LocalContext.current
             SignProviderButton(
                 image = getImageByFileName("ic_google").drawableResId,
                 contentDescription = SharedRes.strings.google_logo.getString(context),
@@ -347,8 +354,8 @@ private fun CredentialsFields(
                 requestFocus = true,
                 value = username,
                 onValueChange = { onAction(CredentialsAction.OnUsernameChange(it)) },
-                labelText = SharedRes.strings.username.getString(LocalContext.current),
-                placeholderText = SharedRes.strings.enter_your_username.getString(LocalContext.current),
+                labelText = SharedRes.strings.username.getString(context),
+                placeholderText = SharedRes.strings.enter_your_username.getString(context),
                 isError = usernameError != null,
                 errorText = usernameError,
                 modifier = Modifier.fillMaxWidth(),
@@ -361,8 +368,8 @@ private fun CredentialsFields(
                 requestFocus = userExists,
                 value = password,
                 onValueChange = { onAction(CredentialsAction.OnPasswordChange(it)) },
-                labelText = SharedRes.strings.password.getString(LocalContext.current),
-                placeholderText = SharedRes.strings.enter_your_password.getString(LocalContext.current),
+                labelText = SharedRes.strings.password.getString(context),
+                placeholderText = SharedRes.strings.enter_your_password.getString(context),
                 onSubmit = { onAction(CredentialsAction.OnSubmit) },
                 isError = passwordError != null,
                 errorText = passwordError,
@@ -377,7 +384,7 @@ private fun CredentialsFields(
                     modifier = Modifier.align(Alignment.End),
                     onClick = { onAction(CredentialsAction.OnForgotPassword) }
                 ) {
-                    Text(SharedRes.strings.forgot_password.getString(LocalContext.current))
+                    Text(SharedRes.strings.forgot_password.getString(context))
                 }
             }
         }
