@@ -1,14 +1,23 @@
 package pl.cuyer.rusthub.domain.model
 
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.util.StringProvider
+
 enum class ServerFilter {
     ALL,
     FAVOURITES,
     SUBSCRIBED;
+
+    companion object {
+        fun fromDisplayName(displayName: String, stringProvider: StringProvider): ServerFilter? {
+            return entries.firstOrNull { it.displayName(stringProvider) == displayName }
+        }
+    }
 }
 
-val ServerFilter.displayName: String
-    get() = when(this) {
-        ServerFilter.ALL -> "All"
-        ServerFilter.FAVOURITES -> "Favourites"
-        ServerFilter.SUBSCRIBED -> "Subscribed"
+fun ServerFilter.displayName(stringProvider: StringProvider): String =
+    when (this) {
+        ALL -> stringProvider.get(SharedRes.strings.all)
+        FAVOURITES -> stringProvider.get(SharedRes.strings.favourites)
+        SUBSCRIBED -> stringProvider.get(SharedRes.strings.subscribed)
     }

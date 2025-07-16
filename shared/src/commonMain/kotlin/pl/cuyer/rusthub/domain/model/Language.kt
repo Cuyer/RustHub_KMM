@@ -1,17 +1,21 @@
 package pl.cuyer.rusthub.domain.model
 
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.util.StringProvider
+
 enum class Language {
     ENGLISH,
     POLISH;
 
     companion object {
-        fun fromDisplayName(name: String): Language? =
-            entries.firstOrNull { it.displayName == name }
+        fun fromDisplayName(displayName: String, stringProvider: StringProvider): Language? {
+            return entries.firstOrNull { it.displayName(stringProvider) == displayName }
+        }
     }
 }
 
-val Language.displayName: String
-    get() = when (this) {
-        Language.ENGLISH -> "English"
-        Language.POLISH -> "Polish"
+fun Language.displayName(stringProvider: StringProvider): String =
+    when (this) {
+        ENGLISH -> stringProvider.get(SharedRes.strings.english)
+        POLISH -> stringProvider.get(SharedRes.strings.polish)
     }

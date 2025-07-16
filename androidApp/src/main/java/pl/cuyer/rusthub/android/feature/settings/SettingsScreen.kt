@@ -203,6 +203,7 @@ private fun PreferencesSection(
     onAction: (SettingsAction) -> Unit
 ) {
     val context = LocalContext.current
+    val stringProvider = koinInject<StringProvider>()
     Text(
         text = SharedRes.strings.preferences.getString(context),
         style = MaterialTheme.typography.titleLarge,
@@ -216,7 +217,7 @@ private fun PreferencesSection(
     )
     AppExposedDropdownMenu(
         label = SharedRes.strings.language.getString(context),
-        options = Language.entries.map { it.displayName },
+        options = Language.entries.map { it.displayName(stringProvider) },
         selectedValue = Language.entries.indexOf(language),
         onSelectionChanged = { onAction(SettingsAction.OnLanguageChange(Language.entries[it])) }
     )
@@ -415,3 +416,4 @@ private fun SettingsPreview() {
         )
     }
 }
+
