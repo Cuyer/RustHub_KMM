@@ -211,7 +211,7 @@ private fun PreferencesSection(
     )
     AppExposedDropdownMenu(
         label = SharedRes.strings.theme.getString(context),
-        options = Theme.entries.map { it.displayName },
+        options = Theme.entries.map { it.displayName(stringProvider) },
         selectedValue = Theme.entries.indexOf(theme),
         onSelectionChanged = { onAction(SettingsAction.OnThemeChange(Theme.entries[it])) }
     )
