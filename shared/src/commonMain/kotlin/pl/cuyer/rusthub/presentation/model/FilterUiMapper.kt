@@ -37,7 +37,7 @@ fun ServerQuery?.toUi(
             Triple(
                 stringProvider.get(SharedRes.strings.region),
                 regions,
-                regions.indexOf(this?.region?.displayName ?: "")
+                regions.indexOf(this?.region?.displayName(stringProvider) ?: "")
             ),
             Triple(
                 stringProvider.get(SharedRes.strings.difficulty),

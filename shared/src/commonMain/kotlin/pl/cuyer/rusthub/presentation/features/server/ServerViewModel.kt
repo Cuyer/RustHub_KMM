@@ -136,7 +136,7 @@ class ServerViewModel(
                 stringProvider = stringProvider,
                 maps = filtersOptions?.maps?.map { it.displayName } ?: emptyList(),
                 flags = filtersOptions?.flags?.map { it.displayName } ?: emptyList(),
-                regions = filtersOptions?.regions?.map { it.displayName } ?: emptyList(),
+                regions = filtersOptions?.regions?.map { it.displayName(stringProvider) } ?: emptyList(),
                 difficulties = filtersOptions?.difficulty?.map { it.displayName } ?: emptyList(),
                 schedules = filtersOptions?.wipeSchedules?.map { it.displayName(stringProvider) } ?: emptyList(),
                 playerCount = filtersOptions?.maxPlayerCount ?: 0,

@@ -163,6 +163,13 @@
     <string name="receive_notifications_about_map_and_full_wipes">Получайте уведомления о вайпах карты и полных вайпах.</string>
     <string name="recent_searches">Недавние поиски</string>
     <string name="region">Регион</string>
+    <string name="asia">Азия</string>
+    <string name="europe">Европа</string>
+    <string name="america">Северная Америка</string>
+    <string name="africa">Африка</string>
+    <string name="south_america">Южная Америка</string>
+    <string name="oceania">Океания</string>
+    <string name="australia">Австралия</string>
     <string name="remove_from_favourites">Убрать из избранного</string>
     <string name="resend_email">Отправить e-mail еще раз</string>
     <string name="reset_filters">Сбросить фильтры</string>
