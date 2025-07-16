@@ -9,7 +9,6 @@ import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.usecase.GetSettingsUseCase
-import pl.cuyer.rusthub.util.updateAppLanguage
 import pl.cuyer.rusthub.util.getCurrentAppLanguage
 
 class SettingsController(
@@ -32,7 +31,6 @@ class SettingsController(
                     }
                     if (_language.value != it.language) {
                         _language.value = it.language
-                        updateAppLanguage(it.language)
                     }
                 }
             }
