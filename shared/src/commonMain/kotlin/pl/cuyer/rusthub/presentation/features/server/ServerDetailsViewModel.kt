@@ -45,6 +45,8 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.ShareHandler
 import pl.cuyer.rusthub.util.ReviewRequester
+import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.SharedRes
 
 class ServerDetailsViewModel(
     private val clipboardHandler: ClipboardHandler,
@@ -57,6 +59,7 @@ class ServerDetailsViewModel(
     private val getUserUseCase: GetUserUseCase,
     private val resendConfirmationUseCase: ResendConfirmationUseCase,
     private val permissionsController: PermissionsController,
+    private val stringProvider: StringProvider,
     private val serverName: String?,
     private val serverId: Long?
 ) : BaseViewModel() {
@@ -116,11 +119,17 @@ class ServerDetailsViewModel(
     }
 
     private fun saveIpToClipboard(ipAddress: String) {
-        clipboardHandler.copyToClipboard("Server address", "client.connect $ipAddress")
+        clipboardHandler.copyToClipboard(
+            stringProvider.get(SharedRes.strings.server_address),
+            "client.connect $ipAddress"
+        )
         coroutineScope.launch {
             snackbarController.sendEvent(
                 event = SnackbarEvent(
-                    message = "Saved $ipAddress to the clipboard!",
+                    message = stringProvider.get(
+                        SharedRes.strings.saved_to_clipboard,
+                        ipAddress
+                    ),
                     duration = Duration.SHORT
                 )
             )
@@ -147,7 +156,14 @@ class ServerDetailsViewModel(
 
         toggleJob = coroutineScope.launch {
             toggleFavouriteUseCase(id, add)
-                .catch { e -> showErrorSnackbar("Error occurred when trying to ${if (add) "add" else "remove"} server ${if (add) "to" else "from"} favourites") }
+                .catch {
+                    showErrorSnackbar(
+                        stringProvider.get(
+                            if (add) SharedRes.strings.error_add_favourite
+                            else SharedRes.strings.error_remove_favourite
+                        )
+                    )
+                }
                 .collectLatest { result ->
                     ensureActive()
                     when (result) {
@@ -155,7 +171,17 @@ class ServerDetailsViewModel(
                             serverDetailsJob = observeServerDetails(id)
                             snackbarController.sendEvent(
                                 event = SnackbarEvent(
-                                    message = if (add) "Added ${state.value.serverName} to favourites" else "Removed ${state.value.serverName} from favourites",
+                                    message = if (add) {
+                                        stringProvider.get(
+                                            SharedRes.strings.added_to_favourites,
+                                            state.value.serverName ?: ""
+                                        )
+                                    } else {
+                                        stringProvider.get(
+                                            SharedRes.strings.removed_from_favourites,
+                                            state.value.serverName ?: ""
+                                        )
+                                    },
                                     duration = Duration.SHORT
                                 )
                             )
@@ -165,7 +191,12 @@ class ServerDetailsViewModel(
                         }
                         is Result.Error -> when (result.exception) {
                             is FavoriteLimitException -> navigateSubscription()
-                            else -> showErrorSnackbar("Error occurred when trying to ${if (add) "add" else "remove"} server ${if (add) "to" else "from"} favourites")
+                            else -> showErrorSnackbar(
+                                stringProvider.get(
+                                    if (add) SharedRes.strings.error_add_favourite
+                                    else SharedRes.strings.error_remove_favourite
+                                )
+                            )
                         }
                     }
                 }
@@ -181,8 +212,13 @@ class ServerDetailsViewModel(
 
         subscriptionJob = coroutineScope.launch {
             toggleSubscriptionUseCase(id, subscribed)
-                .catch { e ->
-                    showErrorSnackbar("Error occurred when trying to ${if (subscribed) "subscribe to" else "unsubscribe from"} notifications")
+                .catch {
+                    showErrorSnackbar(
+                        stringProvider.get(
+                            if (subscribed) SharedRes.strings.error_subscribe_notifications
+                            else SharedRes.strings.error_unsubscribe_notifications
+                        )
+                    )
                 }
                 .collectLatest { result ->
                     ensureActive()
@@ -191,7 +227,11 @@ class ServerDetailsViewModel(
                             serverDetailsJob = observeServerDetails(id)
                             snackbarController.sendEvent(
                                 SnackbarEvent(
-                                    message = if (subscribed) "Subscribed to notifications" else "Unsubscribed from notifications",
+                                    message = if (subscribed) {
+                                        stringProvider.get(SharedRes.strings.subscribed_to_notifications)
+                                    } else {
+                                        stringProvider.get(SharedRes.strings.unsubscribed_from_notifications)
+                                    },
                                     duration = Duration.SHORT
                                 )
                             )
@@ -201,7 +241,12 @@ class ServerDetailsViewModel(
                         }
                         is Result.Error -> when (result.exception) {
                             is SubscriptionLimitException -> navigateSubscription()
-                            else -> showErrorSnackbar("Error occurred when trying to ${if (subscribed) "subscribe to" else "unsubscribe from"} notifications")
+                            else -> showErrorSnackbar(
+                                stringProvider.get(
+                                    if (subscribed) SharedRes.strings.error_subscribe_notifications
+                                    else SharedRes.strings.error_unsubscribe_notifications
+                                )
+                            )
                         }
                     }
                 }
@@ -255,8 +300,10 @@ class ServerDetailsViewModel(
         coroutineScope.launch {
             snackbarController.sendEvent(
                 SnackbarEvent(
-                    message = "Email not confirmed",
-                    action = SnackbarAction("Resend") { navigateConfirmEmail() }
+                    message = stringProvider.get(SharedRes.strings.email_not_confirmed),
+                    action = SnackbarAction(
+                        stringProvider.get(SharedRes.strings.resend)
+                    ) { navigateConfirmEmail() }
                 )
             )
         }
@@ -265,13 +312,21 @@ class ServerDetailsViewModel(
     private fun resendConfirmation() {
         coroutineScope.launch {
             resendConfirmationUseCase()
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catch { e ->
+                    showErrorSnackbar(
+                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
+                    )
+                }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> snackbarController.sendEvent(
-                            SnackbarEvent("Confirmation email sent")
+                            SnackbarEvent(
+                                stringProvider.get(SharedRes.strings.confirmation_email_sent)
+                            )
                         )
-                        is Result.Error -> showErrorSnackbar(result.exception.message ?: "Unknown error")
+                        is Result.Error -> showErrorSnackbar(
+                            result.exception.message ?: stringProvider.get(SharedRes.strings.error_unknown)
+                        )
                     }
                 }
         }
@@ -288,8 +343,8 @@ class ServerDetailsViewModel(
                 changeIsLoading(false)
             }
             .onStart { changeIsLoading(true) }
-            .catch { e ->
-                showErrorSnackbar("Error occured when fetching data about the server")
+            .catch {
+                showErrorSnackbar(stringProvider.get(SharedRes.strings.error_fetching_server_data))
             }
             .launchIn(coroutineScope)
     }

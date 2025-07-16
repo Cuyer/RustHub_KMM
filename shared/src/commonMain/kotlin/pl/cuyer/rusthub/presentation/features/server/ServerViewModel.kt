@@ -51,6 +51,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.SharedRes
 import kotlinx.datetime.Clock.System
 
 //TODO pomyśleć co zrobić żeby uniknąć importu z data do viewmodela (mapowanie)
@@ -95,7 +96,9 @@ class ServerViewModel(
                 pagingData.map { it.toUiModel() }
             }.flowOn(Dispatchers.Default)
         }.cachedIn(coroutineScope)
-            .catch { e -> sendSnackbarEvent("Error occurred during fetching servers.") }
+            .catch {
+                sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_fetching_servers))
+            }
 
     private fun observeSearchQueries() {
         getSearchQueriesUseCase()
@@ -109,7 +112,9 @@ class ServerViewModel(
                 updateIsLoadingSearchHistory(false)
             }
             .onStart { updateIsLoadingSearchHistory(true) }
-            .catch { e -> sendSnackbarEvent("Error occurred during fetching search history.") }
+            .catch {
+                sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_fetching_search_history))
+            }
             .launchIn(coroutineScope)
     }
 
@@ -145,7 +150,9 @@ class ServerViewModel(
                 updateFilters(mappedFilters)
                 updateIsLoadingFilters(false)
             }
-            .catch { e -> sendSnackbarEvent("Error occurred during fetching filters.") }
+            .catch {
+                sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_fetching_filters))
+            }
             .launchIn(coroutineScope)
     }
 
@@ -181,7 +188,11 @@ class ServerViewModel(
                 if (query != null) deleteSearchQueriesUseCase(query)
                 else deleteSearchQueriesUseCase()
             }.onFailure {
-                val msg = if (query != null) "Error deleting query" else "Error deleting queries"
+                val msg = if (query != null) {
+                    stringProvider.get(SharedRes.strings.error_deleting_query)
+                } else {
+                    stringProvider.get(SharedRes.strings.error_deleting_queries)
+                }
                 sendSnackbarEvent(msg)
             }
         }
@@ -198,7 +209,7 @@ class ServerViewModel(
                     )
                 )
             }.onFailure {
-                sendSnackbarEvent("Error occurred during saving searched phrase.")
+                sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_search))
             }.onSuccess {
                 queryFlow.update { query }
             }
@@ -211,11 +222,17 @@ class ServerViewModel(
 
     private fun saveIpToClipboard(ipAddress: String?) {
         ipAddress?.let {
-            clipboardHandler.copyToClipboard("Server address", "client.connect $it")
+            clipboardHandler.copyToClipboard(
+                stringProvider.get(SharedRes.strings.server_address),
+                "client.connect $it"
+            )
             coroutineScope.launch {
                 snackbarController.sendEvent(
                     event = SnackbarEvent(
-                        message = "Saved $it to the clipboard!",
+                        message = stringProvider.get(
+                            SharedRes.strings.saved_to_clipboard,
+                            it
+                        ),
                         duration = Duration.SHORT
                     )
                 )
@@ -224,7 +241,7 @@ class ServerViewModel(
             coroutineScope.launch {
                 snackbarController.sendEvent(
                     event = SnackbarEvent(
-                        message = "There is no IP available for this server.",
+                        message = stringProvider.get(SharedRes.strings.no_ip_available),
                         duration = Duration.SHORT
                     )
                 )
@@ -238,7 +255,7 @@ class ServerViewModel(
             runCatching {
                 saveFiltersUseCase(filters)
             }.onFailure {
-                sendSnackbarEvent("Error occurred during saving filters.")
+                sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_filters))
             }
         }
     }
@@ -248,7 +265,7 @@ class ServerViewModel(
             runCatching {
                 clearFiltersUseCase()
             }.onFailure {
-                sendSnackbarEvent("Error occurred during clearing filters.")
+                sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_clearing_filters))
             }
         }
     }
@@ -310,7 +327,7 @@ class ServerViewModel(
                     ?: ServerQuery(filter = filter)
                 saveFiltersUseCase(current)
             }.onFailure {
-                sendSnackbarEvent("Error occurred during saving filters.")
+                sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_filters))
             }
         }
     }}

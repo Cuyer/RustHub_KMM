@@ -177,6 +177,7 @@ actual val platformModule: Module = module {
             getUserUseCase = get(),
             resendConfirmationUseCase = get(),
             permissionsController = get(),
+            stringProvider = get(),
             serverName = serverName,
             serverId = serverId,
             clipboardHandler = get(),
