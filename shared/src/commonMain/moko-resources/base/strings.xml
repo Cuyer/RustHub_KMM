@@ -39,8 +39,9 @@
     
     
     <string name="logout_error">Error occurred when trying to logout</string>
-    
-    
+
+    <string name="logout_button">Logout button</string>
+
     <string name="fetch_user_error">Error occurred during fetching user data.</string>
     
 
