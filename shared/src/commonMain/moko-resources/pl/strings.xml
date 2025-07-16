@@ -224,6 +224,7 @@
     <string name="view_details">Szczegóły</string>
     <string name="website">Strona</string>
     <string name="weekly">Tygodniowy</string>
+    <string name="biweekly">Dwutygodniowy</string>
     <string name="welcome_back">Witaj ponownie!</string>
     <string name="welcome_to_rusthub">Witamy w RustHub</string>
     <string name="faq_include_question">Co zawiera Rust Hub Pro?</string>

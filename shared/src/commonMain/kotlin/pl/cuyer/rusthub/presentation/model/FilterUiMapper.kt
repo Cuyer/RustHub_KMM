@@ -47,7 +47,7 @@ fun ServerQuery?.toUi(
             Triple(
                 stringProvider.get(SharedRes.strings.wipe_schedule),
                 schedules,
-                schedules.indexOf(this?.wipeSchedule?.displayName ?: "")
+                schedules.indexOf(this?.wipeSchedule?.displayName(stringProvider) ?: "")
             ),
             Triple(
                 stringProvider.get(SharedRes.strings.order),
