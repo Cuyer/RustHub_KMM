@@ -742,6 +742,50 @@
     <string name="unable_to_verify_email">Unable to verify email</string>
 
     <string name="email_not_confirmed_yet">E-mail not confirmed yet</string>
+
+    <string name="error_fetching_servers">Error occurred during fetching servers.</string>
+
+    <string name="error_fetching_search_history">Error occurred during fetching search history.</string>
+
+    <string name="error_fetching_filters">Error occurred during fetching filters.</string>
+
+    <string name="error_saving_search">Error occurred during saving searched phrase.</string>
+
+    <string name="error_deleting_query">Error deleting query</string>
+
+    <string name="error_deleting_queries">Error deleting queries</string>
+
+    <string name="server_address">Server address</string>
+
+    <string name="saved_to_clipboard">Saved %s to the clipboard!</string>
+
+    <string name="no_ip_available">There is no IP available for this server.</string>
+
+    <string name="error_saving_filters">Error occurred during saving filters.</string>
+
+    <string name="error_clearing_filters">Error occurred during clearing filters.</string>
+
+    <string name="added_to_favourites">Added %s to favourites</string>
+
+    <string name="removed_from_favourites">Removed %s from favourites</string>
+
+    <string name="subscribed_to_notifications">Subscribed to notifications</string>
+
+    <string name="unsubscribed_from_notifications">Unsubscribed from notifications</string>
+
+    <string name="error_add_favourite">Error occurred when trying to add server to favourites</string>
+
+    <string name="error_remove_favourite">Error occurred when trying to remove server from favourites</string>
+
+    <string name="error_subscribe_notifications">Error occurred when trying to subscribe to notifications</string>
+
+    <string name="error_unsubscribe_notifications">Error occurred when trying to unsubscribe from notifications</string>
+
+    <string name="email_not_confirmed">Email not confirmed</string>
+
+    <string name="resend">Resend</string>
+
+    <string name="error_fetching_server_data">Error occured when fetching data about the server</string>
     
 
 </resources>
