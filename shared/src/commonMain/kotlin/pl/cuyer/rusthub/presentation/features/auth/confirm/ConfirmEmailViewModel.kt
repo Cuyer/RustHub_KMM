@@ -71,8 +71,8 @@ class ConfirmEmailViewModel(
         confirmJob?.cancel()
         confirmJob = coroutineScope.launch {
             checkEmailConfirmedUseCase()
-                .onStart { updateConfirmLoading(true) }
-                .onCompletion { updateConfirmLoading(false) }
+                .onStart { updateLoading(true) }
+                .onCompletion { updateLoading(false) }
                 .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
                 .collectLatest { result ->
                     when (result) {
@@ -94,8 +94,8 @@ class ConfirmEmailViewModel(
         resendJob?.cancel()
         resendJob = coroutineScope.launch {
             resendConfirmationUseCase()
-                .onStart { updateResendLoading(true) }
-                .onCompletion { updateResendLoading(false) }
+                .onStart { updateLoading(true) }
+                .onCompletion { updateLoading(false) }
                 .catch { e -> showErrorSnackbar(handleError(e)) }
                 .collectLatest { result ->
                     when (result) {
@@ -135,12 +135,8 @@ class ConfirmEmailViewModel(
         }
     }
 
-    private fun updateConfirmLoading(isLoading: Boolean) {
+    private fun updateLoading(isLoading: Boolean) {
         _state.update { it.copy(isLoading = isLoading) }
-    }
-
-    private fun updateResendLoading(isLoading: Boolean) {
-        _state.update { it.copy(resendLoading = isLoading) }
     }
 
     private suspend fun showErrorSnackbar(message: String) {
