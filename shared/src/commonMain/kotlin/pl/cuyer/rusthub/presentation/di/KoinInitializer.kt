@@ -77,6 +77,7 @@ import pl.cuyer.rusthub.presentation.settings.SettingsController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.util.MessagingTokenManager
 import pl.cuyer.rusthub.util.TokenRefresher
+import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.validator.EmailValidator
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
@@ -110,9 +111,9 @@ val appModule = module {
     singleOf(::UserRepositoryImpl) bind UserRepository::class
     singleOf(::ConfigRepositoryImpl) bind ConfigRepository::class
     single { TokenRefresher(get()) }
-    single { EmailValidator }
-    single { PasswordValidator }
-    single { UsernameValidator }
+    single { EmailValidator(get()) }
+    single { PasswordValidator(get()) }
+    single { UsernameValidator(get()) }
     single { GetPagedServersUseCase(get(), get(), get(), get()) }
     single { GetFiltersUseCase(get()) }
     single { SaveFiltersUseCase(get()) }
