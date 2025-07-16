@@ -221,6 +221,7 @@
     <string name="view_details">Подробнее</string>
     <string name="website">Сайт</string>
     <string name="weekly">Еженедельно</string>
+    <string name="biweekly">Раз в две недели</string>
     <string name="welcome_back">С возвращением!</string>
     <string name="welcome_to_rusthub">Добро пожаловать в RustHub</string>
     <string name="faq_include_question">Что входит в Rust Hub Pro?</string>

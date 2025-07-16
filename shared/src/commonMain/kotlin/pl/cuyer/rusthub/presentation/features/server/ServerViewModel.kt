@@ -138,7 +138,7 @@ class ServerViewModel(
                 flags = filtersOptions?.flags?.map { it.displayName } ?: emptyList(),
                 regions = filtersOptions?.regions?.map { it.displayName } ?: emptyList(),
                 difficulties = filtersOptions?.difficulty?.map { it.displayName } ?: emptyList(),
-                schedules = filtersOptions?.wipeSchedules?.map { it.displayName } ?: emptyList(),
+                schedules = filtersOptions?.wipeSchedules?.map { it.displayName(stringProvider) } ?: emptyList(),
                 playerCount = filtersOptions?.maxPlayerCount ?: 0,
                 groupLimit = filtersOptions?.maxGroupLimit ?: 0,
                 ranking = filtersOptions?.maxRanking ?: 0
