@@ -390,7 +390,12 @@ private fun createLabels(item: ServerInfoUi, context: Context): List<Label> {
     val labels = mutableListOf<Label>()
 
     item.wipeSchedule?.let {
-        labels.add(Label(text = it.name))
+        val text = when (it) {
+            WipeSchedule.WEEKLY -> SharedRes.strings.weekly.getString(context)
+            WipeSchedule.BIWEEKLY -> SharedRes.strings.biweekly.getString(context)
+            WipeSchedule.MONTHLY -> SharedRes.strings.monthly.getString(context)
+        }
+        labels.add(Label(text = text))
     }
     item.difficulty?.let {
         labels.add(Label(text = it.name))
