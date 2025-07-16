@@ -3,6 +3,8 @@ package pl.cuyer.rusthub.data.network
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
+import android.os.Build
+import com.appmattus.certificatetransparency.certificateTransparencyInterceptor
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.authProvider
 import io.ktor.client.plugins.auth.providers.BearerAuthProvider
@@ -25,9 +27,16 @@ import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.data.network.auth.model.RefreshRequest
 import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
+import pl.cuyer.rusthub.data.network.AppCheckPlugin
+import pl.cuyer.rusthub.util.AppCheckTokenProvider
+import pl.cuyer.rusthub.util.BuildType
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import java.util.Locale
+
+private fun useCtLibrary(): Boolean {
+    return Build.VERSION.SDK_INT < 36
+}
 
 fun HttpClient.clearBearerToken() {
     authProvider<BearerAuthProvider>()?.clearToken()
@@ -35,11 +44,17 @@ fun HttpClient.clearBearerToken() {
 
 actual class HttpClientFactory actual constructor(
     private val json: Json,
-    private val authDataSource: AuthDataSource
+    private val authDataSource: AuthDataSource,
+    private val appCheckTokenProvider: AppCheckTokenProvider
 ) {
 
     actual fun create(): HttpClient {
         return HttpClient(OkHttp) {
+            engine {
+                if (useCtLibrary()) {
+                    addNetworkInterceptor(certificateTransparencyInterceptor())
+                }
+            }
             install(ContentNegotiation) {
                 json(json)
             }
@@ -61,13 +76,15 @@ actual class HttpClientFactory actual constructor(
 
                         if (response.status.isSuccess()) {
                             val newTokens: TokenPairDto = response.body()
+                            val confirmed = authDataSource.getUserOnce()?.emailConfirmed ?: false
                             authDataSource.insertUser(
                                 email = newTokens.email,
                                 username = newTokens.username,
                                 accessToken = newTokens.accessToken,
                                 refreshToken = newTokens.refreshToken,
                                 provider = AuthProvider.valueOf(newTokens.provider),
-                                subscribed = newTokens.subscribed
+                                subscribed = newTokens.subscribed,
+                                emailConfirmed = confirmed
                             )
                             BearerTokens(newTokens.accessToken, newTokens.refreshToken)
                         } else {
@@ -77,9 +94,15 @@ actual class HttpClientFactory actual constructor(
                     }
                 }
             }
-            install(Logging) {
-                logger = Logger.SIMPLE
-                level = LogLevel.ALL
+            if (BuildType.isDebug) {
+                install(Logging) {
+                    logger = Logger.SIMPLE
+                    level = LogLevel.ALL
+                }
+            }
+
+            install(AppCheckPlugin) {
+                provider = appCheckTokenProvider
             }
 
             defaultRequest {

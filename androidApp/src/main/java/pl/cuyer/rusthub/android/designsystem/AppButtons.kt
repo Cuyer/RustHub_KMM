@@ -18,10 +18,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.domain.model.Theme
+import pl.cuyer.rusthub.SharedRes
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -122,17 +124,18 @@ fun PreviewAppButton() {
                 .wrapContentSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            val context = LocalContext.current
             AppButton(
                 onClick = { /* noop */ },
                 isLoading = false
             ) {
-                Text("Submit")
+                Text(SharedRes.strings.submit.getString(context))
             }
             AppButton(
                 onClick = { /* noop */ },
                 isLoading = true
             ) {
-                Text("Submit")
+                Text(SharedRes.strings.submit.getString(context))
             }
         }
     }
@@ -149,17 +152,18 @@ fun PreviewAppOutlinedButton() {
                 .wrapContentSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            val context = LocalContext.current
             AppOutlinedButton(
                 onClick = { /* noop */ },
                 isLoading = false
             ) {
-                Text("Delete")
+                Text(SharedRes.strings.delete.getString(context))
             }
             AppOutlinedButton(
                 onClick = { /* noop */ },
                 isLoading = true
             ) {
-                Text("Delete")
+                Text(SharedRes.strings.delete.getString(context))
             }
         }
     }

@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.presentation.di
 
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
+import pl.cuyer.rusthub.util.BuildType
 import kotlinx.serialization.json.Json
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -64,6 +65,7 @@ import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
 import pl.cuyer.rusthub.domain.usecase.RequestPasswordResetUseCase
 import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
+import pl.cuyer.rusthub.domain.usecase.SetEmailConfirmedUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
@@ -75,6 +77,7 @@ import pl.cuyer.rusthub.presentation.settings.SettingsController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.util.MessagingTokenManager
 import pl.cuyer.rusthub.util.TokenRefresher
+import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.validator.EmailValidator
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
@@ -108,9 +111,9 @@ val appModule = module {
     singleOf(::UserRepositoryImpl) bind UserRepository::class
     singleOf(::ConfigRepositoryImpl) bind ConfigRepository::class
     single { TokenRefresher(get()) }
-    single { EmailValidator }
-    single { PasswordValidator }
-    single { UsernameValidator }
+    single { EmailValidator(get()) }
+    single { PasswordValidator(get()) }
+    single { UsernameValidator(get()) }
     single { GetPagedServersUseCase(get(), get(), get(), get()) }
     single { GetFiltersUseCase(get()) }
     single { SaveFiltersUseCase(get()) }
@@ -128,6 +131,7 @@ val appModule = module {
     single { CheckUserExistsUseCase(get()) }
     single { CheckEmailConfirmedUseCase(get()) }
     single { ResendConfirmationUseCase(get()) }
+    single { SetEmailConfirmedUseCase(get()) }
     single { GetUserUseCase(get()) }
     single { LogoutUserUseCase(get(), get(), get()) }
     single { DeleteAccountUseCase(get(), get(), get()) }
@@ -145,7 +149,9 @@ val appModule = module {
 expect val platformModule: Module
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
-    Napier.base(DebugAntilog())
+    if (BuildType.isDebug) {
+        Napier.base(DebugAntilog())
+    }
     appDeclaration()
     modules(appModule, platformModule)
 }

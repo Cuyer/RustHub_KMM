@@ -49,6 +49,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppSecureTextField
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
@@ -98,7 +99,7 @@ fun CredentialsScreen(
                     IconButton(onClick = { onAction(CredentialsAction.OnNavigateUp) }) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Navigate up"
+                            contentDescription = SharedRes.strings.navigate_up.getString(context)
                         )
                     }
                 },
@@ -156,6 +157,7 @@ private fun CredentialsStaticContent(
     userExists: Boolean,
     provider: AuthProvider?
 ) {
+    val context = LocalContext.current
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -164,24 +166,37 @@ private fun CredentialsStaticContent(
             modifier = Modifier
                 .size(64.dp),
             painter = painterResource(getImageByFileName("ic_padlock").drawableResId),
-            contentDescription = "Padlock Icon",
+            contentDescription = SharedRes.strings.padlock_icon.getString(context),
         )
         Spacer(Modifier.height(spacing.small))
         Text(
-            text = if (userExists) "Welcome back!" else "Create new account",
+            text = if (userExists) {
+                SharedRes.strings.welcome_back.getString(context)
+            } else {
+                SharedRes.strings.create_new_account.getString(context)
+            },
             style = MaterialTheme.typography.headlineLarge
         )
         if (userExists && provider != AuthProvider.GOOGLE) {
-            Text(text = "Enter your password", style = MaterialTheme.typography.headlineLarge)
+            Text(
+                text = SharedRes.strings.enter_your_password.getString(context),
+                style = MaterialTheme.typography.headlineLarge
+            )
         }
         Spacer(Modifier.height(spacing.small))
         Text(
             text = if (userExists && provider == AuthProvider.GOOGLE) {
-                "This Rust Hub account is already connected with social account."
+                SharedRes.strings.this_rust_hub_account_is_already_connected_with_social_account.getString(
+                    context
+                )
             } else if (userExists) {
-                "Use your password to sign in to an existing account."
+                SharedRes.strings.use_your_password_to_sign_in_to_an_existing_account.getString(
+                    context
+                )
             } else {
-                "Protect your account by providing a strong password."
+                SharedRes.strings.protect_your_account_by_providing_a_strong_password.getString(
+                    context
+                )
             },
             style = MaterialTheme.typography.bodyMedium
         )
@@ -239,7 +254,7 @@ private fun CredentialsScreenCompact(
                 modifier = Modifier
                     .imePadding()
                     .fillMaxWidth()
-            ) { Text("Continue") }
+            ) { Text(SharedRes.strings.continue_further.getString(LocalContext.current)) }
         }
     }
 }
@@ -297,7 +312,7 @@ private fun CredentialsScreenExpanded(
                     modifier = Modifier
                         .imePadding()
                         .fillMaxWidth()
-                ) { Text("Continue") }
+                ) { Text(SharedRes.strings.continue_further.getString(LocalContext.current)) }
             }
         }
     }
@@ -318,11 +333,12 @@ private fun CredentialsFields(
         modifier = Modifier
             .fillMaxWidth()
     ) {
+        val context = LocalContext.current
         if (userExists && provider == AuthProvider.GOOGLE) {
             SignProviderButton(
                 image = getImageByFileName("ic_google").drawableResId,
-                contentDescription = "Google logo",
-                text = "Continue with Google",
+                contentDescription = SharedRes.strings.google_logo.getString(context),
+                text = SharedRes.strings.continue_with_google.getString(context),
                 modifier = Modifier.fillMaxWidth(),
                 isLoading = googleLoading,
                 backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
@@ -338,8 +354,8 @@ private fun CredentialsFields(
                 requestFocus = true,
                 value = username,
                 onValueChange = { onAction(CredentialsAction.OnUsernameChange(it)) },
-                labelText = "Username",
-                placeholderText = "Enter your username",
+                labelText = SharedRes.strings.username.getString(context),
+                placeholderText = SharedRes.strings.enter_your_username.getString(context),
                 isError = usernameError != null,
                 errorText = usernameError,
                 modifier = Modifier.fillMaxWidth(),
@@ -352,8 +368,8 @@ private fun CredentialsFields(
                 requestFocus = userExists,
                 value = password,
                 onValueChange = { onAction(CredentialsAction.OnPasswordChange(it)) },
-                labelText = "Password",
-                placeholderText = "Enter your password",
+                labelText = SharedRes.strings.password.getString(context),
+                placeholderText = SharedRes.strings.enter_your_password.getString(context),
                 onSubmit = { onAction(CredentialsAction.OnSubmit) },
                 isError = passwordError != null,
                 errorText = passwordError,
@@ -367,7 +383,9 @@ private fun CredentialsFields(
                 AppTextButton(
                     modifier = Modifier.align(Alignment.End),
                     onClick = { onAction(CredentialsAction.OnForgotPassword) }
-                ) { Text(text = "Forgot password?") }
+                ) {
+                    Text(SharedRes.strings.forgot_password.getString(context))
+                }
             }
         }
     }

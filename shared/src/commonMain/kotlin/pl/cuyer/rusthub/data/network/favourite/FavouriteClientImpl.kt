@@ -22,7 +22,6 @@ class FavouriteClientImpl(
             when (result) {
                 is Result.Success -> Result.Success(Unit)
                 is Result.Error -> result
-                Result.Loading -> Result.Loading
             }
         }
     }
@@ -34,7 +33,6 @@ class FavouriteClientImpl(
             when (result) {
                 is Result.Success -> Result.Success(Unit)
                 is Result.Error -> result
-                Result.Loading -> Result.Loading
             }
         }
     }

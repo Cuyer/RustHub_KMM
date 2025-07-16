@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.android.feature.subscription
 
+import android.app.Activity
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -34,17 +35,16 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import android.app.Activity
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -65,51 +65,56 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.flowWithLifecycle
+import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
+import pl.cuyer.rusthub.util.StringProvider
 
 private data class Benefit(
     @DrawableRes
     val image: Int,
-    val title: String,
-    val desc: String
+    val title: StringResource,
+    val desc: StringResource
 )
 
 private val benefits = listOf(
     Benefit(
         getImageByFileName("il_rusthub_pro").drawableResId,
-        "Full Access",
-        "Get access to all PRO features "
+        SharedRes.strings.full_access,
+        SharedRes.strings.get_access_to_all_pro_features
     ),
     Benefit(
         getImageByFileName("il_unlimited_favourites").drawableResId,
-        "Unlimited favourites",
-        "Save as many servers as you like."
+        SharedRes.strings.unlimited_favourites,
+        SharedRes.strings.save_as_many_servers_as_you_like
     ),
     Benefit(
         getImageByFileName("il_unlimited_notifications").drawableResId,
-        "Unlimited notifications",
-        "Get notified about all your servers."
+        SharedRes.strings.unlimited_notifications,
+        SharedRes.strings.get_notified_about_all_your_servers
     ),
     Benefit(
         getImageByFileName("il_support_development").drawableResId,
-        "Support development",
-        "Help us keep improving Rust Hub."
+        SharedRes.strings.support_development,
+        SharedRes.strings.help_us_keep_improving_rust_hub
     )
 )
 
-private enum class Plan(val label: String, val billed: String) {
+private enum class Plan(val label: StringResource, val billed: StringResource) {
     MONTHLY(
-        "Monthly",
-        billed = "Billed monthly"
+        SharedRes.strings.monthly,
+        billed = SharedRes.strings.billed_monthly,
     ),
-    YEARLY("Yearly", billed = "Billed yearly"), LIFETIME("Lifetime", billed = "Pay once")
+    YEARLY(SharedRes.strings.yearly, billed = SharedRes.strings.billed_yearly),
+    LIFETIME(SharedRes.strings.lifetime, billed = SharedRes.strings.pay_once)
 }
 
 @OptIn(
@@ -135,7 +140,10 @@ fun SubscriptionScreen(
                 title = { },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Navigate up")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = SharedRes.strings.navigate_up.getString(LocalContext.current)
+                        )
                     }
                 }
             )
@@ -241,6 +249,8 @@ private fun SubscriptionMainContent(
     onPrivacyPolicy: () -> Unit,
     onTerms: () -> Unit
 ) {
+    val stringProvider = koinInject<StringProvider>()
+    val context = LocalContext.current
     HorizontalPager(state = pagerState) { page ->
         val benefit = benefits[page]
         Column(
@@ -253,9 +263,9 @@ private fun SubscriptionMainContent(
                 painter = painterResource(benefit.image),
                 contentDescription = null
             )
-            Text(benefit.title, style = MaterialTheme.typography.titleMedium)
+            Text(benefit.title.getString(context), style = MaterialTheme.typography.titleMedium)
             Text(
-                benefit.desc,
+                benefit.desc.getString(context),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -310,13 +320,13 @@ private fun SubscriptionMainContent(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "PRO",
+                        SharedRes.strings.pro.getString(context),
                         style = MaterialTheme.typography.titleMedium,
                         color = Color(0xFFFDDA0D)
                     )
-                    Text(plan.label, style = MaterialTheme.typography.titleMedium)
+                    Text(plan.label.getString(context), style = MaterialTheme.typography.titleMedium)
                     Text(
-                        plan.billed,
+                        plan.billed.getString(context),
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Thin)
                     )
                 }
@@ -325,28 +335,40 @@ private fun SubscriptionMainContent(
     }
     AppButton(
         modifier = Modifier.fillMaxWidth(),
-        onClick = {}) { Text("Subscribe to ${selectedPlan.label} plan") }
-    AppTextButton(onClick = onNavigateUp) { Text("Not now") }
+        onClick = {}) {
+        Text(stringProvider.get((SharedRes.strings.subscribe_to_plan), selectedPlan.label.getString(context)))
+    }
+    AppTextButton(onClick = onNavigateUp) {
+        Text(SharedRes.strings.not_now.getString(context))
+    }
     Text(
         textAlign = TextAlign.Center,
-        text = "Cancel your subscription at any time.\n\nSubscriptions will automatically renew unless canceled within 24-hours before the end of the current period. You can cancel anytime through your Google Play Store settings.\nRust Hub Pro Lifetime is a one time in-app purchase",
+        text = SharedRes.strings.subscription_disclaimer.getString(context),
         style = MaterialTheme.typography.bodySmall
     )
     Row(horizontalArrangement = Arrangement.spacedBy(spacing.medium)) {
-        AppTextButton(onClick = onPrivacyPolicy) { Text("Privacy policy") }
-        AppTextButton(onClick = onTerms) { Text("Terms & conditions") }
+        AppTextButton(onClick = onPrivacyPolicy) {
+            Text(SharedRes.strings.privacy_policy.getString(context))
+        }
+        AppTextButton(onClick = onTerms) {
+            Text(SharedRes.strings.terms_conditions.getString(context))
+        }
     }
 }
 
 
 @Composable
 private fun ComparisonSection() {
+    val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(spacing.medium),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Need to compare?", style = MaterialTheme.typography.titleMedium)
+        Text(
+            SharedRes.strings.need_to_compare.getString(context),
+            style = MaterialTheme.typography.titleMedium
+        )
 
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -360,13 +382,13 @@ private fun ComparisonSection() {
             ) {
                 Text("", modifier = Modifier.weight(0.5f))
                 Text(
-                    "Free",
+                    SharedRes.strings.free.getString(context),
                     modifier = Modifier.weight(0.25f),
                     style = MaterialTheme.typography.titleSmall,
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    "PRO",
+                    SharedRes.strings.pro.getString(context),
                     modifier = Modifier.weight(0.25f),
                     style = MaterialTheme.typography.titleSmall,
                     color = Color(0xFFFDDA0D),
@@ -379,8 +401,8 @@ private fun ComparisonSection() {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Add notifications", modifier = Modifier.weight(0.5f))
-                Text("3 max", modifier = Modifier.weight(0.25f), textAlign = TextAlign.Center)
+                Text(SharedRes.strings.add_notifications.getString(context), modifier = Modifier.weight(0.5f))
+                Text(SharedRes.strings.three_max.getString(context), modifier = Modifier.weight(0.25f), textAlign = TextAlign.Center)
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
@@ -394,8 +416,8 @@ private fun ComparisonSection() {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Add to favourites", modifier = Modifier.weight(0.5f))
-                Text("3 max", modifier = Modifier.weight(0.25f), textAlign = TextAlign.Center)
+                Text(SharedRes.strings.add_to_favourites.getString(context), modifier = Modifier.weight(0.5f))
+                Text(SharedRes.strings.three_max.getString(context), modifier = Modifier.weight(0.25f), textAlign = TextAlign.Center)
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
@@ -411,20 +433,24 @@ private fun ComparisonSection() {
 @OptIn(ExperimentalAnimationApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 private fun FaqSection() {
+    val context = LocalContext.current
     val faqs = listOf(
-        "What does Rust Hub Pro include?" to "Rust Hub Pro includes unlimited favourite servers and unlimited notifications.",
-        "Is Rust Hub Pro a one-time payment or will it renew automatically?" to "The Rust Hub Pro monthly and yearly plans are subscriptions that renew automatically at the end of your subscription term to avoid any interruption to your service. If you cancel your subscription, you will continue to have access to Rust Hub Pro until your subscription expires. The Rust Hub Pro Lifetime plan is a one time purchase.",
-        "Can I cancel my subscription anytime?" to "Yes, you can cancel your Rust Hub Pro monthly or yearly subscription whenever you want! You will continue to have access to Rust Hub Pro until your subscription expires.",
-        "Can I switch subscription plans?" to "Yes, absolutely. You are able to change subscription plans at any time through the Subscription tab in Rust Hub settings.",
-        "What happens if i switch devices or platforms?" to "You can sign into your account across platforms with the same user name and password. The subscription is connected to your account, not the platform you are using. You can be signed into two different devices simultaneously and even two different platforms at the same time.",
-        "How does Rust Hub Pro Lifetime plan work?" to "The Rust Hub Pro Lifetime plan  is a one time purchase. You will have access to Rust Hub Pro forever.\n\nIf you are already subscribed to a monthly or yearly plan and want to switch to a lifetime plan, make sure to cancel your monthly or yearly subscription after you purchase the lifetime plan to avoid any recurring charges."
+        SharedRes.strings.faq_include_question.getString(context) to SharedRes.strings.faq_include_answer.getString(context),
+        SharedRes.strings.faq_renew_question.getString(context) to SharedRes.strings.faq_renew_answer.getString(context),
+        SharedRes.strings.faq_cancel_question.getString(context) to SharedRes.strings.faq_cancel_answer.getString(context),
+        SharedRes.strings.faq_switch_plan_question.getString(context) to SharedRes.strings.faq_switch_plan_answer.getString(context),
+        SharedRes.strings.faq_devices_question.getString(context) to SharedRes.strings.faq_devices_answer.getString(context),
+        SharedRes.strings.faq_lifetime_question.getString(context) to SharedRes.strings.faq_lifetime_answer.getString(context)
     )
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
-        Text("Any questions?", style = MaterialTheme.typography.titleMedium)
+        Text(
+            SharedRes.strings.any_questions.getString(context),
+            style = MaterialTheme.typography.titleMedium
+        )
         Spacer(modifier = Modifier.height(spacing.medium))
         faqs.forEach { (q, a) ->
             var expanded by remember { mutableStateOf(false) }

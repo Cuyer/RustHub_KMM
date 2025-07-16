@@ -45,6 +45,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
+import org.koin.compose.koinInject
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
@@ -53,6 +55,7 @@ import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailAction
 import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import pl.cuyer.rusthub.util.StringProvider
 
 @OptIn(
     ExperimentalMaterial3WindowSizeClassApi::class,
@@ -93,7 +96,10 @@ fun ConfirmEmailScreen(
                 title = { },
                 navigationIcon = {
                     IconButton(onClick = { onAction(ConfirmEmailAction.OnBack) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Navigate up")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = SharedRes.strings.navigate_up.getString(context)
+                        )
                     }
                 },
                 scrollBehavior = scrollBehavior
@@ -120,6 +126,7 @@ fun ConfirmEmailScreen(
 
 @Composable
 private fun ConfirmEmailScreenCompact(state: ConfirmEmailState, onAction: (ConfirmEmailAction) -> Unit) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -135,7 +142,7 @@ private fun ConfirmEmailScreenCompact(state: ConfirmEmailState, onAction: (Confi
             modifier = Modifier
                 .imePadding()
                 .fillMaxWidth()
-        ) { Text("Confirmed") }
+        ) { Text(SharedRes.strings.confirmed.getString(context)) }
         AppTextButton(
             onClick = { onAction(ConfirmEmailAction.OnResend) },
             enabled = !state.resendLoading
@@ -146,7 +153,7 @@ private fun ConfirmEmailScreenCompact(state: ConfirmEmailState, onAction: (Confi
                     strokeWidth = 2.dp
                 )
             } else {
-                Text("Resend email")
+           Text(SharedRes.strings.resend_email.getString(context))
             }
         }
     }
@@ -154,6 +161,7 @@ private fun ConfirmEmailScreenCompact(state: ConfirmEmailState, onAction: (Confi
 
 @Composable
 private fun ConfirmEmailScreenExpanded(state: ConfirmEmailState, onAction: (ConfirmEmailAction) -> Unit) {
+    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxSize()
@@ -175,7 +183,7 @@ private fun ConfirmEmailScreenExpanded(state: ConfirmEmailState, onAction: (Conf
                 modifier = Modifier
                     .imePadding()
                     .fillMaxWidth()
-            ) { Text("Confirmed") }
+            ) { Text(SharedRes.strings.confirmed.getString(context)) }
             AppTextButton(
                 onClick = { onAction(ConfirmEmailAction.OnResend) },
                 enabled = !state.resendLoading
@@ -186,24 +194,35 @@ private fun ConfirmEmailScreenExpanded(state: ConfirmEmailState, onAction: (Conf
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Text("Resend email")
+                    Text(SharedRes.strings.resend_email.getString(context))
                 }
-            }
+            )
         }
     }
 }
 
 @Composable
 private fun ConfirmEmailStaticContent(email: String, modifier: Modifier = Modifier) {
+    val stringProvider = koinInject<StringProvider>()
+    val context = LocalContext.current
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start) {
         Image(
             modifier = Modifier.size(64.dp),
             painter = painterResource(getImageByFileName("ic_mail").drawableResId),
-            contentDescription = "Mail Icon",
+            contentDescription = SharedRes.strings.mail_icon.getString(context),
         )
         Spacer(Modifier.size(spacing.small))
-        Text(text = "Confirm your email", style = MaterialTheme.typography.headlineLarge)
+        Text(
+            text = SharedRes.strings.confirm_your_email.getString(context),
+            style = MaterialTheme.typography.headlineLarge
+        )
         Spacer(Modifier.size(spacing.small))
-        Text(text = "We have sent a confirmation link to $email. After confirming, press the button below.", style = MaterialTheme.typography.bodyMedium)
+        Text(
+            text = stringProvider.get(
+                SharedRes.strings.confirmation_sent_message,
+                email
+            ),
+            style = MaterialTheme.typography.bodyMedium
+        )
     }
 }

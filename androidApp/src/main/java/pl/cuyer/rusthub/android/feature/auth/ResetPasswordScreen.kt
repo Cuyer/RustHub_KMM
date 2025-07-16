@@ -42,6 +42,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppTextField
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
@@ -143,7 +144,7 @@ private fun ResetPasswordScreenCompact(
                 focusManager.clearFocus()
                 onAction(ResetPasswordAction.OnSend)
             }
-        ) { Text("Send email") }
+        ) { Text(SharedRes.strings.send_email.getString(LocalContext.current)) }
     }
 }
 
@@ -179,27 +180,30 @@ private fun ResetPasswordScreenExpanded(
                     focusManager.clearFocus()
                     onAction(ResetPasswordAction.OnSend)
                 }
-            ) { Text("Send email") }
+            ) { Text(SharedRes.strings.send_email.getString(LocalContext.current)) }
         }
     }
 }
 
 @Composable
 private fun ResetPasswordStaticContent(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     Column(modifier = modifier.fillMaxWidth()) {
         Icon(
             modifier = Modifier.size(64.dp),
             painter = painterResource(getImageByFileName("ic_padlock").drawableResId),
-            contentDescription = "Forgot password icon"
+            contentDescription = SharedRes.strings.forgot_password_icon.getString(context)
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
-            text = "Reset password",
+            text = SharedRes.strings.reset_password.getString(context),
             style = MaterialTheme.typography.headlineLarge
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
-            text = "Enter your e-mail to receive password reset link.",
+            text = SharedRes.strings.enter_your_e_mail_to_receive_password_reset_link.getString(
+                context
+            ),
             style = MaterialTheme.typography.bodyMedium
         )
     }
@@ -211,12 +215,13 @@ private fun ResetPasswordField(
     emailError: String?,
     onAction: (ResetPasswordAction) -> Unit
 ) {
+    val context = LocalContext.current
     AppTextField(
         requestFocus = true,
         value = email,
         onValueChange = { onAction(ResetPasswordAction.OnEmailChange(it)) },
-        labelText = "E-mail",
-        placeholderText = "Enter your e-mail",
+        labelText = SharedRes.strings.e_mail.getString(context),
+        placeholderText = SharedRes.strings.enter_your_e_mail.getString(context),
         keyboardType = KeyboardType.Email,
         imeAction = if (email.isNotBlank()) ImeAction.Send else ImeAction.Done,
         onSubmit = { onAction(ResetPasswordAction.OnSend) },

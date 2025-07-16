@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -20,19 +21,22 @@ import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.exception.TooManyRequestsException
 import pl.cuyer.rusthub.domain.usecase.CheckEmailConfirmedUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
-import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
+import pl.cuyer.rusthub.domain.usecase.SetEmailConfirmedUseCase
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.util.StringProvider
 
 class ConfirmEmailViewModel(
     private val checkEmailConfirmedUseCase: CheckEmailConfirmedUseCase,
     private val getUserUseCase: GetUserUseCase,
     private val resendConfirmationUseCase: ResendConfirmationUseCase,
     private val snackbarController: SnackbarController,
-    private val logoutUserUseCase: LogoutUserUseCase
+    private val setEmailConfirmedUseCase: SetEmailConfirmedUseCase,
+    private val stringProvider: StringProvider,
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -49,18 +53,18 @@ class ConfirmEmailViewModel(
     private var confirmJob: Job? = null
     private var resendJob: Job? = null
 
-    private var logoutJob: Job? = null
 
     fun onAction(action: ConfirmEmailAction) {
         when (action) {
             ConfirmEmailAction.OnConfirm -> confirm()
             ConfirmEmailAction.OnResend -> resend()
-            ConfirmEmailAction.OnBack -> logout()
+            ConfirmEmailAction.OnBack -> navigateBack()
         }
     }
 
     private fun observeUser() {
         getUserUseCase()
+            .distinctUntilChanged()
             .onEach { user ->
                 _state.update { it.copy(email = user?.email ?: "", provider = user?.provider) }
             }
@@ -73,17 +77,27 @@ class ConfirmEmailViewModel(
             checkEmailConfirmedUseCase()
                 .onStart { updateConfirmLoading(true) }
                 .onCompletion { updateConfirmLoading(false) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catch { e -> 
+                             showErrorSnackbar(
+                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
+                    )
+                }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
                             if (result.data) {
+                                setEmailConfirmedUseCase(true)
                                 _uiEvent.send(UiEvent.Navigate(ServerList))
                             } else {
-                                showErrorSnackbar("E-mail not confirmed yet")
+                                showErrorSnackbar(
+                                    stringProvider.get(SharedRes.strings.email_not_confirmed_yet)
+                                )
                             }
                         }
-                        is Result.Error -> showErrorSnackbar(result.exception.message ?: "Unable to verify email")
+                        is Result.Error -> showErrorSnackbar(
+                            result.exception.message
+                                ?: stringProvider.get(SharedRes.strings.unable_to_verify_email)
+                        )
                         else -> Unit
                     }
                 }
@@ -100,38 +114,21 @@ class ConfirmEmailViewModel(
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> snackbarController.sendEvent(
-                            SnackbarEvent("Confirmation email sent")
+                            SnackbarEvent(
+                                stringProvider.get(SharedRes.strings.confirmation_email_sent)
+                            )
                         )
                         is Result.Error -> showErrorSnackbar(handleError(result.exception))
-                        else -> Unit
                     }
                 }
         }
     }
 
-    private fun logout() {
-        logoutJob?.cancel()
-        logoutJob = coroutineScope.launch {
-            logoutUserUseCase()
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
-                .collectLatest { result ->
-                    when (result) {
-                        is Result.Success -> {
-                            _uiEvent.send(UiEvent.NavigateUp)
-                        }
-
-                        is Result.Error -> showErrorSnackbar("Error occurred when trying to logout")
-
-                        else -> Unit
-                    }
-                }
-        }
-    }
 
     private fun handleError(throwable: Throwable): String {
         return when (throwable) {
-            is TooManyRequestsException -> "Please wait before resending"
-            else -> throwable.message ?: "Unknown error"
+            is TooManyRequestsException -> stringProvider.get(SharedRes.strings.wait_before_resending)
+            else -> throwable.message ?: stringProvider.get(SharedRes.strings.error_unknown)
         }
     }
 
@@ -145,5 +142,9 @@ class ConfirmEmailViewModel(
 
     private suspend fun showErrorSnackbar(message: String) {
         snackbarController.sendEvent(SnackbarEvent(message = message))
+    }
+
+    private fun navigateBack() {
+        coroutineScope.launch { _uiEvent.send(UiEvent.NavigateUp) }
     }
 }

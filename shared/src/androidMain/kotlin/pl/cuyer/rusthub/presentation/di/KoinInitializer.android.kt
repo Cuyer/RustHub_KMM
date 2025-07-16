@@ -6,9 +6,11 @@ import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import pl.cuyer.rusthub.data.local.DatabaseDriverFactory
+import pl.cuyer.rusthub.data.local.DatabasePassphraseProvider
 import pl.cuyer.rusthub.data.network.HttpClientFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.AuthProvider
+import pl.cuyer.rusthub.util.AppCheckTokenProvider
 import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
@@ -24,25 +26,42 @@ import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
 import pl.cuyer.rusthub.util.ShareHandler
+import pl.cuyer.rusthub.util.ReviewRequester
 import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
+import pl.cuyer.rusthub.util.InAppUpdateManager
+import pl.cuyer.rusthub.util.StringProvider
+import kotlinx.coroutines.runBlocking
+import pl.cuyer.rusthub.BuildConfig
 
 actual val platformModule: Module = module {
-    single<RustHubDatabase> { DatabaseDriverFactory(androidContext()).create() }
-    single { HttpClientFactory(get(), get()).create() }
+    single { DatabasePassphraseProvider(androidContext()) }
+    single<RustHubDatabase> {
+        if (BuildConfig.USE_ENCRYPTED_DB) {
+            val passphrase = runBlocking { get<DatabasePassphraseProvider>().getPassphrase() }
+            DatabaseDriverFactory(androidContext(), passphrase).create()
+        } else {
+            DatabaseDriverFactory(androidContext()).create()
+        }
+    }
+    single { AppCheckTokenProvider() }
+    single { HttpClientFactory(get(), get(), get()).create() }
     single { TokenRefresher(get()) }
     single { ClipboardHandler(get()) }
     single { ShareHandler(get()) }
     single { SyncScheduler(get()) }
     single { SubscriptionSyncScheduler(get()) }
     single { MessagingTokenScheduler(get()) }
+    single { InAppUpdateManager(androidContext(), get()) }
+    single { ReviewRequester(androidContext()) }
     single { StoreNavigator(androidContext()) }
     single { GoogleAuthClient(androidContext()) }
+    single { StringProvider(androidContext()) }
     single { PermissionsController(androidContext()) }
     viewModel {
-        StartupViewModel(get(), get(), get())
+        StartupViewModel(get(), get(), get(), get(), get())
     }
     viewModel {
         OnboardingViewModel(
@@ -52,7 +71,8 @@ actual val platformModule: Module = module {
             getGoogleClientIdUseCase = get(),
             googleAuthClient = get(),
             snackbarController = get(),
-            emailValidator = get()
+            emailValidator = get(),
+            stringProvider = get()
         )
     }
     viewModel { (email: String, exists: Boolean, provider: AuthProvider?) ->
@@ -70,6 +90,7 @@ actual val platformModule: Module = module {
             loginWithGoogleUseCase = get(),
             getGoogleClientIdUseCase = get(),
             googleAuthClient = get()
+            , stringProvider = get()
         )
     }
     viewModel {
@@ -83,7 +104,8 @@ actual val platformModule: Module = module {
             clearFiltersUseCase = get(),
             saveSearchQueryUseCase = get(),
             getSearchQueriesUseCase = get(),
-            deleteSearchQueriesUseCase = get()
+            deleteSearchQueriesUseCase = get(),
+            stringProvider = get()
         )
     }
     viewModel {
@@ -94,7 +116,8 @@ actual val platformModule: Module = module {
             getUserUseCase = get(),
             permissionsController = get(),
             googleAuthClient = get(),
-            snackbarController = get()
+            snackbarController = get(),
+            stringProvider = get()
         )
     }
     viewModel {
@@ -102,7 +125,8 @@ actual val platformModule: Module = module {
             deleteAccountUseCase = get(),
             snackbarController = get(),
             passwordValidator = get(),
-            getUserUseCase = get()
+            getUserUseCase = get(),
+            stringProvider = get()
         )
     }
     viewModel {
@@ -110,6 +134,7 @@ actual val platformModule: Module = module {
             changePasswordUseCase = get(),
             snackbarController = get(),
             passwordValidator = get(),
+            stringProvider = get(),
         )
     }
     viewModel { (email: String) ->
@@ -117,7 +142,8 @@ actual val platformModule: Module = module {
             email = email,
             requestPasswordResetUseCase = get(),
             snackbarController = get(),
-            emailValidator = get()
+            emailValidator = get(),
+            stringProvider = get()
         )
     }
     viewModel {
@@ -129,7 +155,8 @@ actual val platformModule: Module = module {
             snackbarController = get(),
             usernameValidator = get(),
             passwordValidator = get(),
-            emailValidator = get()
+            emailValidator = get(),
+            stringProvider = get()
         )
     }
     viewModel {
@@ -138,7 +165,8 @@ actual val platformModule: Module = module {
             getUserUseCase = get(),
             resendConfirmationUseCase = get(),
             snackbarController = get(),
-            logoutUserUseCase = get()
+            setEmailConfirmedUseCase = get(),
+            stringProvider = get()
         )
     }
     viewModel { (serverId: Long, serverName: String?) ->
@@ -146,12 +174,17 @@ actual val platformModule: Module = module {
             getServerDetailsUseCase = get(),
             toggleFavouriteUseCase = get(),
             toggleSubscriptionUseCase = get(),
+            getUserUseCase = get(),
+            resendConfirmationUseCase = get(),
             permissionsController = get(),
+            stringProvider = get(),
             serverName = serverName,
             serverId = serverId,
             clipboardHandler = get(),
             snackbarController = get(),
-            shareHandler = get()
+            shareHandler = get(),
+            reviewRequester = get()
         )
     }
 }
+

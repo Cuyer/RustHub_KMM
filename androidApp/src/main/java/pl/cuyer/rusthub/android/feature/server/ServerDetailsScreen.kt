@@ -65,6 +65,8 @@ import pl.cuyer.rusthub.android.designsystem.ServerDetail
 import pl.cuyer.rusthub.android.designsystem.ServerWebsite
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.SharedRes
+import androidx.compose.ui.platform.LocalContext
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
@@ -87,6 +89,7 @@ fun ServerDetailsScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val lazyListState = rememberLazyListState()
     val state = stateProvider().value
+    val context = LocalContext.current
 
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
@@ -130,7 +133,11 @@ fun ServerDetailsScreen(
                         DropdownMenuItem(
                             text = {
                                 Text(
-                                    if (state.details?.isFavorite == true) "Remove from favourites" else "Add to favourites"
+                                    if (state.details?.isFavorite == true) {
+                                        SharedRes.strings.remove_from_favourites.getString(context)
+                                    } else {
+                                        SharedRes.strings.add_to_favourites.getString(context)
+                                    }
                                 )
                             },
                             onClick = {
@@ -149,7 +156,11 @@ fun ServerDetailsScreen(
                         DropdownMenuItem(
                             text = {
                                 Text(
-                                    if (state.details?.isSubscribed == true) "Turn off notifications" else "Turn on notifications"
+                                    if (state.details?.isSubscribed == true) {
+                                        SharedRes.strings.turn_off_notifications.getString(context)
+                                    } else {
+                                        SharedRes.strings.turn_on_notifications.getString(context)
+                                    }
                                 )
                             },
                             onClick = {
@@ -166,7 +177,7 @@ fun ServerDetailsScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Share") },
+                            text = { Text(SharedRes.strings.share.getString(context)) },
                             onClick = {
                                 expanded = false
                                 onAction(ServerDetailsAction.OnShare)
@@ -193,7 +204,7 @@ fun ServerDetailsScreen(
                         Text(
                             modifier = Modifier.padding(spacing.medium),
                             style = MaterialTheme.typography.titleLarge,
-                            text = "General info"
+                            text = SharedRes.strings.general_info.getString(context)
                         )
 
                         it.headerImage?.let {
@@ -210,14 +221,14 @@ fun ServerDetailsScreen(
                         it.ranking?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
-                                label = "Ranking",
+                                label = SharedRes.strings.ranking.getString(context),
                                 value = it.toInt()
                             )
                         }
                         it.serverStatus?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
-                                label = "Status",
+                                label = SharedRes.strings.status.getString(context),
                                 value = it.name,
                                 valueColor = if (it == ServerStatus.ONLINE) Color(0xFF00C853) else Color(
                                     0xFFF44336
@@ -231,7 +242,7 @@ fun ServerDetailsScreen(
                             ) {
                                 Text(
                                     style = MaterialTheme.typography.bodyLarge,
-                                    text = "IP: "
+                                    text = SharedRes.strings.ip.getString(context) + ": "
                                 )
                                 Text(
                                     style = MaterialTheme.typography.bodyLarge.copy(
@@ -251,7 +262,7 @@ fun ServerDetailsScreen(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.ContentCopy,
-                                        contentDescription = "Icon to copy IP address"
+                                        contentDescription = SharedRes.strings.icon_to_copy_ip_address.getString(context)
                                     )
                                 }
                             }
@@ -264,7 +275,7 @@ fun ServerDetailsScreen(
                             ) {
                                 Text(
                                     style = MaterialTheme.typography.bodyLarge,
-                                    text = "Country:"
+                                    text = SharedRes.strings.country.getString(context) + ":"
                                 )
                                 Flag.fromDisplayName(it.displayName)?.let { flag ->
                                     Image(
@@ -280,7 +291,7 @@ fun ServerDetailsScreen(
                         it.averageFps?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
-                                label = "Average FPS",
+                                label = SharedRes.strings.average_fps.getString(context),
                                 value = it.toString()
                             )
                         }
@@ -288,7 +299,7 @@ fun ServerDetailsScreen(
                         it.lastWipe?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
-                                label = "Last wipe",
+                                label = SharedRes.strings.last_wipe.getString(context),
                                 value = it
                             )
                         }
@@ -296,7 +307,7 @@ fun ServerDetailsScreen(
                         it.nextWipe?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
-                                label = "Next wipe",
+                                label = SharedRes.strings.next_wipe.getString(context),
                                 value = it
                             )
                         }
@@ -304,7 +315,7 @@ fun ServerDetailsScreen(
                         it.nextMapWipe?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
-                                label = "Next map wipe",
+                                label = SharedRes.strings.next_map_wipe.getString(context),
                                 value = it
                             )
                         }
@@ -312,8 +323,8 @@ fun ServerDetailsScreen(
                         it.pve?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
-                                label = "PVE",
-                                value = if (it) "True" else "False"
+                                label = SharedRes.strings.pve.getString(context),
+                                value = if (it) SharedRes.strings.true_str.getString(context) else SharedRes.strings.no.getString(context)
                             )
                         }
 
@@ -328,16 +339,16 @@ fun ServerDetailsScreen(
                         it.isOfficial?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
-                                label = "Official",
-                                value = if (it) "True" else "False"
+                                label = SharedRes.strings.official.getString(context),
+                                value = if (it) SharedRes.strings.true_str.getString(context) else SharedRes.strings.false_str.getString(context)
                             )
                         }
 
                         it.isPremium?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
-                                label = "Premium",
-                                value = if (it) "True" else "False"
+                                label = SharedRes.strings.premium.getString(context),
+                                value = if (it) SharedRes.strings.true_str.getString(context) else SharedRes.strings.false_str.getString(context)
                             )
                         }
                     }
@@ -347,37 +358,37 @@ fun ServerDetailsScreen(
                         Text(
                             modifier = Modifier.padding(spacing.medium),
                             style = MaterialTheme.typography.titleLarge,
-                            text = "Settings"
+                            text = SharedRes.strings.settings.getString(context)
                         )
 
                         it.maxGroup?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
-                                label = "Group limit",
-                                value = if (it == 999999L) "None" else it.toString()
+                                label = SharedRes.strings.group_limit.getString(context),
+                                value = if (it == 999999L) SharedRes.strings.none.getString(context) else it.toString()
                             )
                         }
 
                         it.blueprints?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
-                                label = "Blueprints",
-                                value = if (it) "Enabled" else "Disabled"
+                                label = SharedRes.strings.blueprints.getString(context),
+                                value = if (it) SharedRes.strings.enabled.getString(context) else SharedRes.strings.disabled.getString(context)
                             )
                         }
 
                         it.kits?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
-                                label = "Kits",
-                                value = if (it) "Yes" else "No kits"
+                                label = SharedRes.strings.kits.getString(context),
+                                value = if (it) SharedRes.strings.yes.getString(context) else SharedRes.strings.no_kits.getString(context)
                             )
                         }
 
                         it.decay?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
-                                label = "Decay",
+                                label = SharedRes.strings.decay.getString(context),
                                 value = it * 100L
                             )
                         }
@@ -385,7 +396,7 @@ fun ServerDetailsScreen(
                         it.upkeep?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
-                                label = "Upkeep",
+                                label = SharedRes.strings.upkeep.getString(context),
                                 value = it * 100L
                             )
                         }
@@ -393,7 +404,7 @@ fun ServerDetailsScreen(
                         it.rates?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
-                                label = "Rates",
+                                label = SharedRes.strings.rates.getString(context),
                                 value = it
                             )
                         }
@@ -403,7 +414,7 @@ fun ServerDetailsScreen(
                         Text(
                             modifier = Modifier.padding(spacing.medium),
                             style = MaterialTheme.typography.titleLarge,
-                            text = "Description"
+                            text = SharedRes.strings.description.getString(context)
                         )
                         HtmlStyledText(
                             modifier = Modifier.padding(spacing.medium),
@@ -415,41 +426,41 @@ fun ServerDetailsScreen(
                         Text(
                             modifier = Modifier.padding(spacing.medium),
                             style = MaterialTheme.typography.titleLarge,
-                            text = "Map information"
+                            text = SharedRes.strings.map_information.getString(context)
                         )
                         it.seed?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
-                                label = "Seed",
+                                label = SharedRes.strings.seed.getString(context),
                                 value = it.toString()
                             )
                         }
                         it.mapSize?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
-                                label = "Map size",
+                                label = SharedRes.strings.map_size.getString(context),
                                 value = it
                             )
                         }
                         it.mapName?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
-                                label = "Map name",
+                                label = SharedRes.strings.map_name.getString(context),
                                 value = it.displayName
                             )
                         }
                         it.monuments?.let {
                             ServerDetail(
                                 modifier = Modifier.padding(spacing.medium),
-                                label = "Monuments",
+                                label = SharedRes.strings.monuments.getString(context),
                                 value = it
                             )
                         }
                         it.mapUrl?.let {
                             ServerWebsite(
-                                label = "Additional information available at",
+                                label = SharedRes.strings.additional_information_available_at.getString(context),
                                 website = it,
-                                alias = "RustMaps",
+                                alias = SharedRes.strings.rustmaps.getString(context),
                                 spacing = spacing,
                                 urlColor = Color(0xFF1E88E5)
                             )
@@ -463,7 +474,7 @@ fun ServerDetailsScreen(
                                     bottom = spacing.medium
                                 ),
                                 model = it,
-                                contentDescription = "Rust map image"
+                                contentDescription = SharedRes.strings.rust_map_image.getString(context)
                             )
                         }
                     }

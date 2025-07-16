@@ -55,6 +55,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import pl.cuyer.rusthub.SharedRes
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
@@ -207,7 +208,7 @@ fun ServerScreen(
                     when (error) {
                         is NetworkUnavailableException, is TimeoutException,
                         is ServiceUnavailableException -> Unit
-                        else -> onAction(ServerAction.OnError(error.message ?: "Unknown Error"))
+                        else -> onAction(ServerAction.OnError(error.message ?: SharedRes.strings.unknown_error.getString(context)))
                     }
                 }
                 onSuccess { items ->
@@ -218,8 +219,8 @@ fun ServerScreen(
                     ) {
                         onPagingItems(key = { it.id ?: UUID.randomUUID() }) { item ->
                             val interactionSource = remember { MutableInteractionSource() }
-                            val labels by rememberUpdatedState(createLabels(item))
-                            val details by rememberUpdatedState(createDetails(item))
+                            val labels by rememberUpdatedState(createLabels(item, context))
+                            val details by rememberUpdatedState(createDetails(item, context))
                             ServerListItem(
                                 modifier = Modifier
                                     .animateItem()
@@ -299,7 +300,10 @@ fun ServerScreen(
                         }
                     }
                 ) {
-                    Icon(Icons.Default.ArrowUpward, contentDescription = "Scroll to top")
+                    Icon(
+                        Icons.Default.ArrowUpward,
+                        contentDescription = SharedRes.strings.scroll_to_top.getString(context)
+                    )
                 }
             }
         }
@@ -312,6 +316,7 @@ private fun ServerFilterChips(
     onSelectedChange: (ServerFilter) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     FlowRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(spacing.small)
@@ -319,23 +324,23 @@ private fun ServerFilterChips(
         FilterChip(
             selected = selected == ServerFilter.ALL,
             onClick = { onSelectedChange(ServerFilter.ALL) },
-            label = { Text("All") }
+            label = { Text(SharedRes.strings.all.getString(context)) }
         )
         FilterChip(
             selected = selected == ServerFilter.FAVOURITES,
             onClick = { onSelectedChange(ServerFilter.FAVOURITES) },
-            label = { Text("Favourites") }
+            label = { Text(SharedRes.strings.favourites.getString(context)) }
         )
         FilterChip(
             selected = selected == ServerFilter.SUBSCRIBED,
             onClick = { onSelectedChange(ServerFilter.SUBSCRIBED) },
-            label = { Text("Subscribed") }
+            label = { Text(SharedRes.strings.subscribed.getString(context)) }
         )
     }
 }
 
 
-private fun createDetails(item: ServerInfoUi): Map<String, String> {
+private fun createDetails(item: ServerInfoUi, context: Context): Map<String, String> {
     val details = mutableMapOf<String, String>()
 
     item.wipe?.let { wipeInstant: Instant ->
@@ -344,27 +349,44 @@ private fun createDetails(item: ServerInfoUi): Map<String, String> {
         val minutesAgo = duration.inWholeMinutes
 
         val parsedTimeAgo = when (minutesAgo) {
-            in 0..60 -> "$minutesAgo minutes ago"
-            in 61..1440 -> "${minutesAgo / 60} hours ago"
-            in 1441..10080 -> "${minutesAgo / 1440} days ago"
-            else -> "${minutesAgo / 10080} weeks ago"
+            in 0..60 ->
+                context.getString(SharedRes.strings.minutes_ago.resourceId, minutesAgo)
+            in 61..1440 ->
+                context.getString(SharedRes.strings.hours_ago.resourceId, minutesAgo / 60)
+            in 1441..10080 ->
+                context.getString(SharedRes.strings.days_ago.resourceId, minutesAgo / 1440)
+            else ->
+                context.getString(SharedRes.strings.weeks_ago.resourceId, minutesAgo / 10080)
         }
 
-        details["Wipe"] = parsedTimeAgo
+        details[context.getString(SharedRes.strings.wipe.resourceId).trim()] = parsedTimeAgo
     }
 
-    item.ranking?.let { details["Ranking"] = it.toInt().toString() }
-    item.cycle?.let {
-        details["Cycle"] = "~ " + String.format(Locale.getDefault(), "%.2f", it) + " days"
+    item.ranking?.let {
+        details[context.getString(SharedRes.strings.ranking.resourceId)] = it.toInt().toString()
     }
-    item.serverCapacity?.let { details["Players"] = "${item.playerCount ?: 0}/${it}" }
-    item.mapName?.let { details["Map"] = it.name }
-    item.modded?.let { details["Modded"] = if (it) "Yes" else "No" }
+    item.cycle?.let {
+        val cycleValue = "~ " + String.format(Locale.getDefault(), "%.2f", it) +
+            " " + context.getString(SharedRes.strings.days.resourceId).trim()
+        details[context.getString(SharedRes.strings.cycle.resourceId)] = cycleValue
+    }
+    item.serverCapacity?.let {
+        details[context.getString(SharedRes.strings.players.resourceId)] =
+            "${item.playerCount ?: 0}/$it"
+    }
+    item.mapName?.let {
+        details[context.getString(SharedRes.strings.map.resourceId)] = it.name
+    }
+    item.modded?.let {
+        details[context.getString(SharedRes.strings.modded.resourceId)] =
+            if (it) context.getString(SharedRes.strings.yes.resourceId)
+            else context.getString(SharedRes.strings.no.resourceId)
+    }
 
     return details
 }
 
-private fun createLabels(item: ServerInfoUi): List<Label> {
+private fun createLabels(item: ServerInfoUi, context: Context): List<Label> {
     val labels = mutableListOf<Label>()
 
     item.wipeSchedule?.let {
@@ -373,11 +395,18 @@ private fun createLabels(item: ServerInfoUi): List<Label> {
     item.difficulty?.let {
         labels.add(Label(text = it.name))
     }
-    if (item.isOfficial == true) labels.add(Label(text = "Official"))
+    if (item.isOfficial == true) {
+        labels.add(Label(text = SharedRes.strings.official.getString(context)))
+    }
 
     item.wipeType?.let {
         if (it != WipeType.UNKNOWN) {
-            labels.add(Label(text = it.name + " Wipe"))
+            labels.add(
+                Label(
+                    text = it.name + " " +
+                        SharedRes.strings.wipe.getString(context)
+                )
+            )
         }
     }
 

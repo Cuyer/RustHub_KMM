@@ -25,7 +25,6 @@ class GetFiltersOptionsUseCase(
                         is ServiceUnavailableException -> Unit
                         else -> throw it.exception
                     }
-                    is Result.Loading -> Unit
                 }
             }
         }

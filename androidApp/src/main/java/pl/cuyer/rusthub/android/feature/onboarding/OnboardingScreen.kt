@@ -77,11 +77,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation3.runtime.NavKey
+import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppOutlinedButton
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
@@ -131,38 +133,42 @@ fun OnboardingScreen(
     }
 }
 
-private data class Feature(val icon: ImageVector, val title: String, val description: String)
+private data class Feature(
+    val icon: ImageVector,
+    val title: StringResource,
+    val description: StringResource
+)
 
 private val features = listOf(
     Feature(
         Icons.Default.Search,
-        "Find Servers",
-        "Search and explore Rust servers by name, type, last wipe or more."
+        SharedRes.strings.find_servers,
+        SharedRes.strings.search_and_explore_rust_servers_by_name_type_last_wipe_or_more
     ),
     Feature(
         Icons.Default.ContentCopy,
-        "Copy IPs",
-        "Quickly copy server IP addresses to send them to your friends."
+        SharedRes.strings.copy_ips,
+        SharedRes.strings.quickly_copy_server_ip_addresses_to_send_them_to_your_friends
     ),
     Feature(
         Icons.Default.Info,
-        "View Details",
-        "See server info like time of last wipe, map, ranking and more."
+        SharedRes.strings.view_details,
+        SharedRes.strings.see_server_info_like_time_of_last_wipe_map_ranking_and_more
     ),
     Feature(
         Icons.Default.FilterList,
-        "Smart Filters",
-        "Narrow your search using advanced filtering options."
+        SharedRes.strings.smart_filters,
+        SharedRes.strings.narrow_your_search_using_advanced_filtering_options
     ),
     Feature(
         Icons.Default.Notifications,
-        "Notifications",
-        "Receive notifications about map and full wipes."
+        SharedRes.strings.notifications,
+        SharedRes.strings.receive_notifications_about_map_and_full_wipes
     ),
     Feature(
         Icons.Default.Favorite,
-        "Favourites",
-        "Add servers to your favourites to easily access them."
+        SharedRes.strings.favourites,
+        SharedRes.strings.add_servers_to_your_favourites_to_easily_access_them
     )
 )
 
@@ -319,6 +325,7 @@ private fun OnboardingContentExpanded(
 @Composable
 private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> Unit) {
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .imePadding()
@@ -327,15 +334,15 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
         Text(
-            text = "Let's start with your email",
+            text = SharedRes.strings.let_s_start_with_your_email.getString(context),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         AppTextField(
             value = state.email,
             onValueChange = { onAction(OnboardingAction.OnEmailChange(it)) },
-            labelText = "E-mail",
-            placeholderText = "Enter your e-mail",
+            labelText = SharedRes.strings.e_mail.getString(context),
+            placeholderText = SharedRes.strings.enter_your_e_mail.getString(context),
             keyboardType = KeyboardType.Email,
             imeAction = if (state.email.isNotBlank()) ImeAction.Send else ImeAction.Done,
             isError = state.emailError != null,
@@ -353,21 +360,21 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
             isLoading = state.isLoading,
             modifier = Modifier.fillMaxWidth(),
             enabled = state.email.isNotBlank()
-        ) { Text("Continue with e-mail") }
+        ) { Text(SharedRes.strings.continue_with_e_mail.getString(context)) }
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(spacing.small)
         ) {
             HorizontalDivider(modifier = Modifier.weight(1f))
-            Text("or")
+            Text(SharedRes.strings.or_str.getString(context))
             HorizontalDivider(modifier = Modifier.weight(1f))
         }
 
         SignProviderButton(
             image = getImageByFileName("ic_google").drawableResId,
-            contentDescription = "Google logo",
-            text = "Continue with Google",
+            contentDescription = SharedRes.strings.google_logo.getString(context),
+            text = SharedRes.strings.continue_with_google.getString(context),
             modifier = Modifier.fillMaxWidth(),
             isLoading = state.googleLoading,
             backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
@@ -389,12 +396,12 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
             ) {
                 val rotation by animateFloatAsState(if (state.showOtherOptions) 180f else 0f)
 
-                Text("Other options")
+                Text(SharedRes.strings.other_options.getString(context))
                 Icon(
                     modifier = Modifier
                         .rotate(rotation),
                     imageVector = Icons.Default.KeyboardArrowDown,
-                    contentDescription = "Arrow down"
+                    contentDescription = SharedRes.strings.arrow_down.getString(context)
                 )
             }
         }
@@ -403,19 +410,20 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
 
 @Composable
 private fun HeaderSection() {
+    val context = LocalContext.current
     Image(
         painter = painterResource(id = getImageByFileName("rusthub_logo").drawableResId),
-        contentDescription = "Application logo"
+        contentDescription = SharedRes.strings.application_logo.getString(context)
     )
 
     Text(
-        text = "Welcome to RustHub",
+        text = SharedRes.strings.welcome_to_rusthub.getString(context),
         style = MaterialTheme.typography.headlineLarge,
         textAlign = TextAlign.Center
     )
 
     Text(
-        text = "Your gateway to the Rust server world",
+        text = SharedRes.strings.your_gateway_to_the_rust_server_world.getString(context),
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         textAlign = TextAlign.Center
@@ -427,17 +435,19 @@ private fun ActionButtons(
     onAction: (OnboardingAction) -> Unit,
     continueAsGuestLoading: Boolean
 ) {
+    val context = LocalContext.current
     AppOutlinedButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = { onAction(OnboardingAction.OnContinueAsGuest) },
         isLoading = continueAsGuestLoading
     ) {
-        Text("Continue as Guest")
+        Text(SharedRes.strings.continue_as_guest.getString(context))
     }
 }
 
 @Composable
-private fun FeatureItem(icon: ImageVector, title: String, description: String) {
+private fun FeatureItem(icon: ImageVector, title: StringResource, description: StringResource) {
+    val context = LocalContext.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
@@ -449,7 +459,7 @@ private fun FeatureItem(icon: ImageVector, title: String, description: String) {
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = title,
+                contentDescription = title.getString(context),
                 modifier = Modifier.size(24.dp)
             )
         }
@@ -457,9 +467,9 @@ private fun FeatureItem(icon: ImageVector, title: String, description: String) {
         Spacer(modifier = Modifier.width(spacing.xmedium))
 
         Column {
-            Text(text = title, style = MaterialTheme.typography.titleMedium)
+            Text(text = title.getString(context), style = MaterialTheme.typography.titleMedium)
             Text(
-                text = description,
+                text = description.getString(context),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

@@ -18,6 +18,7 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
@@ -49,6 +50,7 @@ import kotlinx.serialization.json.Json
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.features.server.ServerState
@@ -65,6 +67,7 @@ fun FilterBottomSheet(
     onDismissAndRefresh: () -> Unit,
     onAction: (ServerAction) -> Unit
 ) {
+    val context = LocalContext.current
     val json = koinInject<Json>()
     val filterUiSaver = remember {
         Saver<FilterUi?, String>(
@@ -94,7 +97,7 @@ fun FilterBottomSheet(
         }
     ) {
         Text(
-            text = "Filter Options",
+            text = SharedRes.strings.filter_options.getString(context),
             style = MaterialTheme.typography.titleLargeEmphasized,
             modifier = Modifier
                 .padding(start = spacing.medium, end = spacing.medium, bottom = spacing.medium)
@@ -123,8 +126,9 @@ fun FilterBottomSheet(
                             .fillMaxWidth(),
                         contentAlignment = Alignment.Center
                     ) {
+                        val context = LocalContext.current
                         Text(
-                            text = "No filters available",
+                            text = SharedRes.strings.no_filters_available.getString(context),
                             modifier = Modifier.align(Alignment.Center)
                         )
                     }
@@ -153,7 +157,7 @@ fun FilterBottomSheet(
                                     .fillMaxWidth()
                                     .padding(horizontal = spacing.large)
                             ) {
-                                Text("Apply Filters")
+                                Text(SharedRes.strings.apply_filters.getString(context))
                             }
                             AppOutlinedButton(
                                 colors = ButtonDefaults.outlinedButtonColors().copy(
@@ -168,7 +172,7 @@ fun FilterBottomSheet(
                                     .padding(vertical = spacing.small, horizontal = spacing.large)
                             ) {
                                 Text(
-                                    text = "Reset Filters",
+                                    text = SharedRes.strings.reset_filters.getString(context),
                                 )
                             }
                         }
@@ -186,6 +190,7 @@ fun FilterBottomSheetContent(
     filters: FilterUi,
     onFiltersChange: (FilterUi) -> Unit
 ) {
+    val context = LocalContext.current
     Column(
         modifier = modifier
             .padding(spacing.medium),
@@ -245,7 +250,7 @@ fun FilterBottomSheetContent(
                 ),
                 placeholder = {
                     Text(
-                        text = "Enter a number"
+                        text = SharedRes.strings.enter_a_number.getString(context)
                     )
                 }
             )

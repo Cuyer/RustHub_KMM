@@ -30,9 +30,11 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
-    kotlinOptions {
-        jvmTarget = "17"
+
+    kotlin {
+        jvmToolchain(17)
     }
 
     signingConfigs {
@@ -117,8 +119,15 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.messaging)
+    implementation(libs.firebase.appcheck.playintegrity)
+    debugImplementation(libs.firebase.appcheck.debug)
     implementation(libs.firebase.performance)
     implementation(libs.google.auth)
+    implementation(libs.play.review.ktx)
     implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.compat)
+    implementation(libs.google.play.app.update)
+    implementation(libs.google.play.app.update.ktx)
+    coreLibraryDesugaring(libs.desugar.jdk.libs.v215)
     debugImplementation(libs.compose.ui.tooling)
 }

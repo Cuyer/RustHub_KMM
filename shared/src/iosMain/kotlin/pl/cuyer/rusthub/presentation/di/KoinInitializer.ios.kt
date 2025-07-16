@@ -17,33 +17,44 @@ import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
+import pl.cuyer.rusthub.domain.usecase.SetEmailConfirmedUseCase
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
 import pl.cuyer.rusthub.util.StoreNavigator
+import pl.cuyer.rusthub.util.ReviewRequester
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.ShareHandler
+import pl.cuyer.rusthub.util.InAppUpdateManager
+import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.AppCheckTokenProvider
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
-    single { HttpClientFactory(get(), get()).create() }
+    single { AppCheckTokenProvider() }
+    single { HttpClientFactory(get(), get(), get()).create() }
     single { TokenRefresher(get()) }
     single { ClipboardHandler() }
     single { ShareHandler() }
     single { SyncScheduler() }
     single { SubscriptionSyncScheduler() }
     single { MessagingTokenScheduler() }
+    single { InAppUpdateManager() }
+    single { ReviewRequester() }
     single { StoreNavigator() }
     single { GoogleAuthClient() }
+    single { StringProvider() }
     single { PermissionsController() }
-    factory { StartupViewModel(get(), get()) }
+    factory { StartupViewModel(get(), get(), get(), get(), get()) }
     factory {
         ConfirmEmailViewModel(
             checkEmailConfirmedUseCase = get(),
             getUserUseCase = get(),
             resendConfirmationUseCase = get(),
             snackbarController = get(),
+            setEmailConfirmedUseCase = get(),
+            stringProvider = get(),
         )
     }
     factory {
@@ -54,9 +65,8 @@ actual val platformModule: Module = module {
             getGoogleClientIdUseCase = get(),
             googleAuthClient = get(),
             snackbarController = get(),
-            loginWithGoogleUseCase = get(),
-            getGoogleClientIdUseCase = get(),
-            googleAuthClient = get()
+            emailValidator = get(),
+            stringProvider = get()
         )
     }
     factory { (email: String, exists: Boolean, provider: AuthProvider?) ->
@@ -70,7 +80,8 @@ actual val platformModule: Module = module {
             getUserUseCase = get(),
             snackbarController = get(),
             passwordValidator = get(),
-            usernameValidator = get()
+            usernameValidator = get(),
+            stringProvider = get()
         )
     }
     factory {
@@ -80,7 +91,9 @@ actual val platformModule: Module = module {
             logoutUserUseCase = get(),
             getUserUseCase = get(),
             permissionsController = get(),
-            googleAuthClient = get()
+            googleAuthClient = get(),
+            snackbarController = get(),
+            stringProvider = get()
         )
     }
     factory {
@@ -88,7 +101,8 @@ actual val platformModule: Module = module {
             deleteAccountUseCase = get(),
             snackbarController = get(),
             passwordValidator = get(),
-            getUserUseCase = get()
+            getUserUseCase = get(),
+            stringProvider = get()
         )
     }
     factory {
@@ -96,6 +110,7 @@ actual val platformModule: Module = module {
             changePasswordUseCase = get(),
             snackbarController = get(),
             passwordValidator = get(),
+            stringProvider = get(),
         )
     }
     factory { (email: String) ->
@@ -103,7 +118,8 @@ actual val platformModule: Module = module {
             email = email,
             requestPasswordResetUseCase = get(),
             snackbarController = get(),
-            emailValidator = get()
+            emailValidator = get(),
+            stringProvider = get()
         )
     }
     factory {
@@ -115,7 +131,8 @@ actual val platformModule: Module = module {
             snackbarController = get(),
             usernameValidator = get(),
             passwordValidator = get(),
-            emailValidator = get()
+            emailValidator = get(),
+            stringProvider = get()
         )
     }
 }
