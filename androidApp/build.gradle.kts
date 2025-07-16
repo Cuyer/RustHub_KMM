@@ -18,6 +18,12 @@ android {
         versionCode = 1
         versionName = project.property("VERSION_NAME") as String
     }
+
+    androidResources {
+        generateLocaleConfig = true
+        localeFilters.addAll(listOf("pl", "en", "de", "fr", "ru"))
+    }
+
     buildFeatures {
         compose = true
         buildConfig = true
