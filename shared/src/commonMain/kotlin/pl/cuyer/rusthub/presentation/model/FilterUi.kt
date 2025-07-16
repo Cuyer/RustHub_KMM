@@ -37,7 +37,7 @@ fun FilterUi.toDomain(stringProvider: StringProvider): ServerQuery {
     return ServerQuery(
         map = selectedMap?.let { Maps.fromDisplayName(it) },
         flag = selectedFlag?.let { Flag.fromDisplayName(it) },
-        region = selectedRegion?.let { Region.fromDisplayName(it) },
+        region = selectedRegion?.let { Region.fromDisplayName(it, stringProvider) },
         difficulty = selectedDifficulty?.let { Difficulty.fromDisplayName(it) },
         wipeSchedule = selectedWipeSchedule?.let { WipeSchedule.fromDisplayName(it, stringProvider) },
         order = selectedOrder?.let { Order.fromDisplayName(it, stringProvider) } ?: Order.WIPE,

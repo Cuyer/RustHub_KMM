@@ -163,6 +163,13 @@
     <string name="receive_notifications_about_map_and_full_wipes">Recevez des notifications pour les wipes de carte et les wipes complets.</string>
     <string name="recent_searches">Recherches récentes</string>
     <string name="region">Région</string>
+    <string name="asia">Asie</string>
+    <string name="europe">Europe</string>
+    <string name="america">Amérique du Nord</string>
+    <string name="africa">Afrique</string>
+    <string name="south_america">Amérique du Sud</string>
+    <string name="oceania">Océanie</string>
+    <string name="australia">Australie</string>
     <string name="remove_from_favourites">Retirer des favoris</string>
     <string name="resend_email">Renvoyer l’e-mail</string>
     <string name="reset_filters">Réinitialiser les filtres</string>
