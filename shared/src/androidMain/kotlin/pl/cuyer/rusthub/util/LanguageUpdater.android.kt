@@ -14,3 +14,15 @@ actual fun updateAppLanguage(language: Language) {
     val locales = LocaleListCompat.forLanguageTags(locale.toLanguageTag())
     AppCompatDelegate.setApplicationLocales(locales)
 }
+
+actual fun getCurrentAppLanguage(): Language {
+    val locales = AppCompatDelegate.getApplicationLocales()
+    if (!locales.isEmpty) {
+        val languageTag = locales[0]!!.language
+        return when (languageTag) {
+            "pl" -> Language.POLISH
+            else -> Language.ENGLISH
+        }
+    }
+    return Language.ENGLISH
+}

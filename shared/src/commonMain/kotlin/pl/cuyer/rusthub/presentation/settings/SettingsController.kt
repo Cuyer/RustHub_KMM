@@ -10,6 +10,7 @@ import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.usecase.GetSettingsUseCase
 import pl.cuyer.rusthub.util.updateAppLanguage
+import pl.cuyer.rusthub.util.getCurrentAppLanguage
 
 class SettingsController(
     private val getSettingsUseCase: GetSettingsUseCase
@@ -19,7 +20,7 @@ class SettingsController(
     private val _theme = MutableStateFlow(Theme.SYSTEM)
     val theme: StateFlow<Theme> = _theme
 
-    private val _language = MutableStateFlow(Language.ENGLISH)
+    private val _language = MutableStateFlow(getCurrentAppLanguage())
     val language: StateFlow<Language> = _language
 
     init {
