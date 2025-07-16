@@ -29,9 +29,9 @@
     <string name="in_days">za %s dni</string>
     <string name="soon">wkrótce</string>
     <string name="account">Konto</string>
-    <string name="add_notifications">Dodaj powiadomienia</string>
+    <string name="add_notifications">Dodawanie powiadomienia</string>
     <string name="add_servers_to_your_favourites_to_easily_access_them">Dodaj serwery do ulubionych, żeby mieć je pod ręką.</string>
-    <string name="add_to_favourites">Dodaj do ulubionych</string>
+    <string name="add_to_favourites">Dodawanie do ulubionych</string>
     <string name="additional_information_available_at">Więcej informacji na:</string>
     <string name="all">Wszystkie</string>
     <string name="any_questions">Masz pytania?</string>
@@ -47,7 +47,7 @@
     <string name="faq_cancel_question">Czy mogę anulować subskrypcję w dowolnym momencie?</string>
     <string name="faq_switch_plan_question">Czy mogę zmienić plan subskrypcji?</string>
     <string name="cancel">Anuluj</string>
-    <string name="subscription_disclaimer">Możesz anulować subskrypcję w każdej chwili.\n\nSubskrypcja odnawia się automatycznie, chyba że zrezygnujesz co najmniej 24 godziny przed końcem okresu rozliczeniowego. Możesz anulować przez kiedy chcesz przez ustawienia Google Play.\nRust Hub Pro Lifetime to jednorazowy zakup.</string>
+    <string name="subscription_disclaimer">Możesz anulować subskrypcję w każdej chwili.\n\nSubskrypcja odnawia się automatycznie, chyba że zrezygnujesz co najmniej 24 godziny przed końcem okresu rozliczeniowego. Możesz anulować kiedy chcesz przez ustawienia Google Play.\nRust Hub Pro Lifetime to jednorazowy zakup.</string>
     <string name="change_password">Zmień hasło</string>
     <string name="change_password_button">Przycisk zmiany hasła</string>
     <string name="clear">Wyczyść</string>
@@ -116,7 +116,7 @@
     <string name="last_wipe">Ostatni wipe</string>
     <string name="later">Później</string>
     <string name="let_s_start_with_your_email">Zacznijmy od Twojego adresu e-mail</string>
-    <string name="lifetime">Na zawsze</string>
+    <string name="lifetime">Lifetime</string>
     <string name="mail_icon">Ikona maila</string>
     <string name="map">Mapa</string>
     <string name="map_information">Informacje o mapie</string>
@@ -190,7 +190,7 @@
     <string name="submit">Wyślij</string>
     <string name="subscribe">Subskrybuj</string>
     <string name="subscribe_now">Subskrybuj teraz</string>
-    <string name="subscribed">Subskrybowano</string>
+    <string name="subscribed">Subskrybowane</string>
     <string name="subscribe_to_plan">Subskrybuj plan %s</string>
     <string name="subscription">Subskrypcja</string>
     <string name="subscription_button">Przycisk subskrypcji</string>
