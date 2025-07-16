@@ -17,7 +17,7 @@ enum class Order {
 
 fun Order.displayName(stringProvider: StringProvider): String =
     when (this) {
-        WIPE -> stringProvider.get(SharedRes.strings.last_wipe)
-        RANK -> stringProvider.get(SharedRes.strings.ranking)
-        PLAYER_COUNT -> stringProvider.get(SharedRes.strings.player_count)
+        Order.WIPE -> stringProvider.get(SharedRes.strings.last_wipe)
+        Order.RANK -> stringProvider.get(SharedRes.strings.ranking)
+        Order.PLAYER_COUNT -> stringProvider.get(SharedRes.strings.player_count)
     }

@@ -56,6 +56,7 @@ import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.features.server.ServerState
 import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.presentation.model.toDomain
+import pl.cuyer.rusthub.util.StringProvider
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -69,6 +70,7 @@ fun FilterBottomSheet(
 ) {
     val context = LocalContext.current
     val json = koinInject<Json>()
+    val stringProvider = koinInject<StringProvider>()
     val filterUiSaver = remember {
         Saver<FilterUi?, String>(
             save = { it?.let { json.encodeToString(FilterUi.serializer(), it) } },
@@ -150,7 +152,7 @@ fun FilterBottomSheet(
                                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                                 ),
                                 onClick = {
-                                    onAction(ServerAction.OnSaveFilters(filters = it.toDomain()))
+                                    onAction(ServerAction.OnSaveFilters(filters = it.toDomain(stringProvider)))
                                     onDismissAndRefresh()
                                 },
                                 modifier = Modifier

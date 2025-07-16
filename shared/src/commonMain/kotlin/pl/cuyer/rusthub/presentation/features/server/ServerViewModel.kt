@@ -322,7 +322,7 @@ class ServerViewModel(
             runCatching {
                 val current = state.value.filters
                     ?.copy(filter = filter)
-                    ?.toDomain()
+                    ?.toDomain(stringProvider)
                     ?: getFiltersUseCase().first()?.copy(filter = filter)
                     ?: ServerQuery(filter = filter)
                 saveFiltersUseCase(current)

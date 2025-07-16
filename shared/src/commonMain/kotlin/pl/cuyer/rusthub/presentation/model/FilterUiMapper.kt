@@ -5,6 +5,7 @@ import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.model.ServerFilter
 
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.util.StringProvider
 
 fun ServerQuery?.toUi(

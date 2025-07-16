@@ -17,7 +17,7 @@ enum class ServerFilter {
 
 fun ServerFilter.displayName(stringProvider: StringProvider): String =
     when (this) {
-        ALL -> stringProvider.get(SharedRes.strings.all)
-        FAVOURITES -> stringProvider.get(SharedRes.strings.favourites)
-        SUBSCRIBED -> stringProvider.get(SharedRes.strings.subscribed)
+        ServerFilter.ALL -> stringProvider.get(SharedRes.strings.all)
+        ServerFilter.FAVOURITES -> stringProvider.get(SharedRes.strings.favourites)
+        ServerFilter.SUBSCRIBED -> stringProvider.get(SharedRes.strings.subscribed)
     }

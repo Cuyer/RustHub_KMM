@@ -16,6 +16,6 @@ enum class Language {
 
 fun Language.displayName(stringProvider: StringProvider): String =
     when (this) {
-        ENGLISH -> stringProvider.get(SharedRes.strings.english)
-        POLISH -> stringProvider.get(SharedRes.strings.polish)
+        Language.ENGLISH -> stringProvider.get(SharedRes.strings.english)
+        Language.POLISH -> stringProvider.get(SharedRes.strings.polish)
     }

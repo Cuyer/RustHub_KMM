@@ -9,6 +9,7 @@ import pl.cuyer.rusthub.domain.model.Region
 import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.model.WipeSchedule
+import pl.cuyer.rusthub.util.StringProvider
 
 @Serializable
 data class FilterUi(
@@ -18,7 +19,7 @@ data class FilterUi(
     val filter: ServerFilter = ServerFilter.ALL
 )
 
-fun FilterUi.toDomain(): ServerQuery {
+fun FilterUi.toDomain(stringProvider: StringProvider): ServerQuery {
     val selectedMap = lists.getOrNull(0)?.let { it.second.getOrNull(it.third ?: -1) }
     val selectedFlag = lists.getOrNull(1)?.let { it.second.getOrNull(it.third ?: -1) }
     val selectedRegion = lists.getOrNull(2)?.let { it.second.getOrNull(it.third ?: -1) }
@@ -39,7 +40,7 @@ fun FilterUi.toDomain(): ServerQuery {
         region = selectedRegion?.let { Region.fromDisplayName(it) },
         difficulty = selectedDifficulty?.let { Difficulty.fromDisplayName(it) },
         wipeSchedule = selectedWipeSchedule?.let { WipeSchedule.fromDisplayName(it) },
-        order = selectedOrder?.let { Order.fromDisplayName(it) } ?: Order.WIPE,
+        order = selectedOrder?.let { Order.fromDisplayName(it, stringProvider) } ?: Order.WIPE,
         official = official,
         modded = modded,
         playerCount = playerCount,
