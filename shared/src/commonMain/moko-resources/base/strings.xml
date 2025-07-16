@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <resources>
-    <string name="app_name">RustHub</string>
+    <string name="app_name" translatable="false">RustHub</string>
     <string name="notification_channel_name">Notifications</string>
     <string name="notification_channel_description">General notifications in the application.</string>
     <string name="map_wipe_notification_channel_name">Map wipe notifications</string>
@@ -15,7 +15,7 @@
     <string name="logout_error">An error occurred while trying to log out.</string>
     <string name="logout_button">Logout button</string>
     <string name="fetch_user_error">An error occurred while fetching user data.</string>
-    <string name="wipe"> Wipe</string>
+    <string name="wipe">Wipe</string>
     <string name="days"> days</string>
     <string name="three_max">Max 3</string>
     <string name="four_hours_ago">4hrs ago</string>
@@ -62,7 +62,6 @@
     <string name="copy_ips">Copy IPs</string>
     <string name="country">Country</string>
     <string name="create_new_account">Create new account</string>
-    <string name="custom">Custom</string>
     <string name="cycle">Cycle</string>
     <string name="decay">Decay</string>
     <string name="difficulty">Difficulty</string>
@@ -71,10 +70,9 @@
     <string name="delete_account">Delete account</string>
     <string name="delete_account_button">Delete account button</string>
     <string name="deleting_your_account_is_irreversible_all_your_data_will_be_removed">Deleting your account is irreversible. All your data will be removed.</string>
-    <string name="demo_with_icon">Demo with icon</string>
+    <string name="demo_with_icon">Switch with icon</string>
     <string name="description">Description</string>
     <string name="disabled">Disabled</string>
-    <string name="don_t_use">Don't use</string>
     <string name="e_mail">email</string>
     <string name="enable_notifications">Enable notifications</string>
     <string name="enabled">Enabled</string>
@@ -109,7 +107,7 @@
     <string name="help_us_keep_improving_rust_hub">Help us keep improving Rust Hub.</string>
     <string name="hide_password">Hide password</string>
     <string name="faq_lifetime_question">How does Rust Hub Pro Lifetime plan work?</string>
-    <string name="ip">IP</string>
+    <string name="ip" translatable="false">IP</string>
     <string name="icon_to_copy_ip_address">Icon to copy IP address</string>
     <string name="faq_renew_question">Is Rust Hub Pro a one-time payment or will it renew automatically?</string>
     <string name="kits">Kits</string>
@@ -118,7 +116,7 @@
     <string name="polish">Polish</string>
     <string name="last_wipe">Last wipe</string>
     <string name="later">Later</string>
-    <string name="let_s_start_with_your_email">Let's start with your email</string>
+    <string name="let_s_start_with_your_email">Let\'s start with your email</string>
     <string name="lifetime">Lifetime</string>
     <string name="mail_icon">Mail Icon</string>
     <string name="map">Map</string>
@@ -146,46 +144,40 @@
     <string name="open_filters">Open Filters</string>
     <string name="other">Other</string>
     <string name="other_options">Other options</string>
-    <string name="pro">PRO</string>
-    <string name="pve">PVE</string>
+    <string name="pro" translatable="false">PRO</string>
+    <string name="pve" translatable="false">PVE</string>
     <string name="padlock_icon">Padlock Icon</string>
     <string name="password">Password</string>
     <string name="pay_once">Pay once</string>
     <string name="players">Players</string>
     <string name="preferences">Preferences</string>
-    <string name="premium">Premium</string>
+    <string name="premium" translatable="false" >Premium</string>
     <string name="privacy_policy">Privacy policy</string>
     <string name="privacy_policy_button">Privacy policy button</string>
     <string name="protect_your_account_by_providing_a_strong_password">Protect your account by providing a strong password.</string>
-    <string name="provide_credentials_or_connect_google_account_to_upgrade">Enter your credentials
-        or connect your Google account to upgrade.
-    </string>
-    <string name="quickly_copy_server_ip_addresses_to_send_them_to_your_friends">Quickly copy server
-        IP addresses to share them with your friends.
-    </string>
+    <string name="provide_credentials_or_connect_google_account_to_upgrade">Enter your credentials or connect your Google account to upgrade.</string>
+    <string name="quickly_copy_server_ip_addresses_to_send_them_to_your_friends">Quickly copy server IP addresses to share them with your friends.</string>
     <string name="ranking">Ranking</string>
     <string name="rate_application">Rate application</string>
     <string name="rate_application_button">Rate application button</string>
     <string name="rates">Rates</string>
-    <string name="rating">Rating</string>
     <string name="receive_notifications_about_map_and_full_wipes">Receive notifications about map and full wipes.</string>
     <string name="recent_searches">Recent searches</string>
     <string name="region">Region</string>
     <string name="remove_from_favourites">Remove from favourites</string>
-    <string name="repulsion">Repulsion</string>
     <string name="resend_email">Resend email</string>
     <string name="reset_filters">Reset Filters</string>
     <string name="reset_password">Reset password</string>
     <string name="faq_include_answer">Rust Hub Pro includes unlimited favourite servers and unlimited notifications.</string>
     <string name="rust_map_image">Rust map image</string>
-    <string name="rustmaps">RustMaps</string>
-    <string name="save_as_many_servers_as_you_like">Save as many servers as you like.</string>
+    <string name="rustmaps" translatable="false">RustMaps</string>
+    <string name="save_as_many_servers_as_you_like">Add to favourites as many servers as you like.</string>
     <string name="scroll_to_top">Scroll to top</string>
     <string name="search">Search</string>
     <string name="search_and_explore_rust_servers_by_name_type_last_wipe_or_more">Search and explore Rust servers by name, type, last wipe or more.</string>
     <string name="search_servers">Search servers...</string>
     <string name="see_server_info_like_time_of_last_wipe_map_ranking_and_more">See server info like time of last wipe, map, ranking and more.</string>
-    <string name="seed">Seed</string>
+    <string name="seed" translatable="false">Seed</string>
     <string name="send_email">Send email</string>
     <string name="server_flag">Server flag</string>
     <string name="servers">Servers</string>
@@ -205,20 +197,13 @@
     <string name="subscription_button">Subscription button</string>
     <string name="support_development">Support development</string>
     <string name="terms_conditions">Terms &amp; conditions</string>
-    <string name="faq_lifetime_answer">The Rust Hub Pro Lifetime plan is a one time purchase. You
-        will have access to Rust Hub Pro forever.\n\nIf you are already subscribed to a monthly or
-        yearly plan and want to switch to a lifetime plan, make sure to cancel your monthly or
-        yearly subscription after you purchase the lifetime plan to avoid any recurring charges.
-    </string>
+    <string name="faq_lifetime_answer">The Rust Hub Pro Lifetime plan is a one time purchase. You will have access to Rust Hub Pro forever.\n\nIf you are already subscribed to a monthly or yearly plan and want to switch to a lifetime plan, make sure to cancel your monthly or yearly subscription after you purchase the lifetime plan to avoid any recurring charges.</string>
     <string name="faq_renew_answer">The Rust Hub Pro monthly and yearly plans are subscriptions that renew automatically at the end of your subscription term to avoid any interruption to your service. If you cancel your subscription, you will continue to have access to Rust Hub Pro until your subscription expires. The Rust Hub Pro Lifetime plan is a one time purchase.</string>
     <string name="theme">Theme</string>
-    <string name="this_rust_hub_account_is_already_connected_with_social_account">This Rust Hub
-        account is already connected with a social account.
-    </string>
+    <string name="this_rust_hub_account_is_already_connected_with_social_account">This Rust Hub account is already connected with a social account.</string>
     <string name="true_str">True</string>
     <string name="turn_off_notifications">Turn off notifications</string>
     <string name="turn_on_notifications">Turn on notifications</string>
-    <string name="twopane">TwoPane</string>
     <string name="or_str">or</string>
     <string name="unknown_error">Unknown Error</string>
     <string name="unlimited_favourites">Unlimited favourites</string>
@@ -241,7 +226,6 @@
     <string name="welcome_to_rusthub">Welcome to RustHub</string>
     <string name="faq_include_question">What does Rust Hub Pro include?</string>
     <string name="faq_devices_question">What happens if I switch devices or platforms?</string>
-    <string name="wipe">Wipe</string>
     <string name="enter_your_email">Enter your email</string>
     <string name="yearly">Yearly</string>
     <string name="yes">Yes</string>
@@ -249,8 +233,8 @@
     <string name="faq_cancel_answer">Yes, you can cancel your Rust Hub Pro monthly or yearly subscription whenever you want! You will continue to have access to Rust Hub Pro until your subscription expires.</string>
     <string name="faq_devices_answer">You can sign into your account across platforms with the same user name and password. The subscription is connected to your account, not the platform you are using. You can be signed into two different devices simultaneously and even two different platforms at the same time.</string>
     <string name="your_gateway_to_the_rust_server_world">Your gateway to the Rust server world</string>
-    <string name="hello_username">Hello %s!</string>
-    <string name="order">Order</string>
+    <string name="hello_username">Hello %1$s!</string>
+    <string name="order">Sort</string>
     <string name="player_count">Player count</string>
     <string name="wipe_schedule">Wipe Schedule</string>
     <string name="invalid_email_format">Invalid email format</string>
@@ -268,16 +252,14 @@
     <string name="google_sign_in_failed">Google sign in failed</string>
     <string name="error_google_sign_in">An error occurred during Google sign-in.</string>
     <string name="unable_to_get_client_id">Unable to get client id</string>
-    <string name="error_creating_guest_account">An error occurred while creating guest account.
-    </string>
+    <string name="error_creating_guest_account">An error occurred while creating guest account.</string>
     <string name="provided_credentials_incorrect">Provided credentials are incorrect.</string>
     <string name="user_already_exists">User already exists.</string>
     <string name="auth_error">An error occurred during authentication</string>
     <string name="unable_to_verify_email">Unable to verify email</string>
     <string name="email_not_confirmed_yet">Email not confirmed yet</string>
     <string name="error_fetching_servers">An error occurred while fetching servers.</string>
-    <string name="error_fetching_search_history">An error occurred while fetching search history.
-    </string>
+    <string name="error_fetching_search_history">An error occurred while fetching search history.</string>
     <string name="error_fetching_filters">An error occurred while fetching filters.</string>
     <string name="error_saving_search">An error occurred while saving the searched phrase.</string>
     <string name="error_deleting_query">Error deleting query</string>
@@ -291,20 +273,11 @@
     <string name="removed_from_favourites">Removed %s from favourites</string>
     <string name="subscribed_to_notifications">Subscribed to notifications</string>
     <string name="unsubscribed_from_notifications">Unsubscribed from notifications</string>
-    <string name="error_add_favourite">An error occurred when trying to add server to favourites
-    </string>
-    <string name="error_remove_favourite">An error occurred when trying to remove server from
-        favourites
-    </string>
-    <string name="error_subscribe_notifications">An error occurred when trying to subscribe to
-        notifications
-    </string>
-    <string name="error_unsubscribe_notifications">An error occurred when trying to unsubscribe from
-        notifications
-    </string>
+    <string name="error_add_favourite">An error occurred when trying to add server to favourites</string>
+    <string name="error_remove_favourite">An error occurred when trying to remove server from favourites</string>
+    <string name="error_subscribe_notifications">An error occurred when trying to subscribe to notifications</string>
+    <string name="error_unsubscribe_notifications">An error occurred when trying to unsubscribe from notifications</string>
     <string name="email_not_confirmed">Email not confirmed</string>
     <string name="resend">Resend</string>
-    <string name="error_fetching_server_data">An error occurred while fetching data about the
-        server.
-    </string>
+    <string name="error_fetching_server_data">An error occurred while fetching data about the server.</string>
 </resources>

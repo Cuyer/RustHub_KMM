@@ -393,9 +393,8 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
 private fun GreetingSection(username: String?) {
     val stringProvider = koinInject<StringProvider>()
     if (username != null) {
-        val context = LocalContext.current
         Text(
-            text = stringProvider.get(SharedRes.strings.hello_username, context),
+            text = stringProvider.get(SharedRes.strings.hello_username, username),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.headlineSmall,
