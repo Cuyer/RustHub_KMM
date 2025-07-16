@@ -42,6 +42,7 @@ import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.anonymousAccountExpiresIn
 import pl.cuyer.rusthub.util.formatExpiration
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.updateAppLanguage
 
 class SettingsViewModel(
     private val getSettingsUseCase: GetSettingsUseCase,
@@ -93,6 +94,7 @@ class SettingsViewModel(
 
     private fun updateLanguage(language: Language) {
         _state.update { it.copy(language = language) }
+        updateAppLanguage(language)
         save()
     }
 
