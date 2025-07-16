@@ -102,7 +102,8 @@ actual val platformModule: Module = module {
             clearFiltersUseCase = get(),
             saveSearchQueryUseCase = get(),
             getSearchQueriesUseCase = get(),
-            deleteSearchQueriesUseCase = get()
+            deleteSearchQueriesUseCase = get(),
+            stringProvider = get()
         )
     }
     viewModel {

@@ -188,6 +188,8 @@
     
     
     <string name="decay">Decay</string>
+
+    <string name="difficulty">Difficulty</string>
     
     
     <string name="delete">Delete</string>
@@ -296,6 +298,8 @@
     
     
     <string name="google_logo">Google logo</string>
+    <string name="max_player_count">Max player count</string>
+    <string name="max_ranking">Max ranking</string>
     
     
     <string name="group_limit">Group limit</string>
@@ -692,6 +696,10 @@
     <string name="your_gateway_to_the_rust_server_world">Your gateway to the Rust server world</string>
 
     <string name="hello_username">Hello %s!</string>
+
+    <string name="order">Order</string>
+    <string name="player_count">Player count</string>
+    <string name="wipe_schedule">Wipe Schedule</string>
     
 
 </resources>

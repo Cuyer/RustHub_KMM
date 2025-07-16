@@ -50,6 +50,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.ClipboardHandler
+import pl.cuyer.rusthub.util.StringProvider
 import kotlinx.datetime.Clock.System
 
 //TODO pomyśleć co zrobić żeby uniknąć importu z data do viewmodela (mapowanie)
@@ -64,6 +65,7 @@ class ServerViewModel(
     private val saveSearchQueryUseCase: SaveSearchQueryUseCase,
     private val getSearchQueriesUseCase: GetSearchQueriesUseCase,
     private val deleteSearchQueriesUseCase: DeleteSearchQueriesUseCase,
+    private val stringProvider: StringProvider,
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -126,6 +128,7 @@ class ServerViewModel(
             getFiltersUseCase.invoke()
         ) { filtersOptions, filters ->
             filters.toUi(
+                stringProvider = stringProvider,
                 maps = filtersOptions?.maps?.map { it.displayName } ?: emptyList(),
                 flags = filtersOptions?.flags?.map { it.displayName } ?: emptyList(),
                 regions = filtersOptions?.regions?.map { it.displayName } ?: emptyList(),
