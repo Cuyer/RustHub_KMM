@@ -65,15 +65,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.flowWithLifecycle
+import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
+import pl.cuyer.rusthub.util.StringProvider
 
 private data class Benefit(
     @DrawableRes
@@ -246,6 +249,7 @@ private fun SubscriptionMainContent(
     onPrivacyPolicy: () -> Unit,
     onTerms: () -> Unit
 ) {
+    val stringProvider = koinInject<StringProvider>()
     val context = LocalContext.current
     HorizontalPager(state = pagerState) { page ->
         val benefit = benefits[page]
@@ -332,7 +336,7 @@ private fun SubscriptionMainContent(
     AppButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = {}) {
-        Text(SharedRes.strings.subscribe_to_plan.getString(context, selectedPlan.label.getString(context)))
+        Text(stringProvider.get((SharedRes.strings.subscribe_to_plan), selectedPlan.label.getString(context)))
     }
     AppTextButton(onClick = onNavigateUp) {
         Text(SharedRes.strings.not_now.getString(context))
@@ -355,6 +359,7 @@ private fun SubscriptionMainContent(
 
 @Composable
 private fun ComparisonSection() {
+    val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(spacing.medium),

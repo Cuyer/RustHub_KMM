@@ -56,6 +56,7 @@ import pl.cuyer.rusthub.android.feature.settings.SettingsScreen
 import pl.cuyer.rusthub.android.feature.subscription.SubscriptionScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.common.Constants
+import pl.cuyer.rusthub.common.Urls
 import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
@@ -276,13 +277,13 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
 
                         entry<PrivacyPolicy> {
                             PrivacyPolicyScreen(
-                                url = Constants.PRIVACY_POLICY_URL,
+                                url = Urls.PRIVACY_POLICY_URL,
                                 onNavigateUp = { backStack.removeLastOrNull() }
                             )
                         }
                         entry<Terms> {
                             PrivacyPolicyScreen(
-                                url = Constants.TERMS_URL,
+                                url = Urls.TERMS_URL,
                                 title = SharedRes.strings.terms_conditions.getString(LocalContext.current),
                                 onNavigateUp = { backStack.removeLastOrNull() }
                             )

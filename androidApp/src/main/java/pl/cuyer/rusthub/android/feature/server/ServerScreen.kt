@@ -316,6 +316,7 @@ private fun ServerFilterChips(
     onSelectedChange: (ServerFilter) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     FlowRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(spacing.small)

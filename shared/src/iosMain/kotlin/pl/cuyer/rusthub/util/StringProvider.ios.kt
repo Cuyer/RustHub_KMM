@@ -2,7 +2,6 @@ package pl.cuyer.rusthub.util
 
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.desc.desc
-import dev.icerock.moko.resources.desc.localized
 import dev.icerock.moko.resources.format
 
 actual class StringProvider {

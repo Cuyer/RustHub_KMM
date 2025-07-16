@@ -119,6 +119,7 @@ fun UpgradeAccountScreen(
 
 @Composable
 private fun UpgradeScreenCompact(state: UpgradeState, onAction: (UpgradeAction) -> Unit) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -162,6 +163,7 @@ private fun UpgradeScreenCompact(state: UpgradeState, onAction: (UpgradeAction) 
 
 @Composable
 private fun UpgradeScreenExpanded(state: UpgradeState, onAction: (UpgradeAction) -> Unit) {
+    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxSize()

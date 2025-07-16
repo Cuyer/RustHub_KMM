@@ -55,6 +55,7 @@ import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.AppInfo
+import pl.cuyer.rusthub.util.StringProvider
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class,
@@ -244,6 +245,7 @@ private fun AccountSection(
     expiration: String?,
     onAction: (SettingsAction) -> Unit
 ) {
+    val stringProvider = koinInject<StringProvider>()
     val context = LocalContext.current
     Text(
         text = SharedRes.strings.account.getString(context),
@@ -292,7 +294,7 @@ private fun AccountSection(
     if (provider == AuthProvider.ANONYMOUS) {
         expiration?.let {
             Text(
-                text = SharedRes.strings.temporary_account_expiration.getString(context, it),
+                text = stringProvider.get(SharedRes.strings.temporary_account_expiration, it),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(bottom = spacing.small)
@@ -388,10 +390,11 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
 
 @Composable
 private fun GreetingSection(username: String?) {
+    val stringProvider = koinInject<StringProvider>()
     if (username != null) {
         val context = LocalContext.current
         Text(
-            text = SharedRes.strings.hello_username.getString(context, username),
+            text = stringProvider.get(SharedRes.strings.hello_username, context),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.headlineSmall,

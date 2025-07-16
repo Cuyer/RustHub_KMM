@@ -190,6 +190,7 @@ fun FilterBottomSheetContent(
     filters: FilterUi,
     onFiltersChange: (FilterUi) -> Unit
 ) {
+    val context = LocalContext.current
     Column(
         modifier = modifier
             .padding(spacing.medium),
