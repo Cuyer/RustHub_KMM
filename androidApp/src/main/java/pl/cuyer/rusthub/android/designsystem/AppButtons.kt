@@ -18,10 +18,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.domain.model.Theme
+import pl.cuyer.rusthub.android.R
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -126,13 +128,13 @@ fun PreviewAppButton() {
                 onClick = { /* noop */ },
                 isLoading = false
             ) {
-                Text("Submit")
+                Text(stringResource(R.string.submit))
             }
             AppButton(
                 onClick = { /* noop */ },
                 isLoading = true
             ) {
-                Text("Submit")
+                Text(stringResource(R.string.submit))
             }
         }
     }
@@ -153,13 +155,13 @@ fun PreviewAppOutlinedButton() {
                 onClick = { /* noop */ },
                 isLoading = false
             ) {
-                Text("Delete")
+                Text(stringResource(R.string.delete))
             }
             AppOutlinedButton(
                 onClick = { /* noop */ },
                 isLoading = true
             ) {
-                Text("Delete")
+                Text(stringResource(R.string.delete))
             }
         }
     }
