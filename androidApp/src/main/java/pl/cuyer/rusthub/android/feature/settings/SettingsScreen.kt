@@ -84,7 +84,11 @@ fun SettingsScreen(
                 actions = {
                     IconButton(onClick = { onAction(SettingsAction.OnLogout) }) {
                         val icon = Icons.AutoMirrored.Default.Logout
-                        Icon(icon, contentDescription = null)
+                        Icon(
+                            icon,
+                            contentDescription =
+                                SharedRes.strings.logout_button.getString(context)
+                        )
                     }
                 },
                 scrollBehavior = scrollBehavior
