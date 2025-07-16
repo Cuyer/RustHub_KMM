@@ -327,6 +327,10 @@
     
     
     <string name="language">Language</string>
+
+    <string name="english">English</string>
+
+    <string name="polish">Polish</string>
     
     
     <string name="last_wipe">Last wipe</string>

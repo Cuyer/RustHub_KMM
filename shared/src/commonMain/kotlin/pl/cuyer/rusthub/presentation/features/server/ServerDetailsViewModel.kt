@@ -336,7 +336,7 @@ class ServerDetailsViewModel(
     private fun observeServerDetails(serverId: Long): Job {
         serverDetailsJob?.cancel()
         return getServerDetailsUseCase(serverId)
-            .map { it?.toUiModel() }
+            .map { it?.toUiModel(stringProvider) }
             .flowOn(Dispatchers.Default)
             .onEach { mappedDetails ->
                 updateDetails(mappedDetails)

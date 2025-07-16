@@ -93,7 +93,7 @@ class ServerViewModel(
             getPagedServersUseCase(
                 searchQuery = query
             ).map { pagingData ->
-                pagingData.map { it.toUiModel() }
+                pagingData.map { it.toUiModel(stringProvider) }
             }.flowOn(Dispatchers.Default)
         }.cachedIn(coroutineScope)
             .catch {
