@@ -17,14 +17,11 @@ import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.presentation.settings.SettingsController
 import pl.cuyer.rusthub.presentation.ui.Colors
 import pl.cuyer.rusthub.util.InAppUpdateManager
-import pl.cuyer.rusthub.util.getCurrentAppLanguage
-import pl.cuyer.rusthub.util.updateAppLanguage
 
 class MainActivity : ComponentActivity() {
     private val startupViewModel: StartupViewModel by viewModel()
     private val settingsController: SettingsController by inject()
     private val inAppUpdateManager: InAppUpdateManager by inject()
-    private var currentLanguage = getCurrentAppLanguage()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
@@ -50,7 +47,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             val state = startupViewModel.state.collectAsStateWithLifecycle()
             val appTheme = settingsController.theme.collectAsStateWithLifecycle()
-            val language = settingsController.language.collectAsStateWithLifecycle()
 
             val darkTheme = when (appTheme.value) {
                 Theme.LIGHT -> false
@@ -71,13 +67,6 @@ class MainActivity : ComponentActivity() {
                         SystemBarStyle.light(lightScrim, darkScrim)
                     }
                 )
-            }
-
-            androidx.compose.runtime.LaunchedEffect(language.value) {
-                if (currentLanguage != language.value) {
-                    currentLanguage = language.value
-                    updateAppLanguage(language.value, this@MainActivity)
-                }
             }
 
             RustHubTheme(theme = appTheme.value) {
