@@ -159,7 +159,7 @@
     <string name="ranking">Ranking</string>
     <string name="rate_application">Oceń aplikację</string>
     <string name="rate_application_button">Przycisk ocenienia aplikacji</string>
-    <string name="rates">Rate\n'y</string>
+    <string name="rates">Rate'y</string>
     <string name="receive_notifications_about_map_and_full_wipes">Otrzymuj powiadomienia o wipe’ach map i pełnych wipe’ach.</string>
     <string name="recent_searches">Ostatnie wyszukiwania</string>
     <string name="region">Region</string>
@@ -219,7 +219,7 @@
     <string name="use_your_password_to_sign_in_to_an_existing_account">Zaloguj się swoim hasłem.</string>
     <string name="username">Nazwa użytkownika</string>
     <string name="view_details">Szczegóły</string>
-    <string name="website">Strona www</string>
+    <string name="website">Strona</string>
     <string name="weekly">Tygodniowy</string>
     <string name="welcome_back">Witaj ponownie!</string>
     <string name="welcome_to_rusthub">Witamy w RustHub</string>
