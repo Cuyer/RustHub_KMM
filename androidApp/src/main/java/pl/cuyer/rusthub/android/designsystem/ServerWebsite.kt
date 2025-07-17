@@ -19,7 +19,7 @@ fun ServerWebsite(
     website: String,
     modifier: Modifier = Modifier,
     spacing: Spacing,
-    label: String = SharedRes.strings.website.getString(LocalContext.current),
+    label: String = stringResource(SharedRes.strings.website),
     alias: String? = null,
     labelColor: Color = MaterialTheme.colorScheme.onSurface,
     urlColor: Color = MaterialTheme.colorScheme.primary

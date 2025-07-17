@@ -84,6 +84,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppOutlinedButton
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
@@ -325,7 +326,6 @@ private fun OnboardingContentExpanded(
 @Composable
 private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> Unit) {
     val focusManager = LocalFocusManager.current
-    val context = LocalContext.current
     Column(
         modifier = Modifier
             .imePadding()
@@ -334,15 +334,15 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
         Text(
-            text = SharedRes.strings.let_s_start_with_your_email.getString(context),
+            text = stringResource(SharedRes.strings.let_s_start_with_your_email),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         AppTextField(
             value = state.email,
             onValueChange = { onAction(OnboardingAction.OnEmailChange(it)) },
-            labelText = SharedRes.strings.e_mail.getString(context),
-            placeholderText = SharedRes.strings.enter_your_e_mail.getString(context),
+            labelText = stringResource(SharedRes.strings.e_mail),
+            placeholderText = stringResource(SharedRes.strings.enter_your_e_mail),
             keyboardType = KeyboardType.Email,
             imeAction = if (state.email.isNotBlank()) ImeAction.Send else ImeAction.Done,
             isError = state.emailError != null,
@@ -360,21 +360,21 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
             isLoading = state.isLoading,
             modifier = Modifier.fillMaxWidth(),
             enabled = state.email.isNotBlank()
-        ) { Text(SharedRes.strings.continue_with_e_mail.getString(context)) }
+        ) { Text(stringResource(SharedRes.strings.continue_with_e_mail)) }
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(spacing.small)
         ) {
             HorizontalDivider(modifier = Modifier.weight(1f))
-            Text(SharedRes.strings.or_str.getString(context))
+            Text(stringResource(SharedRes.strings.or_str))
             HorizontalDivider(modifier = Modifier.weight(1f))
         }
 
         SignProviderButton(
             image = getImageByFileName("ic_google").drawableResId,
-            contentDescription = SharedRes.strings.google_logo.getString(context),
-            text = SharedRes.strings.continue_with_google.getString(context),
+            contentDescription = stringResource(SharedRes.strings.google_logo),
+            text = stringResource(SharedRes.strings.continue_with_google),
             modifier = Modifier.fillMaxWidth(),
             isLoading = state.googleLoading,
             backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
@@ -396,12 +396,12 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
             ) {
                 val rotation by animateFloatAsState(if (state.showOtherOptions) 180f else 0f)
 
-                Text(SharedRes.strings.other_options.getString(context))
+                Text(stringResource(SharedRes.strings.other_options))
                 Icon(
                     modifier = Modifier
                         .rotate(rotation),
                     imageVector = Icons.Default.KeyboardArrowDown,
-                    contentDescription = SharedRes.strings.arrow_down.getString(context)
+                    contentDescription = stringResource(SharedRes.strings.arrow_down)
                 )
             }
         }
@@ -410,20 +410,19 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
 
 @Composable
 private fun HeaderSection() {
-    val context = LocalContext.current
     Image(
         painter = painterResource(id = getImageByFileName("rusthub_logo").drawableResId),
-        contentDescription = SharedRes.strings.application_logo.getString(context)
+        contentDescription = stringResource(SharedRes.strings.application_logo)
     )
 
     Text(
-        text = SharedRes.strings.welcome_to_rusthub.getString(context),
+        text = stringResource(SharedRes.strings.welcome_to_rusthub),
         style = MaterialTheme.typography.headlineLarge,
         textAlign = TextAlign.Center
     )
 
     Text(
-        text = SharedRes.strings.your_gateway_to_the_rust_server_world.getString(context),
+        text = stringResource(SharedRes.strings.your_gateway_to_the_rust_server_world),
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         textAlign = TextAlign.Center
@@ -435,19 +434,17 @@ private fun ActionButtons(
     onAction: (OnboardingAction) -> Unit,
     continueAsGuestLoading: Boolean
 ) {
-    val context = LocalContext.current
     AppOutlinedButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = { onAction(OnboardingAction.OnContinueAsGuest) },
         isLoading = continueAsGuestLoading
     ) {
-        Text(SharedRes.strings.continue_as_guest.getString(context))
+        Text(stringResource(SharedRes.strings.continue_as_guest))
     }
 }
 
 @Composable
 private fun FeatureItem(icon: ImageVector, title: StringResource, description: StringResource) {
-    val context = LocalContext.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
@@ -459,7 +456,7 @@ private fun FeatureItem(icon: ImageVector, title: StringResource, description: S
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = title.getString(context),
+                contentDescription = stringResource(title),
                 modifier = Modifier.size(24.dp)
             )
         }
@@ -467,9 +464,9 @@ private fun FeatureItem(icon: ImageVector, title: StringResource, description: S
         Spacer(modifier = Modifier.width(spacing.xmedium))
 
         Column {
-            Text(text = title.getString(context), style = MaterialTheme.typography.titleMedium)
+            Text(text = stringResource(title), style = MaterialTheme.typography.titleMedium)
             Text(
-                text = description.getString(context),
+                text = stringResource(description),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

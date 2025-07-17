@@ -56,6 +56,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
@@ -209,7 +210,7 @@ fun ServerScreen(
                     when (error) {
                         is NetworkUnavailableException, is TimeoutException,
                         is ServiceUnavailableException -> Unit
-                        else -> onAction(ServerAction.OnError(error.message ?: SharedRes.strings.unknown_error.getString(context)))
+                        else -> onAction(ServerAction.OnError(error.message ?: stringResource(SharedRes.strings.unknown_error)))
                     }
                 }
                 onSuccess { items ->
@@ -303,7 +304,7 @@ fun ServerScreen(
                 ) {
                     Icon(
                         Icons.Default.ArrowUpward,
-                        contentDescription = SharedRes.strings.scroll_to_top.getString(context)
+                        contentDescription = stringResource(SharedRes.strings.scroll_to_top)
                     )
                 }
             }
@@ -317,7 +318,6 @@ private fun ServerFilterChips(
     onSelectedChange: (ServerFilter) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     FlowRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(spacing.small)
@@ -325,17 +325,17 @@ private fun ServerFilterChips(
         FilterChip(
             selected = selected == ServerFilter.ALL,
             onClick = { onSelectedChange(ServerFilter.ALL) },
-            label = { Text(SharedRes.strings.all.getString(context)) }
+            label = { Text(stringResource(SharedRes.strings.all)) }
         )
         FilterChip(
             selected = selected == ServerFilter.FAVOURITES,
             onClick = { onSelectedChange(ServerFilter.FAVOURITES) },
-            label = { Text(SharedRes.strings.favourites.getString(context)) }
+            label = { Text(stringResource(SharedRes.strings.favourites)) }
         )
         FilterChip(
             selected = selected == ServerFilter.SUBSCRIBED,
             onClick = { onSelectedChange(ServerFilter.SUBSCRIBED) },
-            label = { Text(SharedRes.strings.subscribed.getString(context)) }
+            label = { Text(stringResource(SharedRes.strings.subscribed)) }
         )
     }
 }
@@ -351,37 +351,37 @@ private fun createDetails(item: ServerInfoUi, context: Context): Map<String, Str
 
         val parsedTimeAgo = when (minutesAgo) {
             in 0..60 ->
-                context.getString(SharedRes.strings.minutes_ago.resourceId, minutesAgo)
+                stringResource(SharedRes.strings.minutes_ago, minutesAgo)
             in 61..1440 ->
-                context.getString(SharedRes.strings.hours_ago.resourceId, minutesAgo / 60)
+                stringResource(SharedRes.strings.hours_ago, minutesAgo / 60)
             in 1441..10080 ->
-                context.getString(SharedRes.strings.days_ago.resourceId, minutesAgo / 1440)
+                stringResource(SharedRes.strings.days_ago, minutesAgo / 1440)
             else ->
-                context.getString(SharedRes.strings.weeks_ago.resourceId, minutesAgo / 10080)
+                stringResource(SharedRes.strings.weeks_ago, minutesAgo / 10080)
         }
 
-        details[context.getString(SharedRes.strings.wipe.resourceId).trim()] = parsedTimeAgo
+        details[stringResource(SharedRes.strings.wipe).trim()] = parsedTimeAgo
     }
 
     item.ranking?.let {
-        details[context.getString(SharedRes.strings.ranking.resourceId)] = it.toInt().toString()
+        details[stringResource(SharedRes.strings.ranking)] = it.toInt().toString()
     }
     item.cycle?.let {
         val cycleValue = "~ " + String.format(Locale.getDefault(), "%.2f", it) +
-            " " + context.getString(SharedRes.strings.days.resourceId).trim()
-        details[context.getString(SharedRes.strings.cycle.resourceId)] = cycleValue
+            " " + stringResource(SharedRes.strings.days).trim()
+        details[stringResource(SharedRes.strings.cycle)] = cycleValue
     }
     item.serverCapacity?.let {
-        details[context.getString(SharedRes.strings.players.resourceId)] =
+        details[stringResource(SharedRes.strings.players)] =
             "${item.playerCount ?: 0}/$it"
     }
     item.mapName?.let {
-        details[context.getString(SharedRes.strings.map.resourceId)] = it.name
+        details[stringResource(SharedRes.strings.map)] = it.name
     }
     item.modded?.let {
-        details[context.getString(SharedRes.strings.modded.resourceId)] =
-            if (it) context.getString(SharedRes.strings.yes.resourceId)
-            else context.getString(SharedRes.strings.no.resourceId)
+        details[stringResource(SharedRes.strings.modded)] =
+            if (it) stringResource(SharedRes.strings.yes)
+            else stringResource(SharedRes.strings.no)
     }
 
     return details
@@ -392,9 +392,9 @@ private fun createLabels(item: ServerInfoUi, context: Context): List<Label> {
 
     item.wipeSchedule?.let {
         val text = when (it) {
-            WipeSchedule.WEEKLY -> SharedRes.strings.weekly.getString(context)
-            WipeSchedule.BIWEEKLY -> SharedRes.strings.biweekly.getString(context)
-            WipeSchedule.MONTHLY -> SharedRes.strings.monthly.getString(context)
+            WipeSchedule.WEEKLY -> stringResource(SharedRes.strings.weekly)
+            WipeSchedule.BIWEEKLY -> stringResource(SharedRes.strings.biweekly)
+            WipeSchedule.MONTHLY -> stringResource(SharedRes.strings.monthly)
         }
         labels.add(Label(text = text))
     }
@@ -402,7 +402,7 @@ private fun createLabels(item: ServerInfoUi, context: Context): List<Label> {
         labels.add(Label(text = it.name))
     }
     if (item.isOfficial == true) {
-        labels.add(Label(text = SharedRes.strings.official.getString(context)))
+        labels.add(Label(text = stringResource(SharedRes.strings.official)))
     }
 
     item.wipeType?.let {
@@ -410,7 +410,7 @@ private fun createLabels(item: ServerInfoUi, context: Context): List<Label> {
             labels.add(
                 Label(
                     text = it.name + " " +
-                        SharedRes.strings.wipe.getString(context)
+                        stringResource(SharedRes.strings.wipe)
                 )
             )
         }

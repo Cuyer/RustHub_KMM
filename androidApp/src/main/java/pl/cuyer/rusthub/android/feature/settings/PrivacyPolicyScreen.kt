@@ -20,7 +20,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrivacyPolicyScreen(url: String, onNavigateUp: () -> Unit, title: String = SharedRes.strings.privacy_policy.getString(LocalContext.current)) {
+fun PrivacyPolicyScreen(url: String, onNavigateUp: () -> Unit, title: String = stringResource(SharedRes.strings.privacy_policy)) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -29,7 +29,7 @@ fun PrivacyPolicyScreen(url: String, onNavigateUp: () -> Unit, title: String = S
                     IconButton(onClick = onNavigateUp) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = SharedRes.strings.navigate_up.getString(LocalContext.current)
+                            contentDescription = stringResource(SharedRes.strings.navigate_up)
                         )
                     }
                 }

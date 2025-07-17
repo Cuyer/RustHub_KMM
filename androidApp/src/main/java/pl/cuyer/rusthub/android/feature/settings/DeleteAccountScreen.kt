@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppSecureTextField
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
@@ -152,7 +153,7 @@ private fun DeleteAccountScreenCompact(
                 focusManager.clearFocus()
                 onAction(DeleteAccountAction.OnDelete)
             }
-        ) { Text(SharedRes.strings.delete_account.getString(LocalContext.current)) }
+        ) { Text(stringResource(SharedRes.strings.delete_account)) }
     }
 }
 
@@ -190,30 +191,27 @@ private fun DeleteAccountScreenExpanded(
                     focusManager.clearFocus()
                     onAction(DeleteAccountAction.OnDelete)
                 }
-            ) { Text(SharedRes.strings.delete_account.getString(LocalContext.current)) }
+            ) { Text(stringResource(SharedRes.strings.delete_account)) }
         }
     }
 }
 
 @Composable
 private fun DeleteAccountStaticContent(modifier: Modifier = Modifier) {
-    val context = LocalContext.current
     Column(modifier = modifier.fillMaxWidth()) {
         Icon(
             modifier = Modifier.size(64.dp),
             painter = painterResource(getImageByFileName("ic_bin").drawableResId),
-            contentDescription = SharedRes.strings.delete_account_button.getString(context)
+            contentDescription = stringResource(SharedRes.strings.delete_account_button)
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
-            text = SharedRes.strings.delete_account.getString(context),
+            text = stringResource(SharedRes.strings.delete_account),
             style = MaterialTheme.typography.headlineLarge
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
-            text = SharedRes.strings.deleting_your_account_is_irreversible_all_your_data_will_be_removed.getString(
-                context
-            ),
+            text = stringResource(SharedRes.strings.deleting_your_account_is_irreversible_all_your_data_will_be_removed),
             style = MaterialTheme.typography.bodyMedium
         )
     }
@@ -226,7 +224,6 @@ private fun DeleteAccountFields(
     passwordError: String?,
     onAction: (DeleteAccountAction) -> Unit
 ) {
-    val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(spacing.small)
@@ -236,8 +233,8 @@ private fun DeleteAccountFields(
             AppSecureTextField(
                 value = password,
                 onValueChange = { onAction(DeleteAccountAction.OnPasswordChange(it)) },
-                labelText = SharedRes.strings.password.getString(context),
-                placeholderText = SharedRes.strings.enter_your_password.getString(context),
+                labelText = stringResource(SharedRes.strings.password),
+                placeholderText = stringResource(SharedRes.strings.enter_your_password),
                 onSubmit = {
                     focusManager.clearFocus()
                     onAction(DeleteAccountAction.OnDelete)

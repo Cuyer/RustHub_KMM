@@ -82,7 +82,7 @@ fun AppExposedDropdownMenu(
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                     trailingIcon = {
                         Flag.fromDisplayName(option)?.let { flag ->
-                            if (label != SharedRes.strings.region.getString(context)) {
+                            if (label != stringResource(SharedRes.strings.region)) {
                                 Image(
                                     painter = painterResource(flag.toDrawable()),
                                     contentDescription = null,

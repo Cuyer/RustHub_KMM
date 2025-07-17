@@ -103,7 +103,7 @@ fun RustSearchBarTopAppBar(
                     onSearchTriggered()
                 }
             },
-            placeholder = { Text(SharedRes.strings.search_servers.getString(context)) },
+            placeholder = { Text(stringResource(SharedRes.strings.search_servers)) },
             leadingIcon = {
                 if (searchBarState.currentValue == SearchBarValue.Expanded) {
                     IconButton(
@@ -115,13 +115,13 @@ fun RustSearchBarTopAppBar(
                     ) {
                         Icon(
                             Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = SharedRes.strings.back.getString(context)
+                            contentDescription = stringResource(SharedRes.strings.back)
                         )
                     }
                 } else {
                     Icon(
                         Icons.Default.Search,
-                        contentDescription = SharedRes.strings.search.getString(context)
+                        contentDescription = stringResource(SharedRes.strings.search)
                     )
                 }
             },
@@ -131,7 +131,7 @@ fun RustSearchBarTopAppBar(
                         IconButton(onClick = { textFieldState.setTextAndPlaceCursorAtEnd("") }) {
                             Icon(
                                 Icons.Default.Close,
-                                contentDescription = SharedRes.strings.clear.getString(context)
+                                contentDescription = stringResource(SharedRes.strings.clear)
                             )
                         }
                     }
@@ -157,7 +157,7 @@ fun RustSearchBarTopAppBar(
                         IconButton(onClick = onOpenFilters) {
                             Icon(
                                 Icons.Default.FilterList,
-                                contentDescription = SharedRes.strings.open_filters.getString(context)
+                                contentDescription = stringResource(SharedRes.strings.open_filters)
                             )
                         }
                     }
@@ -185,7 +185,7 @@ fun RustSearchBarTopAppBar(
                             modifier = Modifier
                                 .animateItem()
                                 .padding(spacing.medium),
-                            text = SharedRes.strings.recent_searches.getString(context)
+                            text = stringResource(SharedRes.strings.recent_searches)
                         )
                     }
                 }
@@ -204,7 +204,7 @@ fun RustSearchBarTopAppBar(
                         ) {
                             Icon(
                                 Icons.Default.Delete,
-                                contentDescription = SharedRes.strings.delete.getString(context),
+                                contentDescription = stringResource(SharedRes.strings.delete),
                                 tint = MaterialTheme.colorScheme.onError
                             )
                         }
@@ -252,7 +252,7 @@ fun RustSearchBarTopAppBar(
                                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                         ) {
-                            Text(SharedRes.strings.clear_search_history.getString(context))
+                            Text(stringResource(SharedRes.strings.clear_search_history))
                         }
                     }
                 }
