@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.Settings
@@ -30,6 +31,28 @@ class SettingsDataSourceImpl(
         dataStore.edit { prefs ->
             prefs[themeKey] = settings.theme.name
             prefs[languageKey] = settings.language.name
+        }
+    }
+
+    override suspend fun getTheme(): Theme? {
+        val prefs = dataStore.data.first()
+        return prefs[themeKey]?.let { Theme.valueOf(it) }
+    }
+
+    override suspend fun getLanguage(): Language? {
+        val prefs = dataStore.data.first()
+        return prefs[languageKey]?.let { Language.valueOf(it) }
+    }
+
+    override suspend fun setTheme(theme: Theme) {
+        dataStore.edit { prefs ->
+            prefs[themeKey] = theme.name
+        }
+    }
+
+    override suspend fun setLanguage(language: Language) {
+        dataStore.edit { prefs ->
+            prefs[languageKey] = language.name
         }
     }
 }
