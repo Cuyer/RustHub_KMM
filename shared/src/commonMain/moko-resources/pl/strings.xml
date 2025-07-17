@@ -29,7 +29,7 @@
     <string name="in_days">za %s dni</string>
     <string name="soon">wkrótce</string>
     <string name="account">Konto</string>
-    <string name="add_notifications">Dodawanie powiadomienia</string>
+    <string name="add_notifications">Dodawanie powiadomień</string>
     <string name="add_servers_to_your_favourites_to_easily_access_them">Dodawaj serwery do ulubionych, żeby mieć je pod ręką.</string>
     <string name="add_to_favourites">Dodawanie do ulubionych</string>
     <string name="additional_information_available_at">Więcej informacji na:</string>
@@ -139,7 +139,7 @@
     <string name="notifications">Powiadomienia</string>
     <string name="notifications_toggle">Włącz/Wyłącz powiadomienia</string>
     <string name="official">Oficjalny</string>
-    <string name="old_password">Stare hasło</string>
+    <string name="old_password">Obecne hasło</string>
     <string name="open_filters">Pokaż filtry</string>
     <string name="other">Inne</string>
     <string name="other_options">Więcej opcji</string>

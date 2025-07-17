@@ -29,7 +29,7 @@
     <string name="in_days">через %s дн</string>
     <string name="soon">скоро</string>
     <string name="account">Аккаунт</string>
-    <string name="add_notifications">Добавить уведомления</string>
+    <string name="add_notifications">Добавление уведомлений</string>
     <string name="add_servers_to_your_favourites_to_easily_access_them">Добавляйте серверы в избранное для быстрого доступа.</string>
     <string name="add_to_favourites">В избранное</string>
     <string name="additional_information_available_at">Дополнительная информация на:</string>
@@ -139,7 +139,7 @@
     <string name="notifications">Уведомления</string>
     <string name="notifications_toggle">Вкл/Выкл уведомления</string>
     <string name="official">Официальный</string>
-    <string name="old_password">Старый пароль</string>
+    <string name="old_password">Текущий пароль</string>
     <string name="open_filters">Показать фильтры</string>
     <string name="other">Другое</string>
     <string name="other_options">Другие опции</string>

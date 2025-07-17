@@ -15,8 +15,10 @@ import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -292,7 +294,9 @@ private fun SubscriptionMainContent(
         }
     }
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .height(IntrinsicSize.Max)
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(
             spacing.small,
             Alignment.CenterHorizontally
@@ -304,11 +308,13 @@ private fun SubscriptionMainContent(
             ElevatedCard(
                 onClick = { onPlanSelect(plan) },
                 modifier = Modifier.then(
-                    if (isSelected) Modifier.border(
+                    if (isSelected) Modifier
+                        .fillMaxHeight()
+                        .border(
                         width = 1.dp,
                         color = MaterialTheme.colorScheme.primary,
                         shape = CardDefaults.elevatedShape
-                    ) else Modifier
+                    ) else Modifier.fillMaxHeight()
                 )
             ) {
                 Column(
@@ -316,7 +322,7 @@ private fun SubscriptionMainContent(
                         .padding(spacing.medium)
                         .widthIn(min = 60.dp, max = 80.dp)
                         .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
                         stringResource(SharedRes.strings.pro),
@@ -325,7 +331,10 @@ private fun SubscriptionMainContent(
                     )
                     Text(stringResource(plan.label), style = MaterialTheme.typography.titleMedium)
                     Text(
-                        stringResource(plan.billed),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        text = stringResource(plan.billed),
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Thin)
                     )
                 }

@@ -139,7 +139,7 @@
     <string name="notifications">Notifications</string>
     <string name="notifications_toggle">Activer/Désactiver les notifications</string>
     <string name="official">Officiel</string>
-    <string name="old_password">Ancien mot de passe</string>
+    <string name="old_password">Mot de passe actuel</string>
     <string name="open_filters">Voir les filtres</string>
     <string name="other">Autre</string>
     <string name="other_options">Autres options</string>
