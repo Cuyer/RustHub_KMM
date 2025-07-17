@@ -39,7 +39,6 @@ class AuthAnonymouslyUseCase(
 
                 is Result.Error -> send(Result.Error(result.exception))
 
-                else -> Unit
             }
         }
     }

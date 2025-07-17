@@ -83,7 +83,6 @@ class OnboardingViewModel(
                         is Result.Error -> showErrorSnackbar(
                             stringProvider.get(SharedRes.strings.error_creating_guest_account)
                         )
-                        else -> Unit
                     }
                 }
         }
@@ -131,7 +130,6 @@ class OnboardingViewModel(
                         is Result.Error -> showErrorSnackbar(
                             result.exception.message ?: stringProvider.get(SharedRes.strings.error_unknown)
                         )
-                        else -> Unit
                     }
                 }
         }
@@ -164,7 +162,6 @@ class OnboardingViewModel(
                             result.exception.message
                                 ?: stringProvider.get(SharedRes.strings.unable_to_get_client_id)
                         )
-                        else -> Unit
                     }
                 }
         }
@@ -188,7 +185,6 @@ class OnboardingViewModel(
                         is Result.Error -> showErrorSnackbar(
                             stringProvider.get(SharedRes.strings.error_google_sign_in)
                         )
-                        else -> Unit
                     }
                 }
         }

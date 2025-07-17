@@ -54,7 +54,6 @@ import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.SharedRes
 import kotlinx.datetime.Clock.System
 
-//TODO pomyśleć co zrobić żeby uniknąć importu z data do viewmodela (mapowanie)
 class ServerViewModel(
     private val clipboardHandler: ClipboardHandler,
     private val snackbarController: SnackbarController,

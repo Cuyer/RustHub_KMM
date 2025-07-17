@@ -122,7 +122,6 @@ class UpgradeViewModel(
                             result.exception.message
                                 ?: stringProvider.get(SharedRes.strings.unable_to_upgrade_account)
                         )
-                        else -> Unit
                     }
                 }
         }
@@ -155,7 +154,6 @@ class UpgradeViewModel(
                             result.exception.message
                                 ?: stringProvider.get(SharedRes.strings.unable_to_get_client_id)
                         )
-                        else -> Unit
                     }
                 }
         }
@@ -186,7 +184,6 @@ class UpgradeViewModel(
                             result.exception.message
                                 ?: stringProvider.get(SharedRes.strings.unable_to_upgrade_account)
                         )
-                        else -> Unit
                     }
                 }
         }

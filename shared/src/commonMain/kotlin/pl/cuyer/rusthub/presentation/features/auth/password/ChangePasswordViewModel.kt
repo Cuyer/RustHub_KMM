@@ -100,7 +100,6 @@ class ChangePasswordViewModel(
                             result.exception.message
                                 ?: stringProvider.get(SharedRes.strings.unable_to_change_password)
                         )
-                        else -> Unit
                     }
                 }
         }

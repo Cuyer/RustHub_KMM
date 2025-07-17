@@ -94,7 +94,6 @@ class DeleteAccountViewModel(
                                 result.exception.message
                                     ?: stringProvider.get(SharedRes.strings.unable_to_delete_account)
                             )
-                            else -> Unit
                         }
                     }
                 return@launch
@@ -137,7 +136,6 @@ class DeleteAccountViewModel(
                             result.exception.message
                                 ?: stringProvider.get(SharedRes.strings.unable_to_delete_account)
                         )
-                        else -> Unit
                     }
                 }
         }

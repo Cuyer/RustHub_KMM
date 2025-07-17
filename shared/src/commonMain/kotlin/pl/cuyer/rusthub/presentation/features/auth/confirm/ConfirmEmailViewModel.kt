@@ -98,7 +98,6 @@ class ConfirmEmailViewModel(
                             result.exception.message
                                 ?: stringProvider.get(SharedRes.strings.unable_to_verify_email)
                         )
-                        else -> Unit
                     }
                 }
         }

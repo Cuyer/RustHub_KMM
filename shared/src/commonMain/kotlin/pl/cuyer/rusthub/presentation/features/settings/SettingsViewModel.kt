@@ -174,7 +174,6 @@ class SettingsViewModel(
 
                         is Result.Error -> showErrorSnackbar(stringProvider.get(SharedRes.strings.logout_error))
 
-                        else -> Unit
                     }
                 }
         }

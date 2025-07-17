@@ -89,7 +89,6 @@ class ResetPasswordViewModel(
                             result.exception.message
                                 ?: stringProvider.get(SharedRes.strings.unable_to_send_reset_email)
                         )
-                        else -> Unit
                     }
                 }
         }

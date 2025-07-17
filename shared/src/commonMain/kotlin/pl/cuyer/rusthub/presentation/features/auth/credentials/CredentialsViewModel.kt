@@ -130,7 +130,6 @@ class CredentialsViewModel(
                     when (result) {
                         is Result.Success -> handlePostAuth()
                         is Result.Error -> handleError(result.exception)
-                        else -> Unit
                     }
                 }
         }
