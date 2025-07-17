@@ -54,10 +54,6 @@ actual class DatabaseDriverFactory(
                 sort_orderAdapter = EnumColumnAdapter(),
                 filterAdapter = EnumColumnAdapter()
             ),
-            settingsEntityAdapter = database.SettingsEntity.Adapter(
-                themeAdapter = EnumColumnAdapter(),
-                languageAdapter = EnumColumnAdapter()
-            )
         )
     }
 }
