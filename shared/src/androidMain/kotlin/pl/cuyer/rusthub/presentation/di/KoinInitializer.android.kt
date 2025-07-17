@@ -35,9 +35,6 @@ import pl.cuyer.rusthub.util.InAppUpdateManager
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.data.local.settings.SettingsDataSourceImpl
 import pl.cuyer.rusthub.domain.repository.settings.SettingsDataSource
-import pl.cuyer.rusthub.data.local.settings.createSettingsDataStore
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import kotlinx.coroutines.runBlocking
 import org.koin.dsl.bind
 import pl.cuyer.rusthub.BuildConfig
@@ -65,8 +62,7 @@ actual val platformModule: Module = module {
     single { StoreNavigator(androidContext()) }
     single { GoogleAuthClient(androidContext()) }
     single { StringProvider(androidContext()) }
-    single<DataStore<Preferences>> { createSettingsDataStore(androidContext()) }
-    single { SettingsDataSourceImpl(get()) } bind SettingsDataSource::class
+    single { SettingsDataSourceImpl() } bind SettingsDataSource::class
     single { PermissionsController(androidContext()) }
     viewModel {
         StartupViewModel(get(), get(), get(), get(), get())
