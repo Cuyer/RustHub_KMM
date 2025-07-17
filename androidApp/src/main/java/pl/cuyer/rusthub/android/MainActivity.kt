@@ -19,7 +19,7 @@ import pl.cuyer.rusthub.presentation.settings.SettingsController
 import pl.cuyer.rusthub.presentation.ui.Colors
 import pl.cuyer.rusthub.util.InAppUpdateManager
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     private val startupViewModel: StartupViewModel by viewModel()
     private val settingsController: SettingsController by inject()
     private val inAppUpdateManager: InAppUpdateManager by inject()
