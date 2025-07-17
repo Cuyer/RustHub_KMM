@@ -69,6 +69,7 @@ kotlin {
             implementation(libs.google.play.app.update)
             implementation(libs.google.play.app.update.ktx)
             implementation(libs.play.review.ktx)
+            implementation(libs.androidx.appcompat)
         }
         commonMain.dependencies {
             implementation(project.dependencies.platform(libs.koin.bom))

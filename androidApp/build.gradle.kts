@@ -92,6 +92,7 @@ android {
 dependencies {
     implementation(projects.shared)
     implementation(project.dependencies.platform(libs.compose.bom))
+    implementation(libs.androidx.datastore.preferences)
     implementation(libs.compose.ui)
     implementation(libs.compose.foundation)
     implementation(libs.compose.ui.tooling.preview)
@@ -134,6 +135,7 @@ dependencies {
     implementation(libs.androidx.credentials.compat)
     implementation(libs.google.play.app.update)
     implementation(libs.google.play.app.update.ktx)
+    implementation(libs.androidx.appcompat)
     coreLibraryDesugaring(libs.desugar.jdk.libs.v215)
     debugImplementation(libs.compose.ui.tooling)
 }

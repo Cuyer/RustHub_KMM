@@ -10,6 +10,4 @@ interface SettingsDataSource {
     fun getLanguage(): Language
     fun setTheme(theme: Theme)
     fun setLanguage(language: Language)
-
-    fun applySettings()
 }

@@ -3,10 +3,7 @@ package pl.cuyer.rusthub.data.local.settings
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import pl.cuyer.rusthub.domain.model.Language
-import pl.cuyer.rusthub.domain.model.Settings
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.repository.settings.SettingsDataSource
 
@@ -53,10 +50,5 @@ class SettingsDataSourceImpl : SettingsDataSource {
         val locales = LocaleListCompat.forLanguageTags(localeTag)
         Log.d(TAG, "setLanguage: language=$language localeTag=$localeTag")
         AppCompatDelegate.setApplicationLocales(locales)
-    }
-
-    override fun applySettings() {
-        setTheme(getTheme())
-        setLanguage(getLanguage())
     }
 }

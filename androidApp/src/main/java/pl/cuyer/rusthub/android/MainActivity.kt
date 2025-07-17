@@ -23,7 +23,6 @@ class MainActivity : AppCompatActivity() {
     private val settingsDataSource: SettingsDataSource by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        settingsDataSource.applySettings()
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition {
             startupViewModel.state.value.isLoading
