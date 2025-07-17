@@ -26,6 +26,9 @@ class SettingsDataSourceImpl : SettingsDataSource {
         val tag = if (!locales.isEmpty) locales[0]!!.language else null
         val language = when (tag) {
             "pl" -> Language.POLISH
+            "de" -> Language.GERMAN
+            "fr" -> Language.FRENCH
+            "ru" -> Language.RUSSIAN
             else -> Language.ENGLISH
         }
         Log.d(TAG, "getLanguage: tag=$tag resolvedLanguage=$language")
@@ -46,6 +49,9 @@ class SettingsDataSourceImpl : SettingsDataSource {
         val localeTag = when (language) {
             Language.ENGLISH -> "en"
             Language.POLISH -> "pl"
+            Language.GERMAN -> "de"
+            Language.FRENCH -> "fr"
+            Language.RUSSIAN -> "ru"
         }
         val locales = LocaleListCompat.forLanguageTags(localeTag)
         Log.d(TAG, "setLanguage: language=$language localeTag=$localeTag")
