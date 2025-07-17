@@ -17,7 +17,6 @@ import pl.cuyer.rusthub.data.local.filtersOptions.FiltersOptionsDataSourceImpl
 import pl.cuyer.rusthub.data.local.remotekey.RemoteKeyDataSourceImpl
 import pl.cuyer.rusthub.data.local.search.SearchQueryDataSourceImpl
 import pl.cuyer.rusthub.data.local.server.ServerDataSourceImpl
-import pl.cuyer.rusthub.data.local.settings.SettingsDataSourceImpl
 import pl.cuyer.rusthub.data.local.subscription.SubscriptionSyncDataSourceImpl
 import pl.cuyer.rusthub.data.network.auth.AuthRepositoryImpl
 import pl.cuyer.rusthub.data.network.config.ConfigRepositoryImpl
@@ -73,7 +72,6 @@ import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleSubscriptionUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeWithGoogleUseCase
-import pl.cuyer.rusthub.presentation.settings.SettingsController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.util.MessagingTokenManager
 import pl.cuyer.rusthub.util.TokenRefresher
@@ -100,7 +98,6 @@ val appModule = module {
     singleOf(::FiltersDataSourceImpl) bind FiltersDataSource::class
     singleOf(::SearchQueryDataSourceImpl) bind SearchQueryDataSource::class
     singleOf(::RemoteKeyDataSourceImpl) bind RemoteKeyDataSource::class
-    singleOf(::SettingsDataSourceImpl) bind SettingsDataSource::class
     singleOf(::MessagingTokenClientImpl) bind MessagingTokenRepository::class
     single { MessagingTokenManager(get(), get()) }
     single { GetPagedServersUseCase(get(), get(), get(), get()) }
@@ -141,7 +138,6 @@ val appModule = module {
     single { UpgradeWithGoogleUseCase(get(), get(), get(), get()) }
     single { GetSettingsUseCase(get()) }
     single { SaveSettingsUseCase(get()) }
-    single { SettingsController(get()) }
     single { ToggleFavouriteUseCase(get(), get(), get(), get()) }
     single { ToggleSubscriptionUseCase(get(), get(), get(), get()) }
 }
