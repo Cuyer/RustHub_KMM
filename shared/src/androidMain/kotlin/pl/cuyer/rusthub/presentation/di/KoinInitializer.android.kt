@@ -114,8 +114,6 @@ actual val platformModule: Module = module {
     }
     viewModel {
         SettingsViewModel(
-            getSettingsUseCase = get(),
-            saveSettingsUseCase = get(),
             logoutUserUseCase = get(),
             getUserUseCase = get(),
             permissionsController = get(),

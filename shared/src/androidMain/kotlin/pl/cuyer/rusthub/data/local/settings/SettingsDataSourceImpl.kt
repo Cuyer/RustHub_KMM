@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.data.local.settings
 
+import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import kotlinx.coroutines.flow.Flow
@@ -11,52 +12,51 @@ import pl.cuyer.rusthub.domain.repository.settings.SettingsDataSource
 
 class SettingsDataSourceImpl : SettingsDataSource {
 
-    override fun getSettings(): Flow<Settings?> {
-        val theme = getTheme() ?: Theme.SYSTEM
-        val language = getLanguage() ?: Language.ENGLISH
-        return flowOf(Settings(theme, language))
-    }
-
-    override suspend fun upsertSettings(settings: Settings) {
-        setTheme(settings.theme)
-        setLanguage(settings.language)
-    }
-
-    override suspend fun getTheme(): Theme? {
-        return when (AppCompatDelegate.getDefaultNightMode()) {
+    private val TAG = "SettingsDataSource"
+    override fun getTheme(): Theme {
+        val mode = AppCompatDelegate.getDefaultNightMode()
+        val theme = when (mode) {
             AppCompatDelegate.MODE_NIGHT_NO -> Theme.LIGHT
             AppCompatDelegate.MODE_NIGHT_YES -> Theme.DARK
             else -> Theme.SYSTEM
         }
+        Log.d(TAG, "getTheme: mode=$mode resolvedTheme=$theme")
+        return theme
     }
 
-    override suspend fun getLanguage(): Language? {
+    override fun getLanguage(): Language {
         val locales = AppCompatDelegate.getApplicationLocales()
-        if (!locales.isEmpty) {
-            val tag = locales[0]!!.language
-            return when (tag) {
-                "pl" -> Language.POLISH
-                else -> Language.ENGLISH
-            }
+        val tag = if (!locales.isEmpty) locales[0]!!.language else null
+        val language = when (tag) {
+            "pl" -> Language.POLISH
+            else -> Language.ENGLISH
         }
-        return Language.ENGLISH
+        Log.d(TAG, "getLanguage: tag=$tag resolvedLanguage=$language")
+        return language
     }
 
-    override suspend fun setTheme(theme: Theme) {
+    override fun setTheme(theme: Theme) {
         val mode = when (theme) {
             Theme.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
             Theme.DARK -> AppCompatDelegate.MODE_NIGHT_YES
             Theme.SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         }
+        Log.d(TAG, "setTheme: theme=$theme resolvedMode=$mode")
         AppCompatDelegate.setDefaultNightMode(mode)
     }
 
-    override suspend fun setLanguage(language: Language) {
-        val locale = when (language) {
+    override fun setLanguage(language: Language) {
+        val localeTag = when (language) {
             Language.ENGLISH -> "en"
             Language.POLISH -> "pl"
         }
-        val locales = LocaleListCompat.forLanguageTags(locale)
+        val locales = LocaleListCompat.forLanguageTags(localeTag)
+        Log.d(TAG, "setLanguage: language=$language localeTag=$localeTag")
         AppCompatDelegate.setApplicationLocales(locales)
+    }
+
+    override fun applySettings() {
+        setTheme(getTheme())
+        setLanguage(getLanguage())
     }
 }

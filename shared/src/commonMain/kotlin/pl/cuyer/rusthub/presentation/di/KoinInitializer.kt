@@ -56,7 +56,6 @@ import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
-import pl.cuyer.rusthub.domain.usecase.GetSettingsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
@@ -67,7 +66,6 @@ import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
 import pl.cuyer.rusthub.domain.usecase.SetEmailConfirmedUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
-import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleSubscriptionUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeAccountUseCase
@@ -136,8 +134,6 @@ val appModule = module {
     single { RequestPasswordResetUseCase(get()) }
     single { UpgradeAccountUseCase(get(), get(), get(), get()) }
     single { UpgradeWithGoogleUseCase(get(), get(), get(), get()) }
-    single { GetSettingsUseCase(get()) }
-    single { SaveSettingsUseCase(get()) }
     single { ToggleFavouriteUseCase(get(), get(), get(), get()) }
     single { ToggleSubscriptionUseCase(get(), get(), get(), get()) }
 }

@@ -423,7 +423,7 @@ private fun createLabels(item: ServerInfoUi): List<Label> {
 @Preview
 @Composable
 private fun ServerScreenPreview() {
-    RustHubTheme(theme = Theme.SYSTEM) {
+    RustHubTheme() {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

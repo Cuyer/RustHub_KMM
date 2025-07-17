@@ -55,7 +55,7 @@ fun AppLabel(
 @Composable
 @Preview
 private fun LabelPreview() {
-    RustHubTheme(theme = Theme.LIGHT) {
+    RustHubTheme {
         AppLabel(
             text = "Monthly"
         )

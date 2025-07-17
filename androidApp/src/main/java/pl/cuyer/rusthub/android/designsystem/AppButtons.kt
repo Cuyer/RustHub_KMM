@@ -118,7 +118,7 @@ fun AppTextButton(
 @Composable
 @OptIn(ExperimentalAnimationApi::class)
 fun PreviewAppButton() {
-    RustHubTheme(theme = Theme.SYSTEM) {
+    RustHubTheme() {
         Column(
             modifier = Modifier
                 .padding(16.dp)
@@ -145,7 +145,7 @@ fun PreviewAppButton() {
 @Composable
 @OptIn(ExperimentalAnimationApi::class)
 fun PreviewAppOutlinedButton() {
-    RustHubTheme(theme = Theme.SYSTEM) {
+    RustHubTheme() {
         Column(
             modifier = Modifier
                 .padding(16.dp)

@@ -47,7 +47,7 @@ fun DetailsRow(details: Map<String, String>) {
 @Preview
 @Composable
 private fun DetailsRowPreview() {
-    RustHubTheme(theme = Theme.SYSTEM) {
+    RustHubTheme() {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

@@ -290,7 +290,7 @@ fun RustSearchBarTopAppBar(
 @Preview(device = "spec:parent=pixel_5,orientation=portrait")
 @Composable
 private fun AppSearchTopBarPreview() {
-    RustHubTheme(theme = Theme.SYSTEM) {
+    RustHubTheme() {
         Scaffold(
             topBar = {
                 RustSearchBarTopAppBar(

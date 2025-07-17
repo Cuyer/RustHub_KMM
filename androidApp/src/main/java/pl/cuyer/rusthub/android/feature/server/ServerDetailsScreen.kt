@@ -590,7 +590,7 @@ fun parseHtmlToAnnotatedString(html: String): AnnotatedString {
 @Preview
 @Composable
 private fun ServerDetailsPrev() {
-    RustHubTheme(theme = Theme.SYSTEM) {
+    RustHubTheme() {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

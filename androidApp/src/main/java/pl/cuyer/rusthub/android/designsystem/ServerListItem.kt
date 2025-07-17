@@ -185,7 +185,7 @@ fun ServerListItemShimmer(modifier: Modifier = Modifier) {
 )
 @Composable
 private fun ServerListItemPreview() {
-    RustHubTheme(theme = Theme.SYSTEM) {
+    RustHubTheme() {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

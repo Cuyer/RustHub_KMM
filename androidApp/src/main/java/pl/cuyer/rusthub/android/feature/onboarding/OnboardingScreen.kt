@@ -514,7 +514,7 @@ fun CarouselAutoPlayHandler(
 @Preview
 @Composable
 private fun OnboardingPrev() {
-    RustHubTheme(theme = Theme.SYSTEM) {
+    RustHubTheme() {
         OnboardingScreen(
             onNavigate = {},
             stateProvider = { mutableStateOf(OnboardingState()) },

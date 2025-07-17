@@ -119,7 +119,7 @@ fun AppTextField(
 @Composable
 @Preview
 private fun AppTextFieldPreview() {
-    RustHubTheme(theme = Theme.LIGHT) {
+    RustHubTheme {
         Column(modifier = Modifier.fillMaxSize()) {
             AppTextField(
                 modifier = Modifier

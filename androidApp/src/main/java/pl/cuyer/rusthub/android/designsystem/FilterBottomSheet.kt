@@ -273,7 +273,7 @@ private fun FilterBottomSheetPreview() {
     val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
 
-    RustHubTheme(theme = Theme.SYSTEM) {
+    RustHubTheme() {
         Surface(
             modifier = Modifier
                 .fillMaxSize(),

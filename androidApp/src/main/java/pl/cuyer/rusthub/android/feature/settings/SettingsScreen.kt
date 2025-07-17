@@ -29,6 +29,9 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -38,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.android.designsystem.AppExposedDropdownMenu
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
@@ -57,6 +61,7 @@ import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.AppInfo
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
+import pl.cuyer.rusthub.domain.repository.settings.SettingsDataSource
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class,
@@ -111,8 +116,6 @@ fun SettingsScreen(
             }
             if (isTabletMode) {
                 SettingsScreenExpanded(
-                    theme = state.value.theme,
-                    language = state.value.language,
                     username = state.value.username,
                     provider = state.value.provider,
                     subscribed = state.value.subscribed,
@@ -123,8 +126,6 @@ fun SettingsScreen(
                 SettingsScreenCompact(
                     modifier = Modifier
                         .verticalScroll(rememberScrollState()),
-                    theme = state.value.theme,
-                    language = state.value.language,
                     username = state.value.username,
                     provider = state.value.provider,
                     subscribed = state.value.subscribed,
@@ -140,8 +141,6 @@ fun SettingsScreen(
 private fun SettingsScreenCompact(
     modifier: Modifier = Modifier,
     username: String?,
-    theme: Theme,
-    language: Language,
     provider: AuthProvider?,
     subscribed: Boolean,
     expiration: String?,
@@ -152,7 +151,7 @@ private fun SettingsScreenCompact(
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
         GreetingSection(username)
-        PreferencesSection(theme, language, onAction)
+        PreferencesSection(onAction)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
         AccountSection(provider, subscribed, expiration, onAction)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
@@ -164,8 +163,6 @@ private fun SettingsScreenCompact(
 private fun SettingsScreenExpanded(
     modifier: Modifier = Modifier,
     username: String?,
-    theme: Theme,
-    language: Language,
     provider: AuthProvider?,
     subscribed: Boolean,
     expiration: String?,
@@ -182,7 +179,7 @@ private fun SettingsScreenExpanded(
             verticalArrangement = Arrangement.spacedBy(spacing.medium)
         ) {
             GreetingSection(username)
-            PreferencesSection(theme, language, onAction)
+            PreferencesSection(onAction)
             HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
             AccountSection(provider, subscribed, expiration, onAction)
         }
@@ -199,34 +196,39 @@ private fun SettingsScreenExpanded(
 
 @Composable
 private fun PreferencesSection(
-    theme: Theme,
-    language: Language,
     onAction: (SettingsAction) -> Unit
 ) {
     val stringProvider = koinInject<StringProvider>()
+    val settingsDataSource = koinInject<SettingsDataSource>()
     Text(
         text = stringResource(SharedRes.strings.preferences),
         style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(bottom = spacing.small)
     )
+
     AppExposedDropdownMenu(
         label = stringResource(SharedRes.strings.theme),
         options = Theme.entries.map { it.displayName(stringProvider) },
-        selectedValue = Theme.entries.indexOf(theme),
-        onSelectionChanged = { onAction(SettingsAction.OnThemeChange(Theme.entries[it])) }
+        selectedValue = Theme.entries.indexOf(settingsDataSource.getTheme()),
+        onSelectionChanged = {
+            settingsDataSource.setTheme(Theme.entries[it])
+        }
     )
+
     AppExposedDropdownMenu(
         label = stringResource(SharedRes.strings.language),
         options = Language.entries.map { it.displayName(stringProvider) },
-        selectedValue = Language.entries.indexOf(language),
-        onSelectionChanged = { onAction(SettingsAction.OnLanguageChange(Language.entries[it])) }
+        selectedValue = Language.entries.indexOf(settingsDataSource.getLanguage()),
+        onSelectionChanged = {
+            settingsDataSource.setLanguage(Language.entries[it])
+        }
     )
+
     AppTextButton(
         onClick = { onAction(SettingsAction.OnNotificationsClick) }
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -238,6 +240,7 @@ private fun PreferencesSection(
         }
     }
 }
+
 
 @Composable
 private fun AccountSection(
@@ -402,7 +405,7 @@ private fun GreetingSection(username: String?) {
 @Preview
 @Composable
 private fun SettingsPreview() {
-    RustHubTheme(theme = Theme.SYSTEM) {
+    RustHubTheme {
         SettingsScreen(
             onNavigate = {},
             uiEvent = MutableStateFlow(UiEvent.Navigate(Onboarding)),

@@ -35,7 +35,7 @@ fun LabelRow(
 @Preview
 @Composable
 private fun LabelRowPreview() {
-    RustHubTheme(theme = Theme.SYSTEM) {
+    RustHubTheme() {
         LabelRow(
             labels = listOf(
                 Label(

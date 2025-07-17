@@ -5,32 +5,25 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.core.graphics.toColorInt
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import pl.cuyer.rusthub.android.theme.RustHubTheme
-import pl.cuyer.rusthub.domain.model.Theme
+import pl.cuyer.rusthub.domain.repository.settings.SettingsDataSource
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
-import pl.cuyer.rusthub.domain.usecase.GetSettingsUseCase
 import pl.cuyer.rusthub.presentation.ui.Colors
 import pl.cuyer.rusthub.util.InAppUpdateManager
-import pl.cuyer.rusthub.domain.repository.settings.SettingsDataSource
-import pl.cuyer.rusthub.domain.model.Language
-import pl.cuyer.rusthub.util.updateAppLanguage
-import pl.cuyer.rusthub.util.updateAppTheme
 
 class MainActivity : AppCompatActivity() {
     private val startupViewModel: StartupViewModel by viewModel()
-    private val getSettingsUseCase: GetSettingsUseCase by inject()
     private val inAppUpdateManager: InAppUpdateManager by inject()
+
     private val settingsDataSource: SettingsDataSource by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        settingsDataSource.applySettings()
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition {
             startupViewModel.state.value.isLoading
@@ -47,39 +40,14 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        applySettings()
+
         super.onCreate(savedInstanceState)
 
         inAppUpdateManager.check(this)
 
         setContent {
             val state = startupViewModel.state.collectAsStateWithLifecycle()
-            val appTheme = getSettingsUseCase()
-                .map { it?.theme ?: Theme.SYSTEM }
-                .collectAsStateWithLifecycle(initialValue = Theme.SYSTEM)
-
-            val darkTheme = when (appTheme.value) {
-                Theme.LIGHT -> false
-                Theme.DARK -> true
-                Theme.SYSTEM -> isSystemInDarkTheme()
-            }
-
-            androidx.compose.runtime.LaunchedEffect(darkTheme) {
-                enableEdgeToEdge(
-                    statusBarStyle = if (darkTheme) {
-                        SystemBarStyle.dark(darkScrim)
-                    } else {
-                        SystemBarStyle.light(lightScrim, darkScrim)
-                    },
-                    navigationBarStyle = if (darkTheme) {
-                        SystemBarStyle.dark(darkScrim)
-                    } else {
-                        SystemBarStyle.light(lightScrim, darkScrim)
-                    }
-                )
-            }
-
-            RustHubTheme(theme = appTheme.value) {
+            RustHubTheme {
                 if (!state.value.isLoading) {
                     NavigationRoot(startDestination = state.value.startDestination)
                 }
@@ -90,13 +58,6 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         inAppUpdateManager.onResume(this)
-    }
-
-    private fun applySettings() {
-        runBlocking {
-            settingsDataSource.getTheme()?.let { updateAppTheme(it) }
-            settingsDataSource.getLanguage()?.let { updateAppLanguage(it) }
-        }
     }
 }
 

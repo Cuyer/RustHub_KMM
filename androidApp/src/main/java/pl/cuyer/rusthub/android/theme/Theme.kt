@@ -3,6 +3,7 @@ import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialExpressiveTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -89,20 +90,12 @@ private val darkScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDark,
 )
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun RustHubTheme(
-    theme: Theme = Theme.SYSTEM,
-    // Dynamic color is available on Android 12+
+    darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
-    content: @Composable () -> Unit
+    content: @Composable() () -> Unit
 ) {
-    val darkTheme = when (theme) {
-        Theme.LIGHT -> false
-        Theme.DARK -> true
-        Theme.SYSTEM -> isSystemInDarkTheme()
-    }
-
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
@@ -115,8 +108,7 @@ fun RustHubTheme(
     CompositionLocalProvider(
         LocalSpacing provides Spacing()
     ) {
-        MaterialExpressiveTheme(
-            motionScheme = MotionScheme.expressive(),
+        MaterialTheme(
             colorScheme = colorScheme,
             typography = AppTypography,
             content = content
