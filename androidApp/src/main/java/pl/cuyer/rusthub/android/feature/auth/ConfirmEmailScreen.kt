@@ -137,7 +137,6 @@ private fun ConfirmEmailScreenCompact(
     state: ConfirmEmailState,
     onAction: (ConfirmEmailAction) -> Unit
 ) {
-    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -168,7 +167,6 @@ private fun ConfirmEmailScreenExpanded(
     state: ConfirmEmailState,
     onAction: (ConfirmEmailAction) -> Unit
 ) {
-    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxSize()
@@ -202,8 +200,6 @@ private fun ConfirmEmailScreenExpanded(
 
 @Composable
 private fun ConfirmEmailStaticContent(email: String, modifier: Modifier = Modifier) {
-    val stringProvider = koinInject<StringProvider>()
-    val context = LocalContext.current
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start) {
         Image(
             modifier = Modifier.size(64.dp),
@@ -217,10 +213,7 @@ private fun ConfirmEmailStaticContent(email: String, modifier: Modifier = Modifi
         )
         Spacer(Modifier.size(spacing.small))
         Text(
-            text = stringProvider.get(
-                SharedRes.strings.confirmation_sent_message,
-                email
-            ),
+            text = stringResource(SharedRes.strings.confirmation_sent_message, email),
             style = MaterialTheme.typography.bodyMedium
         )
     }

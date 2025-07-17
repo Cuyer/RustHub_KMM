@@ -30,7 +30,7 @@
     <string name="soon">скоро</string>
     <string name="account">Аккаунт</string>
     <string name="add_notifications">Добавить уведомления</string>
-    <string name="add_servers_to_your_favourites_to_easily_access_them">Добавьте серверы в избранное для быстрого доступа.</string>
+    <string name="add_servers_to_your_favourites_to_easily_access_them">Добавляйте серверы в избранное для быстрого доступа.</string>
     <string name="add_to_favourites">В избранное</string>
     <string name="additional_information_available_at">Дополнительная информация на:</string>
     <string name="all">Все</string>
@@ -59,7 +59,7 @@
     <string name="continue_as_guest">Продолжить как гость</string>
     <string name="continue_with_google">Продолжить с Google</string>
     <string name="continue_with_e_mail">Продолжить с e-mail</string>
-    <string name="copy_ips">Копировать IP</string>
+    <string name="copy_ips">Копирование IP</string>
     <string name="country">Страна</string>
     <string name="create_new_account">Создать аккаунт</string>
     <string name="custom">Свой вариант</string>
@@ -74,7 +74,7 @@
     <string name="demo_with_icon">Демо с иконкой</string>
     <string name="description">Описание</string>
     <string name="disabled">Отключено</string>
-    <string name="e_mail">e-mail</string>
+    <string name="e_mail">E-mail</string>
     <string name="enable_notifications">Включить уведомления</string>
     <string name="enabled">Включено</string>
     <string name="enter_a_number">Введите число</string>
@@ -90,7 +90,7 @@
     <string name="false_str">Нет</string>
     <string name="favourites">Избранное</string>
     <string name="filter_options">Параметры фильтрации</string>
-    <string name="find_servers">Найти серверы</string>
+    <string name="find_servers">Поиск</string>
     <string name="forgot_password_icon">Иконка "Забыли пароль"</string>
     <string name="forgot_password">Забыли пароль?</string>
     <string name="free">Бесплатно</string>
@@ -155,7 +155,7 @@
     <string name="privacy_policy_button">Кнопка политики конфиденциальности</string>
     <string name="protect_your_account_by_providing_a_strong_password">Создайте надежный пароль для защиты аккаунта.</string>
     <string name="provide_credentials_or_connect_google_account_to_upgrade">Введите данные или подключите Google для обновления.</string>
-    <string name="quickly_copy_server_ip_addresses_to_send_them_to_your_friends">Быстро копируйте IP сервера и отправляйте друзьям.</string>
+    <string name="quickly_copy_server_ip_addresses_to_send_them_to_your_friends">Копируйте IP-адреса сервера и отправляйте друзьям.</string>
     <string name="ranking">Рейтинг</string>
     <string name="rate_application">Оценить приложение</string>
     <string name="rate_application_button">Кнопка оценки приложения</string>
@@ -222,13 +222,13 @@
     <string name="upgrade_account_button">Кнопка улучшения аккаунта</string>
     <string name="upgrade_with_google">Улучшить через Google</string>
     <string name="upgrade_your_account">Улучшить ваш аккаунт</string>
-    <string name="temporary_account_expiration">Ваш временный аккаунт истекает через %s. Обновитесь, чтобы сохранить избранное и уведомления о вайпах.</string>
+    <string name="temporary_account_expiration">Ваш временный аккаунт истекает через %s. Обновитесь, чтобы сохранить избранные серверы и уведомления о вайпах.</string>
     <string name="confirmation_email_sent">Письмо с подтверждением отправлено</string>
     <string name="wait_before_resending">Подождите перед повторной отправкой</string>
     <string name="upkeep">Обслуживание</string>
     <string name="use_your_password_to_sign_in_to_an_existing_account">Войдите с помощью вашего пароля.</string>
     <string name="username">Имя пользователя</string>
-    <string name="view_details">Подробнее</string>
+    <string name="view_details">Детали сервера</string>
     <string name="website">Сайт</string>
     <string name="weekly">Еженедельно</string>
     <string name="biweekly">Раз в две недели</string>

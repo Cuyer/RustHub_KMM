@@ -30,7 +30,7 @@
     <string name="soon">wkrótce</string>
     <string name="account">Konto</string>
     <string name="add_notifications">Dodawanie powiadomienia</string>
-    <string name="add_servers_to_your_favourites_to_easily_access_them">Dodaj serwery do ulubionych, żeby mieć je pod ręką.</string>
+    <string name="add_servers_to_your_favourites_to_easily_access_them">Dodawaj serwery do ulubionych, żeby mieć je pod ręką.</string>
     <string name="add_to_favourites">Dodawanie do ulubionych</string>
     <string name="additional_information_available_at">Więcej informacji na:</string>
     <string name="all">Wszystkie</string>
@@ -59,7 +59,7 @@
     <string name="continue_as_guest">Kontynuuj jako gość</string>
     <string name="continue_with_google">Kontynuuj z Google</string>
     <string name="continue_with_e_mail">Kontynuuj z e-mailem</string>
-    <string name="copy_ips">Kopiuj IP</string>
+    <string name="copy_ips">Kopiowanie IP</string>
     <string name="country">Kraj</string>
     <string name="create_new_account">Załóż konto</string>
     <string name="custom">Własny</string>
@@ -74,7 +74,7 @@
     <string name="demo_with_icon">Switch z ikoną</string>
     <string name="description">Opis</string>
     <string name="disabled">Wyłączone</string>
-    <string name="e_mail">e-mail</string>
+    <string name="e_mail">E-mail</string>
     <string name="enable_notifications">Włącz powiadomienia</string>
     <string name="enabled">Włączone</string>
     <string name="enter_a_number">Wprowadź liczbę</string>
@@ -90,7 +90,7 @@
     <string name="false_str">Nie</string>
     <string name="favourites">Ulubione</string>
     <string name="filter_options">Opcje filtrowania</string>
-    <string name="find_servers">Znajdź serwery</string>
+    <string name="find_servers">Wyszukiwanie</string>
     <string name="forgot_password_icon">Ikona „Zapomniałeś hasła”</string>
     <string name="forgot_password">Nie pamiętasz hasła?</string>
     <string name="free">Darmowe</string>
@@ -155,7 +155,7 @@
     <string name="privacy_policy_button">Przycisk polityki prywatności</string>
     <string name="protect_your_account_by_providing_a_strong_password">Ustaw silne hasło, aby chronić konto.</string>
     <string name="provide_credentials_or_connect_google_account_to_upgrade">Wprowadź dane lub połącz konto z Google, aby je ulepszyć.</string>
-    <string name="quickly_copy_server_ip_addresses_to_send_them_to_your_friends">Szybko kopiuj IP serwera i wysyłaj znajomym.</string>
+    <string name="quickly_copy_server_ip_addresses_to_send_them_to_your_friends">Kopiuj IP serwera i wysyłaj znajomym.</string>
     <string name="ranking">Ranking</string>
     <string name="rate_application">Oceń aplikację</string>
     <string name="rate_application_button">Przycisk ocenienia aplikacji</string>
@@ -180,9 +180,9 @@
     <string name="save_as_many_servers_as_you_like">Dodawaj do ulubionych dowolną ilość serwerów.</string>
     <string name="scroll_to_top">Do góry</string>
     <string name="search">Szukaj</string>
-    <string name="search_and_explore_rust_servers_by_name_type_last_wipe_or_more">Szukaj i odkrywaj serwery Rust po nazwie, typie, wipe’ie i nie tylko.</string>
+    <string name="search_and_explore_rust_servers_by_name_type_last_wipe_or_more">Wyszukuj i odkrywaj serwery Rust po nazwie, typie, wipe’ie i nie tylko.</string>
     <string name="search_servers">Szukaj serwerów...</string>
-    <string name="see_server_info_like_time_of_last_wipe_map_ranking_and_more">Sprawdź informacje o serwerze: czas ostatniego wipe’a, mapa, ranking itd.</string>
+    <string name="see_server_info_like_time_of_last_wipe_map_ranking_and_more">Sprawdź informacje o serwerze — czas ostatniego wipe’a, mapa, ranking itd.</string>
     <string name="seed" translatable="false">Seed</string>
     <string name="send_email">Wyślij e-mail</string>
     <string name="server_flag">Flaga serwera</string>
@@ -222,13 +222,13 @@
     <string name="upgrade_account_button">Przycisk ulepszenia konta</string>
     <string name="upgrade_with_google">Ulepsz przez Google</string>
     <string name="upgrade_your_account">Ulepsz swoje konto</string>
-    <string name="temporary_account_expiration">Twoje tymczasowe konto wygasa za %s. Ulepsz, żeby zachować ulubione i powiadomienia o wipe’ach.</string>
+    <string name="temporary_account_expiration">Twoje tymczasowe konto wygasa za %s. Ulepsz, żeby zachować ulubione serwery i powiadomienia o wipe’ach.</string>
     <string name="confirmation_email_sent">E-mail potwierdzający wysłany</string>
     <string name="wait_before_resending">Odczekaj chwilę przed ponownym wysłaniem</string>
     <string name="upkeep">Utrzymanie</string>
     <string name="use_your_password_to_sign_in_to_an_existing_account">Zaloguj się swoim hasłem.</string>
     <string name="username">Nazwa użytkownika</string>
-    <string name="view_details">Szczegóły</string>
+    <string name="view_details">Szczegóły Serwera</string>
     <string name="website">Strona</string>
     <string name="weekly">Tygodniowy</string>
     <string name="biweekly">Dwutygodniowy</string>

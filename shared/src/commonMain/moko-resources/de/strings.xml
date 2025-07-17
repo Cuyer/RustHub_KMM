@@ -30,7 +30,7 @@
     <string name="soon">bald</string>
     <string name="account">Konto</string>
     <string name="add_notifications">Benachrichtigungen hinzufügen</string>
-    <string name="add_servers_to_your_favourites_to_easily_access_them">Füge Server zu deinen Favoriten hinzu, um sie schnell zu erreichen.</string>
+    <string name="add_servers_to_your_favourites_to_easily_access_them">Füge Server zu Favoriten hinzu, um schnell darauf zuzugreifen.</string>
     <string name="add_to_favourites">Zu Favoriten hinzufügen</string>
     <string name="additional_information_available_at">Weitere Informationen unter:</string>
     <string name="all">Alle</string>
@@ -59,7 +59,7 @@
     <string name="continue_as_guest">Als Gast fortfahren</string>
     <string name="continue_with_google">Mit Google fortfahren</string>
     <string name="continue_with_e_mail">Mit E-Mail fortfahren</string>
-    <string name="copy_ips">IP kopieren</string>
+    <string name="copy_ips">IP-Adressen kopieren</string>
     <string name="country">Land</string>
     <string name="create_new_account">Konto erstellen</string>
     <string name="custom">Benutzerdefiniert</string>
@@ -90,7 +90,7 @@
     <string name="false_str">Nein</string>
     <string name="favourites">Favoriten</string>
     <string name="filter_options">Filteroptionen</string>
-    <string name="find_servers">Server finden</string>
+    <string name="find_servers">Suche</string>
     <string name="forgot_password_icon">Icon „Passwort vergessen“</string>
     <string name="forgot_password">Passwort vergessen?</string>
     <string name="free">Kostenlos</string>
@@ -155,7 +155,7 @@
     <string name="privacy_policy_button">Datenschutz-Button</string>
     <string name="protect_your_account_by_providing_a_strong_password">Verwende ein sicheres Passwort zum Schutz deines Kontos.</string>
     <string name="provide_credentials_or_connect_google_account_to_upgrade">Daten eingeben oder mit Google verbinden, um zu upgraden.</string>
-    <string name="quickly_copy_server_ip_addresses_to_send_them_to_your_friends">Kopiere IP-Adressen, um sie mit Freunden zu teilen.</string>
+    <string name="quickly_copy_server_ip_addresses_to_send_them_to_your_friends">Kopiere Server-IP-Adressen und sende an deine Freunde.</string>
     <string name="ranking">Ranking</string>
     <string name="rate_application">App bewerten</string>
     <string name="rate_application_button">App-Bewerten-Button</string>
@@ -228,7 +228,7 @@
     <string name="upkeep">Wartung</string>
     <string name="use_your_password_to_sign_in_to_an_existing_account">Melde dich mit deinem Passwort an.</string>
     <string name="username">Benutzername</string>
-    <string name="view_details">Details anzeigen</string>
+    <string name="view_details">Serverdetails</string>
     <string name="website">Website</string>
     <string name="weekly">Wöchentlich</string>
     <string name="biweekly">Zweiwöchentlich</string>

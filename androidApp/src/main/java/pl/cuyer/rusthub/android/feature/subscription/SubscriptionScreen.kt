@@ -250,7 +250,6 @@ private fun SubscriptionMainContent(
     onPrivacyPolicy: () -> Unit,
     onTerms: () -> Unit
 ) {
-    val stringProvider = koinInject<StringProvider>()
     HorizontalPager(state = pagerState) { page ->
         val benefit = benefits[page]
         Column(

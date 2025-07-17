@@ -51,6 +51,7 @@ import org.koin.compose.koinInject
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.features.server.ServerState
@@ -68,7 +69,6 @@ fun FilterBottomSheet(
     onDismissAndRefresh: () -> Unit,
     onAction: (ServerAction) -> Unit
 ) {
-    val context = LocalContext.current
     val json = koinInject<Json>()
     val stringProvider = koinInject<StringProvider>()
     val filterUiSaver = remember {
@@ -128,7 +128,6 @@ fun FilterBottomSheet(
                             .fillMaxWidth(),
                         contentAlignment = Alignment.Center
                     ) {
-                        val context = LocalContext.current
                         Text(
                             text = stringResource(SharedRes.strings.no_filters_available),
                             modifier = Modifier.align(Alignment.Center)
@@ -192,7 +191,6 @@ fun FilterBottomSheetContent(
     filters: FilterUi,
     onFiltersChange: (FilterUi) -> Unit
 ) {
-    val context = LocalContext.current
     Column(
         modifier = modifier
             .padding(spacing.medium),

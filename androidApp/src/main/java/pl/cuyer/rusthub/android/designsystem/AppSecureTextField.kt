@@ -33,6 +33,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @Composable
 fun AppSecureTextField(
@@ -91,7 +92,6 @@ fun AppSecureTextField(
             Crossfade(targetState = value.isNotEmpty()) { hasText ->
                 if (hasText) {
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        val context = LocalContext.current
                         Crossfade(
                             targetState = passwordVisible,
                             label = stringResource(SharedRes.strings.show_or_hide_password)

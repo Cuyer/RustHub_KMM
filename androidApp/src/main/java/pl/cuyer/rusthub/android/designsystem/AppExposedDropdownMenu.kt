@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 
@@ -40,7 +41,6 @@ fun AppExposedDropdownMenu(
     var expanded by remember { mutableStateOf(false) }
     val textFieldState = rememberTextFieldState(options.getOrElse(selectedValue ?: -1) { "" })
     val focusManager = LocalFocusManager.current
-    val context = LocalContext.current
 
     LaunchedEffect(selectedValue) {
         textFieldState.setTextAndPlaceCursorAtEnd(options.getOrElse(selectedValue ?: -1) { "" })

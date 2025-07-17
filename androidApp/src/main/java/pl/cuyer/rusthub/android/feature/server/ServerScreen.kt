@@ -221,8 +221,8 @@ fun ServerScreen(
                     ) {
                         onPagingItems(key = { it.id ?: UUID.randomUUID() }) { item ->
                             val interactionSource = remember { MutableInteractionSource() }
-                            val labels by rememberUpdatedState(createLabels(item, context))
-                            val details by rememberUpdatedState(createDetails(item, context))
+                            val labels by rememberUpdatedState(createLabels(item))
+                            val details by rememberUpdatedState(createDetails(item))
                             ServerListItem(
                                 modifier = Modifier
                                     .animateItem()
@@ -340,8 +340,8 @@ private fun ServerFilterChips(
     }
 }
 
-
-private fun createDetails(item: ServerInfoUi, context: Context): Map<String, String> {
+@Composable
+private fun createDetails(item: ServerInfoUi): Map<String, String> {
     val details = mutableMapOf<String, String>()
 
     item.wipe?.let { wipeInstant: Instant ->
@@ -387,7 +387,8 @@ private fun createDetails(item: ServerInfoUi, context: Context): Map<String, Str
     return details
 }
 
-private fun createLabels(item: ServerInfoUi, context: Context): List<Label> {
+@Composable
+private fun createLabels(item: ServerInfoUi): List<Label> {
     val labels = mutableListOf<Label>()
 
     item.wipeSchedule?.let {

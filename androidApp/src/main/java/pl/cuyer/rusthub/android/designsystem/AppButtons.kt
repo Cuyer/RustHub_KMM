@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -124,7 +125,6 @@ fun PreviewAppButton() {
                 .wrapContentSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            val context = LocalContext.current
             AppButton(
                 onClick = { /* noop */ },
                 isLoading = false
@@ -152,7 +152,6 @@ fun PreviewAppOutlinedButton() {
                 .wrapContentSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            val context = LocalContext.current
             AppOutlinedButton(
                 onClick = { /* noop */ },
                 isLoading = false

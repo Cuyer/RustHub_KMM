@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import pl.cuyer.rusthub.SharedRes
 import androidx.compose.ui.viewinterop.AndroidView
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -30,7 +30,7 @@
     <string name="soon">bientôt</string>
     <string name="account">Compte</string>
     <string name="add_notifications">Ajouter des notifications</string>
-    <string name="add_servers_to_your_favourites_to_easily_access_them">Ajoutez des serveurs à vos favoris pour y accéder facilement.</string>
+    <string name="add_servers_to_your_favourites_to_easily_access_them">Ajoutez des serveurs aux favoris pour y accéder rapidement.</string>
     <string name="add_to_favourites">Ajouter aux favoris</string>
     <string name="additional_information_available_at">Informations supplémentaires sur :</string>
     <string name="all">Tous</string>
@@ -59,7 +59,7 @@
     <string name="continue_as_guest">Continuer en tant qu'invité</string>
     <string name="continue_with_google">Continuer avec Google</string>
     <string name="continue_with_e_mail">Continuer avec e-mail</string>
-    <string name="copy_ips">Copier les IP</string>
+    <string name="copy_ips">Copie des IP</string>
     <string name="country">Pays</string>
     <string name="create_new_account">Créer un compte</string>
     <string name="custom">Personnalisé</string>
@@ -74,7 +74,7 @@
     <string name="demo_with_icon">Démo avec icône</string>
     <string name="description">Description</string>
     <string name="disabled">Désactivé</string>
-    <string name="e_mail">e-mail</string>
+    <string name="e_mail">E-mail</string>
     <string name="enable_notifications">Activer les notifications</string>
     <string name="enabled">Activé</string>
     <string name="enter_a_number">Entrez un nombre</string>
@@ -90,7 +90,7 @@
     <string name="false_str">Non</string>
     <string name="favourites">Favoris</string>
     <string name="filter_options">Options de filtrage</string>
-    <string name="find_servers">Trouver des serveurs</string>
+    <string name="find_servers">Recherche</string>
     <string name="forgot_password_icon">Icône « mot de passe oublié »</string>
     <string name="forgot_password">Mot de passe oublié?</string>
     <string name="free">Gratuit</string>
@@ -155,7 +155,7 @@
     <string name="privacy_policy_button">Bouton politique de confidentialité</string>
     <string name="protect_your_account_by_providing_a_strong_password">Protégez votre compte avec un mot de passe solide.</string>
     <string name="provide_credentials_or_connect_google_account_to_upgrade">Entrez vos identifiants ou connectez-vous via Google pour passer à la version supérieure.</string>
-    <string name="quickly_copy_server_ip_addresses_to_send_them_to_your_friends">Copiez rapidement l’IP d’un serveur pour la partager avec vos amis.</string>
+    <string name="quickly_copy_server_ip_addresses_to_send_them_to_your_friends">Copiez les adresses IP du serveur et envoyez à vos amis.</string>
     <string name="ranking">Classement</string>
     <string name="rate_application">Noter l'application</string>
     <string name="rate_application_button">Bouton de notation de l’application</string>
@@ -222,13 +222,13 @@
     <string name="upgrade_account_button">Bouton d’amélioration de compte</string>
     <string name="upgrade_with_google">Améliorer avec Google</string>
     <string name="upgrade_your_account">Améliorer votre compte</string>
-    <string name="temporary_account_expiration">Votre compte temporaire expire dans %s. Passez à la version supérieure pour garder vos favoris et alertes de wipe.</string>
+    <string name="temporary_account_expiration">Votre compte temporaire expire dans %s. Passez à une version supérieure pour conserver vos serveurs favoris et les notifications de wipe.</string>
     <string name="confirmation_email_sent">E-mail de confirmation envoyé</string>
     <string name="wait_before_resending">Veuillez patienter avant de renvoyer</string>
     <string name="upkeep">Entretien</string>
     <string name="use_your_password_to_sign_in_to_an_existing_account">Connectez-vous avec votre mot de passe.</string>
     <string name="username">Nom d'utilisateur</string>
-    <string name="view_details">Voir les détails</string>
+    <string name="view_details">Détails du serveur</string>
     <string name="website">Site web</string>
     <string name="weekly">Hebdomadaire</string>
     <string name="biweekly">Bi-hebdomadaire</string>

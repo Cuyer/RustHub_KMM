@@ -246,7 +246,6 @@ private fun AccountSection(
     expiration: String?,
     onAction: (SettingsAction) -> Unit
 ) {
-    val stringProvider = koinInject<StringProvider>()
     Text(
         text = stringResource(SharedRes.strings.account),
         style = MaterialTheme.typography.titleLarge,
@@ -294,7 +293,7 @@ private fun AccountSection(
     if (provider == AuthProvider.ANONYMOUS) {
         expiration?.let {
             Text(
-                text = stringProvider.get(SharedRes.strings.temporary_account_expiration, it),
+                text = stringResource(SharedRes.strings.temporary_account_expiration, it),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(bottom = spacing.small)
@@ -389,10 +388,9 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
 
 @Composable
 private fun GreetingSection(username: String?) {
-    val stringProvider = koinInject<StringProvider>()
     if (username != null) {
         Text(
-            text = stringProvider.get(SharedRes.strings.hello_username, username),
+            text = stringResource(SharedRes.strings.hello_username, username),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.headlineSmall,

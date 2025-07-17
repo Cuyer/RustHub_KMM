@@ -73,7 +73,7 @@
     <string name="demo_with_icon">Switch with icon</string>
     <string name="description">Description</string>
     <string name="disabled">Disabled</string>
-    <string name="e_mail">email</string>
+    <string name="e_mail">Email</string>
     <string name="enable_notifications">Enable notifications</string>
     <string name="enabled">Enabled</string>
     <string name="enter_a_number">Enter a number</string>
@@ -91,7 +91,7 @@
     <string name="false_str">False</string>
     <string name="favourites">Favourites</string>
     <string name="filter_options">Filter Options</string>
-    <string name="find_servers">Find Servers</string>
+    <string name="find_servers">Search</string>
     <string name="forgot_password_icon">Forgot password icon</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="free">Free</string>
@@ -156,7 +156,7 @@
     <string name="privacy_policy_button">Privacy policy button</string>
     <string name="protect_your_account_by_providing_a_strong_password">Protect your account by providing a strong password.</string>
     <string name="provide_credentials_or_connect_google_account_to_upgrade">Enter your credentials or connect your Google account to upgrade.</string>
-    <string name="quickly_copy_server_ip_addresses_to_send_them_to_your_friends">Quickly copy server IP addresses to share them with your friends.</string>
+    <string name="quickly_copy_server_ip_addresses_to_send_them_to_your_friends">Copy server IP addresses and send to your friends.</string>
     <string name="ranking">Ranking</string>
     <string name="rate_application">Rate application</string>
     <string name="rate_application_button">Rate application button</string>

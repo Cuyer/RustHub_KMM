@@ -38,6 +38,7 @@ import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -49,7 +50,6 @@ fun ServerListItem(
     labels: List<Label>,
     details: Map<String, String>
 ) {
-    val context = LocalContext.current
     ElevatedCard(
         shape = RectangleShape,
         modifier = modifier

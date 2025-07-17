@@ -463,7 +463,9 @@ private fun FeatureItem(icon: ImageVector, title: StringResource, description: S
 
         Spacer(modifier = Modifier.width(spacing.xmedium))
 
-        Column {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text(text = stringResource(title), style = MaterialTheme.typography.titleMedium)
             Text(
                 text = stringResource(description),
