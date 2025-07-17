@@ -25,7 +25,7 @@ fun AppSwitch(
     var checked by remember(isChecked) { mutableStateOf(isChecked) }
     val context = LocalContext.current
     Switch(
-        modifier = Modifier.semantics { contentDescription = SharedRes.strings.demo_with_icon.getString(context) },
+        modifier = Modifier.semantics { contentDescription = stringResource(SharedRes.strings.demo_with_icon) },
         checked = checked,
         onCheckedChange = {
             checked = it

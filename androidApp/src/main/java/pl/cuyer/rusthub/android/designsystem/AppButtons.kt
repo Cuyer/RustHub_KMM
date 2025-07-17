@@ -129,13 +129,13 @@ fun PreviewAppButton() {
                 onClick = { /* noop */ },
                 isLoading = false
             ) {
-                Text(SharedRes.strings.submit.getString(context))
+                Text(stringResource(SharedRes.strings.submit))
             }
             AppButton(
                 onClick = { /* noop */ },
                 isLoading = true
             ) {
-                Text(SharedRes.strings.submit.getString(context))
+                Text(stringResource(SharedRes.strings.submit))
             }
         }
     }
@@ -157,13 +157,13 @@ fun PreviewAppOutlinedButton() {
                 onClick = { /* noop */ },
                 isLoading = false
             ) {
-                Text(SharedRes.strings.delete.getString(context))
+                Text(stringResource(SharedRes.strings.delete))
             }
             AppOutlinedButton(
                 onClick = { /* noop */ },
                 isLoading = true
             ) {
-                Text(SharedRes.strings.delete.getString(context))
+                Text(stringResource(SharedRes.strings.delete))
             }
         }
     }

@@ -99,7 +99,7 @@ fun FilterBottomSheet(
         }
     ) {
         Text(
-            text = SharedRes.strings.filter_options.getString(context),
+            text = stringResource(SharedRes.strings.filter_options),
             style = MaterialTheme.typography.titleLargeEmphasized,
             modifier = Modifier
                 .padding(start = spacing.medium, end = spacing.medium, bottom = spacing.medium)
@@ -130,7 +130,7 @@ fun FilterBottomSheet(
                     ) {
                         val context = LocalContext.current
                         Text(
-                            text = SharedRes.strings.no_filters_available.getString(context),
+                            text = stringResource(SharedRes.strings.no_filters_available),
                             modifier = Modifier.align(Alignment.Center)
                         )
                     }
@@ -159,7 +159,7 @@ fun FilterBottomSheet(
                                     .fillMaxWidth()
                                     .padding(horizontal = spacing.large)
                             ) {
-                                Text(SharedRes.strings.apply_filters.getString(context))
+                                Text(stringResource(SharedRes.strings.apply_filters))
                             }
                             AppOutlinedButton(
                                 colors = ButtonDefaults.outlinedButtonColors().copy(
@@ -174,7 +174,7 @@ fun FilterBottomSheet(
                                     .padding(vertical = spacing.small, horizontal = spacing.large)
                             ) {
                                 Text(
-                                    text = SharedRes.strings.reset_filters.getString(context),
+                                    text = stringResource(SharedRes.strings.reset_filters),
                                 )
                             }
                         }
@@ -252,7 +252,7 @@ fun FilterBottomSheetContent(
                 ),
                 placeholder = {
                     Text(
-                        text = SharedRes.strings.enter_a_number.getString(context)
+                        text = stringResource(SharedRes.strings.enter_a_number)
                     )
                 }
             )

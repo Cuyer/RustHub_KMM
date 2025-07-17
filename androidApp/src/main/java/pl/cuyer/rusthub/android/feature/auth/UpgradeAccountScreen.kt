@@ -57,6 +57,7 @@ import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeAction
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @OptIn(
     ExperimentalMaterial3WindowSizeClassApi::class,
@@ -91,7 +92,7 @@ fun UpgradeAccountScreen(
                     IconButton(onClick = { onAction(UpgradeAction.OnNavigateUp) }) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = SharedRes.strings.navigate_up.getString(context)
+                            contentDescription = stringResource(SharedRes.strings.navigate_up)
                         )
                     }
                 },
@@ -119,7 +120,6 @@ fun UpgradeAccountScreen(
 
 @Composable
 private fun UpgradeScreenCompact(state: UpgradeState, onAction: (UpgradeAction) -> Unit) {
-    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -138,21 +138,21 @@ private fun UpgradeScreenCompact(state: UpgradeState, onAction: (UpgradeAction) 
             modifier = Modifier
                 .imePadding()
                 .fillMaxWidth()
-        ) { Text(SharedRes.strings.upgrade.getString(context)) }
+        ) { Text(stringResource(SharedRes.strings.upgrade)) }
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(spacing.small)
         ) {
             HorizontalDivider(modifier = Modifier.weight(1f))
-            Text(SharedRes.strings.or_str.getString(context))
+            Text(stringResource(SharedRes.strings.or_str))
             HorizontalDivider(modifier = Modifier.weight(1f))
         }
 
         SignProviderButton(
             image = getImageByFileName("ic_google").drawableResId,
-            contentDescription = SharedRes.strings.google_logo.getString(context),
-            text = SharedRes.strings.upgrade_with_google.getString(context),
+            contentDescription = stringResource(SharedRes.strings.google_logo),
+            text = stringResource(SharedRes.strings.upgrade_with_google),
             modifier = Modifier.fillMaxWidth(),
             isLoading = state.googleLoading,
             backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
@@ -163,7 +163,6 @@ private fun UpgradeScreenCompact(state: UpgradeState, onAction: (UpgradeAction) 
 
 @Composable
 private fun UpgradeScreenExpanded(state: UpgradeState, onAction: (UpgradeAction) -> Unit) {
-    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxSize()
@@ -187,21 +186,21 @@ private fun UpgradeScreenExpanded(state: UpgradeState, onAction: (UpgradeAction)
                 modifier = Modifier
                     .imePadding()
                     .fillMaxWidth()
-            ) { Text(SharedRes.strings.upgrade.getString(context)) }
+            ) { Text(stringResource(SharedRes.strings.upgrade)) }
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(spacing.small)
             ) {
                 HorizontalDivider(modifier = Modifier.weight(1f))
-                Text(SharedRes.strings.or_str.getString(context))
+                Text(stringResource(SharedRes.strings.or_str))
                 HorizontalDivider(modifier = Modifier.weight(1f))
             }
 
             SignProviderButton(
                 image = getImageByFileName("ic_google").drawableResId,
-                contentDescription = SharedRes.strings.google_logo.getString(context),
-                text = SharedRes.strings.upgrade_with_google.getString(context),
+                contentDescription = stringResource(SharedRes.strings.google_logo),
+                text = stringResource(SharedRes.strings.upgrade_with_google),
                 modifier = Modifier.fillMaxWidth(),
                 isLoading = state.googleLoading,
                 backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
@@ -213,23 +212,20 @@ private fun UpgradeScreenExpanded(state: UpgradeState, onAction: (UpgradeAction)
 
 @Composable
 private fun UpgradeStaticContent(modifier: Modifier = Modifier) {
-    val context = LocalContext.current
     Column(modifier = modifier.fillMaxWidth()) {
         Icon(
             modifier = Modifier.size(64.dp),
             painter = painterResource(getImageByFileName("ic_rocket").drawableResId),
-            contentDescription = SharedRes.strings.padlock_icon.getString(context)
+            contentDescription = stringResource(SharedRes.strings.padlock_icon)
         )
         Spacer(Modifier.size(spacing.small))
         Text(
-            text = SharedRes.strings.upgrade_your_account.getString(context),
+            text = stringResource(SharedRes.strings.upgrade_your_account),
             style = MaterialTheme.typography.headlineLarge
         )
         Spacer(Modifier.size(spacing.small))
         Text(
-            text = SharedRes.strings.provide_credentials_or_connect_google_account_to_upgrade.getString(
-                context
-            ),
+            text = stringResource(SharedRes.strings.provide_credentials_or_connect_google_account_to_upgrade),
             style = MaterialTheme.typography.bodyMedium
         )
     }
@@ -237,14 +233,13 @@ private fun UpgradeStaticContent(modifier: Modifier = Modifier) {
 
 @Composable
 private fun UpgradeFields(state: UpgradeState, onAction: (UpgradeAction) -> Unit) {
-    val context = LocalContext.current
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(spacing.small)) {
         AppTextField(
             requestFocus = true,
             value = state.username,
             onValueChange = { onAction(UpgradeAction.OnUsernameChange(it)) },
-            labelText = SharedRes.strings.username.getString(context),
-            placeholderText = SharedRes.strings.enter_username.getString(context),
+            labelText = stringResource(SharedRes.strings.username),
+            placeholderText = stringResource(SharedRes.strings.enter_username),
             isError = state.usernameError != null,
             errorText = state.usernameError,
             modifier = Modifier.fillMaxWidth(),
@@ -254,8 +249,8 @@ private fun UpgradeFields(state: UpgradeState, onAction: (UpgradeAction) -> Unit
         AppTextField(
             value = state.email,
             onValueChange = { onAction(UpgradeAction.OnEmailChange(it)) },
-            labelText = SharedRes.strings.e_mail.getString(context),
-            placeholderText = SharedRes.strings.enter_your_e_mail.getString(context),
+            labelText = stringResource(SharedRes.strings.e_mail),
+            placeholderText = stringResource(SharedRes.strings.enter_your_e_mail),
             isError = state.emailError != null,
             errorText = state.emailError,
             modifier = Modifier.fillMaxWidth(),
@@ -265,8 +260,8 @@ private fun UpgradeFields(state: UpgradeState, onAction: (UpgradeAction) -> Unit
         AppSecureTextField(
             value = state.password,
             onValueChange = { onAction(UpgradeAction.OnPasswordChange(it)) },
-            labelText = SharedRes.strings.password.getString(context),
-            placeholderText = SharedRes.strings.enter_password.getString(context),
+            labelText = stringResource(SharedRes.strings.password),
+            placeholderText = stringResource(SharedRes.strings.enter_password),
             onSubmit = { onAction(UpgradeAction.OnSubmit) },
             isError = state.passwordError != null,
             errorText = state.passwordError,

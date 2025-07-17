@@ -56,6 +56,7 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.AppInfo
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class,
@@ -88,7 +89,7 @@ fun SettingsScreen(
                         Icon(
                             icon,
                             contentDescription =
-                                SharedRes.strings.logout_button.getString(context)
+                                stringResource(SharedRes.strings.logout_button)
                         )
                     }
                 },
@@ -202,21 +203,20 @@ private fun PreferencesSection(
     language: Language,
     onAction: (SettingsAction) -> Unit
 ) {
-    val context = LocalContext.current
     val stringProvider = koinInject<StringProvider>()
     Text(
-        text = SharedRes.strings.preferences.getString(context),
+        text = stringResource(SharedRes.strings.preferences),
         style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(bottom = spacing.small)
     )
     AppExposedDropdownMenu(
-        label = SharedRes.strings.theme.getString(context),
+        label = stringResource(SharedRes.strings.theme),
         options = Theme.entries.map { it.displayName(stringProvider) },
         selectedValue = Theme.entries.indexOf(theme),
         onSelectionChanged = { onAction(SettingsAction.OnThemeChange(Theme.entries[it])) }
     )
     AppExposedDropdownMenu(
-        label = SharedRes.strings.language.getString(context),
+        label = stringResource(SharedRes.strings.language),
         options = Language.entries.map { it.displayName(stringProvider) },
         selectedValue = Language.entries.indexOf(language),
         onSelectionChanged = { onAction(SettingsAction.OnLanguageChange(Language.entries[it])) }
@@ -230,10 +230,10 @@ private fun PreferencesSection(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(SharedRes.strings.notifications.getString(context))
+            Text(stringResource(SharedRes.strings.notifications))
             Icon(
                 imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                contentDescription = SharedRes.strings.notifications_toggle.getString(context)
+                contentDescription = stringResource(SharedRes.strings.notifications_toggle)
             )
         }
     }
@@ -247,9 +247,8 @@ private fun AccountSection(
     onAction: (SettingsAction) -> Unit
 ) {
     val stringProvider = koinInject<StringProvider>()
-    val context = LocalContext.current
     Text(
-        text = SharedRes.strings.account.getString(context),
+        text = stringResource(SharedRes.strings.account),
         style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(bottom = spacing.small)
     )
@@ -264,10 +263,10 @@ private fun AccountSection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(SharedRes.strings.change_password.getString(context))
+                Text(stringResource(SharedRes.strings.change_password))
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                    contentDescription = SharedRes.strings.change_password_button.getString(context)
+                    contentDescription = stringResource(SharedRes.strings.change_password_button)
                 )
             }
         }
@@ -283,10 +282,10 @@ private fun AccountSection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(SharedRes.strings.subscription.getString(context))
+                Text(stringResource(SharedRes.strings.subscription))
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                    contentDescription = SharedRes.strings.subscription_button.getString(context)
+                    contentDescription = stringResource(SharedRes.strings.subscription_button)
                 )
             }
         }
@@ -309,10 +308,10 @@ private fun AccountSection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(SharedRes.strings.upgrade_account.getString(context))
+                Text(stringResource(SharedRes.strings.upgrade_account))
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                    contentDescription = SharedRes.strings.upgrade_account_button.getString(context)
+                    contentDescription = stringResource(SharedRes.strings.upgrade_account_button)
                 )
             }
         }
@@ -325,10 +324,10 @@ private fun AccountSection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(SharedRes.strings.delete_account.getString(context), color = MaterialTheme.colorScheme.error)
+                Text(stringResource(SharedRes.strings.delete_account), color = MaterialTheme.colorScheme.error)
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                    contentDescription = SharedRes.strings.delete_account_button.getString(context),
+                    contentDescription = stringResource(SharedRes.strings.delete_account_button),
                     tint = MaterialTheme.colorScheme.error
                 )
             }
@@ -340,9 +339,8 @@ private fun AccountSection(
 
 private fun OtherSection(onAction: (SettingsAction) -> Unit) {
     val storeNavigator = koinInject<StoreNavigator>()
-    val context = LocalContext.current
     Text(
-        text = SharedRes.strings.other.getString(context),
+        text = stringResource(SharedRes.strings.other),
         style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(bottom = spacing.small)
     )
@@ -356,10 +354,10 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(SharedRes.strings.privacy_policy.getString(context))
+            Text(stringResource(SharedRes.strings.privacy_policy))
             Icon(
                 imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                contentDescription = SharedRes.strings.privacy_policy_button.getString(context)
+                contentDescription = stringResource(SharedRes.strings.privacy_policy_button)
             )
         }
     }
@@ -373,10 +371,10 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(SharedRes.strings.rate_application.getString(context))
+            Text(stringResource(SharedRes.strings.rate_application))
             Icon(
                 imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                contentDescription = SharedRes.strings.rate_application_button.getString(context)
+                contentDescription = stringResource(SharedRes.strings.rate_application_button)
             )
         }
     }
@@ -384,7 +382,7 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
     Text(
         modifier = Modifier.fillMaxWidth(),
         style = MaterialTheme.typography.bodySmall,
-        text = "${SharedRes.strings.app_version.getString(context)}: ${AppInfo.versionName}",
+        text = "${stringResource(SharedRes.strings.app_version)}: ${AppInfo.versionName}",
         textAlign = TextAlign.Center
     )
 }

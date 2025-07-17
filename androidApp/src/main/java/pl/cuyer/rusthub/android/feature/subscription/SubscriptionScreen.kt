@@ -77,6 +77,7 @@ import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 private data class Benefit(
     @DrawableRes
@@ -142,7 +143,7 @@ fun SubscriptionScreen(
                     IconButton(onClick = onNavigateUp) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = SharedRes.strings.navigate_up.getString(LocalContext.current)
+                            contentDescription = stringResource(SharedRes.strings.navigate_up)
                         )
                     }
                 }
@@ -250,7 +251,6 @@ private fun SubscriptionMainContent(
     onTerms: () -> Unit
 ) {
     val stringProvider = koinInject<StringProvider>()
-    val context = LocalContext.current
     HorizontalPager(state = pagerState) { page ->
         val benefit = benefits[page]
         Column(
@@ -263,9 +263,9 @@ private fun SubscriptionMainContent(
                 painter = painterResource(benefit.image),
                 contentDescription = null
             )
-            Text(benefit.title.getString(context), style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(benefit.title), style = MaterialTheme.typography.titleMedium)
             Text(
-                benefit.desc.getString(context),
+                stringResource(benefit.desc),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -320,13 +320,13 @@ private fun SubscriptionMainContent(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        SharedRes.strings.pro.getString(context),
+                        stringResource(SharedRes.strings.pro),
                         style = MaterialTheme.typography.titleMedium,
                         color = Color(0xFFFDDA0D)
                     )
-                    Text(plan.label.getString(context), style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(plan.label), style = MaterialTheme.typography.titleMedium)
                     Text(
-                        plan.billed.getString(context),
+                        stringResource(plan.billed),
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Thin)
                     )
                 }
@@ -336,22 +336,22 @@ private fun SubscriptionMainContent(
     AppButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = {}) {
-        Text(stringProvider.get((SharedRes.strings.subscribe_to_plan), selectedPlan.label.getString(context)))
+        Text(stringResource(SharedRes.strings.subscribe_to_plan, stringResource(selectedPlan.label)))
     }
     AppTextButton(onClick = onNavigateUp) {
-        Text(SharedRes.strings.not_now.getString(context))
+        Text(stringResource(SharedRes.strings.not_now))
     }
     Text(
         textAlign = TextAlign.Center,
-        text = SharedRes.strings.subscription_disclaimer.getString(context),
+        text = stringResource(SharedRes.strings.subscription_disclaimer),
         style = MaterialTheme.typography.bodySmall
     )
     Row(horizontalArrangement = Arrangement.spacedBy(spacing.medium)) {
         AppTextButton(onClick = onPrivacyPolicy) {
-            Text(SharedRes.strings.privacy_policy.getString(context))
+            Text(stringResource(SharedRes.strings.privacy_policy))
         }
         AppTextButton(onClick = onTerms) {
-            Text(SharedRes.strings.terms_conditions.getString(context))
+            Text(stringResource(SharedRes.strings.terms_conditions))
         }
     }
 }
@@ -359,14 +359,13 @@ private fun SubscriptionMainContent(
 
 @Composable
 private fun ComparisonSection() {
-    val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(spacing.medium),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            SharedRes.strings.need_to_compare.getString(context),
+            stringResource(SharedRes.strings.need_to_compare),
             style = MaterialTheme.typography.titleMedium
         )
 
@@ -382,13 +381,13 @@ private fun ComparisonSection() {
             ) {
                 Text("", modifier = Modifier.weight(0.5f))
                 Text(
-                    SharedRes.strings.free.getString(context),
+                    stringResource(SharedRes.strings.free),
                     modifier = Modifier.weight(0.25f),
                     style = MaterialTheme.typography.titleSmall,
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    SharedRes.strings.pro.getString(context),
+                    stringResource(SharedRes.strings.pro),
                     modifier = Modifier.weight(0.25f),
                     style = MaterialTheme.typography.titleSmall,
                     color = Color(0xFFFDDA0D),
@@ -401,8 +400,8 @@ private fun ComparisonSection() {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(SharedRes.strings.add_notifications.getString(context), modifier = Modifier.weight(0.5f))
-                Text(SharedRes.strings.three_max.getString(context), modifier = Modifier.weight(0.25f), textAlign = TextAlign.Center)
+                Text(stringResource(SharedRes.strings.add_notifications), modifier = Modifier.weight(0.5f))
+                Text(stringResource(SharedRes.strings.three_max), modifier = Modifier.weight(0.25f), textAlign = TextAlign.Center)
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
@@ -416,8 +415,8 @@ private fun ComparisonSection() {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(SharedRes.strings.add_to_favourites.getString(context), modifier = Modifier.weight(0.5f))
-                Text(SharedRes.strings.three_max.getString(context), modifier = Modifier.weight(0.25f), textAlign = TextAlign.Center)
+                Text(stringResource(SharedRes.strings.add_to_favourites), modifier = Modifier.weight(0.5f))
+                Text(stringResource(SharedRes.strings.three_max), modifier = Modifier.weight(0.25f), textAlign = TextAlign.Center)
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
@@ -433,14 +432,13 @@ private fun ComparisonSection() {
 @OptIn(ExperimentalAnimationApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 private fun FaqSection() {
-    val context = LocalContext.current
     val faqs = listOf(
-        SharedRes.strings.faq_include_question.getString(context) to SharedRes.strings.faq_include_answer.getString(context),
-        SharedRes.strings.faq_renew_question.getString(context) to SharedRes.strings.faq_renew_answer.getString(context),
-        SharedRes.strings.faq_cancel_question.getString(context) to SharedRes.strings.faq_cancel_answer.getString(context),
-        SharedRes.strings.faq_switch_plan_question.getString(context) to SharedRes.strings.faq_switch_plan_answer.getString(context),
-        SharedRes.strings.faq_devices_question.getString(context) to SharedRes.strings.faq_devices_answer.getString(context),
-        SharedRes.strings.faq_lifetime_question.getString(context) to SharedRes.strings.faq_lifetime_answer.getString(context)
+        stringResource(SharedRes.strings.faq_include_question) to stringResource(SharedRes.strings.faq_include_answer),
+        stringResource(SharedRes.strings.faq_renew_question) to stringResource(SharedRes.strings.faq_renew_answer),
+        stringResource(SharedRes.strings.faq_cancel_question) to stringResource(SharedRes.strings.faq_cancel_answer),
+        stringResource(SharedRes.strings.faq_switch_plan_question) to stringResource(SharedRes.strings.faq_switch_plan_answer),
+        stringResource(SharedRes.strings.faq_devices_question) to stringResource(SharedRes.strings.faq_devices_answer),
+        stringResource(SharedRes.strings.faq_lifetime_question) to stringResource(SharedRes.strings.faq_lifetime_answer)
     )
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -448,7 +446,7 @@ private fun FaqSection() {
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
         Text(
-            SharedRes.strings.any_questions.getString(context),
+            stringResource(SharedRes.strings.any_questions),
             style = MaterialTheme.typography.titleMedium
         )
         Spacer(modifier = Modifier.height(spacing.medium))

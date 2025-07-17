@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import dev.icerock.moko.resources.StringResource
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @Composable
 fun SubscriptionDialog(
@@ -19,26 +20,25 @@ fun SubscriptionDialog(
     onDismiss: () -> Unit
 ) {
     if (showDialog) {
-        val context = LocalContext.current
         AlertDialog(
             onDismissRequest = onDismiss,
             title = {
-                Text(text = title.getString(context))
+                Text(text = stringResource(title))
             },
             text = {
-                Text(text = message.getString(context))
+                Text(text = stringResource(message))
             },
             confirmButton = {
                 Button(onClick = {
                     onConfirm()
                     onDismiss()
                 }) {
-                    Text(confirmButtonText.getString(context))
+                    Text(stringResource(confirmButtonText))
                 }
             },
             dismissButton = {
                 AppButton(onClick = onDismiss) {
-                    Text(dismissButtonText.getString(context))
+                    Text(stringResource(dismissButtonText))
                 }
             }
         )

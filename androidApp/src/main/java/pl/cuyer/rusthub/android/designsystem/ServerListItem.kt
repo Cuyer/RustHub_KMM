@@ -94,7 +94,7 @@ fun ServerListItem(
                         modifier = modifier
                             .size(24.dp),
                         painter = painterResource(flag),
-                        contentDescription = SharedRes.strings.server_flag.getString(context),
+                        contentDescription = stringResource(SharedRes.strings.server_flag),
                         contentScale = ContentScale.Fit
                     )
                 }

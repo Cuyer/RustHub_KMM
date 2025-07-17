@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import dev.icerock.moko.resources.StringResource
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @Composable
 fun NotificationInfoDialog(
@@ -18,19 +19,18 @@ fun NotificationInfoDialog(
     onDismiss: () -> Unit
 ) {
     if (showDialog) {
-        val context = LocalContext.current
         AlertDialog(
             onDismissRequest = onDismiss,
-            title = { Text(text = title.getString(context)) },
-            text = { Text(text = message.getString(context)) },
+            title = { Text(text = stringResource(title)) },
+            text = { Text(text = stringResource(message)) },
             confirmButton = {
                 AppButton(onClick = onConfirm) {
-                    Text(confirmButtonText.getString(context))
+                    Text(stringResource(confirmButtonText))
                 }
             },
             dismissButton = {
                 AppTextButton(onClick = onDismiss) {
-                    Text(dismissButtonText.getString(context))
+                    Text(stringResource(dismissButtonText))
                 }
             }
         )

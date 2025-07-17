@@ -42,6 +42,7 @@ import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.android.feature.auth.ConfirmEmailScreen
 import pl.cuyer.rusthub.android.feature.auth.CredentialsScreen
 import pl.cuyer.rusthub.android.feature.auth.ResetPasswordScreen
@@ -121,7 +122,6 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
 
     @Composable
     fun AppScaffold(modifier: Modifier = Modifier) {
-        val context = LocalContext.current
         Scaffold(
             modifier = modifier
                 .fillMaxSize(),
@@ -284,7 +284,7 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                         entry<Terms> {
                             PrivacyPolicyScreen(
                                 url = Urls.TERMS_URL,
-                                title = SharedRes.strings.terms_conditions.getString(context),
+                                title = stringResource(SharedRes.strings.terms_conditions),
                                 onNavigateUp = { backStack.removeLastOrNull() }
                             )
                         }
@@ -311,7 +311,6 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
             modifier = Modifier
                 .navigationBarsPadding(),
             navigationItems = {
-                val context = LocalContext.current
                 NavigationSuiteItem(
                     selected = current is ServerList || current is ServerDetails,
                     onClick = {
@@ -324,10 +323,10 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                     icon = {
                         Icon(
                             Icons.AutoMirrored.Filled.List,
-                            contentDescription = SharedRes.strings.servers.getString(context)
+                            contentDescription = stringResource(SharedRes.strings.servers)
                         )
                     },
-                    label = { Text(SharedRes.strings.servers.getString(context)) }
+                    label = { Text(stringResource(SharedRes.strings.servers)) }
                 )
                 NavigationSuiteItem(
                     selected = current is Settings,
@@ -339,10 +338,10 @@ fun NavigationRoot(startDestination: NavKey = Onboarding) {
                     icon = {
                         Icon(
                             Icons.Default.Settings,
-                            contentDescription = SharedRes.strings.settings.getString(context)
+                            contentDescription = stringResource(SharedRes.strings.settings)
                         )
                     },
-                    label = { Text(SharedRes.strings.settings.getString(context)) }
+                    label = { Text(stringResource(SharedRes.strings.settings)) }
                 )
             },
             content = {

@@ -94,14 +94,14 @@ fun AppSecureTextField(
                         val context = LocalContext.current
                         Crossfade(
                             targetState = passwordVisible,
-                            label = SharedRes.strings.show_or_hide_password.getString(context)
+                            label = stringResource(SharedRes.strings.show_or_hide_password)
                         ) { isVisible ->
                             Icon(
                                 imageVector = if (isVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
                                 contentDescription = if (isVisible) {
-                                    SharedRes.strings.hide_password.getString(context)
+                                    stringResource(SharedRes.strings.hide_password)
                                 } else {
-                                    SharedRes.strings.show_password.getString(context)
+                                    stringResource(SharedRes.strings.show_password)
                                 }
                             )
                         }
