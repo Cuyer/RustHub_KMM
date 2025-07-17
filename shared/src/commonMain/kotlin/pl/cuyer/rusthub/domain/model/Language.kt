@@ -5,7 +5,10 @@ import pl.cuyer.rusthub.util.StringProvider
 
 enum class Language {
     ENGLISH,
-    POLISH;
+    POLISH,
+    GERMAN,
+    FRENCH,
+    RUSSIAN;
 
     companion object {
         fun fromDisplayName(displayName: String, stringProvider: StringProvider): Language? {
@@ -18,4 +21,7 @@ fun Language.displayName(stringProvider: StringProvider): String =
     when (this) {
         Language.ENGLISH -> stringProvider.get(SharedRes.strings.english)
         Language.POLISH -> stringProvider.get(SharedRes.strings.polish)
+        Language.GERMAN -> stringProvider.get(SharedRes.strings.german)
+        Language.FRENCH -> stringProvider.get(SharedRes.strings.french)
+        Language.RUSSIAN -> stringProvider.get(SharedRes.strings.russian)
     }

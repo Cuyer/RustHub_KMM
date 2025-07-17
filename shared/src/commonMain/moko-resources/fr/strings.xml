@@ -113,6 +113,9 @@
     <string name="language">Langue</string>
     <string name="english">Anglais</string>
     <string name="polish">Polonais</string>
+    <string name="german">Allemand</string>
+    <string name="french">Français</string>
+    <string name="russian">Russe</string>
     <string name="last_wipe">Dernier wipe</string>
     <string name="later">Plus tard</string>
     <string name="let_s_start_with_your_email">Commençons par votre e-mail</string>

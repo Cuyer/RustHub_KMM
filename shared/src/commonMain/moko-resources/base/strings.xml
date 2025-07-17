@@ -114,6 +114,9 @@
     <string name="language">Language</string>
     <string name="english">English</string>
     <string name="polish">Polish</string>
+    <string name="german">German</string>
+    <string name="french">French</string>
+    <string name="russian">Russian</string>
     <string name="last_wipe">Last wipe</string>
     <string name="later">Later</string>
     <string name="let_s_start_with_your_email">Let\'s start with your email</string>
