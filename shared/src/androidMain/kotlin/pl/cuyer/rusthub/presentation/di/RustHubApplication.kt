@@ -21,6 +21,11 @@ import pl.cuyer.rusthub.BuildConfig
 import android.os.Build
 import com.appmattus.certificatetransparency.installCertificateTransparencyProvider
 import com.appmattus.certificatetransparency.BasicAndroidCTLogger
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 private fun needCtProvider(): Boolean {
     return Build.VERSION.SDK_INT < 36
@@ -34,6 +39,7 @@ class RustHubApplication : Application(), Configuration.Provider {
     val subscriptionSyncDataSource by inject<SubscriptionSyncDataSource>()
     val serverDataSource by inject<ServerDataSource>()
     val tokenManager by inject<MessagingTokenManager>()
+    val settingsDataStore by inject<DataStore<Preferences>>()
 
     override fun onCreate() {
         super.onCreate()
@@ -55,6 +61,7 @@ class RustHubApplication : Application(), Configuration.Provider {
             }
             modules(appModule, platformModule)
         }
+        applySettings()
         NotificationPresenter(this).createDefaultChannels()
         WorkManager.initialize(this, workManagerConfiguration)
     }
@@ -72,4 +79,15 @@ class RustHubApplication : Application(), Configuration.Provider {
                 )
             )
             .build()
+}
+
+private fun RustHubApplication.applySettings() {
+    val dataStore = settingsDataStore
+    val themeKey = stringPreferencesKey("theme")
+    val languageKey = stringPreferencesKey("language")
+    runBlocking {
+        val prefs = dataStore.data.first()
+        prefs[themeKey]?.let { updateAppTheme(Theme.valueOf(it)) }
+        prefs[languageKey]?.let { updateAppLanguage(Language.valueOf(it)) }
+    }
 }
