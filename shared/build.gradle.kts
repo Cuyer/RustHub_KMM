@@ -78,6 +78,7 @@ kotlin {
             implementation(libs.ktor.serialization.json)
             implementation(libs.ktor.logging)
             implementation(libs.ktor.auth)
+            implementation(libs.androidx.datastore.preferences)
             implementation(libs.sql.delight.runtime)
             implementation(libs.sql.delight.coroutines.extensions)
             implementation(libs.kotlin.coroutines.core)
