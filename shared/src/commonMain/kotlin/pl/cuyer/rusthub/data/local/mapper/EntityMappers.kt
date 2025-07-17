@@ -10,17 +10,14 @@ import database.FiltersWipeScheduleEntity
 import database.RemoteKeyEntity
 import database.SearchQueryEntity
 import database.ServerEntity
-import database.SettingsEntity
 import database.UserEntity
 import pl.cuyer.rusthub.data.local.model.DifficultyEntity
 import pl.cuyer.rusthub.data.local.model.FlagEntity
-import pl.cuyer.rusthub.data.local.model.LanguageEntity
 import pl.cuyer.rusthub.data.local.model.MapsEntity
 import pl.cuyer.rusthub.data.local.model.OrderEntity
 import pl.cuyer.rusthub.data.local.model.RegionEntity
 import pl.cuyer.rusthub.data.local.model.ServerFilterEntity
 import pl.cuyer.rusthub.data.local.model.ServerStatusEntity
-import pl.cuyer.rusthub.data.local.model.ThemeEntity
 import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity
 import pl.cuyer.rusthub.data.local.model.WipeTypeEntity
 import pl.cuyer.rusthub.domain.model.AuthProvider
@@ -194,13 +191,4 @@ fun UserEntity.toUser(): User = User(
 
 
 
-fun ThemeEntity?.toDomain(): Theme? = this?.let { Theme.valueOf(it.name) }
-fun Theme?.toEntity(): ThemeEntity? = this?.let { ThemeEntity.valueOf(it.name) }
 
-fun LanguageEntity?.toDomain(): Language? = this?.let { Language.valueOf(it.name) }
-fun Language?.toEntity(): LanguageEntity? = this?.let { LanguageEntity.valueOf(it.name) }
-
-fun SettingsEntity.toSettings(): Settings = Settings(
-    theme = theme.toDomain() ?: Theme.SYSTEM,
-    language = language.toDomain() ?: Language.ENGLISH
-)

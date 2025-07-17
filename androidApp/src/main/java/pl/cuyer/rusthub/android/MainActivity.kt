@@ -10,18 +10,19 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.core.graphics.toColorInt
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.map
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
-import pl.cuyer.rusthub.presentation.settings.SettingsController
+import pl.cuyer.rusthub.domain.usecase.GetSettingsUseCase
 import pl.cuyer.rusthub.presentation.ui.Colors
 import pl.cuyer.rusthub.util.InAppUpdateManager
 
 class MainActivity : AppCompatActivity() {
     private val startupViewModel: StartupViewModel by viewModel()
-    private val settingsController: SettingsController by inject()
+    private val getSettingsUseCase: GetSettingsUseCase by inject()
     private val inAppUpdateManager: InAppUpdateManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,7 +48,9 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             val state = startupViewModel.state.collectAsStateWithLifecycle()
-            val appTheme = settingsController.theme.collectAsStateWithLifecycle()
+            val appTheme = getSettingsUseCase()
+                .map { it?.theme ?: Theme.SYSTEM }
+                .collectAsStateWithLifecycle(initialValue = Theme.SYSTEM)
 
             val darkTheme = when (appTheme.value) {
                 Theme.LIGHT -> false

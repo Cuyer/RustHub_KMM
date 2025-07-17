@@ -1,12 +1,10 @@
 import pl.cuyer.rusthub.data.local.model.DifficultyEntity;
 import pl.cuyer.rusthub.data.local.model.FlagEntity;
-import pl.cuyer.rusthub.data.local.model.LanguageEntity;
 import pl.cuyer.rusthub.data.local.model.MapsEntity;
 import pl.cuyer.rusthub.data.local.model.OrderEntity;
 import pl.cuyer.rusthub.data.local.model.RegionEntity;
 import pl.cuyer.rusthub.data.local.model.ServerFilterEntity;
 import pl.cuyer.rusthub.data.local.model.ServerStatusEntity;
-import pl.cuyer.rusthub.data.local.model.ThemeEntity;
 import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity;
 import pl.cuyer.rusthub.data.local.model.WipeTypeEntity;
 
@@ -566,19 +564,3 @@ SELECT * FROM userEntity LIMIT 1;
 
 updateEmailConfirmed:
 UPDATE userEntity SET email_confirmed = CASE WHEN :confirmed THEN 1 ELSE 0 END WHERE id = :id;
-
-CREATE TABLE settingsEntity (
-    id TEXT NOT NULL PRIMARY KEY,
-    theme TEXT AS ThemeEntity,
-    language TEXT AS LanguageEntity
-);
-
-upsertSettings:
-INSERT INTO settingsEntity (id, theme, language)
-VALUES (:id, :theme, :language)
-ON CONFLICT(id) DO UPDATE SET
-    theme = excluded.theme,
-    language = excluded.language;
-
-getSettings:
-SELECT * FROM settingsEntity WHERE id = ?;

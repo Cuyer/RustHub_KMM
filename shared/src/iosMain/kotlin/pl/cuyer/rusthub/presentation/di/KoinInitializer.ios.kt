@@ -29,6 +29,8 @@ import pl.cuyer.rusthub.util.ShareHandler
 import pl.cuyer.rusthub.util.InAppUpdateManager
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.AppCheckTokenProvider
+import pl.cuyer.rusthub.data.local.settings.SettingsDataSourceImpl
+import pl.cuyer.rusthub.domain.repository.settings.SettingsDataSource
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
@@ -45,6 +47,7 @@ actual val platformModule: Module = module {
     single { StoreNavigator() }
     single { GoogleAuthClient() }
     single { StringProvider() }
+    single { SettingsDataSourceImpl() } bind SettingsDataSource::class
     single { PermissionsController() }
     factory { StartupViewModel(get(), get(), get(), get(), get()) }
     factory {

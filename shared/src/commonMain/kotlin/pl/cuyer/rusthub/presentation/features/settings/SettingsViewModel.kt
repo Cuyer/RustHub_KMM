@@ -43,6 +43,7 @@ import pl.cuyer.rusthub.util.anonymousAccountExpiresIn
 import pl.cuyer.rusthub.util.formatExpiration
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.updateAppLanguage
+import pl.cuyer.rusthub.util.updateAppTheme
 
 class SettingsViewModel(
     private val getSettingsUseCase: GetSettingsUseCase,
@@ -89,6 +90,7 @@ class SettingsViewModel(
 
     private fun updateTheme(theme: Theme) {
         _state.update { it.copy(theme = theme) }
+        updateAppTheme(theme)
         save()
     }
 
