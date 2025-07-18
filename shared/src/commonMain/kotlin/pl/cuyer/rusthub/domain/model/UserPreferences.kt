@@ -1,6 +1,6 @@
 package pl.cuyer.rusthub.domain.model
 
-data class UserData(
+data class UserPreferences(
     val darkThemeConfig: DarkThemeConfig = DarkThemeConfig.FOLLOW_SYSTEM,
     val useDynamicColor: Boolean = false
 )

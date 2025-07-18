@@ -2,14 +2,14 @@ package pl.cuyer.rusthub.data.local.user
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import pl.cuyer.rusthub.domain.model.DarkThemeConfig
-import pl.cuyer.rusthub.domain.model.UserData
+import pl.cuyer.rusthub.domain.model.Theme
+import pl.cuyer.rusthub.domain.model.UserPreferences
 import pl.cuyer.rusthub.domain.repository.user.UserPreferencesRepository
 
 class UserPreferencesRepositoryImpl : UserPreferencesRepository {
-    override val userData: Flow<UserData> = flowOf(UserData())
+    override val userPreferences: Flow<UserPreferences> = flowOf(UserPreferences())
 
-    override suspend fun setThemeConfig(darkThemeConfig: DarkThemeConfig) {
+    override suspend fun setThemeConfig(theme: Theme) {
         // no-op
     }
 
