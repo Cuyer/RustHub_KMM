@@ -215,6 +215,8 @@ private fun CredentialsScreenCompact(
     isLoading: Boolean,
     onAction: (CredentialsAction) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -239,7 +241,10 @@ private fun CredentialsScreenCompact(
         )
         if (provider != AuthProvider.GOOGLE) {
             AppButton(
-                onClick = { onAction(CredentialsAction.OnSubmit) },
+                onClick = {
+                    focusManager.clearFocus()
+                    onAction(CredentialsAction.OnSubmit)
+                },
                 isLoading = isLoading,
                 enabled = when (userExists) {
                     true -> password.isNotBlank()
@@ -266,6 +271,8 @@ private fun CredentialsScreenExpanded(
     isLoading: Boolean,
     onAction: (CredentialsAction) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+
     Row(
         modifier = Modifier
             .fillMaxSize()
@@ -297,7 +304,10 @@ private fun CredentialsScreenExpanded(
             )
             if (provider != AuthProvider.GOOGLE) {
                 AppButton(
-                    onClick = { onAction(CredentialsAction.OnSubmit) },
+                    onClick = {
+                        focusManager.clearFocus()
+                        onAction(CredentialsAction.OnSubmit)
+                    },
                     isLoading = isLoading,
                     enabled = when (userExists) {
                         true -> password.isNotBlank()
@@ -323,6 +333,8 @@ private fun CredentialsFields(
     usernameError: String?,
     onAction: (CredentialsAction) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -337,6 +349,7 @@ private fun CredentialsFields(
                 backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
                 contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White
             ) {
+                focusManager.clearFocus()
                 onAction(CredentialsAction.OnGoogleLogin)
             }
             return
@@ -375,7 +388,10 @@ private fun CredentialsFields(
             if (userExists) {
                 AppTextButton(
                     modifier = Modifier.align(Alignment.End),
-                    onClick = { onAction(CredentialsAction.OnForgotPassword) }
+                    onClick = {
+                        focusManager.clearFocus()
+                        onAction(CredentialsAction.OnForgotPassword)
+                    }
                 ) {
                     Text(stringResource(SharedRes.strings.forgot_password))
                 }
