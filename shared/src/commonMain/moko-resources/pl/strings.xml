@@ -111,6 +111,7 @@
     <string name="faq_renew_question">Czy Rust Hub Pro to jednorazowa płatność, czy odnawia się automatycznie?</string>
     <string name="kits">Zestawy</string>
     <string name="language">Język</string>
+    <string name="select_language">Wybierz język</string>
     <string name="english">Angielski</string>
     <string name="polish">Polski</string>
     <string name="german">Niemiecki</string>
@@ -209,6 +210,7 @@
     <string name="faq_lifetime_answer">Plan Rust Hub Pro Lifetime to jednorazowy zakup. Uzyskujesz dostęp do Rust Hub Pro na zawsze. Jeśli masz już aktywną subskrypcję miesięczną lub roczną i chcesz przejść na plan Lifetime, po jego zakupie pamiętaj o anulowaniu dotychczasowej subskrypcji, aby uniknąć dalszych opłat cyklicznych.</string>
     <string name="faq_renew_answer">Plany Rust Hub Pro miesięczny i roczny to subskrypcje, które odnawiają się automatycznie po zakończeniu okresu subskrypcji, aby uniknąć przerw w działaniu usługi. Jeśli anulujesz subskrypcję, będziesz mieć dostęp do Rust Hub Pro aż do wygaśnięcia obecnej subskrypcji. Plan Rust Hub Pro Lifetime to jednorazowy zakup.</string>
     <string name="theme">Motyw</string>
+    <string name="select_theme">Wybierz motyw</string>
     <string name="light">Jasny</string>
     <string name="dark">Ciemny</string>
     <string name="system">Systemowy</string>

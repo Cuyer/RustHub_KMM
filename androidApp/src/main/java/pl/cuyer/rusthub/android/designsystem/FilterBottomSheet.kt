@@ -42,6 +42,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -101,8 +102,9 @@ fun FilterBottomSheet(
         Text(
             text = stringResource(SharedRes.strings.filter_options),
             style = MaterialTheme.typography.titleLargeEmphasized,
+            fontWeight = FontWeight.SemiBold,
             modifier = Modifier
-                .padding(start = spacing.medium, end = spacing.medium, bottom = spacing.medium)
+                .padding(horizontal = spacing.medium)
         )
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
         AnimatedContent(

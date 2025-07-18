@@ -111,6 +111,7 @@
     <string name="faq_renew_question">Rust Hub Pro – Einmalzahlung oder Abo?</string>
     <string name="kits">Kits</string>
     <string name="language">Sprache</string>
+    <string name="select_language">Sprache auswählen</string>
     <string name="english">Englisch</string>
     <string name="polish">Polnisch</string>
     <string name="german">Deutsch</string>
@@ -209,6 +210,7 @@
     <string name="faq_lifetime_answer">Der Rust Hub Pro Lifetime-Plan ist ein einmaliger Kauf. Du hast dauerhaft Zugriff auf Rust Hub Pro. Wenn du bereits ein monatliches oder jährliches Abo hast und auf Lifetime wechseln willst, kündige das alte Abo nach dem Kauf des Lifetime-Plans, um doppelte Zahlungen zu vermeiden.</string>
     <string name="faq_renew_answer">Die monatlichen und jährlichen Rust Hub Pro-Pläne sind Abos, die sich automatisch verlängern. Nach einer Kündigung bleibt der Zugriff bis zum Ende des Abos erhalten. Lifetime ist ein einmaliger Kauf.</string>
     <string name="theme">Thema</string>
+    <string name="select_theme">Thema auswählen</string>
     <string name="light">Hell</string>
     <string name="dark">Dunkel</string>
     <string name="system">System</string>

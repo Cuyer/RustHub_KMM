@@ -9,6 +9,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -19,9 +21,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.material3.Text
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import pl.cuyer.rusthub.android.designsystem.bottomSheetNestedScroll
 import pl.cuyer.rusthub.android.designsystem.settleCompat
 import pl.cuyer.rusthub.android.theme.RustHubTheme
@@ -29,8 +34,9 @@ import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
+import pl.cuyer.rusthub.domain.model.displayName
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun LanguageBottomSheet(
     sheetState: SheetState,
@@ -52,31 +58,36 @@ fun LanguageBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(spacing.medium)
         ) {
             Text(
-                text = stringResource(SharedRes.strings.language),
-                style = MaterialTheme.typography.titleLarge
+                modifier = Modifier
+                    .padding(horizontal = spacing.medium),
+                text = stringResource(SharedRes.strings.select_language),
+                style = MaterialTheme.typography.titleLargeEmphasized,
+                fontWeight = FontWeight.SemiBold
             )
+            HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
             Language.entries.forEach { language ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = spacing.small)
-                        .clickable {
-                            onSelect(language)
-                            onDismiss()
-                        },
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                AppTextButton(
+                    onClick = {
+                        onSelect(language)
+                        onDismiss()
+                    }
                 ) {
-                    Text(language.displayName(stringProvider))
-                    if (language == current) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = null
-                        )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = spacing.medium),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(language.displayName(stringProvider))
+                        if (language == current) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null
+                            )
+                        }
                     }
                 }
             }
@@ -84,6 +95,7 @@ fun LanguageBottomSheet(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 private fun LanguageBottomSheetPreview() {

@@ -111,6 +111,7 @@
     <string name="faq_renew_question">Rust Hub Pro : paiement unique ou renouvellement automatique?</string>
     <string name="kits">Kits</string>
     <string name="language">Langue</string>
+    <string name="select_language">Choisir la langue</string>
     <string name="english">Anglais</string>
     <string name="polish">Polonais</string>
     <string name="german">Allemand</string>
@@ -209,6 +210,7 @@
     <string name="faq_lifetime_answer">Le plan Rust Hub Pro Lifetime est un achat unique. Vous aurez un accès à vie à Rust Hub Pro.\n\nSi vous avez déjà un abonnement mensuel ou annuel et que vous souhaitez passer au Lifetime, pensez à annuler votre ancien abonnement pour éviter toute facturation récurrente.</string>
     <string name="faq_renew_answer">Les formules mensuelles et annuelles de Rust Hub Pro sont des abonnements qui se renouvellent automatiquement. Après annulation, vous gardez l'accès à Rust Hub Pro jusqu'à la fin de la période en cours. La formule Lifetime est un achat unique.</string>
     <string name="theme">Thème</string>
+    <string name="select_theme">Choisir le thème</string>
     <string name="light">Clair</string>
     <string name="dark">Sombre</string>
     <string name="system">Système</string>

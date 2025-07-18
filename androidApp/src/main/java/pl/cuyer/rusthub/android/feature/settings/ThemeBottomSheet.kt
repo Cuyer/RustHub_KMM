@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
@@ -12,11 +14,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.SwitchWithText
+import pl.cuyer.rusthub.android.designsystem.SwitchWithTextHorizontal
 import pl.cuyer.rusthub.android.designsystem.bottomSheetNestedScroll
 import pl.cuyer.rusthub.android.designsystem.settleCompat
 import pl.cuyer.rusthub.android.theme.RustHubTheme
@@ -25,7 +29,7 @@ import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ThemeBottomSheet(
     sheetState: SheetState,
@@ -36,7 +40,6 @@ fun ThemeBottomSheet(
     onDismiss: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val stringProvider = koinInject<StringProvider>()
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -49,19 +52,21 @@ fun ThemeBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(spacing.medium)
         ) {
             Text(
-                text = stringResource(SharedRes.strings.theme),
-                style = MaterialTheme.typography.titleLarge
+                modifier = Modifier
+                    .padding(horizontal = spacing.medium),
+                text = stringResource(SharedRes.strings.select_theme),
+                style = MaterialTheme.typography.titleLargeEmphasized,
+                fontWeight = FontWeight.SemiBold
             )
-            SwitchWithText(
+            HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
+            SwitchWithTextHorizontal(
                 text = stringResource(SharedRes.strings.dark_mode),
                 isChecked = current == Theme.DARK,
                 onCheckedChange = { onThemeChange(if (it) Theme.DARK else Theme.LIGHT) }
             )
-            SwitchWithText(
+            SwitchWithTextHorizontal(
                 text = stringResource(SharedRes.strings.dynamic_colors),
                 isChecked = dynamicColors,
                 onCheckedChange = onDynamicColorsChange
@@ -70,6 +75,7 @@ fun ThemeBottomSheet(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 private fun ThemeBottomSheetPreview() {
