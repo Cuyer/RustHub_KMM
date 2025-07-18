@@ -138,6 +138,8 @@ fun SubscriptionScreen(
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
 
     Scaffold(
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         topBar = {
             TopAppBar(
                 title = { Text(

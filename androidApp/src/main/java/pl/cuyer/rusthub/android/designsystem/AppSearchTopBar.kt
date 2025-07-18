@@ -57,6 +57,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.RectangleShape
 import pl.cuyer.rusthub.SharedRes
@@ -292,6 +293,8 @@ fun RustSearchBarTopAppBar(
 private fun AppSearchTopBarPreview() {
     RustHubTheme() {
         Scaffold(
+            containerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.onBackground,
             topBar = {
                 RustSearchBarTopAppBar(
                     searchBarState = rememberSearchBarState(),

@@ -53,6 +53,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import pl.cuyer.rusthub.SharedRes
@@ -138,6 +139,8 @@ fun ServerScreen(
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     Scaffold(
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         topBar = {
             Column(
                 modifier = with(scrollBehavior)
