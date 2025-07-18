@@ -15,6 +15,7 @@ import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
+import pl.cuyer.rusthub.domain.usecase.GetUserPreferencesUseCase
 import pl.cuyer.rusthub.util.AppCheckTokenProvider
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.GoogleAuthClient
@@ -43,7 +44,7 @@ actual val platformModule: Module = module {
     single { StoreNavigator() }
     single { GoogleAuthClient() }
     single { StringProvider() }
-    factory { StartupViewModel(get(), get(), get(), get(), get()) }
+    factory { StartupViewModel(get(), get(), get(), get(), get(), get()) }
     factory {
         ConfirmEmailViewModel(
             checkEmailConfirmedUseCase = get(),
