@@ -212,6 +212,8 @@
     <string name="light">Hell</string>
     <string name="dark">Dunkel</string>
     <string name="system">System</string>
+    <string name="dark_mode">Dunkler Modus</string>
+    <string name="dynamic_colors">Dynamische Farben</string>
     <string name="this_rust_hub_account_is_already_connected_with_social_account">Dieses Rust Hub-Konto ist bereits mit einem anderen sozialen Konto verbunden.</string>
     <string name="true_str">Ja</string>
     <string name="turn_off_notifications">Benachrichtigungen deaktivieren</string>

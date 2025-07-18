@@ -44,8 +44,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-import pl.cuyer.rusthub.android.designsystem.AppExposedDropdownMenu
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
@@ -60,7 +63,6 @@ import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.AppInfo
-import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.repository.settings.SettingsDataSource
 
@@ -84,6 +86,13 @@ fun SettingsScreen(
     val context = LocalContext.current
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
+
+    val settingsDataSource = koinInject<SettingsDataSource>()
+    val themeSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val languageSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showThemeSheet by rememberSaveable { mutableStateOf(false) }
+    var showLanguageSheet by rememberSaveable { mutableStateOf(false) }
+    var dynamicColorsEnabled by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -124,7 +133,9 @@ fun SettingsScreen(
                     provider = state.value.provider,
                     subscribed = state.value.subscribed,
                     expiration = state.value.anonymousExpiration,
-                    onAction = onAction
+                    onAction = onAction,
+                    onThemeClick = { showThemeSheet = true },
+                    onLanguageClick = { showLanguageSheet = true }
                 )
             } else {
                 SettingsScreenCompact(
@@ -134,7 +145,27 @@ fun SettingsScreen(
                     provider = state.value.provider,
                     subscribed = state.value.subscribed,
                     expiration = state.value.anonymousExpiration,
-                    onAction = onAction
+                    onAction = onAction,
+                    onThemeClick = { showThemeSheet = true },
+                    onLanguageClick = { showLanguageSheet = true }
+                )
+            }
+            if (showThemeSheet) {
+                ThemeBottomSheet(
+                    sheetState = themeSheetState,
+                    current = settingsDataSource.getTheme(),
+                    dynamicColors = dynamicColorsEnabled,
+                    onThemeChange = { settingsDataSource.setTheme(it) },
+                    onDynamicColorsChange = { dynamicColorsEnabled = it },
+                    onDismiss = { showThemeSheet = false }
+                )
+            }
+            if (showLanguageSheet) {
+                LanguageBottomSheet(
+                    sheetState = languageSheetState,
+                    current = settingsDataSource.getLanguage(),
+                    onSelect = { settingsDataSource.setLanguage(it) },
+                    onDismiss = { showLanguageSheet = false }
                 )
             }
         }
@@ -148,14 +179,16 @@ private fun SettingsScreenCompact(
     provider: AuthProvider?,
     subscribed: Boolean,
     expiration: String?,
-    onAction: (SettingsAction) -> Unit
+    onAction: (SettingsAction) -> Unit,
+    onThemeClick: () -> Unit,
+    onLanguageClick: () -> Unit
 ) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
         GreetingSection(username)
-        PreferencesSection(onAction)
+        PreferencesSection(onAction, onThemeClick, onLanguageClick)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
         AccountSection(provider, subscribed, expiration, onAction)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
@@ -170,7 +203,9 @@ private fun SettingsScreenExpanded(
     provider: AuthProvider?,
     subscribed: Boolean,
     expiration: String?,
-    onAction: (SettingsAction) -> Unit
+    onAction: (SettingsAction) -> Unit,
+    onThemeClick: () -> Unit,
+    onLanguageClick: () -> Unit
 ) {
     Row(
         modifier = modifier,
@@ -183,7 +218,7 @@ private fun SettingsScreenExpanded(
             verticalArrangement = Arrangement.spacedBy(spacing.medium)
         ) {
             GreetingSection(username)
-            PreferencesSection(onAction)
+            PreferencesSection(onAction, onThemeClick, onLanguageClick)
             HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
             AccountSection(provider, subscribed, expiration, onAction)
         }
@@ -200,33 +235,43 @@ private fun SettingsScreenExpanded(
 
 @Composable
 private fun PreferencesSection(
-    onAction: (SettingsAction) -> Unit
+    onAction: (SettingsAction) -> Unit,
+    onThemeClick: () -> Unit,
+    onLanguageClick: () -> Unit
 ) {
-    val stringProvider = koinInject<StringProvider>()
-    val settingsDataSource = koinInject<SettingsDataSource>()
     Text(
         text = stringResource(SharedRes.strings.preferences),
         style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(bottom = spacing.small)
     )
 
-    AppExposedDropdownMenu(
-        label = stringResource(SharedRes.strings.theme),
-        options = Theme.entries.map { it.displayName(stringProvider) },
-        selectedValue = Theme.entries.indexOf(settingsDataSource.getTheme()),
-        onSelectionChanged = {
-            settingsDataSource.setTheme(Theme.entries[it])
+    AppTextButton(onClick = onThemeClick) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(SharedRes.strings.theme))
+            Icon(
+                imageVector = Icons.AutoMirrored.Default.ArrowRight,
+                contentDescription = stringResource(SharedRes.strings.theme)
+            )
         }
-    )
+    }
 
-    AppExposedDropdownMenu(
-        label = stringResource(SharedRes.strings.language),
-        options = Language.entries.map { it.displayName(stringProvider) },
-        selectedValue = Language.entries.indexOf(settingsDataSource.getLanguage()),
-        onSelectionChanged = {
-            settingsDataSource.setLanguage(Language.entries[it])
+    AppTextButton(onClick = onLanguageClick) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(SharedRes.strings.language))
+            Icon(
+                imageVector = Icons.AutoMirrored.Default.ArrowRight,
+                contentDescription = stringResource(SharedRes.strings.language)
+            )
         }
-    )
+    }
 
     AppTextButton(
         onClick = { onAction(SettingsAction.OnNotificationsClick) }
