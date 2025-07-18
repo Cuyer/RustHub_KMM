@@ -46,7 +46,8 @@ class StartupViewModel(
         .shareIn(coroutineScope, SharingStarted.WhileSubscribed(5_000L), 1)
 
     private val preferencesFlow = getUserPreferencesUseCase()
-        .stateIn(coroutineScope, SharingStarted.WhileSubscribed(5_000L), UserPreferences())
+        .distinctUntilChanged()
+        .shareIn(coroutineScope, SharingStarted.WhileSubscribed(5_000L), 1)
 
     private val _state = MutableStateFlow(StartupState())
     val state = _state.stateIn(
