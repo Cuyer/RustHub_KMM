@@ -30,8 +30,6 @@ import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -42,7 +40,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -91,7 +88,6 @@ fun SettingsScreen(
     val languageSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showThemeSheet by rememberSaveable { mutableStateOf(false) }
     var showLanguageSheet by rememberSaveable { mutableStateOf(false) }
-    var dynamicColorsEnabled by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -154,10 +150,10 @@ fun SettingsScreen(
             if (showThemeSheet) {
                 ThemeBottomSheet(
                     sheetState = themeSheetState,
-                    current = Theme.SYSTEM,
-                    dynamicColors = dynamicColorsEnabled,
-                    onThemeChange = { },
-                    onDynamicColorsChange = { dynamicColorsEnabled = it },
+                    current = state.value.theme,
+                    dynamicColors = state.value.dynamicColors,
+                    onThemeChange = { onAction(SettingsAction.OnThemeChange(it)) },
+                    onDynamicColorsChange = { onAction(SettingsAction.OnDynamicColorsChange(it)) },
                     onDismiss = { showThemeSheet = false }
                 )
             }
