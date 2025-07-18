@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.presentation.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.core.okio.OkioStorage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -21,7 +22,11 @@ private fun createUserPreferencesDataStore(
     userPreferencesSerializer: UserPreferencesSerializer,
 ): DataStore<UserPreferencesProto> =
     DataStoreFactory.create(
-        storage = userPreferencesSerializer,
+        storage = OkioStorage(
+            fileSystem = FileSystem.SYSTEM,
+            serializer = userPreferencesSerializer,
+            producePath = { path },
+        ),
         scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     )
 
