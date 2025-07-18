@@ -252,7 +252,7 @@
     <string name="player_count">Player count</string>
     <string name="wipe_schedule">Wipe Schedule</string>
     <string name="invalid_email_format">Invalid email format</string>
-    <string name="password_requirements">Password must be 8+ chars and contain a digit</string>
+    <string name="password_requirements">Password should contain at least 8 characters and a digit</string>
     <string name="username_too_short">Username too short</string>
     <string name="correct_errors_try_again">Please correct the errors above and try again.</string>
     <string name="account_deleted_successfully">Account deleted successfully</string>

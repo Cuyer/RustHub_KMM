@@ -251,7 +251,7 @@
     <string name="player_count">Liczba graczy</string>
     <string name="wipe_schedule">Harmonogram wipe’ów</string>
     <string name="invalid_email_format">Nieprawidłowy e-mail</string>
-    <string name="password_requirements">Hasło: minimum 8 znaków i cyfra</string>
+    <string name="password_requirements">Hasło powinno zawierać minimum 8 znaków oraz cyfrę</string>
     <string name="username_too_short">Nazwa użytkownika za krótka</string>
     <string name="correct_errors_try_again">Popraw błędy i spróbuj jeszcze raz.</string>
     <string name="account_deleted_successfully">Konto usunięte</string>
