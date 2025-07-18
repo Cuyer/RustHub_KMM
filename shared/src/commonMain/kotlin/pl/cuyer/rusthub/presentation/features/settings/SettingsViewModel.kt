@@ -20,9 +20,13 @@ import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.AuthProvider
+import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.model.User
+import pl.cuyer.rusthub.domain.usecase.GetUserPreferencesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
+import pl.cuyer.rusthub.domain.usecase.SetDynamicColorPreferenceUseCase
+import pl.cuyer.rusthub.domain.usecase.SetThemeConfigUseCase
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
@@ -40,6 +44,9 @@ import pl.cuyer.rusthub.util.formatExpiration
 class SettingsViewModel(
     private val logoutUserUseCase: LogoutUserUseCase,
     private val getUserUseCase: GetUserUseCase,
+    private val getUserPreferencesUseCase: GetUserPreferencesUseCase,
+    private val setThemeConfigUseCase: SetThemeConfigUseCase,
+    private val setDynamicColorPreferenceUseCase: SetDynamicColorPreferenceUseCase,
     private val permissionsController: PermissionsController,
     private val googleAuthClient: GoogleAuthClient,
     private val snackbarController: SnackbarController,
@@ -54,6 +61,7 @@ class SettingsViewModel(
     val state = _state
         .onStart {
             observeUser()
+            observePreferences()
         }
         .stateIn(
             scope = coroutineScope,
@@ -72,6 +80,8 @@ class SettingsViewModel(
             SettingsAction.OnPrivacyPolicy -> openPrivacyPolicy()
             SettingsAction.OnDeleteAccount -> navigateDeleteAccount()
             SettingsAction.OnUpgradeAccount -> navigateUpgrade()
+            is SettingsAction.OnThemeChange -> setTheme(action.theme)
+            is SettingsAction.OnDynamicColorsChange -> setDynamicColors(action.enabled)
         }
     }
 
@@ -85,6 +95,16 @@ class SettingsViewModel(
         coroutineScope.launch {
             _uiEvent.send(UiEvent.Navigate(UpgradeAccount))
         }
+    }
+
+    private fun observePreferences() {
+        getUserPreferencesUseCase()
+            .onEach { prefs ->
+                _state.update {
+                    it.copy(theme = prefs.themeConfig, dynamicColors = prefs.useDynamicColor)
+                }
+            }
+            .launchIn(coroutineScope)
     }
 
     private fun observeUser() {
@@ -141,6 +161,14 @@ class SettingsViewModel(
 
     private fun updateLoading(isLoading: Boolean) {
         _state.update { it.copy(isLoading = isLoading) }
+    }
+
+    private fun setTheme(theme: Theme) {
+        coroutineScope.launch { setThemeConfigUseCase(theme) }
+    }
+
+    private fun setDynamicColors(enabled: Boolean) {
+        coroutineScope.launch { setDynamicColorPreferenceUseCase(enabled) }
     }
 
     private fun showErrorSnackbar(message: String) {

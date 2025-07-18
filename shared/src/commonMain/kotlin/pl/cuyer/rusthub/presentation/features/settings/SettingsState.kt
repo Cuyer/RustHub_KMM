@@ -10,5 +10,7 @@ data class SettingsState(
     val provider: AuthProvider? = null,
     val subscribed: Boolean = false,
     val anonymousExpiration: String? = null,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val theme: Theme = Theme.SYSTEM,
+    val dynamicColors: Boolean = false
 )
