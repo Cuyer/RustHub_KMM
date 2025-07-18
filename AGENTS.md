@@ -31,5 +31,6 @@ This repository hosts a Kotlin Multiplatform Mobile (KMM) project. The Android a
 - When executing use cases, apply `.onStart { ... }` to set loading flags and
   `.onCompletion { ... }` to clear them.
 - Handle errors with `.catch { e -> ... }` and collect using `collectLatest` when appropriate.
+- Follow MVI and Clean Architecture patterns
 
 Keep these conventions in mind when modifying or adding code.
