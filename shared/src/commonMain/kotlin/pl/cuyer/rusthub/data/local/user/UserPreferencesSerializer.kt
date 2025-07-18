@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.data.local.user
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
 import com.google.protobuf.InvalidProtocolBufferException
+import kotlinx.serialization.Serializer
 import java.io.InputStream
 import java.io.OutputStream
 

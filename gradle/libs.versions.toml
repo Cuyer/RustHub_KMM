@@ -44,6 +44,8 @@ security-crypto = "1.1.0-beta01"
 sqlcipher = "4.9.0"
 playcore = "2.1.0"
 play-review = "2.0.2"
+protobufPlugin = "0.9.5"
+protobuf = "4.31.1"
 
 [libraries]
 
@@ -147,6 +149,8 @@ certificate-transparency = { module = "com.appmattus.certificatetransparency:cer
 google-play-app-update = { module = "com.google.android.play:app-update", version.ref = "playcore" }
 google-play-app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.ref = "playcore" }
 desugar_jdk_libs-v215 = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
+protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
+protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -162,3 +166,4 @@ performance = { id = "com.google.firebase.firebase-perf", version.ref = "perform
 sqlDelightGradlePlugin = { id = "app.cash.sqldelight", version.ref = "sql-delight-version" }
 mokoMultiplatformResources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko-resources" }
 buildKonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
+protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }

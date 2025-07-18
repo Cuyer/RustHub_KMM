@@ -13,7 +13,7 @@ class RustHubPreferencesDataSource(
 ) {
     val preferences: Flow<UserPreferences> = userPreferences.data.map {
         UserPreferences(
-            darkThemeConfig = when (it.darkThemeConfig) {
+            themeConfig = when (it.themeConfig) {
                 ThemeProto.THEME_LIGHT -> Theme.LIGHT
                 ThemeProto.THEME_DARK -> Theme.DARK
                 else -> Theme.SYSTEM
@@ -28,10 +28,10 @@ class RustHubPreferencesDataSource(
         }
     }
 
-    suspend fun setDarkThemeConfig(theme: Theme) {
+    suspend fun setTheme(theme: Theme) {
         userPreferences.updateData {
             it.copy {
-                this.darkThemeConfig = when (theme) {
+                this.themeConfig = when (theme) {
                     Theme.SYSTEM -> ThemeProto.THEME_SYSTEM
                     Theme.LIGHT -> ThemeProto.THEME_LIGHT
                     Theme.DARK -> ThemeProto.THEME_DARK

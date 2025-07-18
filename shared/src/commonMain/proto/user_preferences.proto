@@ -8,6 +8,6 @@ enum ThemeProto {
 }
 
 message UserPreferencesProto {
-    ThemeProto dark_theme_config = 1;
+    ThemeProto theme_config = 1;
     bool use_dynamic_color = 2;
 }

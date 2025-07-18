@@ -11,7 +11,6 @@ import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import pl.cuyer.rusthub.UserPreferencesProto
-import pl.cuyer.rusthub.data.local.user.IntToStringIdsMigration
 import pl.cuyer.rusthub.data.local.user.RustHubPreferencesDataSource
 import pl.cuyer.rusthub.data.local.user.UserPreferencesRepositoryImpl
 import pl.cuyer.rusthub.data.local.user.UserPreferencesSerializer
@@ -24,7 +23,6 @@ private fun providesUserPreferencesDataStore(
     DataStoreFactory.createWithPath(
         serializer = userPreferencesSerializer,
         scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
-        migrations = listOf(IntToStringIdsMigration),
         produceFile = { path }
     )
 
