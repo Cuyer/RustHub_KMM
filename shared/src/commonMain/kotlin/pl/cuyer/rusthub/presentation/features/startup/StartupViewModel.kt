@@ -4,7 +4,6 @@ import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
@@ -46,8 +45,11 @@ class StartupViewModel(
         .shareIn(coroutineScope, SharingStarted.WhileSubscribed(5_000L), 1)
 
     private val preferencesFlow = getUserPreferencesUseCase()
-        .distinctUntilChanged()
-        .shareIn(coroutineScope, SharingStarted.WhileSubscribed(5_000L), 1)
+        .stateIn(
+            scope = coroutineScope,
+            started = SharingStarted.WhileSubscribed(5_000L),
+            initialValue = UserPreferences()
+        )
 
     private val _state = MutableStateFlow(StartupState())
     val state = _state.stateIn(
