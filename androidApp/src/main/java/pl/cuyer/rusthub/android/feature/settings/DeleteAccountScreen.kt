@@ -80,7 +80,7 @@ fun DeleteAccountScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { },
+                title = { Text(stringResource(SharedRes.strings.delete_account)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)

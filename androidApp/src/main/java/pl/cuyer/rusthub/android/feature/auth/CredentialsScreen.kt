@@ -95,7 +95,7 @@ fun CredentialsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { },
+                title = { Text(stringResource(SharedRes.strings.account)) },
                 navigationIcon = {
                     IconButton(onClick = { onAction(CredentialsAction.OnNavigateUp) }) {
                         Icon(

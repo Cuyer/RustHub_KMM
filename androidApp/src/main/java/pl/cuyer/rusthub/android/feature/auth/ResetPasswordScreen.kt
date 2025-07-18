@@ -79,7 +79,7 @@ fun ResetPasswordScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { },
+                title = { Text(stringResource(SharedRes.strings.reset_password)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
