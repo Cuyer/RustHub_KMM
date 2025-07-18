@@ -87,7 +87,7 @@ fun UpgradeAccountScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { },
+                title = { Text(stringResource(SharedRes.strings.upgrade_account)) },
                 navigationIcon = {
                     IconButton(onClick = { onAction(UpgradeAction.OnNavigateUp) }) {
                         Icon(

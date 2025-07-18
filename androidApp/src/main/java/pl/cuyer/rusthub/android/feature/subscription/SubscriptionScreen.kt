@@ -140,7 +140,7 @@ fun SubscriptionScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { },
+                title = { Text(stringResource(SharedRes.strings.subscription)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
                         Icon(
