@@ -251,7 +251,7 @@
     <string name="player_count">Spieleranzahl</string>
     <string name="wipe_schedule">Wipe-Zeitplan</string>
     <string name="invalid_email_format">Ungültiges E-Mail-Format</string>
-    <string name="password_requirements">Passwort: mind. 8 Zeichen und eine Ziffer</string>
+    <string name="password_requirements">Passwort sollte mindestens 8 Zeichen und eine Ziffer enthalten</string>
     <string name="username_too_short">Benutzername zu kurz</string>
     <string name="correct_errors_try_again">Bitte korrigiere die Fehler oben und versuche es erneut.</string>
     <string name="account_deleted_successfully">Konto erfolgreich gelöscht</string>

@@ -251,7 +251,7 @@
     <string name="player_count">Количество игроков</string>
     <string name="wipe_schedule">График вайпов</string>
     <string name="invalid_email_format">Неверный формат e-mail</string>
-    <string name="password_requirements">Пароль: не менее 8 символов и цифра</string>
+    <string name="password_requirements">Пароль должен содержать минимум 8 символов и цифру</string>
     <string name="username_too_short">Имя пользователя слишком короткое</string>
     <string name="correct_errors_try_again">Исправьте ошибки и попробуйте снова.</string>
     <string name="account_deleted_successfully">Аккаунт удалён</string>
