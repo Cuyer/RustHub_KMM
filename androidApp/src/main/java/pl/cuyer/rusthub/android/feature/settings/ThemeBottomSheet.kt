@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import android.os.Build
+import android.os.Build.VERSION_CODES
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
@@ -66,11 +68,13 @@ fun ThemeBottomSheet(
                 isChecked = current == Theme.DARK,
                 onCheckedChange = { onThemeChange(if (it) Theme.DARK else Theme.LIGHT) }
             )
-            SwitchWithTextHorizontal(
-                text = stringResource(SharedRes.strings.dynamic_colors),
-                isChecked = dynamicColors,
-                onCheckedChange = onDynamicColorsChange
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                SwitchWithTextHorizontal(
+                    text = stringResource(SharedRes.strings.dynamic_colors),
+                    isChecked = dynamicColors,
+                    onCheckedChange = onDynamicColorsChange
+                )
+            }
         }
     }
 }
