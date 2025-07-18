@@ -138,11 +138,12 @@ val appModule = module {
 }
 
 expect val platformModule: Module
+expect val userPreferencesModule: Module
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
     if (BuildType.isDebug) {
         Napier.base(DebugAntilog())
     }
     appDeclaration()
-    modules(appModule, platformModule)
+    modules(appModule, userPreferencesModule, platformModule)
 }
