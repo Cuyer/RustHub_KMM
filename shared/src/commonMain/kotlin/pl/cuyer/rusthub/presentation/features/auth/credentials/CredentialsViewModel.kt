@@ -162,7 +162,6 @@ class CredentialsViewModel(
                             result.exception.message
                                 ?: stringProvider.get(SharedRes.strings.unable_to_get_client_id)
                         )
-                        else -> Unit
                     }
                 }
         }
@@ -186,7 +185,6 @@ class CredentialsViewModel(
                         is Result.Error -> showErrorSnackbar(
                             stringProvider.get(SharedRes.strings.error_google_sign_in)
                         )
-                        else -> Unit
                     }
                 }
         }
@@ -215,8 +213,6 @@ class CredentialsViewModel(
                             ?: stringProvider.get(SharedRes.strings.unable_to_verify_email)
                     )
                 }
-
-                else -> Unit
             }
         } else {
             navigate(ServerList)

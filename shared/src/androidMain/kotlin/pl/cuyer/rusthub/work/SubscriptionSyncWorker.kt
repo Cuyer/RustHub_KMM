@@ -48,7 +48,6 @@ class SubscriptionSyncWorker(
                                 else -> success = false
                             }
                         }
-                        else -> Unit
                     }
                 }
                 success

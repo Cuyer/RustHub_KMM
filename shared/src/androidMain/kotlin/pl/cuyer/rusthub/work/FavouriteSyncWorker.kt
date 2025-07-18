@@ -50,7 +50,6 @@ class FavouriteSyncWorker(
                             }
                         }
 
-                        else -> Unit
                     }
                 }
                 success
