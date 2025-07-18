@@ -65,7 +65,6 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.AppInfo
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
-import pl.cuyer.rusthub.domain.repository.settings.SettingsDataSource
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class,
@@ -88,7 +87,6 @@ fun SettingsScreen(
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
 
-    val settingsDataSource = koinInject<SettingsDataSource>()
     val themeSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val languageSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showThemeSheet by rememberSaveable { mutableStateOf(false) }
@@ -156,9 +154,9 @@ fun SettingsScreen(
             if (showThemeSheet) {
                 ThemeBottomSheet(
                     sheetState = themeSheetState,
-                    current = settingsDataSource.getTheme(),
+                    current = Theme.SYSTEM,
                     dynamicColors = dynamicColorsEnabled,
-                    onThemeChange = { settingsDataSource.setTheme(it) },
+                    onThemeChange = { },
                     onDynamicColorsChange = { dynamicColorsEnabled = it },
                     onDismiss = { showThemeSheet = false }
                 )
@@ -166,8 +164,8 @@ fun SettingsScreen(
             if (showLanguageSheet) {
                 LanguageBottomSheet(
                     sheetState = languageSheetState,
-                    current = settingsDataSource.getLanguage(),
-                    onSelect = { settingsDataSource.setLanguage(it) },
+                    current = Language.ENGLISH,
+                    onSelect = { },
                     onDismiss = { showLanguageSheet = false }
                 )
             }
