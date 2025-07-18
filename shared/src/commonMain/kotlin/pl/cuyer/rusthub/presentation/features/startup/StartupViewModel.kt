@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -18,7 +17,10 @@ import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.exception.ConnectivityException
 import pl.cuyer.rusthub.domain.exception.ServiceUnavailableException
 import pl.cuyer.rusthub.domain.model.AuthProvider
+import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.model.User
+import pl.cuyer.rusthub.domain.model.UserPreferences
+import pl.cuyer.rusthub.domain.usecase.GetUserPreferencesUseCase
 import pl.cuyer.rusthub.domain.usecase.CheckEmailConfirmedUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.SetEmailConfirmedUseCase
@@ -35,11 +37,16 @@ class StartupViewModel(
     private val checkEmailConfirmedUseCase: CheckEmailConfirmedUseCase,
     private val setEmailConfirmedUseCase: SetEmailConfirmedUseCase,
     private val stringProvider: StringProvider,
+    private val getUserPreferencesUseCase: GetUserPreferencesUseCase,
 ) : BaseViewModel() {
 
     private val userFlow = getUserUseCase()
         .distinctUntilChanged()
-        .shareIn(coroutineScope, SharingStarted.WhileSubscribed(5_000L), replay = 1)
+        .stateIn(coroutineScope, SharingStarted.WhileSubscribed(5_000L), null)
+
+    private val preferencesFlow = getUserPreferencesUseCase()
+        .distinctUntilChanged()
+        .stateIn(coroutineScope, SharingStarted.WhileSubscribed(5_000L), UserPreferences())
 
     private val _state = MutableStateFlow(StartupState())
     val state = _state.stateIn(
@@ -50,6 +57,7 @@ class StartupViewModel(
 
     init {
         observeUser()
+        observePreferences()
         coroutineScope.launch { initialize() }
     }
 
@@ -60,6 +68,17 @@ class StartupViewModel(
             }
             .catch {
                 showErrorSnackbar(stringProvider.get(SharedRes.strings.fetch_user_error))
+            }
+            .launchIn(coroutineScope)
+    }
+
+    private fun observePreferences() {
+        preferencesFlow
+            .onEach { prefs ->
+                updateTheme(prefs.themeConfig, prefs.useDynamicColor)
+            }
+            .catch { e ->
+                Napier.e("Error reading preferences", e)
             }
             .launchIn(coroutineScope)
     }
@@ -94,6 +113,12 @@ class StartupViewModel(
             it.copy(
                 startDestination = if (user == null) Onboarding else ServerList
             )
+        }
+    }
+
+    private fun updateTheme(theme: Theme, dynamicColor: Boolean) {
+        _state.update {
+            it.copy(theme = theme, dynamicColors = dynamicColor)
         }
     }
 

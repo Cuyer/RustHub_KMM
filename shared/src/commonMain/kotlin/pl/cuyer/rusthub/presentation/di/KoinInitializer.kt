@@ -56,6 +56,7 @@ import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
+import pl.cuyer.rusthub.domain.usecase.GetUserPreferencesUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
@@ -127,6 +128,7 @@ val appModule = module {
     single { ResendConfirmationUseCase(get()) }
     single { SetEmailConfirmedUseCase(get()) }
     single { GetUserUseCase(get()) }
+    single { GetUserPreferencesUseCase(get()) }
     single { LogoutUserUseCase(get(), get(), get()) }
     single { DeleteAccountUseCase(get(), get(), get()) }
     single { ChangePasswordUseCase(get()) }

@@ -22,6 +22,7 @@ import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
+import pl.cuyer.rusthub.domain.usecase.GetUserPreferencesUseCase
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
@@ -62,7 +63,7 @@ actual val platformModule: Module = module {
     single { StringProvider(androidContext()) }
     single { PermissionsController(androidContext()) }
     viewModel {
-        StartupViewModel(get(), get(), get(), get(), get())
+        StartupViewModel(get(), get(), get(), get(), get(), get())
     }
     viewModel {
         OnboardingViewModel(
