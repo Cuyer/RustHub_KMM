@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -42,10 +43,9 @@ class StartupViewModel(
 
     private val userFlow = getUserUseCase()
         .distinctUntilChanged()
-        .stateIn(coroutineScope, SharingStarted.WhileSubscribed(5_000L), null)
+        .shareIn(coroutineScope, SharingStarted.WhileSubscribed(5_000L), 1)
 
     private val preferencesFlow = getUserPreferencesUseCase()
-        .distinctUntilChanged()
         .stateIn(coroutineScope, SharingStarted.WhileSubscribed(5_000L), UserPreferences())
 
     private val _state = MutableStateFlow(StartupState())
