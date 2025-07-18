@@ -200,13 +200,4 @@ protobuf {
     protoc {
         artifact = libs.protobuf.protoc.get().toString()
     }
-    generateProtoTasks {
-        all().configureEach {
-            builtins {
-                named("kotlin") {
-                    option("lite")
-                }
-            }
-        }
-    }
 }

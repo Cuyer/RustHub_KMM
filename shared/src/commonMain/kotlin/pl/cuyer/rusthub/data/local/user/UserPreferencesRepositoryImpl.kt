@@ -11,7 +11,7 @@ class UserPreferencesRepositoryImpl(
     override val userPreferences: Flow<UserPreferences> = dataSource.preferences
 
     override suspend fun setThemeConfig(theme: Theme) {
-        dataSource.setThemeConfig(theme)
+        dataSource.setTheme(theme)
     }
 
     override suspend fun setDynamicColorPreference(useDynamicColor: Boolean) {

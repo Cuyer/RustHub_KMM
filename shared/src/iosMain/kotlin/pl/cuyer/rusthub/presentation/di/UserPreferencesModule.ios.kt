@@ -16,20 +16,19 @@ import pl.cuyer.rusthub.data.local.user.UserPreferencesRepositoryImpl
 import pl.cuyer.rusthub.data.local.user.UserPreferencesSerializer
 import pl.cuyer.rusthub.domain.repository.user.UserPreferencesRepository
 
-private fun providesUserPreferencesDataStore(
+private fun createUserPreferencesDataStore(
     path: Path,
     userPreferencesSerializer: UserPreferencesSerializer,
 ): DataStore<UserPreferencesProto> =
-    DataStoreFactory.createWithPath(
-        serializer = userPreferencesSerializer,
-        scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
-        produceFile = { path }
+    DataStoreFactory.create(
+        storage = userPreferencesSerializer,
+        scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     )
 
 actual val userPreferencesModule: Module = module {
     single { UserPreferencesSerializer() }
     single<DataStore<UserPreferencesProto>> {
-        providesUserPreferencesDataStore(
+        createUserPreferencesDataStore(
             FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "user_preferences.pb",
             get()
         )

@@ -14,10 +14,10 @@ import org.koin.dsl.module
 import pl.cuyer.rusthub.UserPreferencesProto
 import pl.cuyer.rusthub.data.local.user.RustHubPreferencesDataSource
 import pl.cuyer.rusthub.data.local.user.UserPreferencesRepositoryImpl
-import pl.cuyer.rusthub.data.local.user.UserPreferencesSerializer
+import pl.cuyer.rusthub.presentation.di.UserPreferencesSerializer
 import pl.cuyer.rusthub.domain.repository.user.UserPreferencesRepository
 
-private fun providesUserPreferencesDataStore(
+private fun createUserPreferencesDataStore(
     context: Context,
     userPreferencesSerializer: UserPreferencesSerializer,
 ): DataStore<UserPreferencesProto> =
@@ -30,7 +30,7 @@ private fun providesUserPreferencesDataStore(
 
 actual val userPreferencesModule: Module = module {
     single { UserPreferencesSerializer() }
-    single<DataStore<UserPreferencesProto>> { providesUserPreferencesDataStore(androidContext(), get()) }
+    single<DataStore<UserPreferencesProto>> { createUserPreferencesDataStore(androidContext(), get()) }
     single { RustHubPreferencesDataSource(get()) }
     single { UserPreferencesRepositoryImpl(get()) } bind UserPreferencesRepository::class
 }
