@@ -44,6 +44,8 @@ import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
@@ -213,8 +215,18 @@ private fun ConfirmEmailStaticContent(email: String, modifier: Modifier = Modifi
             contentDescription = stringResource(SharedRes.strings.mail_icon),
         )
         Spacer(Modifier.size(spacing.small))
+
+        val template = stringResource(SharedRes.strings.confirmation_sent_message)
+        val parts = template.split("%s")
+
+        val annotated = buildAnnotatedString {
+            append(parts.first())
+            withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) { append(email) }
+            if (parts.size > 1) append(parts[1])
+        }
+
         Text(
-            text = stringResource(SharedRes.strings.confirmation_sent_message, email),
+            text = annotated,
             style = MaterialTheme.typography.bodyMedium
         )
     }
