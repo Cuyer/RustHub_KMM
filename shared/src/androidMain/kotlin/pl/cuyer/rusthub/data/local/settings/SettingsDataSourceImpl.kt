@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.data.local.settings
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
+import java.util.Locale
 import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.repository.settings.SettingsDataSource
@@ -23,7 +24,11 @@ class SettingsDataSourceImpl : SettingsDataSource {
 
     override fun getLanguage(): Language {
         val locales = AppCompatDelegate.getApplicationLocales()
-        val tag = if (!locales.isEmpty) locales[0]!!.language else null
+        val tag = if (!locales.isEmpty) {
+            locales[0]!!.language
+        } else {
+            Locale.getDefault().language
+        }
         val language = when (tag) {
             "pl" -> Language.POLISH
             "de" -> Language.GERMAN
