@@ -1,0 +1,13 @@
+syntax = "proto3";
+package pl.cuyer.rusthub;
+
+enum ThemeProto {
+    THEME_SYSTEM = 0;
+    THEME_LIGHT = 1;
+    THEME_DARK = 2;
+}
+
+message UserPreferencesProto {
+    ThemeProto dark_theme_config = 1;
+    bool use_dynamic_color = 2;
+}
