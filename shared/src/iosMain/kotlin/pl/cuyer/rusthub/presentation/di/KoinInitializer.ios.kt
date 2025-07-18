@@ -16,6 +16,8 @@ import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.domain.usecase.GetUserPreferencesUseCase
+import pl.cuyer.rusthub.domain.usecase.SetThemeConfigUseCase
+import pl.cuyer.rusthub.domain.usecase.SetDynamicColorPreferenceUseCase
 import pl.cuyer.rusthub.util.AppCheckTokenProvider
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.GoogleAuthClient
@@ -86,6 +88,9 @@ actual val platformModule: Module = module {
         SettingsViewModel(
             logoutUserUseCase = get(),
             getUserUseCase = get(),
+            getUserPreferencesUseCase = get(),
+            setThemeConfigUseCase = get(),
+            setDynamicColorPreferenceUseCase = get(),
             permissionsController = get(),
             googleAuthClient = get(),
             snackbarController = get(),
