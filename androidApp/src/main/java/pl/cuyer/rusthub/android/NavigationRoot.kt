@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.android
 
+import android.util.Log
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -95,7 +96,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
     ExperimentalMaterial3AdaptiveApi::class
 )
 @Composable
-fun NavigationRoot(startDestination: NavKey = Onboarding) {
+fun NavigationRoot(startDestination: NavKey) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     ObserveAsEvents(flow = SnackbarController.events, snackbarHostState) { event ->

@@ -49,11 +49,6 @@ class StartupViewModel(
     )
 
     init {
-        coroutineScope.launch {
-            state.collectLatest {
-                Napier.d(tag = "StartupViewModel") { "${it.startDestination}" }
-            }
-        }
         observeUser()
         coroutineScope.launch { initialize() }
     }
@@ -61,10 +56,7 @@ class StartupViewModel(
     private fun observeUser() {
         userFlow
             .onEach { user ->
-                Napier.d(tag = "StartupViewModel") { "$user" }
-                if (user == null) {
-                    updateStartDestination(null)
-                }
+                updateStartDestination(user)
             }
             .catch {
                 showErrorSnackbar(stringProvider.get(SharedRes.strings.fetch_user_error))
@@ -76,7 +68,6 @@ class StartupViewModel(
         updateLoadingState(true)
         try {
             val user = userFlow.first()
-            Napier.d(tag = "StartupViewModel") { "Initialize\n$user" }
             if (user != null && user.provider == AuthProvider.LOCAL) {
                 when (val result = checkEmailConfirmedUseCase().first()) {
                     is Result.Success -> setEmailConfirmedUseCase(result.data)
