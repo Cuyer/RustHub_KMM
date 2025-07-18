@@ -115,7 +115,7 @@ fun ServerDetailsScreen(
                         text = state.serverName ?: "",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.titleLarge
+                        fontWeight = FontWeight.SemiBold
                     )
                 },
                 actions = {

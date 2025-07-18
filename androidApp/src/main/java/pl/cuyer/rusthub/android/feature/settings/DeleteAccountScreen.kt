@@ -38,6 +38,7 @@ import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
@@ -80,7 +81,10 @@ fun DeleteAccountScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(SharedRes.strings.delete_account)) },
+                title = { Text(
+                    text = stringResource(SharedRes.strings.delete_account),
+                    fontWeight = FontWeight.SemiBold
+                ) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
@@ -203,11 +207,6 @@ private fun DeleteAccountStaticContent(modifier: Modifier = Modifier) {
             modifier = Modifier.size(64.dp),
             painter = painterResource(getImageByFileName("ic_bin").drawableResId),
             contentDescription = stringResource(SharedRes.strings.delete_account_button)
-        )
-        Spacer(modifier = Modifier.height(spacing.small))
-        Text(
-            text = stringResource(SharedRes.strings.delete_account),
-            style = MaterialTheme.typography.headlineLarge
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(

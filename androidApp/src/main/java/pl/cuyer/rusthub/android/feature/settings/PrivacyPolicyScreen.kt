@@ -15,6 +15,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import pl.cuyer.rusthub.SharedRes
 import androidx.compose.ui.viewinterop.AndroidView
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
@@ -25,7 +26,10 @@ fun PrivacyPolicyScreen(url: String, onNavigateUp: () -> Unit, title: String = s
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(title) },
+                title = { Text(
+                    text = title,
+                    fontWeight = FontWeight.SemiBold
+                ) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
                         Icon(

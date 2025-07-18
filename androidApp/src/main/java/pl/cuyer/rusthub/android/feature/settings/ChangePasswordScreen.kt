@@ -38,6 +38,7 @@ import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
@@ -77,7 +78,10 @@ fun ChangePasswordScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(SharedRes.strings.change_password)) },
+                title = { Text(
+                    text = stringResource(SharedRes.strings.change_password),
+                    fontWeight = FontWeight.SemiBold
+                ) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
                         Icon(
@@ -198,11 +202,6 @@ private fun ChangePasswordStaticContent(modifier: Modifier = Modifier) {
             modifier = Modifier.size(64.dp),
             painter = painterResource(getImageByFileName("ic_padlock").drawableResId),
             contentDescription = stringResource(SharedRes.strings.padlock_icon)
-        )
-        Spacer(modifier = Modifier.height(spacing.small))
-        Text(
-            text = stringResource(SharedRes.strings.change_password),
-            style = MaterialTheme.typography.headlineLarge
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(

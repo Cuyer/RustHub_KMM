@@ -35,6 +35,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -87,7 +88,10 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(SharedRes.strings.settings)) },
+                title = { Text(
+                    text = stringResource(SharedRes.strings.settings),
+                    fontWeight = FontWeight.SemiBold
+                ) },
                 actions = {
                     IconButton(onClick = { onAction(SettingsAction.OnLogout) }) {
                         val icon = Icons.AutoMirrored.Default.Logout

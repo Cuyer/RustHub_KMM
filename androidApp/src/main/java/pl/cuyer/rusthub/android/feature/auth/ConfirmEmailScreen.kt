@@ -44,6 +44,7 @@ import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
@@ -96,7 +97,12 @@ fun ConfirmEmailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { },
+                title = {
+                    Text(
+                        text = stringResource(SharedRes.strings.confirm_your_email),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { onAction(ConfirmEmailAction.OnBack) }) {
                         Icon(
@@ -205,11 +211,6 @@ private fun ConfirmEmailStaticContent(email: String, modifier: Modifier = Modifi
             modifier = Modifier.size(64.dp),
             painter = painterResource(getImageByFileName("ic_mail").drawableResId),
             contentDescription = stringResource(SharedRes.strings.mail_icon),
-        )
-        Spacer(Modifier.size(spacing.small))
-        Text(
-            text = stringResource(SharedRes.strings.confirm_your_email),
-            style = MaterialTheme.typography.headlineLarge
         )
         Spacer(Modifier.size(spacing.small))
         Text(

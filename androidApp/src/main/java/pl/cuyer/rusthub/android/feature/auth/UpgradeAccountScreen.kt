@@ -42,6 +42,7 @@ import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -87,7 +88,10 @@ fun UpgradeAccountScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(SharedRes.strings.upgrade_account)) },
+                title = { Text(
+                    text = stringResource(SharedRes.strings.upgrade_account),
+                    fontWeight = FontWeight.SemiBold
+                ) },
                 navigationIcon = {
                     IconButton(onClick = { onAction(UpgradeAction.OnNavigateUp) }) {
                         Icon(
@@ -217,11 +221,6 @@ private fun UpgradeStaticContent(modifier: Modifier = Modifier) {
             modifier = Modifier.size(64.dp),
             painter = painterResource(getImageByFileName("ic_rocket").drawableResId),
             contentDescription = stringResource(SharedRes.strings.padlock_icon)
-        )
-        Spacer(Modifier.size(spacing.small))
-        Text(
-            text = stringResource(SharedRes.strings.upgrade_your_account),
-            style = MaterialTheme.typography.headlineLarge
         )
         Spacer(Modifier.size(spacing.small))
         Text(
