@@ -6,6 +6,7 @@ import pl.cuyer.rusthub.data.local.DatabaseDriverFactory
 import pl.cuyer.rusthub.data.network.HttpClientFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.AuthProvider
+import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
 import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordViewModel
@@ -14,24 +15,18 @@ import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
-import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
+import pl.cuyer.rusthub.util.AppCheckTokenProvider
 import pl.cuyer.rusthub.util.ClipboardHandler
-import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
-import pl.cuyer.rusthub.domain.usecase.SetEmailConfirmedUseCase
 import pl.cuyer.rusthub.util.GoogleAuthClient
+import pl.cuyer.rusthub.util.InAppUpdateManager
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
-import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.ReviewRequester
+import pl.cuyer.rusthub.util.ShareHandler
+import pl.cuyer.rusthub.util.StoreNavigator
+import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
-import pl.cuyer.rusthub.util.ShareHandler
-import pl.cuyer.rusthub.util.InAppUpdateManager
-import pl.cuyer.rusthub.util.StringProvider
-import pl.cuyer.rusthub.util.AppCheckTokenProvider
-import pl.cuyer.rusthub.data.local.settings.createSettingsDataStore
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
@@ -48,8 +43,6 @@ actual val platformModule: Module = module {
     single { StoreNavigator() }
     single { GoogleAuthClient() }
     single { StringProvider() }
-    single<DataStore<Preferences>> { createSettingsDataStore() }
-    single { PermissionsController() }
     factory { StartupViewModel(get(), get(), get(), get(), get()) }
     factory {
         ConfirmEmailViewModel(
@@ -90,8 +83,6 @@ actual val platformModule: Module = module {
     }
     factory {
         SettingsViewModel(
-            getSettingsUseCase = get(),
-            saveSettingsUseCase = get(),
             logoutUserUseCase = get(),
             getUserUseCase = get(),
             permissionsController = get(),
