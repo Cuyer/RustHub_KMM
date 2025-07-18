@@ -29,7 +29,8 @@ import pl.cuyer.rusthub.util.ShareHandler
 import pl.cuyer.rusthub.util.InAppUpdateManager
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.AppCheckTokenProvider
-import pl.cuyer.rusthub.domain.repository.settings.SettingsDataSource
+import pl.cuyer.rusthub.data.local.user.UserPreferencesRepositoryImpl
+import pl.cuyer.rusthub.domain.repository.user.UserPreferencesRepository
 import pl.cuyer.rusthub.data.local.settings.createSettingsDataStore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -50,7 +51,7 @@ actual val platformModule: Module = module {
     single { GoogleAuthClient() }
     single { StringProvider() }
     single<DataStore<Preferences>> { createSettingsDataStore() }
-    single { SettingsDataSourceImpl(get()) } bind SettingsDataSource::class
+    single { UserPreferencesRepositoryImpl() } bind UserPreferencesRepository::class
     single { PermissionsController() }
     factory { StartupViewModel(get(), get(), get(), get(), get()) }
     factory {

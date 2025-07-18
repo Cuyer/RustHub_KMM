@@ -33,8 +33,8 @@ import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.InAppUpdateManager
 import pl.cuyer.rusthub.util.StringProvider
-import pl.cuyer.rusthub.data.local.settings.SettingsDataSourceImpl
-import pl.cuyer.rusthub.domain.repository.settings.SettingsDataSource
+import pl.cuyer.rusthub.data.local.user.UserPreferencesRepositoryImpl
+import pl.cuyer.rusthub.domain.repository.user.UserPreferencesRepository
 import kotlinx.coroutines.runBlocking
 import org.koin.dsl.bind
 import pl.cuyer.rusthub.BuildConfig
@@ -62,7 +62,7 @@ actual val platformModule: Module = module {
     single { StoreNavigator(androidContext()) }
     single { GoogleAuthClient(androidContext()) }
     single { StringProvider(androidContext()) }
-    single { SettingsDataSourceImpl() } bind SettingsDataSource::class
+    single { UserPreferencesRepositoryImpl() } bind UserPreferencesRepository::class
     single { PermissionsController(androidContext()) }
     viewModel {
         StartupViewModel(get(), get(), get(), get(), get())

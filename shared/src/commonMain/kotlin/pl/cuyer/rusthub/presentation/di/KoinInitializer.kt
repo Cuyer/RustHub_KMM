@@ -39,7 +39,6 @@ import pl.cuyer.rusthub.domain.repository.notification.MessagingTokenRepository
 import pl.cuyer.rusthub.domain.repository.search.SearchQueryDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
-import pl.cuyer.rusthub.domain.repository.settings.SettingsDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
 import pl.cuyer.rusthub.domain.repository.user.UserRepository
