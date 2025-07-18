@@ -24,19 +24,19 @@ class RustHubPreferencesDataSource(
 
     suspend fun setDynamicColorPreference(useDynamicColor: Boolean) {
         userPreferences.updateData {
-            it.copy { this.useDynamicColor = useDynamicColor }
+            it.copy(useDynamicColor = useDynamicColor)
         }
     }
 
     suspend fun setTheme(theme: Theme) {
         userPreferences.updateData {
-            it.copy {
-                this.themeConfig = when (theme) {
+            it.copy(
+                themeConfig = when (theme) {
                     Theme.SYSTEM -> ThemeProto.THEME_SYSTEM
                     Theme.LIGHT -> ThemeProto.THEME_LIGHT
                     Theme.DARK -> ThemeProto.THEME_DARK
                 }
-            }
+            )
         }
     }
 }
