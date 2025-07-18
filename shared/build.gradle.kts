@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.mokoMultiplatformResources)
     alias(libs.plugins.buildKonfig)
+    alias(libs.plugins.protobuf)
 }
 
 kotlin {
@@ -83,6 +84,7 @@ kotlin {
             implementation(libs.ktor.auth)
             implementation(libs.androidx.datastore.preferences)
             implementation(libs.androidx.datastore)
+            implementation(libs.kotlin.serialization.protobuf)
             implementation(libs.sql.delight.runtime)
             implementation(libs.sql.delight.coroutines.extensions)
             implementation(libs.kotlin.coroutines.core)
@@ -191,5 +193,20 @@ sqldelight {
             packageName.set("pl.cuyer.rusthub.database")
         }
         linkSqlite.set(true)
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = libs.protobuf.protoc.get().toString()
+    }
+    generateProtoTasks {
+        all().configureEach {
+            builtins {
+                named("kotlin") {
+                    option("lite")
+                }
+            }
+        }
     }
 }
