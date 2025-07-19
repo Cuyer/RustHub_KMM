@@ -200,6 +200,8 @@
     <string name="hide_answer">Скрыть ответ</string>
     <string name="smart_filters">Умные фильтры</string>
     <string name="status">Статус</string>
+    <string name="online">Онлайн</string>
+    <string name="offline">Оффлайн</string>
     <string name="stay_up_to_date_with_updates_and_news">Будьте в курсе новостей и обновлений.</string>
     <string name="submit">Отправить</string>
     <string name="subscribe">Подписаться</string>
