@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import pl.cuyer.rusthub.domain.model.Flag
@@ -86,7 +87,9 @@ fun AppExposedDropdownMenu(
                                 Image(
                                     painter = painterResource(flag.toDrawable()),
                                     contentDescription = null,
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clearAndSetSemantics {}
                                 )
                             }
                         }
