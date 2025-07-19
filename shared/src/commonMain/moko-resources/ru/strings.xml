@@ -97,6 +97,7 @@
     <string name="forgot_password">Забыли пароль?</string>
     <string name="free">Бесплатно</string>
     <string name="full_access">Полный доступ</string>
+    <string name="full_access_icon">Символ полного доступа</string>
     <string name="general_info">Общая информация</string>
     <string name="get_access_to_all_pro_features">Получите доступ ко всем функциям PRO</string>
     <string name="get_notified_about_all_your_servers">Получайте уведомления обо всех своих серверах.</string>
@@ -219,6 +220,7 @@
     <string name="subscription">Подписка</string>
     <string name="subscription_button">Кнопка подписки</string>
     <string name="support_development">Поддержать разработку</string>
+    <string name="support_development_icon">Символ поддержки разработки</string>
     <string name="terms_conditions">Условия использования</string>
     <string name="faq_lifetime_answer">План Rust Hub Pro Lifetime — единоразовая покупка. Доступ к Rust Hub Pro навсегда. Если у вас уже есть месячная или годовая подписка и вы хотите перейти на Lifetime, не забудьте отменить предыдущую подписку, чтобы избежать двойных списаний.</string>
     <string name="faq_renew_answer">Месячные и годовые планы Rust Hub Pro — это подписки с автопродлением. После отмены подписки вы пользуетесь сервисом до конца оплаченного периода. Lifetime — это разовая покупка.</string>
@@ -235,7 +237,9 @@
     <string name="turn_on_notifications">Включить уведомления</string>
     <string name="or_str">или</string>
     <string name="unlimited_favourites">Неограниченное избранное</string>
+    <string name="unlimited_favourites_icon">Символ безлимитных избранных</string>
     <string name="unlimited_notifications">Безлимитные уведомления</string>
+    <string name="unlimited_notifications_icon">Символ безлимитных уведомлений</string>
     <string name="upgrade">Улучшить</string>
     <string name="upgrade_account">Улучшить аккаунт</string>
     <string name="upgrade_account_button">Кнопка улучшения аккаунта</string>

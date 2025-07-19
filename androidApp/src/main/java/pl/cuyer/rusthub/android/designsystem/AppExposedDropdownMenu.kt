@@ -96,6 +96,7 @@ fun AppExposedDropdownMenu(
                     trailingIcon = {
                         Flag.fromDisplayName(option)?.let { flag ->
                             if (label != stringResource(SharedRes.strings.region)) {
+                                // Flag icon is decorative when label is not region
                                 Image(
                                     painter = painterResource(flag.toDrawable()),
                                     contentDescription = null,

@@ -43,6 +43,7 @@ fun AppSwitch(
         },
         thumbContent = {
             if (checked) {
+                // Decorative check mark shown inside the switch
                 Icon(
                     imageVector = Icons.Filled.Check,
                     contentDescription = null,

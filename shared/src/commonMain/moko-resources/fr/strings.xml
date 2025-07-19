@@ -97,6 +97,7 @@
     <string name="forgot_password">Mot de passe oublié?</string>
     <string name="free">Gratuit</string>
     <string name="full_access">Accès complet</string>
+    <string name="full_access_icon">Symbole d'accès complet</string>
     <string name="general_info">Informations générales</string>
     <string name="get_access_to_all_pro_features">Accédez à toutes les fonctionnalités PRO</string>
     <string name="get_notified_about_all_your_servers">Recevez des notifications sur tous vos serveurs.</string>
@@ -219,6 +220,7 @@
     <string name="subscription">Abonnement</string>
     <string name="subscription_button">Bouton d’abonnement</string>
     <string name="support_development">Soutenir le développement</string>
+    <string name="support_development_icon">Symbole de soutien au développement</string>
     <string name="terms_conditions">Conditions générales</string>
     <string name="faq_lifetime_answer">Le plan Rust Hub Pro Lifetime est un achat unique. Vous aurez un accès à vie à Rust Hub Pro.\n\nSi vous avez déjà un abonnement mensuel ou annuel et que vous souhaitez passer au Lifetime, pensez à annuler votre ancien abonnement pour éviter toute facturation récurrente.</string>
     <string name="faq_renew_answer">Les formules mensuelles et annuelles de Rust Hub Pro sont des abonnements qui se renouvellent automatiquement. Après annulation, vous gardez l'accès à Rust Hub Pro jusqu'à la fin de la période en cours. La formule Lifetime est un achat unique.</string>
@@ -235,7 +237,9 @@
     <string name="turn_on_notifications">Activer les notifications</string>
     <string name="or_str">ou</string>
     <string name="unlimited_favourites">Favoris illimités</string>
+    <string name="unlimited_favourites_icon">Symbole de favoris illimités</string>
     <string name="unlimited_notifications">Notifications illimitées</string>
+    <string name="unlimited_notifications_icon">Symbole de notifications illimitées</string>
     <string name="upgrade">Améliorer</string>
     <string name="upgrade_account">Améliorer le compte</string>
     <string name="upgrade_account_button">Bouton d’amélioration de compte</string>
