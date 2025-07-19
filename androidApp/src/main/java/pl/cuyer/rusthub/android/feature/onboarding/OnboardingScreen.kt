@@ -76,6 +76,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -225,6 +227,13 @@ private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: Onboa
                             color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                             shape = CircleShape
                         )
+                        .semantics {
+                            contentDescription = stringResource(
+                                SharedRes.strings.page_indicator,
+                                index + 1,
+                                features.size
+                            )
+                        }
                 )
             }
         }
@@ -299,6 +308,13 @@ private fun OnboardingContentExpanded(
                                 else MaterialTheme.colorScheme.onSurfaceVariant,
                                 shape = CircleShape
                             )
+                            .semantics {
+                                contentDescription = stringResource(
+                                    SharedRes.strings.page_indicator,
+                                    index + 1,
+                                    features.size
+                                )
+                            }
                     )
                 }
             }

@@ -155,6 +155,7 @@
     <string name="pro" translatable="false">PRO</string>
     <string name="pve" translatable="false">PVE</string>
     <string name="padlock_icon">Иконка замка</string>
+    <string name="page_indicator">Страница %1$d из %2$d</string>
     <string name="password">Пароль</string>
     <string name="pay_once">Оплата один раз</string>
     <string name="players">Игроки</string>
