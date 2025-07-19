@@ -298,4 +298,5 @@
     <string name="email_not_confirmed">Email not confirmed</string>
     <string name="resend">Resend</string>
     <string name="error_fetching_server_data">An error occurred while fetching data about the server.</string>
+    <string name="query_cannot_be_empty">Enter the server name.</string>
 </resources>

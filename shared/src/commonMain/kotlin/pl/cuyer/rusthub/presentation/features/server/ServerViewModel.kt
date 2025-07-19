@@ -198,20 +198,24 @@ class ServerViewModel(
     }
 
     private fun handleSearch(query: String) {
-        coroutineScope.launch {
-            runCatching {
-                saveSearchQueryUseCase(
-                    SearchQuery(
-                        query = query,
-                        timestamp = System.now(),
-                        id = null
+        if (query.isNotEmpty()) {
+            coroutineScope.launch {
+                runCatching {
+                    saveSearchQueryUseCase(
+                        SearchQuery(
+                            query = query,
+                            timestamp = System.now(),
+                            id = null
+                        )
                     )
-                )
-            }.onFailure {
-                sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_search))
-            }.onSuccess {
-                queryFlow.update { query }
+                }.onFailure {
+                    sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_search))
+                }.onSuccess {
+                    queryFlow.update { query }
+                }
             }
+        } else {
+            sendSnackbarEvent(stringProvider.get(SharedRes.strings.query_cannot_be_empty))
         }
     }
 

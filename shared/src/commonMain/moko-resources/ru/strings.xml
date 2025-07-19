@@ -297,4 +297,5 @@
     <string name="email_not_confirmed">E-mail не подтверждён</string>
     <string name="resend">Отправить ещё раз</string>
     <string name="error_fetching_server_data">Ошибка при получении данных о сервере.</string>
+    <string name="query_cannot_be_empty">Введите имя сервера.</string>
 </resources>

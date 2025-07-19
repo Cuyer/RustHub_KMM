@@ -297,4 +297,5 @@
     <string name="email_not_confirmed">E-Mail nicht bestätigt</string>
     <string name="resend">Erneut senden</string>
     <string name="error_fetching_server_data">Beim Laden der Serverdaten ist ein Fehler aufgetreten.</string>
+    <string name="query_cannot_be_empty">Bitte gib einen Servernamen ein.</string>
 </resources>
