@@ -25,14 +25,16 @@ fun AppSwitch(
     onCheckedChange: (Boolean) -> Unit
 ) {
     var checked by remember(isChecked) { mutableStateOf(isChecked) }
+    val sd = if (checked) {
+        stringResource(SharedRes.strings.enabled)
+    } else {
+        stringResource(SharedRes.strings.disabled)
+    }
+
     Switch(
         modifier = Modifier.semantics {
             role = Role.Switch
-            stateDescription = if (checked) {
-                stringResource(SharedRes.strings.enabled)
-            } else {
-                stringResource(SharedRes.strings.disabled)
-            }
+            stateDescription = sd
         },
         checked = checked,
         onCheckedChange = {

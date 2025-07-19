@@ -36,15 +36,16 @@ fun PulsatingCircle(
     val coreColor = remember(isOnline) {
         if (isOnline) Color(0xFF00C853) else Color(0xFFF44336)
     }
+    val cd =  if (isOnline) {
+        stringResource(SharedRes.strings.online)
+    } else {
+        stringResource(SharedRes.strings.offline)
+    }
     Canvas(
         modifier = modifier
             .size(12.dp)
             .semantics {
-                contentDescription = if (isOnline) {
-                    stringResource(SharedRes.strings.online)
-                } else {
-                    stringResource(SharedRes.strings.offline)
-                }
+                contentDescription =cd
             }
     ) {
         val center = this.center

@@ -47,7 +47,10 @@ fun ServerWebsite(
                 modifier = Modifier
                     .semantics {
                         role = Role.Button
-                        onClick(label = openWebsiteLabel) {}
+                        onClick(label = openWebsiteLabel) {
+                            uriHandler.openUri(website)
+                            true
+                        }
                     }
                     .clickable(onClickLabel = openWebsiteLabel) {
                         uriHandler.openUri(website)
