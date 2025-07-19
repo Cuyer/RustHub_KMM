@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.android.feature.server
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -62,6 +63,7 @@ import dev.icerock.moko.permissions.compose.BindEffect
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.compose.koinInject
+import pl.cuyer.rusthub.android.designsystem.MapDialog
 import pl.cuyer.rusthub.android.designsystem.NotificationInfoDialog
 import pl.cuyer.rusthub.android.designsystem.ServerDetail
 import pl.cuyer.rusthub.android.designsystem.ServerWebsite
@@ -105,6 +107,14 @@ fun ServerDetailsScreen(
             onConfirm = { onAction(ServerDetailsAction.OnSubscribe) },
             onDismiss = { onAction(ServerDetailsAction.OnDismissNotificationInfo) }
         )
+    }
+
+    state.details?.mapImage?.let { mapUrl ->
+        if (state.showMap) {
+            MapDialog(mapUrl = mapUrl) {
+                onAction(ServerDetailsAction.OnDismissMap)
+            }
+        }
     }
 
     Scaffold(
@@ -473,13 +483,17 @@ fun ServerDetailsScreen(
 
                         it.mapImage?.let {
                             AsyncImage(
-                                modifier = Modifier.padding(
-                                    start = spacing.medium,
-                                    end = spacing.medium,
-                                    bottom = spacing.medium
-                                ),
+                                modifier = Modifier
+                                    .padding(
+                                        start = spacing.medium,
+                                        end = spacing.medium,
+                                        bottom = spacing.medium
+                                    )
+                                    .clickable { onAction(ServerDetailsAction.OnShowMap) },
                                 model = it,
-                                contentDescription = stringResource(SharedRes.strings.rust_map_image)
+                                contentDescription = stringResource(
+                                    SharedRes.strings.rust_map_image
+                                )
                             )
                         }
                     }

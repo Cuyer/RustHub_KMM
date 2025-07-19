@@ -93,6 +93,8 @@ class ServerDetailsViewModel(
             ServerDetailsAction.OnDismissNotificationInfo -> showNotificationInfo(false)
             ServerDetailsAction.OnSubscribe -> handleSubscribeAction()
             ServerDetailsAction.OnShare -> shareServer()
+            ServerDetailsAction.OnShowMap -> showMapDialog(true)
+            ServerDetailsAction.OnDismissMap -> showMapDialog(false)
         }
     }
 
@@ -270,6 +272,14 @@ class ServerDetailsViewModel(
         _state.update {
             it.copy(
                 showNotificationInfo = show
+            )
+        }
+    }
+
+    private fun showMapDialog(show: Boolean) {
+        _state.update {
+            it.copy(
+                showMap = show
             )
         }
     }
