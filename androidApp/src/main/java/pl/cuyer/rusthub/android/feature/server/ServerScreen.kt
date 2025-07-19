@@ -245,7 +245,8 @@ fun ServerScreen(
                                                     item.name ?: ""
                                                 )
                                             )
-                                        }
+                                        },
+                                        onClickLabel = stringResource(SharedRes.strings.view_details)
                                     ),
                                 serverName = item.name.orEmpty(),
                                 flag = item.serverFlag.toDrawable(),
