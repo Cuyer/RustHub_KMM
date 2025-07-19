@@ -155,10 +155,7 @@ class CredentialsViewModel(
                                 )
                             }
                         }
-                        is Result.Error -> showErrorSnackbar(
-                            result.exception.message
-                                ?: stringProvider.get(SharedRes.strings.unable_to_get_client_id)
-                        )
+                        is Result.Error -> showErrorSnackbar(result.exception.toUserMessage(stringProvider))
                     }
                 }
         }
