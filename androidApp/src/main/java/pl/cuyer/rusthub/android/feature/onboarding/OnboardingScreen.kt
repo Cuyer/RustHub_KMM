@@ -219,6 +219,11 @@ private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: Onboa
             verticalAlignment = Alignment.CenterVertically
         ) {
             repeat(features.size) { index ->
+                val cd = stringResource(
+                    SharedRes.strings.page_indicator,
+                    index + 1,
+                    features.size
+                )
                 val selected = pagerState.currentPage == index
                 Box(
                     modifier = Modifier
@@ -228,11 +233,7 @@ private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: Onboa
                             shape = CircleShape
                         )
                         .semantics {
-                            contentDescription = stringResource(
-                                SharedRes.strings.page_indicator,
-                                index + 1,
-                                features.size
-                            )
+                            contentDescription = cd
                         }
                 )
             }
@@ -300,6 +301,11 @@ private fun OnboardingContentExpanded(
             Row(horizontalArrangement = Arrangement.spacedBy(spacing.xsmall)) {
                 repeat(features.size) { index ->
                     val selected = pagerState.currentPage == index
+                    val cd = stringResource(
+                        SharedRes.strings.page_indicator,
+                        index + 1,
+                        features.size
+                    )
                     Box(
                         modifier = Modifier
                             .size(if (selected) 8.dp else 6.dp)
@@ -309,11 +315,7 @@ private fun OnboardingContentExpanded(
                                 shape = CircleShape
                             )
                             .semantics {
-                                contentDescription = stringResource(
-                                    SharedRes.strings.page_indicator,
-                                    index + 1,
-                                    features.size
-                                )
+                                contentDescription = cd
                             }
                     )
                 }
