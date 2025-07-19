@@ -190,11 +190,14 @@
     <string name="seed" translatable="false">Seed</string>
     <string name="send_email">Отправить e-mail</string>
     <string name="server_flag">Флаг сервера</string>
+    <string name="server_header_image">Изображение заголовка сервера</string>
     <string name="servers">Серверы</string>
     <string name="settings">Настройки</string>
     <string name="share">Поделиться</string>
     <string name="show_or_hide_password">Показать/скрыть пароль</string>
     <string name="show_password">Показать пароль</string>
+    <string name="show_answer">Показать ответ</string>
+    <string name="hide_answer">Скрыть ответ</string>
     <string name="smart_filters">Умные фильтры</string>
     <string name="status">Статус</string>
     <string name="stay_up_to_date_with_updates_and_news">Будьте в курсе новостей и обновлений.</string>

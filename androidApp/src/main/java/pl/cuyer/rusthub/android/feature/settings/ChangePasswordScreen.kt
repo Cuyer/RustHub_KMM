@@ -92,7 +92,7 @@ fun ChangePasswordScreen(
                         Icon(
                             tint = contentColorFor(TopAppBarDefaults.topAppBarColors().containerColor),
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = null
+                            contentDescription = stringResource(SharedRes.strings.navigate_up)
                         )
                     }
                 }
