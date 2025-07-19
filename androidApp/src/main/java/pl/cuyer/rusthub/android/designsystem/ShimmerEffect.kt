@@ -13,6 +13,7 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.semantics.clearAndSetSemantics
 
 fun Modifier.shimmer(): Modifier = composed {
     val transition = rememberInfiniteTransition(label = "shimmer")
@@ -37,4 +38,5 @@ fun Modifier.shimmer(): Modifier = composed {
     )
 
     background(brush, shape = RectangleShape)
+        .clearAndSetSemantics {}
 }
