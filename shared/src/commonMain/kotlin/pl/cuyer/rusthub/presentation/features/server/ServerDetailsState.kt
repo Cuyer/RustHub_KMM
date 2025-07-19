@@ -7,5 +7,6 @@ data class ServerDetailsState(
     val isLoading: Boolean = true,
     val serverId: Long? = null,
     val serverName: String? = null,
-    val showNotificationInfo: Boolean = false
+    val showNotificationInfo: Boolean = false,
+    val showMap: Boolean = false
 )
