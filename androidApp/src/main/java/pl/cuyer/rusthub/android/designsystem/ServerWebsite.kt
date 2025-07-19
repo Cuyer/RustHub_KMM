@@ -8,9 +8,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import pl.cuyer.rusthub.android.theme.Spacing
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
@@ -27,6 +30,7 @@ fun ServerWebsite(
 ) {
     if (website.isNotBlank()) {
         val uriHandler = LocalUriHandler.current
+        val openWebsiteLabel = stringResource(SharedRes.strings.open_website)
 
         Row(modifier = modifier.padding(spacing.medium)) {
             Text(
@@ -40,9 +44,14 @@ fun ServerWebsite(
                 color = urlColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.clickable {
-                    uriHandler.openUri(website)
-                }
+                modifier = Modifier
+                    .semantics {
+                        role = Role.Button
+                        onClick(label = openWebsiteLabel) {}
+                    }
+                    .clickable(onClickLabel = openWebsiteLabel) {
+                        uriHandler.openUri(website)
+                    }
             )
         }
     }
