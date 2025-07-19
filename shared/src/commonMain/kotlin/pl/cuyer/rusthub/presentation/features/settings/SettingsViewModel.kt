@@ -20,6 +20,7 @@ import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.AuthProvider
+import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.model.User
 import pl.cuyer.rusthub.domain.usecase.GetUserPreferencesUseCase
@@ -187,12 +188,8 @@ class SettingsViewModel(
         }
     }
 
-    private fun showSubscriptionDialog(show: Boolean) {
-        _state.update {
-            it.copy(
-                showSubscriptionDialog = show
-            )
-        }
+    private fun changeLanguage(language: Language) {
+
     }
 
     private fun openPrivacyPolicy() {

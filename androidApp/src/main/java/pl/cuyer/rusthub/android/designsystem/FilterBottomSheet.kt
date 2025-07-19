@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,6 +30,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -148,9 +150,9 @@ fun FilterBottomSheet(
                             )
                             Spacer(Modifier.height(spacing.medium))
                             AppButton(
-                                colors = ButtonDefaults.elevatedButtonColors().copy(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                colors = ButtonDefaults.elevatedButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    contentColor = contentColorFor(MaterialTheme.colorScheme.onPrimaryContainer)
                                 ),
                                 onClick = {
                                     onAction(ServerAction.OnSaveFilters(filters = it.toDomain(stringProvider)))
@@ -164,7 +166,7 @@ fun FilterBottomSheet(
                             }
                             AppOutlinedButton(
                                 colors = ButtonDefaults.outlinedButtonColors().copy(
-                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                    contentColor = contentColorFor(BottomSheetDefaults.ContainerColor)
                                 ),
                                 onClick = {
                                     onAction(ServerAction.OnClearFilters)

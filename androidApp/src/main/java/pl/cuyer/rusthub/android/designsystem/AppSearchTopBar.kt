@@ -47,6 +47,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopSearchBar
+import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -235,8 +236,8 @@ fun RustSearchBarTopAppBar(
                     }
                 }
             }
-            item {
-                AnimatedVisibility(visible = searchQueryUi.isNotEmpty()) {
+            if (searchQueryUi.isNotEmpty()) {
+                item {
                     Row(
                         modifier = Modifier
                             .animateItem()
@@ -247,12 +248,13 @@ fun RustSearchBarTopAppBar(
                         AppButton(
                             onClick = {
                                 onDelete("")
+                                textFieldState.setTextAndPlaceCursorAtEnd("")
                                 coroutineScope.launch { searchBarState.animateToCollapsed() }
                             },
-                            colors = ButtonDefaults.elevatedButtonColors().copy(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
+                            colors = ButtonDefaults.elevatedButtonColors(
+                                containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                contentColor = contentColorFor(MaterialTheme.colorScheme.onPrimaryContainer)
+                            ),
                         ) {
                             Text(stringResource(SharedRes.strings.clear_search_history))
                         }

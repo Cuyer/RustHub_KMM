@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.android.feature.settings
 
 import android.app.Activity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,12 +46,17 @@ import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.util.composeUtil.rememberCurrentLanguage
+import pl.cuyer.rusthub.android.util.composeUtil.setLanguage
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.Theme
@@ -62,6 +68,7 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.AppInfo
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
+import java.util.Locale
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class,
@@ -158,10 +165,13 @@ fun SettingsScreen(
                 )
             }
             if (showLanguageSheet) {
+                val currentLanguage by rememberCurrentLanguage()
                 LanguageBottomSheet(
                     sheetState = languageSheetState,
-                    current = Language.ENGLISH,
-                    onSelect = { },
+                    current = currentLanguage,
+                    onSelect = {
+                        setLanguage(it)
+                    },
                     onDismiss = { showLanguageSheet = false }
                 )
             }
