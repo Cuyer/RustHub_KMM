@@ -312,6 +312,9 @@ fun NavigationRoot(startDestination: NavKey) {
     }
 
     val current = backStack.lastOrNull()
+    LaunchedEffect(current) {
+        snackbarHostState.currentSnackbarData?.dismiss()
+    }
     val showNav = current is ServerList || current is ServerDetails || current is Settings
 
 
