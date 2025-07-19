@@ -29,10 +29,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -125,7 +127,8 @@ fun ServerDetailsScreen(
                     val rotation by animateFloatAsState(if (expanded) 90f else 0f)
                     IconButton(onClick = { expanded = !expanded }) {
                         Icon(
-                            Icons.Default.MoreVert,
+                            tint = contentColorFor(SearchBarDefaults.colors().containerColor),
+                            imageVector = Icons.Default.MoreVert,
                             contentDescription = null,
                             modifier = Modifier.rotate(rotation)
                         )
@@ -262,6 +265,7 @@ fun ServerDetailsScreen(
                                     }
                                 ) {
                                     Icon(
+                                        tint = contentColorFor(TopAppBarDefaults.topAppBarColors().containerColor),
                                         imageVector = Icons.Default.ContentCopy,
                                         contentDescription = stringResource(SharedRes.strings.icon_to_copy_ip_address)
                                     )

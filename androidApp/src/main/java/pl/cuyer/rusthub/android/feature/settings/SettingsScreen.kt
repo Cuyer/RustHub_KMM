@@ -25,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -109,9 +110,9 @@ fun SettingsScreen(
                     IconButton(onClick = { onAction(SettingsAction.OnLogout) }) {
                         val icon = Icons.AutoMirrored.Default.Logout
                         Icon(
-                            icon,
-                            contentDescription =
-                                stringResource(SharedRes.strings.logout_button)
+                            tint = contentColorFor(TopAppBarDefaults.topAppBarColors().containerColor),
+                            imageVector = icon,
+                            contentDescription = stringResource(SharedRes.strings.logout_button)
                         )
                     }
                 },

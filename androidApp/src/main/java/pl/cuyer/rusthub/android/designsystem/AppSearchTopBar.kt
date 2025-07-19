@@ -117,7 +117,7 @@ fun RustSearchBarTopAppBar(
                         }
                     ) {
                         Icon(
-                            Icons.AutoMirrored.Default.ArrowBack,
+                            Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(SharedRes.strings.back)
                         )
                     }
@@ -159,7 +159,8 @@ fun RustSearchBarTopAppBar(
                     ) {
                         IconButton(onClick = onOpenFilters) {
                             Icon(
-                                Icons.Default.FilterList,
+                                tint = contentColorFor(SearchBarDefaults.colors().containerColor),
+                                imageVector = Icons.Default.FilterList,
                                 contentDescription = stringResource(SharedRes.strings.open_filters)
                             )
                         }
