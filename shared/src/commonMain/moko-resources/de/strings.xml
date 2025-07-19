@@ -200,6 +200,8 @@
     <string name="hide_answer">Antwort ausblenden</string>
     <string name="smart_filters">Intelligente Filter</string>
     <string name="status">Status</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
     <string name="stay_up_to_date_with_updates_and_news">Bleibe mit Updates und Neuigkeiten auf dem Laufenden.</string>
     <string name="submit">Senden</string>
     <string name="subscribe">Abonnieren</string>

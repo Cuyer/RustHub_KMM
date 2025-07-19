@@ -201,6 +201,8 @@
     <string name="hide_answer">Hide answer</string>
     <string name="smart_filters">Smart Filters</string>
     <string name="status">Status</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
     <string name="stay_up_to_date_with_updates_and_news">Stay up to date with updates and news.</string>
     <string name="submit">Submit</string>
     <string name="subscribe">Subscribe</string>
