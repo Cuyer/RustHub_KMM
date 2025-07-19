@@ -41,6 +41,7 @@ import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -132,19 +133,21 @@ fun ServerListItemShimmer(modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .height(24.dp)
-                        .shimmer()
-                )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .height(24.dp)
+                            .shimmer()
+                            .clearAndSetSemantics {}
+                    )
 
-                Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clip(RectangleShape)
-                        .shimmer()
-                )
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(RectangleShape)
+                            .shimmer()
+                            .clearAndSetSemantics {}
+                    )
             }
 
             Row(
@@ -161,6 +164,7 @@ fun ServerListItemShimmer(modifier: Modifier = Modifier) {
                             .width(60.dp)
                             .clip(RectangleShape)
                             .shimmer()
+                            .clearAndSetSemantics {}
                     )
                 }
             }
@@ -175,6 +179,7 @@ fun ServerListItemShimmer(modifier: Modifier = Modifier) {
                             .height(16.dp)
                             .clip(RoundedCornerShape(4.dp))
                             .shimmer()
+                            .clearAndSetSemantics {}
                     )
                 }
             }
