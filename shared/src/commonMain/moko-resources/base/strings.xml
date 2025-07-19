@@ -241,6 +241,7 @@
     <string name="username">Username</string>
     <string name="view_details">View Details</string>
     <string name="website">Website</string>
+    <string name="open_website">Open website</string>
     <string name="weekly">Weekly</string>
     <string name="biweekly">Biweekly</string>
     <string name="welcome_back">Welcome back!</string>

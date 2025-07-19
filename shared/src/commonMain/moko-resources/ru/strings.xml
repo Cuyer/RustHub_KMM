@@ -239,6 +239,7 @@
     <string name="username">Имя пользователя</string>
     <string name="view_details">Детали сервера</string>
     <string name="website">Сайт</string>
+    <string name="open_website">Открыть сайт</string>
     <string name="weekly">Еженедельно</string>
     <string name="biweekly">Раз в две недели</string>
     <string name="welcome_back">С возвращением!</string>

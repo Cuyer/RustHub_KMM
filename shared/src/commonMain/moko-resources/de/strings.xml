@@ -239,6 +239,7 @@
     <string name="username">Benutzername</string>
     <string name="view_details">Serverdetails</string>
     <string name="website">Website</string>
+    <string name="open_website">Webseite öffnen</string>
     <string name="weekly">Wöchentlich</string>
     <string name="biweekly">Zweiwöchentlich</string>
     <string name="welcome_back">Willkommen zurück!</string>
