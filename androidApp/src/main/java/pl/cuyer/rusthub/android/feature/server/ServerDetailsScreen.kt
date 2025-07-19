@@ -4,10 +4,12 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -73,6 +75,7 @@ import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import androidx.compose.ui.platform.LocalContext
+import pl.cuyer.rusthub.android.designsystem.shimmer
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
