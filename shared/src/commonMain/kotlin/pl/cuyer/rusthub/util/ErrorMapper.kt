@@ -1,6 +1,5 @@
 package pl.cuyer.rusthub.util
 
-import kotlinx.serialization.SerializationException
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.domain.exception.AnonymousUpgradeException
 import pl.cuyer.rusthub.domain.exception.BadRequestException
@@ -40,7 +39,6 @@ fun Throwable.toUserMessage(stringProvider: StringProvider): String? {
         is ServersQueryException -> stringProvider.get(SharedRes.strings.error_fetching_servers)
         is FavoriteLimitException, is SubscriptionLimitException -> null
         is HttpStatusException -> stringProvider.get(SharedRes.strings.error_unknown)
-        is SerializationException -> stringProvider.get(SharedRes.strings.error_unknown)
         else -> this.message ?: stringProvider.get(SharedRes.strings.error_unknown)
     }
 }

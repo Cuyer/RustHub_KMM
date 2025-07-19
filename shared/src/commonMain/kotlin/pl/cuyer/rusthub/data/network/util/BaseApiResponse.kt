@@ -15,6 +15,7 @@ import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.data.network.model.ErrorResponse
 import pl.cuyer.rusthub.data.network.util.ApiExceptionMapper
+import pl.cuyer.rusthub.domain.exception.ServiceUnavailableException
 import kotlin.coroutines.coroutineContext
 
 abstract class BaseApiResponse(
@@ -29,9 +30,10 @@ abstract class BaseApiResponse(
                 val data: T = response.body()
                 emit(success(data))
             } else {
+                val contentType = response.headers["Content-Type"]
                 val body = response.bodyAsText()
                 val exception = try {
-                    if (body.isNotBlank()) {
+                    if (contentType?.contains("application/json", ignoreCase = true) == true && body.isNotBlank()) {
                         val errorResponse = json.decodeFromString<ErrorResponse>(body)
                         ApiExceptionMapper.fromErrorResponse(errorResponse)
                     } else {
@@ -43,12 +45,10 @@ abstract class BaseApiResponse(
                 emit(Result.Error(exception))
             }
         }.catch { e ->
-            if (e is CancellationException) {
-                throw e
-            } else {
-                emit(error(ApiExceptionMapper.fromThrowable(e)))
-            }
+            if (e is CancellationException) throw e
+            else emit(error(ApiExceptionMapper.fromThrowable(e)))
         }
+
     fun <T> success(success: T): Result.Success<T> = Result.Success(success)
     fun <T> error(exception: Throwable): Result<T> =
         Result.Error(exception = exception)

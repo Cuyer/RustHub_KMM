@@ -76,7 +76,6 @@ object ApiExceptionMapper {
             is ConnectTimeoutException -> TimeoutException("Connection timed out")
             is SocketTimeoutException -> TimeoutException("Connection timed out")
             is TimeoutCancellationException -> TimeoutException("Request timed out")
-            is SerializationException -> SerializationException("Invalid response format")
             // General IO
             is IOException -> NetworkUnavailableException("Network error. Please check your connection.")
 
