@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.work
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -29,6 +30,7 @@ class FavouriteSyncWorker(
         val tasks = operations.map { operation ->
             async {
                 var success = false
+                var throwable: Throwable? = null
                 repository.run {
                     if (operation.isAdd) addFavourite(operation.serverId)
                     else removeFavourite(operation.serverId)
@@ -41,22 +43,34 @@ class FavouriteSyncWorker(
                         }
 
                         is DomainResult.Error -> {
-                            when(result.exception) {
+                            when (result.exception) {
                                 is FavoriteLimitException -> {
                                     syncDataSource.deleteOperation(operation.serverId)
                                     success = true
                                 }
-                                else -> success = false
+                                else -> {
+                                    throwable = result.exception
+                                    success = false
+                                }
                             }
                         }
 
                     }
                 }
-                success
+                if (success) null else Pair(operation, throwable)
             }
         }
 
-        val results = tasks.awaitAll()
-        return@coroutineScope if (results.any { !it }) Result.retry() else Result.success()
+        val results = tasks.awaitAll().filterNotNull()
+        return@coroutineScope if (results.isNotEmpty()) {
+            results.forEach { (operation, throwable) ->
+                Napier.e(
+                    "Failed to sync favourite ${if (operation.isAdd) "add" else "remove"} " +
+                        "for server ${operation.serverId}",
+                    throwable
+                )
+            }
+            Result.retry()
+        } else Result.success()
     }
 }
