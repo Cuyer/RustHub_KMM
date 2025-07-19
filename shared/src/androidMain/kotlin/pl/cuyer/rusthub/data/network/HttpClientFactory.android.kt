@@ -5,6 +5,7 @@ import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
 import android.os.Build
 import com.appmattus.certificatetransparency.certificateTransparencyInterceptor
+import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.authProvider
 import io.ktor.client.plugins.auth.providers.BearerAuthProvider
@@ -20,9 +21,11 @@ import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.io.IOException
 import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.data.network.auth.model.RefreshRequest
 import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
@@ -33,13 +36,10 @@ import pl.cuyer.rusthub.util.BuildType
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import java.util.Locale
+import kotlin.random.Random
 
 private fun useCtLibrary(): Boolean {
     return Build.VERSION.SDK_INT < 36
-}
-
-fun HttpClient.clearBearerToken() {
-    authProvider<BearerAuthProvider>()?.clearToken()
 }
 
 actual class HttpClientFactory actual constructor(
@@ -103,6 +103,11 @@ actual class HttpClientFactory actual constructor(
 
             install(AppCheckPlugin) {
                 provider = appCheckTokenProvider
+            }
+
+            install(HttpRequestRetry) {
+                retryOnServerErrors(maxRetries = 3)
+                exponentialDelay()
             }
 
             defaultRequest {
