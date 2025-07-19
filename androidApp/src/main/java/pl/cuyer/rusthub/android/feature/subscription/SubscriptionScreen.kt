@@ -268,7 +268,9 @@ private fun SubscriptionMainContent(
             verticalArrangement = Arrangement.spacedBy(spacing.small)
         ) {
             Image(
-                modifier = Modifier.size(200.dp),
+                modifier = Modifier
+                    .size(200.dp)
+                    .semantics { invisibleToUser() },
                 painter = painterResource(benefit.image),
                 contentDescription = null
             )
@@ -420,7 +422,7 @@ private fun ComparisonSection() {
                 Text(stringResource(SharedRes.strings.three_max), modifier = Modifier.weight(0.25f), textAlign = TextAlign.Center)
                 Icon(
                     imageVector = Icons.Default.Check,
-                    contentDescription = null,
+                    contentDescription = stringResource(SharedRes.strings.yes),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.weight(0.25f)
                 )
@@ -435,7 +437,7 @@ private fun ComparisonSection() {
                 Text(stringResource(SharedRes.strings.three_max), modifier = Modifier.weight(0.25f), textAlign = TextAlign.Center)
                 Icon(
                     imageVector = Icons.Default.Check,
-                    contentDescription = null,
+                    contentDescription = stringResource(SharedRes.strings.yes),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.weight(0.25f)
                 )
