@@ -66,7 +66,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.invisibleToUser
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -482,7 +485,18 @@ private fun FaqSection() {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { expanded = !expanded }
+                            .toggleable(
+                                value = expanded,
+                                role = Role.Button,
+                                onValueChange = { expanded = !expanded }
+                            )
+                            .semantics {
+                                stateDescription = if (expanded) {
+                                    stringResource(SharedRes.strings.expanded)
+                                } else {
+                                    stringResource(SharedRes.strings.collapsed)
+                                }
+                            }
                             .padding(spacing.medium)
                             .animateBounds(this@LookaheadScope),
                     ) {
@@ -499,13 +513,10 @@ private fun FaqSection() {
 
                             Icon(
                                 modifier = Modifier
-                                    .rotate(rotation),
+                                    .rotate(rotation)
+                                    .semantics { hideFromAccessibility() },
                                 imageVector = Icons.Default.ExpandMore,
-                                contentDescription = if (expanded) {
-                                    stringResource(SharedRes.strings.hide_answer)
-                                } else {
-                                    stringResource(SharedRes.strings.show_answer)
-                                }
+                                contentDescription = null
                             )
                         }
                         AnimatedVisibility(expanded) {
