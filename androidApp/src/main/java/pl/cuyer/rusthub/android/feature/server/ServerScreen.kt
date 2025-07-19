@@ -82,7 +82,6 @@ import pl.cuyer.rusthub.android.util.HandlePagingItems
 import pl.cuyer.rusthub.domain.exception.NetworkUnavailableException
 import pl.cuyer.rusthub.domain.exception.TimeoutException
 import pl.cuyer.rusthub.domain.exception.ServiceUnavailableException
-import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
 import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.Theme
@@ -249,7 +248,7 @@ fun ServerScreen(
                                         onClickLabel = stringResource(SharedRes.strings.view_details)
                                     ),
                                 serverName = item.name.orEmpty(),
-                                flag = item.serverFlag.toDrawable(),
+                                flag = item.serverFlag,
                                 labels = labels,
                                 details = details,
                                 isOnline = item.serverStatus == ServerStatus.ONLINE

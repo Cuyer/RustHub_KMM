@@ -1,7 +1,7 @@
 package pl.cuyer.rusthub.android.designsystem
 
 import android.content.res.Configuration
-import androidx.annotation.DrawableRes
+import pl.cuyer.rusthub.domain.model.Flag
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -38,8 +37,6 @@ import androidx.compose.ui.unit.dp
 import pl.cuyer.rusthub.android.model.Label
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
-import pl.cuyer.rusthub.common.getImageByFileName
-import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -51,7 +48,7 @@ fun ServerListItem(
     modifier: Modifier = Modifier,
     serverName: String,
     isOnline: Boolean,
-    @DrawableRes flag: Int,
+    flag: Flag?,
     labels: List<Label>,
     details: Map<String, String>
 ) {
@@ -102,8 +99,8 @@ fun ServerListItem(
                     Image(
                         modifier = modifier
                             .size(24.dp),
-                        painter = painterResource(flag),
-                        contentDescription = stringResource(SharedRes.strings.server_flag),
+                        painter = painterResource(flag.toDrawable()),
+                        contentDescription = flag?.displayName ?: stringResource(SharedRes.strings.server_flag),
                         contentScale = ContentScale.Fit
                     )
                 }
@@ -215,7 +212,7 @@ private fun ServerListItemPreview() {
                         text = "Weekly"
                     )
                 ),
-                flag = getImageByFileName("gb").drawableResId,
+                flag = Flag.GB,
                 isOnline = true,
                 details = mapOf(
                     "Wipe" to "4hrs ago",

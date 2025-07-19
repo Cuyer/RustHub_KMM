@@ -35,6 +35,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.minimumTouchTargetSize
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -114,7 +115,8 @@ fun RustSearchBarTopAppBar(
                             coroutineScope.launch {
                                 searchBarState.animateToCollapsed()
                             }
-                        }
+                        },
+                        modifier = Modifier.minimumTouchTargetSize()
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
@@ -131,7 +133,10 @@ fun RustSearchBarTopAppBar(
             trailingIcon = {
                 Row {
                     if (textFieldState.text.isNotEmpty()) {
-                        IconButton(onClick = { textFieldState.setTextAndPlaceCursorAtEnd("") }) {
+                        IconButton(
+                            onClick = { textFieldState.setTextAndPlaceCursorAtEnd("") },
+                            modifier = Modifier.minimumTouchTargetSize()
+                        ) {
                             Icon(
                                 Icons.Default.Close,
                                 contentDescription = stringResource(SharedRes.strings.clear)
@@ -157,7 +162,10 @@ fun RustSearchBarTopAppBar(
                         ),
                         visible = searchBarState.currentValue == SearchBarValue.Collapsed && textFieldState.text.isEmpty()
                     ) {
-                        IconButton(onClick = onOpenFilters) {
+                        IconButton(
+                            onClick = onOpenFilters,
+                            modifier = Modifier.minimumTouchTargetSize()
+                        ) {
                             Icon(
                                 tint = contentColorFor(SearchBarDefaults.colors().containerColor),
                                 imageVector = Icons.Default.FilterList,

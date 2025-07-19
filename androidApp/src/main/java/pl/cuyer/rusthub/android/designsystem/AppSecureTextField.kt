@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.minimumTouchTargetSize
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -91,7 +92,10 @@ fun AppSecureTextField(
         trailingIcon = {
             Crossfade(targetState = value.isNotEmpty()) { hasText ->
                 if (hasText) {
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    IconButton(
+                        onClick = { passwordVisible = !passwordVisible },
+                        modifier = Modifier.minimumTouchTargetSize()
+                    ) {
                         Crossfade(
                             targetState = passwordVisible,
                             label = stringResource(SharedRes.strings.show_or_hide_password)

@@ -73,6 +73,8 @@
     <string name="demo_with_icon">Switch with icon</string>
     <string name="description">Description</string>
     <string name="disabled">Disabled</string>
+    <string name="expanded">Expanded</string>
+    <string name="collapsed">Collapsed</string>
     <string name="e_mail">Email</string>
     <string name="enable_notifications">Enable notifications</string>
     <string name="enabled">Enabled</string>
