@@ -2,9 +2,14 @@ package pl.cuyer.rusthub.data.network.util
 
 import io.ktor.client.network.sockets.ConnectTimeoutException
 import io.ktor.client.network.sockets.SocketTimeoutException
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.plugins.RedirectResponseException
 import io.ktor.client.plugins.ResponseException
+import io.ktor.client.plugins.ServerResponseException
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.io.IOException
+import kotlinx.serialization.SerializationException
 import pl.cuyer.rusthub.data.network.model.ErrorResponse
 import pl.cuyer.rusthub.domain.exception.AnonymousUpgradeException
 import pl.cuyer.rusthub.domain.exception.FavoriteLimitException
@@ -12,8 +17,6 @@ import pl.cuyer.rusthub.domain.exception.SubscriptionLimitException
 import pl.cuyer.rusthub.domain.exception.FiltersOptionsException
 import pl.cuyer.rusthub.domain.exception.ForbiddenException
 import pl.cuyer.rusthub.domain.exception.HttpStatusException
-import pl.cuyer.rusthub.domain.exception.BadRequestException
-import pl.cuyer.rusthub.domain.exception.InternalServerErrorException
 import pl.cuyer.rusthub.domain.exception.InvalidCredentialsException
 import pl.cuyer.rusthub.domain.exception.InvalidRefreshTokenException
 import pl.cuyer.rusthub.domain.exception.NetworkUnavailableException
@@ -52,24 +55,16 @@ object ApiExceptionMapper {
             SubscriptionLimitException::class.simpleName -> SubscriptionLimitException(
                 errorResponse.message ?: "Subscription limit error"
             )
-            BadRequestException::class.simpleName -> BadRequestException(
-                errorResponse.message ?: "Bad request"
-            )
-            InternalServerErrorException::class.simpleName -> InternalServerErrorException(
-                errorResponse.message ?: "Internal server error"
-            )
             else -> Exception(errorResponse.message)
         }
     }
 
     fun fromStatusCode(statusCode: Int): HttpStatusException {
         return when (statusCode) {
-            400 -> BadRequestException("Bad request")
             401 -> UnauthorizedException("You are not authorized. Please log in again.")
             403 -> ForbiddenException("You don't have permission to perform this action.")
             404 -> NotFoundException("Resource not found.")
             429 -> TooManyRequestsException("You’re doing that too much. Please wait a moment.")
-            500 -> InternalServerErrorException("Internal server error")
             503 -> ServiceUnavailableException("Service temporarily unavailable. Try again later.")
             else -> HttpStatusException("HTTP $statusCode error")
         }
@@ -81,7 +76,7 @@ object ApiExceptionMapper {
             is ConnectTimeoutException -> TimeoutException("Connection timed out")
             is SocketTimeoutException -> TimeoutException("Connection timed out")
             is TimeoutCancellationException -> TimeoutException("Request timed out")
-
+            is SerializationException -> SerializationException("Invalid response format")
             // General IO
             is IOException -> NetworkUnavailableException("Network error. Please check your connection.")
 

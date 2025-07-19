@@ -13,7 +13,7 @@ sealed interface ServerAction {
     data object DeleteSearchQueries : ServerAction
     data class DeleteSearchQueryByQuery(val query: String) : ServerAction
     data object OnClearSearchQuery : ServerAction
-    data class OnError(val message: String): ServerAction
+    data class OnError(val exception: Throwable): ServerAction
     data class OnChangeLoadMoreState(val isLoadingMore: Boolean): ServerAction
     data class OnFilterChange(val filter: ServerFilter): ServerAction
 }

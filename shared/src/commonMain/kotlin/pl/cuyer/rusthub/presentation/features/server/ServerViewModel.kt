@@ -53,6 +53,7 @@ import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.SharedRes
 import kotlinx.datetime.Clock.System
+import pl.cuyer.rusthub.util.toUserMessage
 
 class ServerViewModel(
     private val clipboardHandler: ClipboardHandler,
@@ -89,12 +90,12 @@ class ServerViewModel(
     val paging: Flow<PagingData<ServerInfoUi>> =
         queryFlow
             .flatMapLatest { query ->
-            getPagedServersUseCase(
-                searchQuery = query
-            ).map { pagingData ->
-                pagingData.map { it.toUiModel(stringProvider) }
-            }.flowOn(Dispatchers.Default)
-        }.cachedIn(coroutineScope)
+                getPagedServersUseCase(
+                    searchQuery = query
+                ).map { pagingData ->
+                    pagingData.map { it.toUiModel(stringProvider) }
+                }.flowOn(Dispatchers.Default)
+            }.cachedIn(coroutineScope)
             .catch {
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_fetching_servers))
             }
@@ -135,9 +136,11 @@ class ServerViewModel(
                 stringProvider = stringProvider,
                 maps = filtersOptions?.maps?.map { it.displayName } ?: emptyList(),
                 flags = filtersOptions?.flags?.map { it.displayName } ?: emptyList(),
-                regions = filtersOptions?.regions?.map { it.displayName(stringProvider) } ?: emptyList(),
+                regions = filtersOptions?.regions?.map { it.displayName(stringProvider) }
+                    ?: emptyList(),
                 difficulties = filtersOptions?.difficulty?.map { it.displayName } ?: emptyList(),
-                schedules = filtersOptions?.wipeSchedules?.map { it.displayName(stringProvider) } ?: emptyList(),
+                schedules = filtersOptions?.wipeSchedules?.map { it.displayName(stringProvider) }
+                    ?: emptyList(),
                 playerCount = filtersOptions?.maxPlayerCount ?: 0,
                 groupLimit = filtersOptions?.maxGroupLimit ?: 0,
                 ranking = filtersOptions?.maxRanking ?: 0
@@ -175,7 +178,12 @@ class ServerViewModel(
             is ServerAction.OnClearSearchQuery -> clearSearchQuery()
             is ServerAction.DeleteSearchQueries -> deleteSearchQueries(null)
             is ServerAction.DeleteSearchQueryByQuery -> deleteSearchQueries(action.query)
-            is ServerAction.OnError -> sendSnackbarEvent(action.message)
+            is ServerAction.OnError -> sendSnackbarEvent(
+                action.exception.toUserMessage(stringProvider) ?: stringProvider.get(
+                    SharedRes.strings.error_unknown
+                )
+            )
+
             is ServerAction.OnChangeLoadMoreState -> updateLoadingMore(action.isLoadingMore)
             is ServerAction.OnFilterChange -> updateFilter(action.filter)
         }
@@ -333,4 +341,5 @@ class ServerViewModel(
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_filters))
             }
         }
-    }}
+    }
+}

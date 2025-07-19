@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.data.network.util
 
+import io.github.aakira.napier.Napier
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText

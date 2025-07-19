@@ -271,7 +271,9 @@ fun RustSearchBarTopAppBar(
             inputField = inputField
         ) {
             if (isLoadingSearchHistory) {
-                LoadingIndicator()
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    LoadingIndicator()
+                }
             } else {
                 suggestions()
             }
@@ -282,7 +284,9 @@ fun RustSearchBarTopAppBar(
             inputField = inputField
         ) {
             if (isLoadingSearchHistory) {
-                LoadingIndicator()
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    LoadingIndicator()
+                }
             } else {
                 suggestions()
             }

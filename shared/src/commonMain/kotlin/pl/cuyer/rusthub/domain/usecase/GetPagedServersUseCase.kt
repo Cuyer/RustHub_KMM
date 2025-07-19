@@ -14,6 +14,7 @@ import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerRemoteMediator
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
+import pl.cuyer.rusthub.util.StringProvider
 
 class GetPagedServersUseCase(
     private val dataSource: ServerDataSource,

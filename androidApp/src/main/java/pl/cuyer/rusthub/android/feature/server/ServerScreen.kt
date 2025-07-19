@@ -97,6 +97,7 @@ import java.util.Locale
 import java.util.UUID
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import pl.cuyer.rusthub.domain.exception.ConnectivityException
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class,
@@ -212,19 +213,11 @@ fun ServerScreen(
                     }
                 }
                 onError { error ->
-                    when (error) {
-                        is NetworkUnavailableException, is TimeoutException,
-                        is ServiceUnavailableException -> onAction(
-                            ServerAction.OnError(
-                                stringResource(SharedRes.strings.offline_cached_servers_info)
-                            )
+                    onAction(
+                        ServerAction.OnError(
+                            error
                         )
-                        else -> onAction(
-                            ServerAction.OnError(
-                                error.message ?: stringResource(SharedRes.strings.unknown_error)
-                            )
-                        )
-                    }
+                    )
                 }
                 onSuccess { items ->
                     LazyColumn(
@@ -366,10 +359,13 @@ private fun createDetails(item: ServerInfoUi): Map<String, String> {
         val parsedTimeAgo = when (minutesAgo) {
             in 0..60 ->
                 stringResource(SharedRes.strings.minutes_ago, minutesAgo)
+
             in 61..1440 ->
                 stringResource(SharedRes.strings.hours_ago, minutesAgo / 60)
+
             in 1441..10080 ->
                 stringResource(SharedRes.strings.days_ago, minutesAgo / 1440)
+
             else ->
                 stringResource(SharedRes.strings.weeks_ago, minutesAgo / 10080)
         }
@@ -382,7 +378,7 @@ private fun createDetails(item: ServerInfoUi): Map<String, String> {
     }
     item.cycle?.let {
         val cycleValue = "~ " + String.format(Locale.getDefault(), "%.2f", it) +
-            " " + stringResource(SharedRes.strings.days).trim()
+                " " + stringResource(SharedRes.strings.days).trim()
         details[stringResource(SharedRes.strings.cycle)] = cycleValue
     }
     item.serverCapacity?.let {
@@ -425,7 +421,7 @@ private fun createLabels(item: ServerInfoUi): List<Label> {
             labels.add(
                 Label(
                     text = it.name + " " +
-                        stringResource(SharedRes.strings.wipe)
+                            stringResource(SharedRes.strings.wipe)
                 )
             )
         }

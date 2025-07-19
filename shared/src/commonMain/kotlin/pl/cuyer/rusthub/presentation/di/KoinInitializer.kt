@@ -100,7 +100,6 @@ val appModule = module {
     singleOf(::RemoteKeyDataSourceImpl) bind RemoteKeyDataSource::class
     singleOf(::MessagingTokenClientImpl) bind MessagingTokenRepository::class
     single { MessagingTokenManager(get(), get()) }
-    single { GetPagedServersUseCase(get(), get(), get(), get()) }
     singleOf(::FiltersOptionsClientImpl) bind FiltersOptionsRepository::class
     singleOf(::FiltersOptionsDataSourceImpl) bind FiltersOptionsDataSource::class
     singleOf(::AuthRepositoryImpl) bind AuthRepository::class

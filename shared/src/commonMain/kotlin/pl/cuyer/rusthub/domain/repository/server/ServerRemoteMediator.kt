@@ -17,6 +17,9 @@ import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
 import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
 import kotlinx.datetime.Clock
+import kotlinx.serialization.SerializationException
+import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.toUserMessage
 
 @OptIn(ExperimentalPagingApi::class)
 class ServerRemoteMediator(
@@ -61,7 +64,8 @@ class ServerRemoteMediator(
                 is Result.Error -> {
                     return if (
                         result.exception is ConnectivityException ||
-                        result.exception is ServiceUnavailableException
+                        result.exception is ServiceUnavailableException ||
+                        result.exception is SerializationException
                     ) {
                         MediatorResult.Success(endOfPaginationReached = true)
                     } else {
