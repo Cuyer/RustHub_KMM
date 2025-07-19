@@ -120,6 +120,8 @@
     <string name="french">Französisch</string>
     <string name="russian">Russisch</string>
     <string name="selected">Ausgewählt</string>
+    <string name="plan_selected">Plan ausgewählt</string>
+    <string name="plan_not_selected">Plan nicht ausgewählt</string>
     <string name="last_wipe">Letzter Wipe</string>
     <string name="later">Später</string>
     <string name="let_s_start_with_your_email">Starten wir mit deiner E-Mail</string>
