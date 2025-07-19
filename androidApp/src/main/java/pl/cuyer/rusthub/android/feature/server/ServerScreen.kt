@@ -214,8 +214,16 @@ fun ServerScreen(
                 onError { error ->
                     when (error) {
                         is NetworkUnavailableException, is TimeoutException,
-                        is ServiceUnavailableException -> Unit
-                        else -> onAction(ServerAction.OnError(error.message ?: stringResource(SharedRes.strings.unknown_error)))
+                        is ServiceUnavailableException -> onAction(
+                            ServerAction.OnError(
+                                stringResource(SharedRes.strings.offline_cached_servers_info)
+                            )
+                        )
+                        else -> onAction(
+                            ServerAction.OnError(
+                                error.message ?: stringResource(SharedRes.strings.unknown_error)
+                            )
+                        )
                     }
                 }
                 onSuccess { items ->
