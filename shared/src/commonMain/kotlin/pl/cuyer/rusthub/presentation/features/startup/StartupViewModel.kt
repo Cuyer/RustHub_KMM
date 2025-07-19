@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.io.IOException
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.exception.ConnectivityException
@@ -94,9 +95,7 @@ class StartupViewModel(
             if (user != null && user.provider == AuthProvider.LOCAL) {
                 when (val result = checkEmailConfirmedUseCase().first()) {
                     is Result.Success -> setEmailConfirmedUseCase(result.data)
-                    is Result.Error -> showErrorSnackbar(
-                        result.exception.message ?: stringProvider.get(SharedRes.strings.error_unknown)
-                    )
+                    is Result.Error -> Unit
                 }
             }
             updateStartDestination(user)

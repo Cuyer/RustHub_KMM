@@ -60,11 +60,11 @@ object ApiExceptionMapper {
 
     fun fromStatusCode(statusCode: Int): HttpStatusException {
         return when (statusCode) {
-            401 -> UnauthorizedException("Unauthorized")
-            403 -> ForbiddenException("Forbidden")
-            404 -> NotFoundException("Not found")
-            429 -> TooManyRequestsException("Too many requests")
-            503 -> ServiceUnavailableException("Service unavailable")
+            401 -> UnauthorizedException("You are not authorized. Please log in again.")
+            403 -> ForbiddenException("You don't have permission to perform this action.")
+            404 -> NotFoundException("Resource not found.")
+            429 -> TooManyRequestsException("You’re doing that too much. Please wait a moment.")
+            503 -> ServiceUnavailableException("Service temporarily unavailable. Try again later.")
             else -> HttpStatusException("HTTP $statusCode error")
         }
     }
@@ -80,7 +80,7 @@ object ApiExceptionMapper {
             is TimeoutCancellationException -> TimeoutException("Request timed out")
 
             // General IO
-            is IOException -> NetworkUnavailableException("Network error: ${throwable.message}")
+            is IOException -> NetworkUnavailableException("Network error. Please check your connection.")
 
             else -> {
                 throwable
