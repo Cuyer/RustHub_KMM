@@ -143,7 +143,7 @@ fun ServerDetailsScreen(
                         Icon(
                             tint = contentColorFor(SearchBarDefaults.colors().containerColor),
                             imageVector = Icons.Default.MoreVert,
-                            contentDescription = null,
+                            contentDescription = stringResource(SharedRes.strings.other_options),
                             modifier = Modifier.rotate(rotation)
                         )
                     }
@@ -232,7 +232,9 @@ fun ServerDetailsScreen(
                                         .fillMaxWidth()
                                         .padding(horizontal = spacing.medium),
                                 model = it,
-                                contentDescription = null,
+                                contentDescription = stringResource(
+                                    SharedRes.strings.server_header_image
+                                ),
                                 loading = {
                                     Box(
                                         modifier = Modifier
@@ -316,7 +318,7 @@ fun ServerDetailsScreen(
                                 Flag.fromDisplayName(it.displayName)?.let { flag ->
                                     Image(
                                         painter = painterResource(flag.toDrawable()),
-                                        contentDescription = null,
+                                        contentDescription = flag.displayName,
                                         modifier = Modifier
                                             .size(26.dp)
                                     )

@@ -496,7 +496,11 @@ private fun FaqSection() {
                                 modifier = Modifier
                                     .rotate(rotation),
                                 imageVector = Icons.Default.ExpandMore,
-                                contentDescription = null
+                                contentDescription = if (expanded) {
+                                    stringResource(SharedRes.strings.hide_answer)
+                                } else {
+                                    stringResource(SharedRes.strings.show_answer)
+                                }
                             )
                         }
                         AnimatedVisibility(expanded) {

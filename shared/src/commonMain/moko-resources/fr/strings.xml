@@ -190,11 +190,14 @@
     <string name="seed" translatable="false">Seed</string>
     <string name="send_email">Envoyer un e-mail</string>
     <string name="server_flag">Drapeau du serveur</string>
+    <string name="server_header_image">Image d'en-tête du serveur</string>
     <string name="servers">Serveurs</string>
     <string name="settings">Paramètres</string>
     <string name="share">Partager</string>
     <string name="show_or_hide_password">Afficher/Masquer le mot de passe</string>
     <string name="show_password">Afficher le mot de passe</string>
+    <string name="show_answer">Afficher la réponse</string>
+    <string name="hide_answer">Masquer la réponse</string>
     <string name="smart_filters">Filtres intelligents</string>
     <string name="status">Statut</string>
     <string name="stay_up_to_date_with_updates_and_news">Restez informé des nouveautés et mises à jour.</string>
