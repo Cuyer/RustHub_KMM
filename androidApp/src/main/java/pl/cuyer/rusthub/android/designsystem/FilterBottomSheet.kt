@@ -151,8 +151,8 @@ fun FilterBottomSheet(
                             Spacer(Modifier.height(spacing.medium))
                             AppButton(
                                 colors = ButtonDefaults.elevatedButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    contentColor = contentColorFor(MaterialTheme.colorScheme.onPrimaryContainer)
+                                    containerColor = MaterialTheme.colorScheme.background,
+                                    contentColor = MaterialTheme.colorScheme.onBackground
                                 ),
                                 onClick = {
                                     onAction(ServerAction.OnSaveFilters(filters = it.toDomain(stringProvider)))

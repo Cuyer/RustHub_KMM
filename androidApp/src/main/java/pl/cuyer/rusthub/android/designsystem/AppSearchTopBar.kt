@@ -253,8 +253,8 @@ fun RustSearchBarTopAppBar(
                                 coroutineScope.launch { searchBarState.animateToCollapsed() }
                             },
                             colors = ButtonDefaults.elevatedButtonColors(
-                                containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                contentColor = contentColorFor(MaterialTheme.colorScheme.onPrimaryContainer)
+                                containerColor = MaterialTheme.colorScheme.background,
+                                contentColor = MaterialTheme.colorScheme.onBackground
                             ),
                         ) {
                             Text(stringResource(SharedRes.strings.clear_search_history))
