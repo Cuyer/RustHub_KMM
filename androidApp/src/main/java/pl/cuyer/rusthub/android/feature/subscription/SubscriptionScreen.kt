@@ -90,33 +90,38 @@ import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
-private data class Benefit(
+private data class SubscriptionBenefit(
     @DrawableRes
     val image: Int,
     val title: StringResource,
-    val desc: StringResource
+    val desc: StringResource,
+    val iconDesc: StringResource
 )
 
 private val benefits = listOf(
-    Benefit(
+    SubscriptionBenefit(
         getImageByFileName("il_rusthub_pro").drawableResId,
         SharedRes.strings.full_access,
-        SharedRes.strings.get_access_to_all_pro_features
+        SharedRes.strings.get_access_to_all_pro_features,
+        SharedRes.strings.full_access_icon
     ),
-    Benefit(
+    SubscriptionBenefit(
         getImageByFileName("il_unlimited_favourites").drawableResId,
         SharedRes.strings.unlimited_favourites,
-        SharedRes.strings.save_as_many_servers_as_you_like
+        SharedRes.strings.save_as_many_servers_as_you_like,
+        SharedRes.strings.unlimited_favourites_icon
     ),
-    Benefit(
+    SubscriptionBenefit(
         getImageByFileName("il_unlimited_notifications").drawableResId,
         SharedRes.strings.unlimited_notifications,
-        SharedRes.strings.get_notified_about_all_your_servers
+        SharedRes.strings.get_notified_about_all_your_servers,
+        SharedRes.strings.unlimited_notifications_icon
     ),
-    Benefit(
+    SubscriptionBenefit(
         getImageByFileName("il_support_development").drawableResId,
         SharedRes.strings.support_development,
-        SharedRes.strings.help_us_keep_improving_rust_hub
+        SharedRes.strings.help_us_keep_improving_rust_hub,
+        SharedRes.strings.support_development_icon
     )
 )
 
@@ -278,11 +283,9 @@ private fun SubscriptionMainContent(
             verticalArrangement = Arrangement.spacedBy(spacing.small)
         ) {
             Image(
-                modifier = Modifier
-                    .size(200.dp)
-                    .semantics { hideFromAccessibility() },
+                modifier = Modifier.size(200.dp),
                 painter = painterResource(benefit.image),
-                contentDescription = null
+                contentDescription = stringResource(benefit.iconDesc)
             )
             Text(stringResource(benefit.title), style = MaterialTheme.typography.titleMedium)
             Text(
@@ -527,6 +530,7 @@ private fun FaqSection() {
                                 style = MaterialTheme.typography.titleSmall
                             )
 
+                            // Decorative arrow icon
                             Icon(
                                 modifier = Modifier
                                     .rotate(rotation)

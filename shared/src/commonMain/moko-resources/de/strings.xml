@@ -97,6 +97,7 @@
     <string name="forgot_password">Passwort vergessen?</string>
     <string name="free">Kostenlos</string>
     <string name="full_access">Voller Zugriff</string>
+    <string name="full_access_icon">Symbol für vollen Zugriff</string>
     <string name="general_info">Allgemeine Infos</string>
     <string name="get_access_to_all_pro_features">Zugang zu allen PRO-Funktionen</string>
     <string name="get_notified_about_all_your_servers">Erhalte Benachrichtigungen über alle deine Server.</string>
@@ -219,6 +220,7 @@
     <string name="subscription">Abonnement</string>
     <string name="subscription_button">Abo-Button</string>
     <string name="support_development">Entwicklung unterstützen</string>
+    <string name="support_development_icon">Symbol zur Unterstützung der Entwicklung</string>
     <string name="terms_conditions">AGB</string>
     <string name="faq_lifetime_answer">Der Rust Hub Pro Lifetime-Plan ist ein einmaliger Kauf. Du hast dauerhaft Zugriff auf Rust Hub Pro. Wenn du bereits ein monatliches oder jährliches Abo hast und auf Lifetime wechseln willst, kündige das alte Abo nach dem Kauf des Lifetime-Plans, um doppelte Zahlungen zu vermeiden.</string>
     <string name="faq_renew_answer">Die monatlichen und jährlichen Rust Hub Pro-Pläne sind Abos, die sich automatisch verlängern. Nach einer Kündigung bleibt der Zugriff bis zum Ende des Abos erhalten. Lifetime ist ein einmaliger Kauf.</string>
@@ -235,7 +237,9 @@
     <string name="turn_on_notifications">Benachrichtigungen aktivieren</string>
     <string name="or_str">oder</string>
     <string name="unlimited_favourites">Unbegrenzte Favoriten</string>
+    <string name="unlimited_favourites_icon">Symbol für unbegrenzte Favoriten</string>
     <string name="unlimited_notifications">Unbegrenzte Benachrichtigungen</string>
+    <string name="unlimited_notifications_icon">Symbol für unbegrenzte Benachrichtigungen</string>
     <string name="upgrade">Upgrade</string>
     <string name="upgrade_account">Konto upgraden</string>
     <string name="upgrade_account_button">Upgrade-Button</string>

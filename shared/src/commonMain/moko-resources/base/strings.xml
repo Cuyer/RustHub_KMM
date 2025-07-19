@@ -98,6 +98,7 @@
     <string name="forgot_password">Forgot password?</string>
     <string name="free">Free</string>
     <string name="full_access">Full Access</string>
+    <string name="full_access_icon">Full access symbol</string>
     <string name="general_info">General info</string>
     <string name="get_access_to_all_pro_features">Get access to all PRO features</string>
     <string name="get_notified_about_all_your_servers">Get notified about all your servers.</string>
@@ -220,6 +221,7 @@
     <string name="subscription">Subscription</string>
     <string name="subscription_button">Subscription button</string>
     <string name="support_development">Support development</string>
+    <string name="support_development_icon">Support development symbol</string>
     <string name="terms_conditions">Terms &amp; conditions</string>
     <string name="faq_lifetime_answer">The Rust Hub Pro Lifetime plan is a one time purchase. You will have access to Rust Hub Pro forever.\n\nIf you are already subscribed to a monthly or yearly plan and want to switch to a lifetime plan, make sure to cancel your monthly or yearly subscription after you purchase the lifetime plan to avoid any recurring charges.</string>
     <string name="faq_renew_answer">The Rust Hub Pro monthly and yearly plans are subscriptions that renew automatically at the end of your subscription term to avoid any interruption to your service. If you cancel your subscription, you will continue to have access to Rust Hub Pro until your subscription expires. The Rust Hub Pro Lifetime plan is a one time purchase.</string>
@@ -237,7 +239,9 @@
     <string name="or_str">or</string>
     <string name="unknown_error">Unknown Error</string>
     <string name="unlimited_favourites">Unlimited favourites</string>
+    <string name="unlimited_favourites_icon">Unlimited favourites symbol</string>
     <string name="unlimited_notifications">Unlimited notifications</string>
+    <string name="unlimited_notifications_icon">Unlimited notifications symbol</string>
     <string name="upgrade">Upgrade</string>
     <string name="upgrade_account">Upgrade account</string>
     <string name="upgrade_account_button">Upgrade account button</string>
