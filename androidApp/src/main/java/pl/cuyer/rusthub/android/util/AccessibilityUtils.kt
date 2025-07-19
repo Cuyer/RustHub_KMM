@@ -10,9 +10,6 @@ import androidx.compose.ui.platform.LocalContext
 @Composable
 fun prefersReducedMotion(): Boolean {
     val context = LocalContext.current
-    val accessibilityManager = remember {
-        context.getSystemService(AccessibilityManager::class.java)
-    }
     val animatorScale = remember {
         Settings.Global.getFloat(
             context.contentResolver,
@@ -20,11 +17,6 @@ fun prefersReducedMotion(): Boolean {
             1f
         )
     }
-    val a11yReduce = if (Build.VERSION.SDK_INT >= 34) {
-        accessibilityManager?.isReduceMotionEnabled == true
-    } else {
-        false
-    }
-    return animatorScale == 0f || a11yReduce
+    return animatorScale == 0f
 }
 

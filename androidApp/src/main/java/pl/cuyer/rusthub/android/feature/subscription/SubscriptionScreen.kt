@@ -70,6 +70,7 @@ import androidx.compose.ui.semantics.invisibleToUser
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign

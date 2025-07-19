@@ -44,6 +44,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -103,15 +104,16 @@ fun FilterBottomSheet(
                 .invokeOnCompletion { if (!sheetState.isVisible) onDismiss() }
         }
     ) {
+        val header = stringResource(SharedRes.strings.filter_options)
         Text(
-            text = stringResource(SharedRes.strings.filter_options),
+            text = header,
             style = MaterialTheme.typography.titleLargeEmphasized,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier
                 .padding(horizontal = spacing.medium)
                 .semantics {
                     heading()
-                    contentDescription = stringResource(SharedRes.strings.filter_options)
+                    contentDescription = header
                 }
         )
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
