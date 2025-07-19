@@ -113,6 +113,7 @@ fun DeleteAccountScreen(
                         .fillMaxSize()
                         .padding(innerPadding)
                         .padding(spacing.medium)
+                        .semantics { invisibleToUser() }
                         .animateBounds(this)
                         .clickable(
                             interactionSource = interactionSource,
@@ -128,6 +129,7 @@ fun DeleteAccountScreen(
                         .verticalScroll(rememberScrollState())
                         .padding(innerPadding)
                         .padding(spacing.medium)
+                        .semantics { invisibleToUser() }
                         .animateBounds(this)
                         .clickable(
                             interactionSource = interactionSource,
