@@ -168,7 +168,12 @@ fun ServerDetailsScreen(
                                 } else {
                                     Icons.Outlined.FavoriteBorder
                                 }
-                                Icon(icon, contentDescription = null)
+                                val cd = if (state.details?.isFavorite == true) {
+                                    stringResource(SharedRes.strings.remove_from_favourites)
+                                } else {
+                                    stringResource(SharedRes.strings.add_to_favourites)
+                                }
+                                Icon(imageVector = icon, contentDescription = cd)
                             }
                         )
                         DropdownMenuItem(
@@ -191,7 +196,12 @@ fun ServerDetailsScreen(
                                 } else {
                                     Icons.Outlined.NotificationsNone
                                 }
-                                Icon(icon, contentDescription = null)
+                                val cd = if (state.details?.isSubscribed == true) {
+                                    stringResource(SharedRes.strings.turn_off_notifications)
+                                } else {
+                                    stringResource(SharedRes.strings.turn_on_notifications)
+                                }
+                                Icon(imageVector = icon, contentDescription = cd)
                             }
                         )
                         DropdownMenuItem(
@@ -201,7 +211,10 @@ fun ServerDetailsScreen(
                                 onAction(ServerDetailsAction.OnShare)
                             },
                             leadingIcon = {
-                                Icon(Icons.Default.Share, contentDescription = null)
+                                Icon(
+                                    imageVector = Icons.Default.Share,
+                                    contentDescription = stringResource(SharedRes.strings.share)
+                                )
                             }
                         )
                     }
