@@ -201,7 +201,7 @@ class CredentialsViewModel(
 
                 is Result.Error -> {
                     showErrorSnackbar(
-                        result.exception.message
+                        result.exception.toUserMessage(stringProvider)
                             ?: stringProvider.get(SharedRes.strings.unable_to_verify_email)
                     )
                 }
