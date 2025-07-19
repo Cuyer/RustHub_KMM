@@ -25,7 +25,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import coil3.compose.AsyncImage
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import coil3.compose.SubcomposeAsyncImage
+import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
@@ -57,7 +60,7 @@ fun MapDialog(
                     }
                 }
         ) {
-            AsyncImage(
+            SubcomposeAsyncImage(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .graphicsLayer {
@@ -69,7 +72,21 @@ fun MapDialog(
                         transformOrigin = TransformOrigin(0f, 0f)
                     },
                 model = mapUrl,
-                contentDescription = stringResource(SharedRes.strings.rust_map_image)
+                contentDescription = stringResource(SharedRes.strings.rust_map_image),
+                loading = {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .shimmer()
+                    )
+                },
+                error = {
+                    Image(
+                        modifier = Modifier.matchParentSize(),
+                        painter = painterResource(id = getImageByFileName("il_not_found").drawableResId),
+                        contentDescription = stringResource(SharedRes.strings.error_not_found)
+                    )
+                }
             )
             IconButton(
                 onClick = onDismiss,

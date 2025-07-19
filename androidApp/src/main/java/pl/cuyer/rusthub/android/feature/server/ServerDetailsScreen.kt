@@ -57,7 +57,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
-import coil3.compose.AsyncImage
+import coil3.compose.SubcomposeAsyncImage
+import pl.cuyer.rusthub.common.getImageByFileName
 import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.compose.BindEffect
 import kotlinx.coroutines.flow.Flow
@@ -222,13 +223,30 @@ fun ServerDetailsScreen(
                         )
 
                         it.headerImage?.let {
-                            AsyncImage(
+                            SubcomposeAsyncImage(
                                 modifier =
                                     Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = spacing.medium),
                                 model = it,
                                 contentDescription = null,
+                                loading = {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(200.dp)
+                                            .shimmer()
+                                    )
+                                },
+                                error = {
+                                    Image(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(200.dp),
+                                        painter = painterResource(id = getImageByFileName("il_not_found").drawableResId),
+                                        contentDescription = stringResource(SharedRes.strings.error_not_found)
+                                    )
+                                }
                             )
                         }
 
@@ -482,7 +500,7 @@ fun ServerDetailsScreen(
                         }
 
                         it.mapImage?.let {
-                            AsyncImage(
+                            SubcomposeAsyncImage(
                                 modifier = Modifier
                                     .padding(
                                         start = spacing.medium,
@@ -493,7 +511,24 @@ fun ServerDetailsScreen(
                                 model = it,
                                 contentDescription = stringResource(
                                     SharedRes.strings.rust_map_image
-                                )
+                                ),
+                                loading = {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(200.dp)
+                                            .shimmer()
+                                    )
+                                },
+                                error = {
+                                    Image(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(200.dp),
+                                        painter = painterResource(id = getImageByFileName("il_not_found").drawableResId),
+                                        contentDescription = stringResource(SharedRes.strings.error_not_found)
+                                    )
+                                }
                             )
                         }
                     }
