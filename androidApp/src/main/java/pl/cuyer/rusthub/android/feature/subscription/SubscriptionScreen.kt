@@ -80,6 +80,7 @@ import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import pl.cuyer.rusthub.android.util.prefersReducedMotion
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.AppButton
@@ -551,6 +552,7 @@ private fun FaqSection() {
 
 @Composable
 private fun CarouselAutoPlayHandler(pagerState: PagerState, carouselSize: Int, delayMillis: Long = 5000L) {
+    val reduceMotion = prefersReducedMotion()
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     val interactions = remember(pagerState.interactionSource) {
         pagerState.interactionSource.interactions
@@ -569,7 +571,8 @@ private fun CarouselAutoPlayHandler(pagerState: PagerState, carouselSize: Int, d
         }
     }
 
-    LaunchedEffect(pagerState.currentPage, cooldownKey) {
+    LaunchedEffect(pagerState.currentPage, cooldownKey, reduceMotion) {
+        if (reduceMotion) return@LaunchedEffect
         delay(delayMillis)
         val nextPage = (pagerState.currentPage + 1) % carouselSize
         scope.launch { pagerState.animateScrollToPage(nextPage) }
