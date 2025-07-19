@@ -185,6 +185,7 @@ private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: Onboa
     Column(
         modifier = Modifier
             .statusBarsPadding()
+            .semantics { invisibleToUser() }
             .clickable(
                 interactionSource = interactionSource,
                 indication = null
@@ -251,6 +252,7 @@ private fun OnboardingContentExpanded(
 
     Row(
         modifier = Modifier
+            .semantics { invisibleToUser() }
             .clickable(
                 interactionSource = interactionSource,
                 indication = null

@@ -124,6 +124,7 @@ fun CredentialsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
+                    .semantics { invisibleToUser() }
                     .animateBounds(this)
                     .clickable(
                         interactionSource = interactionSource,
