@@ -46,6 +46,7 @@ import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.ShareHandler
 import pl.cuyer.rusthub.util.ReviewRequester
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.SharedRes
 
 class ServerDetailsViewModel(
@@ -290,7 +291,8 @@ class ServerDetailsViewModel(
         }
     }
 
-    private suspend fun showErrorSnackbar(message: String) {
+    private suspend fun showErrorSnackbar(message: String?) {
+        message ?: return
         snackbarController.sendEvent(
             SnackbarEvent(message = message, action = null)
         )
@@ -313,9 +315,7 @@ class ServerDetailsViewModel(
         coroutineScope.launch {
             resendConfirmationUseCase()
                 .catch { e ->
-                    showErrorSnackbar(
-                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
-                    )
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
                     when (result) {
@@ -325,7 +325,7 @@ class ServerDetailsViewModel(
                             )
                         )
                         is Result.Error -> showErrorSnackbar(
-                            result.exception.message ?: stringProvider.get(SharedRes.strings.error_unknown)
+                            result.exception.toUserMessage(stringProvider)
                         )
                     }
                 }
@@ -343,8 +343,9 @@ class ServerDetailsViewModel(
                 changeIsLoading(false)
             }
             .onStart { changeIsLoading(true) }
-            .catch {
-                showErrorSnackbar(stringProvider.get(SharedRes.strings.error_fetching_server_data))
+            .catch { e ->
+                showErrorSnackbar(e.toUserMessage(stringProvider)
+                    ?: stringProvider.get(SharedRes.strings.error_fetching_server_data))
             }
             .launchIn(coroutineScope)
     }

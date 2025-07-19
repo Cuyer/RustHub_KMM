@@ -24,6 +24,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.util.validator.EmailValidator
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
@@ -104,9 +105,7 @@ class UpgradeViewModel(
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
                 .catch { e ->
-                    showErrorSnackbar(
-                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
-                    )
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
                     when (result) {
@@ -119,8 +118,7 @@ class UpgradeViewModel(
                             _uiEvent.send(UiEvent.NavigateUp)
                         }
                         is Result.Error -> showErrorSnackbar(
-                            result.exception.message
-                                ?: stringProvider.get(SharedRes.strings.unable_to_upgrade_account)
+                            result.exception.toUserMessage(stringProvider)
                         )
                     }
                 }
@@ -134,9 +132,7 @@ class UpgradeViewModel(
                 .onStart { updateGoogleLoading(true) }
                 .onCompletion { updateGoogleLoading(false) }
                 .catch { e ->
-                    showErrorSnackbar(
-                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
-                    )
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
                     when (result) {
@@ -151,8 +147,7 @@ class UpgradeViewModel(
                             }
                         }
                         is Result.Error -> showErrorSnackbar(
-                            result.exception.message
-                                ?: stringProvider.get(SharedRes.strings.unable_to_get_client_id)
+                            result.exception.toUserMessage(stringProvider)
                         )
                     }
                 }
@@ -166,9 +161,7 @@ class UpgradeViewModel(
                 .onStart { updateGoogleLoading(true) }
                 .onCompletion { updateGoogleLoading(false) }
                 .catch { e ->
-                    showErrorSnackbar(
-                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
-                    )
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
                     when (result) {
@@ -181,8 +174,7 @@ class UpgradeViewModel(
                             navigateUp()
                         }
                         is Result.Error -> showErrorSnackbar(
-                            result.exception.message
-                                ?: stringProvider.get(SharedRes.strings.unable_to_upgrade_account)
+                            result.exception.toUserMessage(stringProvider)
                         )
                     }
                 }
@@ -197,7 +189,8 @@ class UpgradeViewModel(
         _state.update { it.copy(googleLoading = isLoading) }
     }
 
-    private fun showErrorSnackbar(message: String) {
+    private fun showErrorSnackbar(message: String?) {
+        message ?: return
         coroutineScope.launch { snackbarController.sendEvent(SnackbarEvent(message)) }
     }
 }

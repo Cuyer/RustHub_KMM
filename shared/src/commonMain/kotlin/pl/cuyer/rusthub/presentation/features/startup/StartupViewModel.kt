@@ -125,7 +125,8 @@ class StartupViewModel(
         }
     }
 
-    private fun showErrorSnackbar(message: String) {
+    private fun showErrorSnackbar(message: String?) {
+        message ?: return
         coroutineScope.launch {
             snackbarController.sendEvent(SnackbarEvent(message = message))
         }

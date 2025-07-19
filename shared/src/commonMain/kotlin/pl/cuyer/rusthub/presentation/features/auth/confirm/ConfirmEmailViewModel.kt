@@ -29,6 +29,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.toUserMessage
 
 class ConfirmEmailViewModel(
     private val checkEmailConfirmedUseCase: CheckEmailConfirmedUseCase,
@@ -77,10 +78,8 @@ class ConfirmEmailViewModel(
             checkEmailConfirmedUseCase()
                 .onStart { updateConfirmLoading(true) }
                 .onCompletion { updateConfirmLoading(false) }
-                .catch { e -> 
-                             showErrorSnackbar(
-                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
-                    )
+                .catch { e ->
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
                     when (result) {
@@ -95,8 +94,7 @@ class ConfirmEmailViewModel(
                             }
                         }
                         is Result.Error -> showErrorSnackbar(
-                            result.exception.message
-                                ?: stringProvider.get(SharedRes.strings.unable_to_verify_email)
+                            result.exception.toUserMessage(stringProvider)
                         )
                     }
                 }
@@ -109,7 +107,7 @@ class ConfirmEmailViewModel(
             resendConfirmationUseCase()
                 .onStart { updateResendLoading(true) }
                 .onCompletion { updateResendLoading(false) }
-                .catch { e -> showErrorSnackbar(handleError(e)) }
+                .catch { e -> showErrorSnackbar(e.toUserMessage(stringProvider)) }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> snackbarController.sendEvent(
@@ -117,18 +115,15 @@ class ConfirmEmailViewModel(
                                 stringProvider.get(SharedRes.strings.confirmation_email_sent)
                             )
                         )
-                        is Result.Error -> showErrorSnackbar(handleError(result.exception))
+                        is Result.Error -> showErrorSnackbar(result.exception.toUserMessage(stringProvider))
                     }
                 }
         }
     }
 
 
-    private fun handleError(throwable: Throwable): String {
-        return when (throwable) {
-            is TooManyRequestsException -> stringProvider.get(SharedRes.strings.wait_before_resending)
-            else -> throwable.message ?: stringProvider.get(SharedRes.strings.error_unknown)
-        }
+    private fun handleError(throwable: Throwable): String? {
+        return throwable.toUserMessage(stringProvider)
     }
 
     private fun updateConfirmLoading(isLoading: Boolean) {
@@ -139,7 +134,8 @@ class ConfirmEmailViewModel(
         _state.update { it.copy(resendLoading = isLoading) }
     }
 
-    private suspend fun showErrorSnackbar(message: String) {
+    private suspend fun showErrorSnackbar(message: String?) {
+        message ?: return
         snackbarController.sendEvent(SnackbarEvent(message = message))
     }
 

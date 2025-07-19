@@ -27,6 +27,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 
 class DeleteAccountViewModel(
@@ -76,9 +77,7 @@ class DeleteAccountViewModel(
                     .onStart { updateLoading(true) }
                     .onCompletion { updateLoading(false) }
                     .catch { e ->
-                        showErrorSnackbar(
-                            e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
-                        )
+                        showErrorSnackbar(e.toUserMessage(stringProvider))
                     }
                     .collectLatest { result ->
                         when (result) {
@@ -91,8 +90,7 @@ class DeleteAccountViewModel(
                                 _uiEvent.send(UiEvent.Navigate(Onboarding))
                             }
                             is Result.Error -> showErrorSnackbar(
-                                result.exception.message
-                                    ?: stringProvider.get(SharedRes.strings.unable_to_delete_account)
+                                result.exception.toUserMessage(stringProvider)
                             )
                         }
                     }
@@ -118,9 +116,7 @@ class DeleteAccountViewModel(
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
                 .catch { e ->
-                    showErrorSnackbar(
-                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
-                    )
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
                     when (result) {
@@ -133,8 +129,7 @@ class DeleteAccountViewModel(
                             _uiEvent.send(UiEvent.Navigate(Onboarding))
                         }
                         is Result.Error -> showErrorSnackbar(
-                            result.exception.message
-                                ?: stringProvider.get(SharedRes.strings.unable_to_delete_account)
+                            result.exception.toUserMessage(stringProvider)
                         )
                     }
                 }
@@ -145,7 +140,8 @@ class DeleteAccountViewModel(
         _state.update { it.copy(isLoading = isLoading) }
     }
 
-    private suspend fun showErrorSnackbar(message: String) {
+    private suspend fun showErrorSnackbar(message: String?) {
+        message ?: return
         snackbarController.sendEvent(SnackbarEvent(message = message))
     }
 }

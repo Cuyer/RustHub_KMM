@@ -298,4 +298,14 @@
     <string name="resend">Wyślij ponownie</string>
     <string name="error_fetching_server_data">Błąd pobierania danych o serwerze.</string>
     <string name="query_cannot_be_empty">Wpisz nazwę serwera.</string>
+    <string name="error_network">Błąd sieci. Sprawdź swoje połączenie.</string>
+    <string name="error_timeout">Przekroczono czas oczekiwania. Spróbuj ponownie.</string>
+    <string name="error_service_unavailable">Serwis chwilowo niedostępny. Spróbuj później.</string>
+    <string name="error_bad_request">Błędne żądanie.</string>
+    <string name="error_server">Błąd serwera.</string>
+    <string name="error_unauthorized">Brak autoryzacji. Zaloguj się ponownie.</string>
+    <string name="error_forbidden">Nie masz uprawnień do wykonania tej akcji.</string>
+    <string name="error_not_found">Nie znaleziono zasobu.</string>
+    <string name="error_too_many_requests">Wykonujesz tę akcję zbyt często. Poczekaj chwilę.</string>
+    <string name="error_invalid_refresh_token">Sesja wygasła. Zaloguj się ponownie.</string>
 </resources>
