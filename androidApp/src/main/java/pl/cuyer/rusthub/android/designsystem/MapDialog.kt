@@ -27,6 +27,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import coil3.compose.SubcomposeAsyncImage
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.SharedRes
@@ -60,11 +63,13 @@ fun MapDialog(
                     }
                 }
         ) {
+
+            val sd = stringResource(SharedRes.strings.map_gesture_hint)
             SubcomposeAsyncImage(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .semantics {
-                        stateDescription = stringResource(SharedRes.strings.map_gesture_hint)
+                        stateDescription = sd
                     }
                     .graphicsLayer {
                         // Center image on screen, then apply pan/zoom
