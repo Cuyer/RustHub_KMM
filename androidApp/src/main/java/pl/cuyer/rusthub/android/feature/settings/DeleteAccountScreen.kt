@@ -42,6 +42,8 @@ import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -113,7 +115,7 @@ fun DeleteAccountScreen(
                         .fillMaxSize()
                         .padding(innerPadding)
                         .padding(spacing.medium)
-                        .semantics { invisibleToUser() }
+                        .semantics { hideFromAccessibility() }
                         .animateBounds(this)
                         .clickable(
                             interactionSource = interactionSource,
@@ -129,7 +131,7 @@ fun DeleteAccountScreen(
                         .verticalScroll(rememberScrollState())
                         .padding(innerPadding)
                         .padding(spacing.medium)
-                        .semantics { invisibleToUser() }
+                        .semantics { hideFromAccessibility() }
                         .animateBounds(this)
                         .clickable(
                             interactionSource = interactionSource,
