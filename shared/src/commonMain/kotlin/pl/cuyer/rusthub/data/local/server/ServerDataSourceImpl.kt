@@ -5,6 +5,7 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import app.cash.sqldelight.paging3.QueryPagingSource
 import database.ServerEntity
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -112,6 +113,8 @@ class ServerDataSourceImpl(
         withContext(Dispatchers.IO) {
             runCatching {
                 queries.updateFavourite(id = serverId, favourite = favourite)
+            }.onFailure { e ->
+                Napier.e("Failed to update favourite", e)
             }
         }
     }
@@ -120,6 +123,8 @@ class ServerDataSourceImpl(
         withContext(Dispatchers.IO) {
             runCatching {
                 queries.updateSubscription(id = serverId, subscribed = subscribed)
+            }.onFailure { e ->
+                Napier.e("Failed to update subscription", e)
             }
         }
     }
