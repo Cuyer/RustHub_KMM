@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -39,6 +40,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import pl.cuyer.rusthub.util.anonymousAccountExpiresIn
 import pl.cuyer.rusthub.util.formatExpiration
 
@@ -51,7 +53,8 @@ class SettingsViewModel(
     private val permissionsController: PermissionsController,
     private val googleAuthClient: GoogleAuthClient,
     private val snackbarController: SnackbarController,
-    private val stringProvider: StringProvider
+    private val stringProvider: StringProvider,
+    private val systemDarkThemeObserver: SystemDarkThemeObserver
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -100,10 +103,15 @@ class SettingsViewModel(
 
     private fun observePreferences() {
         getUserPreferencesUseCase()
-            .onEach { prefs ->
-                _state.update {
-                    it.copy(theme = prefs.themeConfig, dynamicColors = prefs.useDynamicColor)
+            .combine(systemDarkThemeObserver.isSystemDarkTheme) { prefs, systemDark ->
+                val theme = when (prefs.themeConfig) {
+                    Theme.SYSTEM -> if (systemDark) Theme.DARK else Theme.LIGHT
+                    else -> prefs.themeConfig
                 }
+                theme to prefs.useDynamicColor
+            }
+            .onEach { (theme, dynamic) ->
+                _state.update { it.copy(theme = theme, dynamicColors = dynamic) }
             }
             .launchIn(coroutineScope)
     }
