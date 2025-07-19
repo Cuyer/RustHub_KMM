@@ -19,7 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.minimumTouchTargetSize
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -110,7 +110,7 @@ fun SettingsScreen(
                 actions = {
                     IconButton(
                         onClick = { onAction(SettingsAction.OnLogout) },
-                        modifier = Modifier.minimumTouchTargetSize()
+                        modifier = Modifier.minimumInteractiveComponentSize()
                     ) {
                         val icon = Icons.AutoMirrored.Default.Logout
                         Icon(

@@ -9,7 +9,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.minimumTouchTargetSize
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -40,7 +40,7 @@ fun PrivacyPolicyScreen(url: String, onNavigateUp: () -> Unit, title: String = s
                 navigationIcon = {
                     IconButton(
                         onClick = onNavigateUp,
-                        modifier = Modifier.minimumTouchTargetSize()
+                        modifier = Modifier.minimumInteractiveComponentSize()
                     ) {
                         Icon(
                             tint = contentColorFor(TopAppBarDefaults.topAppBarColors().containerColor),

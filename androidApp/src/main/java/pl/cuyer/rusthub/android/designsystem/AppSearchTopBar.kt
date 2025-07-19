@@ -11,7 +11,6 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -29,13 +28,14 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExpandedDockedSearchBar
 import androidx.compose.material3.ExpandedFullScreenSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.minimumTouchTargetSize
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -44,11 +44,10 @@ import androidx.compose.material3.SearchBarState
 import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopSearchBar
 import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -60,15 +59,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.RectangleShape
-import pl.cuyer.rusthub.SharedRes
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
-import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.model.SearchQueryUi
 
 
@@ -116,7 +114,7 @@ fun RustSearchBarTopAppBar(
                                 searchBarState.animateToCollapsed()
                             }
                         },
-                        modifier = Modifier.minimumTouchTargetSize()
+                        modifier = Modifier.minimumInteractiveComponentSize()
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
@@ -135,7 +133,7 @@ fun RustSearchBarTopAppBar(
                     if (textFieldState.text.isNotEmpty()) {
                         IconButton(
                             onClick = { textFieldState.setTextAndPlaceCursorAtEnd("") },
-                            modifier = Modifier.minimumTouchTargetSize()
+                            modifier = Modifier.minimumInteractiveComponentSize()
                         ) {
                             Icon(
                                 Icons.Default.Close,
@@ -164,7 +162,7 @@ fun RustSearchBarTopAppBar(
                     ) {
                         IconButton(
                             onClick = onOpenFilters,
-                            modifier = Modifier.minimumTouchTargetSize()
+                            modifier = Modifier.minimumInteractiveComponentSize()
                         ) {
                             Icon(
                                 tint = contentColorFor(SearchBarDefaults.colors().containerColor),

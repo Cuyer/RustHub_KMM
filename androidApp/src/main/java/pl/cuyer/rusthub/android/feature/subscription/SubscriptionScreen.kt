@@ -40,7 +40,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.minimumTouchTargetSize
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -158,7 +158,7 @@ fun SubscriptionScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = onNavigateUp,
-                        modifier = Modifier.minimumTouchTargetSize()
+                        modifier = Modifier.minimumInteractiveComponentSize()
                     ) {
                         Icon(
                             tint = contentColorFor(TopAppBarDefaults.topAppBarColors().containerColor),
@@ -486,6 +486,12 @@ private fun FaqSection() {
             )
             ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                 LookaheadScope {
+                    val sd = if (expanded) {
+                        stringResource(SharedRes.strings.expanded)
+                    } else {
+                        stringResource(SharedRes.strings.collapsed)
+                    }
+
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -495,11 +501,7 @@ private fun FaqSection() {
                                 onValueChange = { expanded = !expanded }
                             )
                             .semantics {
-                                stateDescription = if (expanded) {
-                                    stringResource(SharedRes.strings.expanded)
-                                } else {
-                                    stringResource(SharedRes.strings.collapsed)
-                                }
+                                stateDescription = sd
                             }
                             .padding(spacing.medium)
                             .animateBounds(this@LookaheadScope),

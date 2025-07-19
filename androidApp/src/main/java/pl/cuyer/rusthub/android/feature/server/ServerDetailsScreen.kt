@@ -30,7 +30,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.minimumTouchTargetSize
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
@@ -142,7 +142,7 @@ fun ServerDetailsScreen(
                     val rotation by animateFloatAsState(if (expanded) 90f else 0f)
                     IconButton(
                         onClick = { expanded = !expanded },
-                        modifier = Modifier.minimumTouchTargetSize()
+                        modifier = Modifier.minimumInteractiveComponentSize()
                     ) {
                         Icon(
                             tint = contentColorFor(SearchBarDefaults.colors().containerColor),
@@ -313,7 +313,7 @@ fun ServerDetailsScreen(
                                             )
                                         )
                                     },
-                                    modifier = Modifier.minimumTouchTargetSize()
+                                    modifier = Modifier.minimumInteractiveComponentSize()
                                 ) {
                                     Icon(
                                         tint = contentColorFor(TopAppBarDefaults.topAppBarColors().containerColor),
