@@ -50,7 +50,7 @@ class ServerClientImpl(
         }.map { result ->
             when (result) {
                 is Result.Success -> Result.Success(result.data.toDomain())
-                is Result.Error -> Result.Error(result.exception)
+                is Result.Error -> result
             }
         }
     }

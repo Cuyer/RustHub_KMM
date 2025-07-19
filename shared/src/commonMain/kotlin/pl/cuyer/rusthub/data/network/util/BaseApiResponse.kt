@@ -124,4 +124,5 @@ abstract class BaseApiResponse(
             is TimeoutCancellationException -> TimeoutException(throwable.message ?: "Request timed out")
             else -> throwable
         }
-    }}
+    }
+}

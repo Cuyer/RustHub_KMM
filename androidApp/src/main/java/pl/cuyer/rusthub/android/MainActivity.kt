@@ -15,10 +15,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import pl.cuyer.rusthub.android.theme.RustHubTheme
+import pl.cuyer.rusthub.android.util.composeUtil.isSystemInDarkTheme
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.presentation.ui.Colors
@@ -28,59 +33,53 @@ class MainActivity : AppCompatActivity() {
     private val startupViewModel: StartupViewModel by viewModel()
     private val inAppUpdateManager: InAppUpdateManager by inject()
 
-    private var themeSettings by mutableStateOf(ThemeSettings(false, false))
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
-        splashScreen.setKeepOnScreenCondition {
-            startupViewModel.state.value.isLoading
-        }
-
-        val systemDark =
-            (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
-                Configuration.UI_MODE_NIGHT_YES
-        themeSettings = ThemeSettings(systemDark, false)
-        enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.auto(
-                lightScrim,
-                darkScrim
-            ) { themeSettings.darkTheme },
-            navigationBarStyle = SystemBarStyle.auto(
-                lightScrim,
-                darkScrim
-            ) { themeSettings.darkTheme }
-        )
-
-
         super.onCreate(savedInstanceState)
+
+        var themeSettings by mutableStateOf(
+            ThemeSettings(
+                darkTheme = false,
+                dynamicColor = false
+            )
+        )
 
         inAppUpdateManager.check(this)
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                startupViewModel.state.collect { state ->
-                    val systemDark =
-                        (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
-                            Configuration.UI_MODE_NIGHT_YES
-                    val darkTheme = when (state.theme) {
-                        Theme.DARK -> true
-                        Theme.LIGHT -> false
-                        else -> systemDark
-                    }
-                    themeSettings = ThemeSettings(darkTheme, state.dynamicColors)
-                    enableEdgeToEdge(
-                        statusBarStyle = SystemBarStyle.auto(
-                            lightScrim,
-                            darkScrim
-                        ) { darkTheme },
-                        navigationBarStyle = SystemBarStyle.auto(
-                            lightScrim,
-                            darkScrim
-                        ) { darkTheme }
+                combine(
+                    isSystemInDarkTheme(),
+                    startupViewModel.state
+                ) { systemDark, uiState ->
+                    ThemeSettings(
+                        darkTheme = when (uiState.theme) {
+                            Theme.SYSTEM -> systemDark
+                            Theme.LIGHT -> false
+                            Theme.DARK -> true
+                        },
+                        dynamicColor = uiState.dynamicColors
                     )
-                }
+                }.onEach { themeSettings = it }
+                    .map { it.darkTheme }
+                    .distinctUntilChanged()
+                    .collect { darkTheme ->
+                        enableEdgeToEdge(
+                            statusBarStyle = SystemBarStyle.auto(
+                                lightScrim = android.graphics.Color.TRANSPARENT,
+                                darkScrim = android.graphics.Color.TRANSPARENT,
+                            ) { darkTheme },
+                            navigationBarStyle = SystemBarStyle.auto(
+                                lightScrim = lightScrim,
+                                darkScrim = darkScrim,
+                            ) { darkTheme }
+                        )
+                    }
             }
+        }
+
+        splashScreen.setKeepOnScreenCondition {
+            startupViewModel.state.value.isLoading
         }
 
         setContent {
@@ -90,9 +89,7 @@ class MainActivity : AppCompatActivity() {
                 dynamicColor = themeSettings.dynamicColor
             ) {
                 RustHubBackground {
-                    if (!state.value.isLoading) {
-                        NavigationRoot(startDestination = state.value.startDestination)
-                    }
+                    NavigationRoot(startDestination = state.value.startDestination)
                 }
             }
         }
