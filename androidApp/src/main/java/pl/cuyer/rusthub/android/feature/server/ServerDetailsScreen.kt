@@ -280,8 +280,8 @@ fun ServerDetailsScreen(
                                 modifier = Modifier.padding(spacing.medium),
                                 label = stringResource(SharedRes.strings.status),
                                 value = it.name,
-                                valueColor = if (it == ServerStatus.ONLINE) Color(0xFF00C853) else Color(
-                                    0xFFF44336
+                                valueColor = if (it == ServerStatus.ONLINE) Color(0xFF008939) else Color(
+                                    0xFFEA1B0C
                                 )
                             )
                         }
@@ -383,7 +383,7 @@ fun ServerDetailsScreen(
                             ServerWebsite(
                                 website = url,
                                 spacing = spacing,
-                                urlColor = Color(0xFF1E88E5)
+                                urlColor = Color(0xFF1779CE)
                             )
                         }
 
@@ -513,7 +513,7 @@ fun ServerDetailsScreen(
                                 website = it,
                                 alias = stringResource(SharedRes.strings.rustmaps),
                                 spacing = spacing,
-                                urlColor = Color(0xFF1E88E5)
+                                urlColor = Color(0xFF1779CE)
                             )
                         }
 
@@ -606,7 +606,7 @@ fun parseHtmlToAnnotatedString(html: String): AnnotatedString {
                     )
 
                     "t" -> builder.addStyle(
-                        SpanStyle(color = Color(0xFF00897B)),
+                        SpanStyle(color = Color(0xFF008578)),
                         startIndex,
                         builder.length
                     )
@@ -648,7 +648,7 @@ fun parseHtmlToAnnotatedString(html: String): AnnotatedString {
                 )
 
                 "t" -> builder.addStyle(
-                    SpanStyle(color = Color(0xFF00897B)),
+                    SpanStyle(color = Color(0xFF008578)),
                     startIndex,
                     builder.length
                 )

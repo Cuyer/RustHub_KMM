@@ -340,7 +340,7 @@ private fun SubscriptionMainContent(
                     Text(
                         stringResource(SharedRes.strings.pro),
                         style = MaterialTheme.typography.titleMedium,
-                        color = Color(0xFFFDDA0D)
+                        color = Color(0xFF917200)
                     )
                     Text(stringResource(plan.label), style = MaterialTheme.typography.titleMedium)
                     Text(
@@ -411,7 +411,7 @@ private fun ComparisonSection() {
                     stringResource(SharedRes.strings.pro),
                     modifier = Modifier.weight(0.25f),
                     style = MaterialTheme.typography.titleSmall,
-                    color = Color(0xFFFDDA0D),
+                    color = Color(0xFF917200),
                     textAlign = TextAlign.Center
                 )
             }

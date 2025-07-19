@@ -34,7 +34,7 @@ fun PulsatingCircle(
     )
 
     val coreColor = remember(isOnline) {
-        if (isOnline) Color(0xFF00C853) else Color(0xFFF44336)
+        if (isOnline) Color(0xFF008939) else Color(0xFFEA1B0C)
     }
     val cd =  if (isOnline) {
         stringResource(SharedRes.strings.online)
