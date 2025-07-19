@@ -5,6 +5,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -42,7 +43,11 @@ abstract class BaseApiResponse(
                 emit(Result.Error(exception))
             }
         }.catch { e ->
-            emit(error(ApiExceptionMapper.fromThrowable(e)))
+            if (e is CancellationException) {
+                throw e
+            } else {
+                emit(error(ApiExceptionMapper.fromThrowable(e)))
+            }
         }
     fun <T> success(success: T): Result.Success<T> = Result.Success(success)
     fun <T> error(exception: Throwable): Result<T> =
