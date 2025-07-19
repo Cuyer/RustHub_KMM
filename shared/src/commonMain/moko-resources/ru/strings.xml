@@ -298,4 +298,14 @@
     <string name="resend">Отправить ещё раз</string>
     <string name="error_fetching_server_data">Ошибка при получении данных о сервере.</string>
     <string name="query_cannot_be_empty">Введите имя сервера.</string>
+    <string name="error_network">Ошибка сети. Проверьте подключение.</string>
+    <string name="error_timeout">Превышено время ожидания. Попробуйте ещё раз.</string>
+    <string name="error_service_unavailable">Сервис временно недоступен. Попробуйте позже.</string>
+    <string name="error_bad_request">Неверный запрос.</string>
+    <string name="error_server">Внутренняя ошибка сервера.</string>
+    <string name="error_unauthorized">Нет авторизации. Пожалуйста, войдите снова.</string>
+    <string name="error_forbidden">Недостаточно прав для выполнения действия.</string>
+    <string name="error_not_found">Ресурс не найден.</string>
+    <string name="error_too_many_requests">Слишком много запросов. Подождите немного.</string>
+    <string name="error_invalid_refresh_token">Сессия истекла. Войдите снова.</string>
 </resources>

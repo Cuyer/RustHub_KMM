@@ -40,6 +40,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import pl.cuyer.rusthub.util.anonymousAccountExpiresIn
 import pl.cuyer.rusthub.util.formatExpiration
@@ -148,9 +149,7 @@ class SettingsViewModel(
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
                 .catch { e ->
-                    showErrorSnackbar(
-                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
-                    )
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
                     when (result) {
@@ -180,7 +179,8 @@ class SettingsViewModel(
         coroutineScope.launch { setDynamicColorPreferenceUseCase(enabled) }
     }
 
-    private fun showErrorSnackbar(message: String) {
+    private fun showErrorSnackbar(message: String?) {
+        message ?: return
         coroutineScope.launch { snackbarController.sendEvent(SnackbarEvent(message = message)) }
     }
 

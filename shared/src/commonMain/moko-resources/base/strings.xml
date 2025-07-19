@@ -299,4 +299,14 @@
     <string name="resend">Resend</string>
     <string name="error_fetching_server_data">An error occurred while fetching data about the server.</string>
     <string name="query_cannot_be_empty">Enter the server name.</string>
+    <string name="error_network">Network error. Please check your connection.</string>
+    <string name="error_timeout">Request timed out. Please try again.</string>
+    <string name="error_service_unavailable">Service temporarily unavailable. Try again later.</string>
+    <string name="error_bad_request">Bad request.</string>
+    <string name="error_server">Internal server error.</string>
+    <string name="error_unauthorized">You are not authorized. Please log in again.</string>
+    <string name="error_forbidden">You don't have permission to perform this action.</string>
+    <string name="error_not_found">Resource not found.</string>
+    <string name="error_too_many_requests">You’re doing that too much. Please wait a moment.</string>
+    <string name="error_invalid_refresh_token">Session expired. Please log in again.</string>
 </resources>

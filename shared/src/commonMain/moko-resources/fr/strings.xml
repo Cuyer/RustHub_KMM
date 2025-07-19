@@ -298,4 +298,14 @@
     <string name="resend">Renvoyer</string>
     <string name="error_fetching_server_data">Erreur lors de la récupération des données du serveur.</string>
     <string name="query_cannot_be_empty">Veuillez saisir le nom du serveur.</string>
+    <string name="error_network">Erreur réseau. Veuillez vérifier votre connexion.</string>
+    <string name="error_timeout">Temps d'attente écoulé. Veuillez réessayer.</string>
+    <string name="error_service_unavailable">Service temporairement indisponible. Veuillez réessayer plus tard.</string>
+    <string name="error_bad_request">Requête incorrecte.</string>
+    <string name="error_server">Erreur interne du serveur.</string>
+    <string name="error_unauthorized">Non autorisé. Veuillez vous reconnecter.</string>
+    <string name="error_forbidden">Vous n'avez pas la permission d'effectuer cette action.</string>
+    <string name="error_not_found">Ressource introuvable.</string>
+    <string name="error_too_many_requests">Vous effectuez cette action trop souvent. Veuillez patienter.</string>
+    <string name="error_invalid_refresh_token">Session expirée. Veuillez vous reconnecter.</string>
 </resources>

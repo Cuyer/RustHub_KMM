@@ -36,6 +36,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
 import pl.cuyer.rusthub.util.validator.ValidationResult
@@ -121,9 +122,7 @@ class CredentialsViewModel(
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
                 .catch { e ->
-                    showErrorSnackbar(
-                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
-                    )
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
                     ensureActive()
@@ -142,9 +141,7 @@ class CredentialsViewModel(
                 .onStart { updateGoogleLoading(true) }
                 .onCompletion { updateGoogleLoading(false) }
                 .catch { e ->
-                    showErrorSnackbar(
-                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
-                    )
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
                     when (result) {
@@ -174,9 +171,7 @@ class CredentialsViewModel(
                 .onStart { updateGoogleLoading(true) }
                 .onCompletion { updateGoogleLoading(false) }
                 .catch { e ->
-                    showErrorSnackbar(
-                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
-                    )
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
                     ensureActive()
@@ -224,15 +219,7 @@ class CredentialsViewModel(
     }
 
     private fun handleError(exception: Throwable) {
-        when (exception) {
-            is InvalidCredentialsException -> showErrorSnackbar(
-                stringProvider.get(SharedRes.strings.provided_credentials_incorrect)
-            )
-            is UserAlreadyExistsException -> showErrorSnackbar(
-                stringProvider.get(SharedRes.strings.user_already_exists)
-            )
-            else -> showErrorSnackbar(stringProvider.get(SharedRes.strings.auth_error))
-        }
+        showErrorSnackbar(exception.toUserMessage(stringProvider))
     }
 
     private fun updateUsername(username: String) {
@@ -251,7 +238,8 @@ class CredentialsViewModel(
         coroutineScope.launch { _uiEvent.send(UiEvent.Navigate(destination)) }
     }
 
-    private fun showErrorSnackbar(message: String) {
+    private fun showErrorSnackbar(message: String?) {
+        message ?: return
         coroutineScope.launch { snackbarController.sendEvent(SnackbarEvent(message = message)) }
     }
 }

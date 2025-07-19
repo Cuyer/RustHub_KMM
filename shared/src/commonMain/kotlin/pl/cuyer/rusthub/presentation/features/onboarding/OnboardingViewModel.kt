@@ -29,6 +29,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.util.validator.EmailValidator
 
 class OnboardingViewModel(
@@ -72,9 +73,7 @@ class OnboardingViewModel(
                 .onStart { updateContinueAsGuestLoading(true) }
                 .onCompletion { updateContinueAsGuestLoading(false) }
                 .catch { e ->
-                    showErrorSnackbar(
-                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
-                    )
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
                     ensureActive()
@@ -117,9 +116,7 @@ class OnboardingViewModel(
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
                 .catch { e ->
-                    showErrorSnackbar(
-                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
-                    )
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
                     ensureActive()
@@ -128,7 +125,7 @@ class OnboardingViewModel(
                             Credentials(email, result.data.exists, result.data.provider)
                         )
                         is Result.Error -> showErrorSnackbar(
-                            result.exception.message ?: stringProvider.get(SharedRes.strings.error_unknown)
+                            result.exception.toUserMessage(stringProvider)
                         )
                     }
                 }
@@ -142,9 +139,7 @@ class OnboardingViewModel(
                 .onStart { updateGoogleLoading(true) }
                 .onCompletion { updateGoogleLoading(false) }
                 .catch { e ->
-                    showErrorSnackbar(
-                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
-                    )
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
                     when (result) {
@@ -159,8 +154,7 @@ class OnboardingViewModel(
                             }
                         }
                         is Result.Error -> showErrorSnackbar(
-                            result.exception.message
-                                ?: stringProvider.get(SharedRes.strings.unable_to_get_client_id)
+                            result.exception.toUserMessage(stringProvider)
                         )
                     }
                 }
@@ -174,16 +168,15 @@ class OnboardingViewModel(
                 .onStart { updateGoogleLoading(true) }
                 .onCompletion { updateGoogleLoading(false) }
                 .catch { e ->
-                    showErrorSnackbar(
-                        e.message ?: stringProvider.get(SharedRes.strings.error_unknown)
-                    )
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
                     ensureActive()
                     when (result) {
                         is Result.Success -> navigate(ServerList)
                         is Result.Error -> showErrorSnackbar(
-                            stringProvider.get(SharedRes.strings.error_google_sign_in)
+                            result.exception.toUserMessage(stringProvider)
+                                ?: stringProvider.get(SharedRes.strings.error_google_sign_in)
                         )
                     }
                 }
@@ -194,7 +187,8 @@ class OnboardingViewModel(
         _state.update { it.copy(showOtherOptions = !it.showOtherOptions) }
     }
 
-    private suspend fun showErrorSnackbar(message: String) {
+    private suspend fun showErrorSnackbar(message: String?) {
+        message ?: return
         snackbarController.sendEvent(SnackbarEvent(message = message))
     }
 
