@@ -30,6 +30,7 @@ import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
+import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
@@ -44,6 +45,7 @@ actual val platformModule: Module = module {
     single { InAppUpdateManager() }
     single { ReviewRequester() }
     single { StoreNavigator() }
+    single { SystemDarkThemeObserver() }
     single { GoogleAuthClient() }
     single { StringProvider() }
     factory { StartupViewModel(get(), get(), get(), get(), get(), get()) }
@@ -94,7 +96,8 @@ actual val platformModule: Module = module {
             permissionsController = get(),
             googleAuthClient = get(),
             snackbarController = get(),
-            stringProvider = get()
+            stringProvider = get(),
+            systemDarkThemeObserver = get()
         )
     }
     factory {

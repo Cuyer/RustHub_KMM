@@ -36,6 +36,7 @@ import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.InAppUpdateManager
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import kotlinx.coroutines.runBlocking
 import org.koin.dsl.bind
 import pl.cuyer.rusthub.BuildConfig
@@ -61,6 +62,7 @@ actual val platformModule: Module = module {
     single { InAppUpdateManager(androidContext(), get()) }
     single { ReviewRequester(androidContext()) }
     single { StoreNavigator(androidContext()) }
+    single { SystemDarkThemeObserver(androidContext()) }
     single { GoogleAuthClient(androidContext()) }
     single { StringProvider(androidContext()) }
     single { PermissionsController(androidContext()) }
@@ -122,7 +124,8 @@ actual val platformModule: Module = module {
             permissionsController = get(),
             googleAuthClient = get(),
             snackbarController = get(),
-            stringProvider = get()
+            stringProvider = get(),
+            systemDarkThemeObserver = get()
         )
     }
     viewModel {
