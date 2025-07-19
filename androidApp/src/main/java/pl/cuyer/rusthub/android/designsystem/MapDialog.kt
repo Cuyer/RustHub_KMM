@@ -41,7 +41,6 @@ fun MapDialog(
     ) {
         var zoom by remember { mutableFloatStateOf(1f) }
         var offset by remember { mutableStateOf(Offset.Zero) }
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
