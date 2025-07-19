@@ -120,6 +120,8 @@
     <string name="french">Французский</string>
     <string name="russian">Русский</string>
     <string name="selected">Выбрано</string>
+    <string name="plan_selected">План выбран</string>
+    <string name="plan_not_selected">План не выбран</string>
     <string name="last_wipe">Последний вайп</string>
     <string name="later">Позже</string>
     <string name="let_s_start_with_your_email">Начнем с вашего e-mail</string>

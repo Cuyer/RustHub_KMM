@@ -324,18 +324,28 @@ private fun SubscriptionMainContent(
     ) {
         Plan.entries.forEach { plan ->
             val isSelected = plan == selectedPlan
+            val sd = if (isSelected) {
+                stringResource(SharedRes.strings.plan_selected)
+            } else {
+                stringResource(SharedRes.strings.plan_not_selected)
+            }
 
             ElevatedCard(
                 onClick = { onPlanSelect(plan) },
-                modifier = Modifier.then(
-                    if (isSelected) Modifier
-                        .fillMaxHeight()
-                        .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = CardDefaults.elevatedShape
-                    ) else Modifier.fillMaxHeight()
-                )
+                modifier = Modifier
+                    .semantics {
+                        role = Role.RadioButton
+                        stateDescription = sd
+                    }
+                    .then(
+                        if (isSelected) Modifier
+                            .fillMaxHeight()
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.primary,
+                                shape = CardDefaults.elevatedShape
+                            ) else Modifier.fillMaxHeight()
+                    )
             ) {
                 Column(
                     modifier = Modifier
