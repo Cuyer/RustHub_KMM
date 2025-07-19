@@ -54,13 +54,30 @@ fun ServerListItem(
     labels: List<Label>,
     details: Map<String, String>
 ) {
+    val statusText = if (isOnline) {
+        stringResource(SharedRes.strings.online)
+    } else {
+        stringResource(SharedRes.strings.offline)
+    }
+
+    val playersKey = stringResource(SharedRes.strings.players)
+    val playersInfo = details[playersKey]?.let { "$playersKey $it" }
+    val semanticsDescription = buildString {
+        append(serverName)
+        append(", ")
+        append(statusText)
+        playersInfo?.let {
+            append(", ")
+            append(it)
+        }
+    }
     ElevatedCard(
         shape = RectangleShape,
         modifier = modifier
             .wrapContentHeight()
             .semantics {
                 role = Role.Button
-                contentDescription = serverName
+                contentDescription = semanticsDescription
             }
     ) {
         Column(
