@@ -85,7 +85,7 @@ fun LanguageBottomSheet(
                         if (language == current) {
                             Icon(
                                 imageVector = Icons.Default.Check,
-                                contentDescription = null
+                                contentDescription = stringResource(SharedRes.strings.selected)
                             )
                         }
                     }

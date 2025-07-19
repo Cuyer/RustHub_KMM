@@ -117,6 +117,7 @@
     <string name="german">Allemand</string>
     <string name="french">Français</string>
     <string name="russian">Russe</string>
+    <string name="selected">Sélectionné</string>
     <string name="last_wipe">Dernier wipe</string>
     <string name="later">Plus tard</string>
     <string name="let_s_start_with_your_email">Commençons par votre e-mail</string>
