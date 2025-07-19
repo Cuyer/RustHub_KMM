@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.minimumTouchTargetSize
 import androidx.compose.material3.adaptive.layout.PaneExpansionAnchor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -91,6 +92,7 @@ fun MapDialog(
             IconButton(
                 onClick = onDismiss,
                 modifier = Modifier
+                    .minimumTouchTargetSize()
                     .align(Alignment.TopEnd)
                     .padding(spacing.medium)
             ) {
