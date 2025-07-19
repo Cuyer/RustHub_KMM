@@ -74,6 +74,8 @@
     <string name="demo_with_icon">Switch z ikoną</string>
     <string name="description">Opis</string>
     <string name="disabled">Wyłączone</string>
+    <string name="expanded">Rozwinięte</string>
+    <string name="collapsed">Zwinięte</string>
     <string name="e_mail">E-mail</string>
     <string name="enable_notifications">Włącz powiadomienia</string>
     <string name="enabled">Włączone</string>

@@ -74,6 +74,8 @@
     <string name="demo_with_icon">Демо с иконкой</string>
     <string name="description">Описание</string>
     <string name="disabled">Отключено</string>
+    <string name="expanded">Развернуто</string>
+    <string name="collapsed">Свернуто</string>
     <string name="e_mail">E-mail</string>
     <string name="enable_notifications">Включить уведомления</string>
     <string name="enabled">Включено</string>

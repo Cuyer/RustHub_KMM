@@ -74,6 +74,8 @@
     <string name="demo_with_icon">Demo mit Icon</string>
     <string name="description">Beschreibung</string>
     <string name="disabled">Deaktiviert</string>
+    <string name="expanded">Ausgeklappt</string>
+    <string name="collapsed">Eingeklappt</string>
     <string name="e_mail">E-Mail</string>
     <string name="enable_notifications">Benachrichtigungen aktivieren</string>
     <string name="enabled">Aktiviert</string>
