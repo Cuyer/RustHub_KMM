@@ -181,6 +181,8 @@
     <string name="reset_password">Réinitialiser le mot de passe</string>
     <string name="faq_include_answer">Rust Hub Pro inclut un nombre illimité de serveurs favoris et de notifications.</string>
     <string name="rust_map_image">Image de la carte Rust</string>
+    <string name="map_gesture_hint">Pincez pour zoomer, faites glisser pour déplacer</string>
+    <string name="dismiss">Fermer</string>
     <string name="rustmaps" translatable="false">RustMaps</string>
     <string name="save_as_many_servers_as_you_like">Enregistrez autant de serveurs que vous voulez.</string>
     <string name="scroll_to_top">Remonter en haut</string>

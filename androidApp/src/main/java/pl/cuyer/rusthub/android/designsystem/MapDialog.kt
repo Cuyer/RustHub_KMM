@@ -63,6 +63,9 @@ fun MapDialog(
             SubcomposeAsyncImage(
                 modifier = Modifier
                     .align(Alignment.Center)
+                    .semantics {
+                        stateDescription = stringResource(SharedRes.strings.map_gesture_hint)
+                    }
                     .graphicsLayer {
                         // Center image on screen, then apply pan/zoom
                         translationX = -offset.x * zoom
@@ -88,11 +91,18 @@ fun MapDialog(
                     )
                 }
             )
+            val dismissLabel = stringResource(SharedRes.strings.dismiss)
             IconButton(
                 onClick = onDismiss,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(spacing.medium)
+                    .semantics {
+                        onClick(label = dismissLabel) {
+                            onDismiss()
+                            true
+                        }
+                    }
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,

@@ -182,6 +182,8 @@
     <string name="reset_password">Reset password</string>
     <string name="faq_include_answer">Rust Hub Pro includes unlimited favourite servers and unlimited notifications.</string>
     <string name="rust_map_image">Rust map image</string>
+    <string name="map_gesture_hint">Pinch to zoom, drag to pan</string>
+    <string name="dismiss">Dismiss</string>
     <string name="rustmaps" translatable="false">RustMaps</string>
     <string name="save_as_many_servers_as_you_like">Add to favourites as many servers as you like.</string>
     <string name="scroll_to_top">Scroll to top</string>

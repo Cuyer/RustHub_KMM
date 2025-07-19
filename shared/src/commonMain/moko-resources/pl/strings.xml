@@ -181,6 +181,8 @@
     <string name="reset_password">Zresetuj hasło</string>
     <string name="faq_include_answer">Rust Hub Pro zawiera w sobie nielimitowane dodawanie serwerów do ulubionych oraz do powiadomień.</string>
     <string name="rust_map_image">Podgląd mapy</string>
+    <string name="map_gesture_hint">Uszczypnij, aby powiększyć, przeciągnij, aby przesunąć</string>
+    <string name="dismiss">Zamknij</string>
     <string name="rustmaps" translatable="false">RustMaps</string>
     <string name="save_as_many_servers_as_you_like">Dodawaj do ulubionych dowolną ilość serwerów.</string>
     <string name="scroll_to_top">Do góry</string>
