@@ -23,7 +23,6 @@ abstract class BaseApiResponse(
     inline fun <reified T> safeApiCall(crossinline apiCall: suspend () -> HttpResponse): Flow<Result<T>> =
         flow {
             coroutineContext.ensureActive()
-
             val response = apiCall()
             if (response.status.isSuccess()) {
                 val data: T = response.body()
@@ -38,7 +37,7 @@ abstract class BaseApiResponse(
                         ApiExceptionMapper.fromStatusCode(response.status.value)
                     }
                 } catch (e: SerializationException) {
-                    ApiExceptionMapper.fromStatusCode(response.status.value)
+                    ApiExceptionMapper.fromThrowable(e)
                 }
                 emit(Result.Error(exception))
             }
