@@ -1,9 +1,6 @@
 package pl.cuyer.rusthub.android.feature.onboarding
 
 import android.app.Activity
-import android.os.Build
-import android.provider.Settings
-import android.view.accessibility.AccessibilityManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateBounds
@@ -92,6 +89,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
+import pl.cuyer.rusthub.android.util.prefersReducedMotion
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppOutlinedButton
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
@@ -499,27 +497,6 @@ private fun FeatureItem(icon: ImageVector, title: StringResource, description: S
             )
         }
     }
-}
-
-@Composable
-private fun prefersReducedMotion(): Boolean {
-    val context = LocalContext.current
-    val accessibilityManager = remember {
-        context.getSystemService(AccessibilityManager::class.java)
-    }
-    val animatorScale = remember {
-        Settings.Global.getFloat(
-            context.contentResolver,
-            Settings.Global.ANIMATOR_DURATION_SCALE,
-            1f
-        )
-    }
-    val a11yReduce = if (Build.VERSION.SDK_INT >= 34) {
-        accessibilityManager?.isReduceMotionEnabled == true
-    } else {
-        false
-    }
-    return animatorScale == 0f || a11yReduce
 }
 
 @Composable
