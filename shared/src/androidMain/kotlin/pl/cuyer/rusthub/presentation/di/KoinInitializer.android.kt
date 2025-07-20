@@ -194,7 +194,8 @@ actual val platformModule: Module = module {
             clipboardHandler = get(),
             snackbarController = get(),
             shareHandler = get(),
-            reviewRequester = get()
+            reviewRequester = get(),
+            connectivityObserver = get()
         )
     }
 }

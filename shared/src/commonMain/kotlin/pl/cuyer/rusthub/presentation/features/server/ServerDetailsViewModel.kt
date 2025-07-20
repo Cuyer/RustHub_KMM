@@ -64,7 +64,8 @@ class ServerDetailsViewModel(
     private val permissionsController: PermissionsController,
     private val stringProvider: StringProvider,
     private val serverName: String?,
-    private val serverId: Long?
+    private val serverId: Long?,
+    private val connectivityObserver: ConnectivityObserver
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -75,6 +76,7 @@ class ServerDetailsViewModel(
             assignInitialData()
             assignInitialServerDetailsJob()
             observeUser()
+            observeConnectivity()
         }
         .stateIn(
             scope = coroutineScope,
@@ -374,6 +376,14 @@ class ServerDetailsViewModel(
             .catch { e ->
                 showErrorSnackbar(e.toUserMessage(stringProvider)
                     ?: stringProvider.get(SharedRes.strings.error_fetching_server_data))
+            }
+            .launchIn(coroutineScope)
+    }
+
+    private fun observeConnectivity() {
+        connectivityObserver.isConnected
+            .onEach { connected ->
+                _state.update { it.copy(isConnected = connected) }
             }
             .launchIn(coroutineScope)
     }
