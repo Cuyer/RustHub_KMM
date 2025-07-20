@@ -318,6 +318,8 @@
     <string name="query_cannot_be_empty">Введите имя сервера.</string>
     <string name="error_network">Ошибка сети. Проверьте подключение.</string>
     <string name="offline_cached_servers_info">Нет сети. Отображаются кэшированные серверы.</string>
+    <string name="no_servers_available_offline">Нет серверов в автономном режиме.</string>
+    <string name="no_servers_available">Нет доступных серверов.</string>
     <string name="error_timeout">Превышено время ожидания. Попробуйте ещё раз.</string>
     <string name="error_service_unavailable">Сервис временно недоступен. Попробуйте позже.</string>
     <string name="error_bad_request">Неверный запрос.</string>

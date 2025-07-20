@@ -318,6 +318,8 @@
     <string name="query_cannot_be_empty">Veuillez saisir le nom du serveur.</string>
     <string name="error_network">Erreur réseau. Veuillez vérifier votre connexion.</string>
     <string name="offline_cached_servers_info">Réseau indisponible. Affichage des serveurs en cache.</string>
+    <string name="no_servers_available_offline">Aucun serveur disponible hors ligne.</string>
+    <string name="no_servers_available">Aucun serveur disponible.</string>
     <string name="error_timeout">Temps d'attente écoulé. Veuillez réessayer.</string>
     <string name="error_service_unavailable">Service temporairement indisponible. Veuillez réessayer plus tard.</string>
     <string name="error_bad_request">Requête incorrecte.</string>

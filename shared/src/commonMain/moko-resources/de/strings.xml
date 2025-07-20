@@ -318,6 +318,8 @@
     <string name="query_cannot_be_empty">Bitte gib einen Servernamen ein.</string>
     <string name="error_network">Netzwerkfehler. Bitte überprüfe deine Verbindung.</string>
     <string name="offline_cached_servers_info">Netzwerk nicht verfügbar. Zeige zwischengespeicherte Server.</string>
+    <string name="no_servers_available_offline">Offline sind keine Server verfügbar.</string>
+    <string name="no_servers_available">Keine Server verfügbar.</string>
     <string name="error_timeout">Zeitüberschreitung. Bitte versuche es erneut.</string>
     <string name="error_service_unavailable">Dienst vorübergehend nicht verfügbar. Bitte versuche es später erneut.</string>
     <string name="error_bad_request">Fehlerhafte Anfrage.</string>
