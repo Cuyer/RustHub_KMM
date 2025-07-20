@@ -307,6 +307,7 @@
     <string name="removed_from_favourites">%s удалён из избранного</string>
     <string name="subscribed_to_notifications">Уведомления включены</string>
     <string name="unsubscribed_from_notifications">Уведомления отключены</string>
+    <string name="will_sync_when_online">Синхронизация произойдет при подключении к сети</string>
     <string name="error_add_favourite">Ошибка при добавлении в избранное</string>
     <string name="error_remove_favourite">Ошибка при удалении из избранного</string>
     <string name="error_subscribe_notifications">Ошибка при подписке на уведомления</string>

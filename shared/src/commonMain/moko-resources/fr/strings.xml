@@ -307,6 +307,7 @@
     <string name="removed_from_favourites">%s supprimé des favoris</string>
     <string name="subscribed_to_notifications">Notifications activées</string>
     <string name="unsubscribed_from_notifications">Notifications désactivées</string>
+    <string name="will_sync_when_online">Se synchronisera une fois en ligne</string>
     <string name="error_add_favourite">Erreur lors de l’ajout aux favoris</string>
     <string name="error_remove_favourite">Erreur lors de la suppression des favoris</string>
     <string name="error_subscribe_notifications">Erreur lors de l’abonnement aux notifications</string>

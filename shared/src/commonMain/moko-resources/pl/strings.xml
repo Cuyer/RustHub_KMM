@@ -307,6 +307,7 @@
     <string name="removed_from_favourites">%s usunięty z ulubionych</string>
     <string name="subscribed_to_notifications">Powiadomienia włączone</string>
     <string name="unsubscribed_from_notifications">Powiadomienia wyłączone</string>
+    <string name="will_sync_when_online">Zostanie zsynchronizowane po powrocie online</string>
     <string name="error_add_favourite">Błąd dodawania do ulubionych</string>
     <string name="error_remove_favourite">Błąd usuwania z ulubionych</string>
     <string name="error_subscribe_notifications">Błąd subskrybowania powiadomień</string>
