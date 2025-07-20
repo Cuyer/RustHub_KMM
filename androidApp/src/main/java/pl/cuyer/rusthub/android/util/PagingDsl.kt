@@ -23,7 +23,11 @@ class PagingHandlerScope<T : Any>(
     @Composable
     fun onEmpty(body: @Composable () -> Unit) {
         if (handled) return
-        if (loadState.refresh !is LoadState.Error && items.itemCount == 0) {
+        if (
+            loadState.refresh is LoadState.NotLoading &&
+            items.itemCount == 0 &&
+            loadState.append.endOfPaginationReached
+        ) {
             handled = true
             body()
         }
