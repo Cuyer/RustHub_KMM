@@ -307,6 +307,7 @@
     <string name="removed_from_favourites">%s aus den Favoriten entfernt</string>
     <string name="subscribed_to_notifications">Benachrichtigungen abonniert</string>
     <string name="unsubscribed_from_notifications">Benachrichtigungen abbestellt</string>
+    <string name="will_sync_when_online">Wird synchronisiert, sobald eine Verbindung besteht</string>
     <string name="error_add_favourite">Beim Hinzufügen zu den Favoriten ist ein Fehler aufgetreten</string>
     <string name="error_remove_favourite">Beim Entfernen aus den Favoriten ist ein Fehler aufgetreten</string>
     <string name="error_subscribe_notifications">Beim Abonnieren der Benachrichtigungen ist ein Fehler aufgetreten</string>

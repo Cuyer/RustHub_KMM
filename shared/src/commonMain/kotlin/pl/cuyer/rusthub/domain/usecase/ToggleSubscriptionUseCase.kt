@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import pl.cuyer.rusthub.common.Result
+import pl.cuyer.rusthub.domain.usecase.ToggleActionResult
 import pl.cuyer.rusthub.domain.exception.NetworkUnavailableException
 import pl.cuyer.rusthub.domain.exception.TimeoutException
 import pl.cuyer.rusthub.domain.exception.ServiceUnavailableException
@@ -20,7 +21,7 @@ class ToggleSubscriptionUseCase(
     private val syncDataSource: SubscriptionSyncDataSource,
     private val scheduler: SubscriptionSyncScheduler
 ) {
-    operator fun invoke(serverId: Long, add: Boolean): Flow<Result<Unit>> = channelFlow {
+    operator fun invoke(serverId: Long, add: Boolean): Flow<ToggleActionResult> = channelFlow {
         val flow = if (add) repository.addSubscription(serverId) else repository.removeSubscription(serverId)
 
         flow.collectLatest { result ->
@@ -28,7 +29,7 @@ class ToggleSubscriptionUseCase(
                 is Result.Success -> {
                     serverDataSource.updateSubscription(serverId, add)
                     syncDataSource.deleteOperation(serverId)
-                    send(Result.Success(Unit))
+                    send(ToggleActionResult.Success)
                 }
                 is Result.Error -> {
                     when (result.exception) {
@@ -43,9 +44,9 @@ class ToggleSubscriptionUseCase(
                                 )
                             )
                             scheduler.schedule(serverId)
-                            send(Result.Success(Unit))
+                            send(ToggleActionResult.Queued)
                         }
-                        else -> send(Result.Error(result.exception))
+                        else -> send(ToggleActionResult.Error(result.exception))
                     }
                 }
             }
