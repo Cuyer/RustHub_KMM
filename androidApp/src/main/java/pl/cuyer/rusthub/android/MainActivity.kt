@@ -28,13 +28,14 @@ import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.presentation.ui.Colors
 import pl.cuyer.rusthub.util.InAppUpdateManager
+import pl.cuyer.rusthub.android.feature.startup.StartupScreen
 
 class MainActivity : AppCompatActivity() {
     private val startupViewModel: StartupViewModel by viewModel()
     private val inAppUpdateManager: InAppUpdateManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val splashScreen = installSplashScreen()
+        installSplashScreen()
         super.onCreate(savedInstanceState)
 
         var themeSettings by mutableStateOf(
@@ -78,10 +79,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        splashScreen.setKeepOnScreenCondition {
-            startupViewModel.state.value.isLoading
-        }
-
         setContent {
             val state = startupViewModel.state.collectAsStateWithLifecycle()
             RustHubTheme(
@@ -89,7 +86,11 @@ class MainActivity : AppCompatActivity() {
                 dynamicColor = themeSettings.dynamicColor
             ) {
                 RustHubBackground {
-                    NavigationRoot(startDestination = state.value.startDestination)
+                    if (state.value.isLoading) {
+                        StartupScreen()
+                    } else {
+                        NavigationRoot(startDestination = state.value.startDestination)
+                    }
                 }
             }
         }
