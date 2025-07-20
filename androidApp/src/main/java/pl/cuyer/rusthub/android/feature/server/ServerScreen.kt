@@ -18,6 +18,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -235,6 +236,23 @@ fun ServerScreen(
                                     .padding(horizontal = spacing.xmedium)
                             )
                         }
+                    }
+                }
+                onEmpty {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        val message = if (!state.value.isConnected) {
+                            stringResource(SharedRes.strings.no_servers_available_offline)
+                        } else {
+                            stringResource(SharedRes.strings.no_servers_available)
+                        }
+                        Text(
+                            text = message,
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
                 onError { error ->
