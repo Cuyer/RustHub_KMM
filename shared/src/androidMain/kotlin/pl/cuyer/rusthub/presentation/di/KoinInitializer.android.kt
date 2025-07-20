@@ -40,6 +40,7 @@ import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import kotlinx.coroutines.runBlocking
 import org.koin.dsl.bind
 import pl.cuyer.rusthub.BuildConfig
+import pl.cuyer.rusthub.util.ConnectivityObserver
 
 actual val platformModule: Module = module {
     single { DatabasePassphraseProvider(androidContext()) }
@@ -188,7 +189,6 @@ actual val platformModule: Module = module {
             resendConfirmationUseCase = get(),
             permissionsController = get(),
             stringProvider = get(),
-            connectivityObserver = get(),
             serverName = serverName,
             serverId = serverId,
             clipboardHandler = get(),

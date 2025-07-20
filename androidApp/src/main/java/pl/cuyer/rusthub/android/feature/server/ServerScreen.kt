@@ -3,12 +3,16 @@ package pl.cuyer.rusthub.android.feature.server
 import android.app.Activity
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.animateBounds
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +20,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -57,7 +62,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -100,7 +107,7 @@ import pl.cuyer.rusthub.domain.exception.ConnectivityException
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class,
-    ExperimentalMaterial3WindowSizeClassApi::class
+    ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalSharedTransitionApi::class
 )
 @Composable
 fun ServerScreen(
@@ -144,50 +151,60 @@ fun ServerScreen(
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onBackground,
         topBar = {
-            Column(
-                modifier = with(scrollBehavior)
-                { Modifier.searchBarScrollBehavior() }
-            ) {
-                RustSearchBarTopAppBar(
-                    searchBarState = searchBarState,
-                    textFieldState = textFieldState,
-                    onSearchTriggered = {
-                        onAction(ServerAction.OnSearch(textFieldState.text.toString()))
-                    },
-                    onOpenFilters = { showSheet = true },
-                    searchQueryUi = state.value.searchQuery,
-                    onDelete = {
-                        if (it.isBlank()) onAction(ServerAction.DeleteSearchQueries) else onAction(
-                            ServerAction.DeleteSearchQueryByQuery(it)
-                        )
-                    },
-                    onClearSearchQuery = {
-                        onAction(ServerAction.OnClearSearchQuery)
-                    },
-                    isLoadingSearchHistory = state.value.isLoadingSearchHistory
-                )
-                ServerFilterChips(
-                    selected = state.value.filter,
-                    onSelectedChange = {
-                        onAction(ServerAction.OnFilterChange(it))
-                        pagedList.refresh()
-                    },
-                    modifier = Modifier
-                        .navigationBarsPadding()
-                        .padding(horizontal = spacing.xmedium)
-                        .then(
-                            if (isTabletMode) Modifier.displayCutoutPadding() else Modifier
-                        )
-
-                )
-                if (!state.value.isConnected) {
-                    Text(
-                        text = stringResource(SharedRes.strings.offline_cached_servers_info),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier
-                            .padding(horizontal = spacing.xmedium)
-                            .padding(top = spacing.xsmall)
+            LookaheadScope {
+                Column(
+                    modifier = with(scrollBehavior)
+                    { Modifier.searchBarScrollBehavior() }
+                        .animateBounds(this)
+                ) {
+                    RustSearchBarTopAppBar(
+                        searchBarState = searchBarState,
+                        textFieldState = textFieldState,
+                        onSearchTriggered = {
+                            onAction(ServerAction.OnSearch(textFieldState.text.toString()))
+                        },
+                        onOpenFilters = { showSheet = true },
+                        searchQueryUi = state.value.searchQuery,
+                        onDelete = {
+                            if (it.isBlank()) onAction(ServerAction.DeleteSearchQueries) else onAction(
+                                ServerAction.DeleteSearchQueryByQuery(it)
+                            )
+                        },
+                        onClearSearchQuery = {
+                            onAction(ServerAction.OnClearSearchQuery)
+                        },
+                        isLoadingSearchHistory = state.value.isLoadingSearchHistory
                     )
+                    ServerFilterChips(
+                        selected = state.value.filter,
+                        onSelectedChange = {
+                            onAction(ServerAction.OnFilterChange(it))
+                            pagedList.refresh()
+                        },
+                        modifier = Modifier
+                            .navigationBarsPadding()
+                            .padding(horizontal = spacing.xmedium)
+                            .then(
+                                if (isTabletMode) Modifier.displayCutoutPadding() else Modifier
+                            )
+
+                    )
+                    AnimatedVisibility(
+                        visible = !state.value.isConnected,
+                        enter = slideInVertically(),
+                        exit = slideOutVertically()
+                    ) {
+                        Text(
+                            textAlign = TextAlign.Center,
+                            text = stringResource(SharedRes.strings.offline_cached_servers_info),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = spacing.xsmall)
+                                .background(MaterialTheme.colorScheme.secondary)
+                        )
+                    }
                 }
             }
         },
