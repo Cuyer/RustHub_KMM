@@ -318,6 +318,7 @@
     <string name="query_cannot_be_empty">Wpisz nazwę serwera.</string>
     <string name="error_network">Błąd sieci. Sprawdź swoje połączenie.</string>
     <string name="offline_cached_servers_info">Brak sieci. Wyświetlana jest zapisana lista serwerów.</string>
+    <string name="offline">Brak połączenia z internetem.</string>
     <string name="no_servers_available_offline">Brak dostępnych serwerów offline.</string>
     <string name="no_servers_available">Brak dostępnych serwerów.</string>
     <string name="error_timeout">Przekroczono czas oczekiwania. Spróbuj ponownie.</string>
