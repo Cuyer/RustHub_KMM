@@ -1,10 +1,16 @@
 package pl.cuyer.rusthub.android.feature.server
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateBounds
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -50,12 +56,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -227,13 +235,34 @@ fun ServerDetailsScreen(
             )
         }
     ) { innerPadding ->
-        if (state.details != null) {
-            LazyColumn(
-                state = lazyListState,
+        LookaheadScope {
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
+                    .animateBounds(this)
             ) {
+                AnimatedVisibility(
+                    visible = !state.isConnected,
+                    enter = slideInVertically(),
+                    exit = slideOutVertically()
+                ) {
+                    Text(
+                        textAlign = TextAlign.Center,
+                        text = stringResource(SharedRes.strings.offline_cached_servers_info),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = spacing.xsmall)
+                            .background(MaterialTheme.colorScheme.secondary)
+                    )
+                }
+            if (state.details != null) {
+                LazyColumn(
+                    state = lazyListState,
+                    modifier = Modifier.fillMaxSize()
+                ) {
                 state.details?.let {
                     item {
                         Text(
