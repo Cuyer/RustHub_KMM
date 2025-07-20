@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
+import pl.cuyer.rusthub.domain.usecase.ToggleActionResult
 import pl.cuyer.rusthub.domain.exception.FavoriteLimitException
 import pl.cuyer.rusthub.domain.exception.SubscriptionLimitException
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
@@ -170,7 +171,7 @@ class ServerDetailsViewModel(
                 .collectLatest { result ->
                     ensureActive()
                     when (result) {
-                        is Result.Success -> {
+                        is ToggleActionResult.Success, is ToggleActionResult.Queued -> {
                             serverDetailsJob = observeServerDetails(id)
                             snackbarController.sendEvent(
                                 event = SnackbarEvent(
@@ -188,11 +189,19 @@ class ServerDetailsViewModel(
                                     duration = Duration.SHORT
                                 )
                             )
+                            if (result is ToggleActionResult.Queued) {
+                                snackbarController.sendEvent(
+                                    SnackbarEvent(
+                                        message = stringProvider.get(SharedRes.strings.will_sync_when_online),
+                                        duration = Duration.SHORT
+                                    )
+                                )
+                            }
                             if (add) {
                                 reviewRequester.requestReview()
                             }
                         }
-                        is Result.Error -> when (result.exception) {
+                        is ToggleActionResult.Error -> when (result.exception) {
                             is FavoriteLimitException -> navigateSubscription()
                             else -> showErrorSnackbar(
                                 stringProvider.get(
@@ -226,7 +235,7 @@ class ServerDetailsViewModel(
                 .collectLatest { result ->
                     ensureActive()
                     when (result) {
-                        is Result.Success -> {
+                        is ToggleActionResult.Success, is ToggleActionResult.Queued -> {
                             serverDetailsJob = observeServerDetails(id)
                             snackbarController.sendEvent(
                                 SnackbarEvent(
@@ -238,11 +247,19 @@ class ServerDetailsViewModel(
                                     duration = Duration.SHORT
                                 )
                             )
+                            if (result is ToggleActionResult.Queued) {
+                                snackbarController.sendEvent(
+                                    SnackbarEvent(
+                                        message = stringProvider.get(SharedRes.strings.will_sync_when_online),
+                                        duration = Duration.SHORT
+                                    )
+                                )
+                            }
                             if (subscribed) {
                                 reviewRequester.requestReview()
                             }
                         }
-                        is Result.Error -> when (result.exception) {
+                        is ToggleActionResult.Error -> when (result.exception) {
                             is SubscriptionLimitException -> navigateSubscription()
                             else -> showErrorSnackbar(
                                 stringProvider.get(

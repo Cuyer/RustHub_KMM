@@ -309,6 +309,7 @@
     <string name="removed_from_favourites">Removed %s from favourites</string>
     <string name="subscribed_to_notifications">Subscribed to notifications</string>
     <string name="unsubscribed_from_notifications">Unsubscribed from notifications</string>
+    <string name="will_sync_when_online">Will sync when online</string>
     <string name="error_add_favourite">An error occurred when trying to add server to favourites</string>
     <string name="error_remove_favourite">An error occurred when trying to remove server from favourites</string>
     <string name="error_subscribe_notifications">An error occurred when trying to subscribe to notifications</string>

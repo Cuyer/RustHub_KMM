@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import pl.cuyer.rusthub.common.Result
+import pl.cuyer.rusthub.domain.usecase.ToggleActionResult
 import pl.cuyer.rusthub.domain.exception.NetworkUnavailableException
 import pl.cuyer.rusthub.domain.exception.TimeoutException
 import pl.cuyer.rusthub.domain.exception.ServiceUnavailableException
@@ -20,7 +21,7 @@ class ToggleFavouriteUseCase(
     private val syncDataSource: FavouriteSyncDataSource,
     private val scheduler: SyncScheduler
 ) {
-    operator fun invoke(serverId: Long, add: Boolean): Flow<Result<Unit>> = channelFlow {
+    operator fun invoke(serverId: Long, add: Boolean): Flow<ToggleActionResult> = channelFlow {
         val flow =
             if (add) repository.addFavourite(serverId) else repository.removeFavourite(serverId)
 
@@ -29,7 +30,7 @@ class ToggleFavouriteUseCase(
                 is Result.Success -> {
                     serverDataSource.updateFavourite(serverId, add)
                     syncDataSource.deleteOperation(serverId)
-                    send(Result.Success(Unit))
+                    send(ToggleActionResult.Success)
                 }
 
                 is Result.Error -> {
@@ -45,10 +46,10 @@ class ToggleFavouriteUseCase(
                                 )
                             )
                             scheduler.schedule(serverId)
-                            send(Result.Success(Unit))
+                            send(ToggleActionResult.Queued)
                         }
 
-                        else -> send(Result.Error(result.exception))
+                        else -> send(ToggleActionResult.Error(result.exception))
                     }
                 }
 
