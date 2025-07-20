@@ -8,5 +8,6 @@ data class ServerDetailsState(
     val serverId: Long? = null,
     val serverName: String? = null,
     val showNotificationInfo: Boolean = false,
-    val showMap: Boolean = false
+    val showMap: Boolean = false,
+    val isConnected: Boolean = true
 )

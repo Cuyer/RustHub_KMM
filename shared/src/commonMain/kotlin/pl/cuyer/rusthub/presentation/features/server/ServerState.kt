@@ -11,5 +11,6 @@ data class ServerState(
     val isLoadingSearchHistory: Boolean = true,
     val isLoadingFilters: Boolean = true,
     val loadingMore: Boolean = false,
-    val filter: ServerFilter = ServerFilter.ALL
+    val filter: ServerFilter = ServerFilter.ALL,
+    val isConnected: Boolean = true
 )

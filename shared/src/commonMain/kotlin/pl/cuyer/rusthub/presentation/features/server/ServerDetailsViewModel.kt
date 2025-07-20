@@ -47,6 +47,7 @@ import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.ShareHandler
 import pl.cuyer.rusthub.util.ReviewRequester
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.ConnectivityObserver
 import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.SharedRes
 
@@ -62,6 +63,7 @@ class ServerDetailsViewModel(
     private val resendConfirmationUseCase: ResendConfirmationUseCase,
     private val permissionsController: PermissionsController,
     private val stringProvider: StringProvider,
+    private val connectivityObserver: ConnectivityObserver,
     private val serverName: String?,
     private val serverId: Long?
 ) : BaseViewModel() {
@@ -74,6 +76,7 @@ class ServerDetailsViewModel(
             assignInitialData()
             assignInitialServerDetailsJob()
             observeUser()
+            observeConnectivity()
         }
         .stateIn(
             scope = coroutineScope,
@@ -391,5 +394,13 @@ class ServerDetailsViewModel(
                 isLoading = loading
             )
         }
+    }
+
+    private fun observeConnectivity() {
+        connectivityObserver.isConnected
+            .onEach { connected ->
+                _state.update { it.copy(isConnected = connected) }
+            }
+            .launchIn(coroutineScope)
     }
 }
