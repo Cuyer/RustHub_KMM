@@ -51,6 +51,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.ConnectivityObserver
 import pl.cuyer.rusthub.SharedRes
 import kotlinx.datetime.Clock.System
 import pl.cuyer.rusthub.util.toUserMessage
@@ -67,6 +68,7 @@ class ServerViewModel(
     private val getSearchQueriesUseCase: GetSearchQueriesUseCase,
     private val deleteSearchQueriesUseCase: DeleteSearchQueriesUseCase,
     private val stringProvider: StringProvider,
+    private val connectivityObserver: ConnectivityObserver,
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -79,6 +81,7 @@ class ServerViewModel(
         .onStart {
             observeFilters()
             observeSearchQueries()
+            observeConnectivity()
         }
         .stateIn(
             scope = coroutineScope,
@@ -341,5 +344,13 @@ class ServerViewModel(
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_filters))
             }
         }
+    }
+
+    private fun observeConnectivity() {
+        connectivityObserver.isConnected
+            .onEach { connected ->
+                _state.update { it.copy(isConnected = connected) }
+            }
+            .launchIn(coroutineScope)
     }
 }

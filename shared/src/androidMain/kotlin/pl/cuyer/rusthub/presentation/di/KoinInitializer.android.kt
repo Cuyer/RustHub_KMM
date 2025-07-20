@@ -63,6 +63,7 @@ actual val platformModule: Module = module {
     single { ReviewRequester(androidContext()) }
     single { StoreNavigator(androidContext()) }
     single { SystemDarkThemeObserver(androidContext()) }
+    single { ConnectivityObserver(androidContext()) }
     single { GoogleAuthClient(androidContext()) }
     single { StringProvider(androidContext()) }
     single { PermissionsController(androidContext()) }
@@ -111,7 +112,8 @@ actual val platformModule: Module = module {
             saveSearchQueryUseCase = get(),
             getSearchQueriesUseCase = get(),
             deleteSearchQueriesUseCase = get(),
-            stringProvider = get()
+            stringProvider = get(),
+            connectivityObserver = get()
         )
     }
     viewModel {
@@ -186,6 +188,7 @@ actual val platformModule: Module = module {
             resendConfirmationUseCase = get(),
             permissionsController = get(),
             stringProvider = get(),
+            connectivityObserver = get(),
             serverName = serverName,
             serverId = serverId,
             clipboardHandler = get(),

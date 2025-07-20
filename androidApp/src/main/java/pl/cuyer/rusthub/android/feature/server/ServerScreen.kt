@@ -180,6 +180,15 @@ fun ServerScreen(
                         )
 
                 )
+                if (!state.value.isConnected) {
+                    Text(
+                        text = stringResource(SharedRes.strings.offline_cached_servers_info),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier
+                            .padding(horizontal = spacing.xmedium)
+                            .padding(top = spacing.xsmall)
+                    )
+                }
             }
         },
         modifier = Modifier
