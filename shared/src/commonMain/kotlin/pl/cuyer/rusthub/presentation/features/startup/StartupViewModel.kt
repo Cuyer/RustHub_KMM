@@ -68,7 +68,6 @@ class StartupViewModel(
     )
 
     init {
-        observeUser()
         observePreferences()
         coroutineScope.launch {
             if (itemDataSource.isEmpty()) {
@@ -106,6 +105,7 @@ class StartupViewModel(
     }
 
     private suspend fun initialize() {
+        observeUser()
         updateLoadingState(true)
         try {
             val user = userFlow.first()
