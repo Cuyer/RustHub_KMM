@@ -195,6 +195,7 @@
     <string name="search">Поиск</string>
     <string name="search_and_explore_rust_servers_by_name_type_last_wipe_or_more">Ищите и изучайте серверы Rust по имени, типу, последнему вайпу и др.</string>
     <string name="search_servers">Поиск серверов...</string>
+    <string name="search_items">Поиск предметов...</string>
     <string name="see_server_info_like_time_of_last_wipe_map_ranking_and_more">Смотрите инфо о сервере: время последнего вайпа, карта, рейтинг и т.д.</string>
     <string name="seed" translatable="false">Seed</string>
     <string name="send_email">Отправить e-mail</string>
@@ -321,6 +322,7 @@
     <string name="offline">Нет подключения к интернету.</string>
     <string name="no_servers_available_offline">Нет серверов в автономном режиме.</string>
     <string name="no_servers_available">Нет доступных серверов.</string>
+    <string name="no_items_available">Нет доступных предметов.</string>
     <string name="error_timeout">Превышено время ожидания. Попробуйте ещё раз.</string>
     <string name="error_service_unavailable">Сервис временно недоступен. Попробуйте позже.</string>
     <string name="error_bad_request">Неверный запрос.</string>

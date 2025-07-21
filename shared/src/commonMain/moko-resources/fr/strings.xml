@@ -195,6 +195,7 @@
     <string name="search">Recherche</string>
     <string name="search_and_explore_rust_servers_by_name_type_last_wipe_or_more">Recherchez et explorez les serveurs Rust par nom, type, dernier wipe et plus encore.</string>
     <string name="search_servers">Rechercher des serveurs...</string>
+    <string name="search_items">Rechercher des objets...</string>
     <string name="see_server_info_like_time_of_last_wipe_map_ranking_and_more">Consultez les infos du serveur : date du dernier wipe, carte, classement, etc.</string>
     <string name="seed" translatable="false">Seed</string>
     <string name="send_email">Envoyer un e-mail</string>
@@ -321,6 +322,7 @@
     <string name="offline">Pas de connexion Internet.</string>
     <string name="no_servers_available_offline">Aucun serveur disponible hors ligne.</string>
     <string name="no_servers_available">Aucun serveur disponible.</string>
+    <string name="no_items_available">Aucun objet disponible.</string>
     <string name="error_timeout">Temps d'attente écoulé. Veuillez réessayer.</string>
     <string name="error_service_unavailable">Service temporairement indisponible. Veuillez réessayer plus tard.</string>
     <string name="error_bad_request">Requête incorrecte.</string>
