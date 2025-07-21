@@ -1,8 +1,6 @@
 package pl.cuyer.rusthub.presentation.features.auth.delete
 
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -12,7 +10,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -22,7 +19,7 @@ import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.usecase.DeleteAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
-import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import pl.cuyer.rusthub.presentation.navigation.RootNavigator
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.SharedRes
@@ -37,8 +34,6 @@ class DeleteAccountViewModel(
     private val getUserUseCase: GetUserUseCase,
     private val stringProvider: StringProvider,
 ) : BaseViewModel() {
-    private val _uiEvent = Channel<UiEvent>(UNLIMITED)
-    val uiEvent = _uiEvent.receiveAsFlow()
 
     private val _state = MutableStateFlow(DeleteAccountState())
     val state = _state
@@ -87,7 +82,7 @@ class DeleteAccountViewModel(
                                         message = stringProvider.get(SharedRes.strings.account_deleted_successfully)
                                     )
                                 )
-                                _uiEvent.send(UiEvent.Navigate(Onboarding))
+                                RootNavigator.navigate(Onboarding)
                             }
                             is Result.Error -> showErrorSnackbar(
                                 result.exception.toUserMessage(stringProvider)
@@ -126,7 +121,7 @@ class DeleteAccountViewModel(
                                     message = stringProvider.get(SharedRes.strings.account_deleted_successfully)
                                 )
                             )
-                            _uiEvent.send(UiEvent.Navigate(Onboarding))
+                            RootNavigator.navigate(Onboarding)
                         }
                         is Result.Error -> showErrorSnackbar(
                             result.exception.toUserMessage(stringProvider)

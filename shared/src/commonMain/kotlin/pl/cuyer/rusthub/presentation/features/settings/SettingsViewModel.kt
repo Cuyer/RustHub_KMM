@@ -36,6 +36,7 @@ import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
 import pl.cuyer.rusthub.presentation.navigation.Subscription
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.navigation.UpgradeAccount
+import pl.cuyer.rusthub.presentation.navigation.RootNavigator
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
@@ -163,7 +164,7 @@ class SettingsViewModel(
                             if (state.value.provider == AuthProvider.GOOGLE) {
                                 googleAuthClient.signOut()
                             }
-                            _uiEvent.send(UiEvent.Navigate(Onboarding))
+                            RootNavigator.navigate(Onboarding)
                         }
 
                         is Result.Error -> showErrorSnackbar(stringProvider.get(SharedRes.strings.logout_error))

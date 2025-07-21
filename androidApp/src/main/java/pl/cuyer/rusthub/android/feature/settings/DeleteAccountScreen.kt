@@ -47,19 +47,15 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.navigation3.runtime.NavKey
-import kotlinx.coroutines.flow.Flow
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppSecureTextField
-import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountAction
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountState
-import pl.cuyer.rusthub.presentation.navigation.UiEvent
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class,
@@ -68,15 +64,10 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 @Composable
 fun DeleteAccountScreen(
     onNavigateUp: () -> Unit,
-    onNavigate: (NavKey) -> Unit,
-    uiEvent: Flow<UiEvent>,
     stateProvider: () -> State<DeleteAccountState>,
     onAction: (DeleteAccountAction) -> Unit
 ) {
     val state = stateProvider()
-    ObserveAsEvents(uiEvent) { event ->
-        if (event is UiEvent.Navigate) onNavigate(event.destination)
-    }
 
     val context = LocalContext.current
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
