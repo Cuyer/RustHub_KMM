@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.joinAll
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.AuthProvider
@@ -51,9 +52,6 @@ class StartupViewModel(
 ) : BaseViewModel() {
 
     private var startupJob: Job? = null
-    private val initializationJob = coroutineScope.launch(start = CoroutineStart.LAZY) {
-        initialize()
-    }
 
     private val userFlow = getUserUseCase()
         .distinctUntilChanged()
@@ -67,7 +65,8 @@ class StartupViewModel(
         )
 
     private val _state = MutableStateFlow(StartupState())
-    val state = _state.stateIn(
+    val state = _state
+        .stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000L),
         initialValue = StartupState()
@@ -77,16 +76,22 @@ class StartupViewModel(
         observePreferences()
         observeUser()
         startupJob = coroutineScope.launch {
-            if (itemDataSource.isEmpty()) {
+            val initialization = launch { initialize() }
+
+            val scheduling = launch {
                 updateLoadingState(true)
-                itemSyncDataSource.setState(ItemSyncState.PENDING)
-                itemsScheduler.startNow()
-                startSkipTimer()
-                itemSyncDataSource.observeState().first { it == ItemSyncState.DONE }
-            } else {
-                itemsScheduler.schedule()
+                if (itemDataSource.isEmpty()) {
+                    itemSyncDataSource.setState(ItemSyncState.PENDING)
+                    itemsScheduler.startNow()
+                    startSkipTimer()
+                    itemSyncDataSource.observeState().first { it == ItemSyncState.DONE }
+                } else {
+                    itemsScheduler.schedule()
+                }
             }
-            initializationJob.start()
+
+            listOf(initialization, scheduling).joinAll()
+            updateLoadingState(false)
         }
     }
 
@@ -113,7 +118,6 @@ class StartupViewModel(
     }
 
     private suspend fun initialize() {
-        updateLoadingState(true)
         try {
             val user = userFlow.first()
             if (user != null && user.provider == AuthProvider.LOCAL) {
@@ -126,8 +130,6 @@ class StartupViewModel(
         } catch (e: Exception) {
             showErrorSnackbar(stringProvider.get(SharedRes.strings.fetch_user_error))
             updateStartDestination(null)
-        } finally {
-            updateLoadingState(false)
         }
     }
 
@@ -144,7 +146,6 @@ class StartupViewModel(
 
     fun skipFetching() {
         startupJob?.cancel()
-        initializationJob.start()
     }
 
     private fun updateStartDestination(user: User?) {
