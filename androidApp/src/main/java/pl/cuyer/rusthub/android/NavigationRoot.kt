@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.android
 
+import android.util.Log
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,10 +23,16 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItem
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -35,23 +42,21 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
-import kotlinx.coroutines.flow.flowOf
 import app.cash.paging.compose.collectAsLazyPagingItems
-import androidx.compose.runtime.mutableStateOf
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pl.cuyer.rusthub.SharedRes
-import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.android.feature.auth.ConfirmEmailScreen
 import pl.cuyer.rusthub.android.feature.auth.CredentialsScreen
 import pl.cuyer.rusthub.android.feature.auth.ResetPasswordScreen
 import pl.cuyer.rusthub.android.feature.auth.UpgradeAccountScreen
+import pl.cuyer.rusthub.android.feature.item.ItemDetailsScreen
+import pl.cuyer.rusthub.android.feature.item.ItemScreen
 import pl.cuyer.rusthub.android.feature.onboarding.OnboardingScreen
 import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
-import pl.cuyer.rusthub.android.feature.item.ItemScreen
-import pl.cuyer.rusthub.android.feature.item.ItemDetailsScreen
 import pl.cuyer.rusthub.android.feature.settings.ChangePasswordScreen
 import pl.cuyer.rusthub.android.feature.settings.DeleteAccountScreen
 import pl.cuyer.rusthub.android.feature.settings.PrivacyPolicyScreen
@@ -60,6 +65,7 @@ import pl.cuyer.rusthub.android.feature.subscription.SubscriptionScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.navigation.bottomNavItems
 import pl.cuyer.rusthub.android.navigation.navigateBottomBar
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.common.Urls
 import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
@@ -67,23 +73,23 @@ import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
 import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordViewModel
 import pl.cuyer.rusthub.presentation.features.auth.password.ResetPasswordViewModel
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
+import pl.cuyer.rusthub.presentation.features.item.ItemState
+import pl.cuyer.rusthub.presentation.features.item.ItemViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
-import pl.cuyer.rusthub.presentation.features.item.ItemViewModel
-import pl.cuyer.rusthub.presentation.features.item.ItemState
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
 import pl.cuyer.rusthub.presentation.navigation.Credentials
 import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
+import pl.cuyer.rusthub.presentation.navigation.ItemDetails
+import pl.cuyer.rusthub.presentation.navigation.ItemList
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
 import pl.cuyer.rusthub.presentation.navigation.ResetPassword
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
-import pl.cuyer.rusthub.presentation.navigation.ItemList
-import pl.cuyer.rusthub.presentation.navigation.ItemDetails
 import pl.cuyer.rusthub.presentation.navigation.Settings
 import pl.cuyer.rusthub.presentation.navigation.Subscription
 import pl.cuyer.rusthub.presentation.navigation.Terms
@@ -121,8 +127,21 @@ fun NavigationRoot(startDestination: NavKey) {
     val backStack = rememberNavBackStack(startDestination)
     val listDetailStrategy = rememberListDetailSceneStrategy<Any>()
 
-    LaunchedEffect(startDestination) {
-        if (backStack.firstOrNull() != startDestination) {
+    val configuration = LocalConfiguration.current
+    var lastOrientation by rememberSaveable { mutableIntStateOf(-1) }
+
+    LaunchedEffect(startDestination, configuration.orientation) {
+        val orientationChanged = if (lastOrientation == -1) {
+            lastOrientation = configuration.orientation
+            false
+        } else if (lastOrientation != configuration.orientation) {
+            lastOrientation = configuration.orientation
+            true
+        } else {
+            false
+        }
+
+        if (!orientationChanged && backStack.firstOrNull() != startDestination) {
             backStack.clear()
             backStack.add(startDestination)
         }
