@@ -350,8 +350,8 @@
     <string name="synchronizing_data">Synchronizowanie danych</string>
     <string name="skip">Pomiń</string>
     <string name="fetching_in_background">Pobieranie będzie kontynuowane w tle.</string>
-    <string name="looting">Plądrowanie</string>
-    <string name="crafting">Rzemiosło</string>
+    <string name="looting">Pozyskiwane z</string>
+    <string name="crafting">Craftowanie</string>
     <string name="recycling">Recykling</string>
-    <string name="raiding">Najazd</string>
+    <string name="raiding">Rajdowanie</string>
 </resources>
