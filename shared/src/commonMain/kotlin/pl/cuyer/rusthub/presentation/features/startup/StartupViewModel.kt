@@ -2,10 +2,10 @@ package pl.cuyer.rusthub.presentation.features.startup
 
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
@@ -15,11 +15,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
-import kotlinx.io.IOException
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
-import pl.cuyer.rusthub.domain.exception.ConnectivityException
-import pl.cuyer.rusthub.domain.exception.ServiceUnavailableException
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.model.User
@@ -54,7 +51,9 @@ class StartupViewModel(
 ) : BaseViewModel() {
 
     private var startupJob: Job? = null
-    private var initialized = false
+    private val initializationJob = coroutineScope.launch(start = CoroutineStart.LAZY) {
+        initialize()
+    }
 
     private val userFlow = getUserUseCase()
         .distinctUntilChanged()
@@ -87,7 +86,7 @@ class StartupViewModel(
             } else {
                 itemsScheduler.schedule()
             }
-            initialize()
+            initializationJob.start()
         }
     }
 
@@ -114,8 +113,6 @@ class StartupViewModel(
     }
 
     private suspend fun initialize() {
-        if (initialized) return
-        initialized = true
         updateLoadingState(true)
         try {
             val user = userFlow.first()
@@ -146,9 +143,8 @@ class StartupViewModel(
     }
 
     fun skipFetching() {
-        if (initialized) return
         startupJob?.cancel()
-        coroutineScope.launch { initialize() }
+        initializationJob.start()
     }
 
     private fun updateStartDestination(user: User?) {
