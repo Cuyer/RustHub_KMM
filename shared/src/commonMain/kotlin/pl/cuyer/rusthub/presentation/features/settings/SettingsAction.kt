@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.presentation.features.settings
 
 import pl.cuyer.rusthub.domain.model.Theme
+import pl.cuyer.rusthub.domain.model.Language
 
 sealed interface SettingsAction {
     data object OnChangePasswordClick : SettingsAction
@@ -14,4 +15,5 @@ sealed interface SettingsAction {
     data object OnUpgradeAccount : SettingsAction
     data class OnThemeChange(val theme: Theme) : SettingsAction
     data class OnDynamicColorsChange(val enabled: Boolean) : SettingsAction
+    data class OnLanguageChange(val language: Language) : SettingsAction
 }
