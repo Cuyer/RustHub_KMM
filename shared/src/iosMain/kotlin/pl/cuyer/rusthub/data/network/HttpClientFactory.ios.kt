@@ -36,7 +36,13 @@ import pl.cuyer.rusthub.domain.model.AuthProvider
 import platform.Foundation.NSLocale
 import platform.Foundation.currentLocale
 import platform.Foundation.languageCode
+import platform.Foundation.preferredLanguages
 import kotlin.random.Random
+
+private fun preferredLanguageCode(): String {
+    val first = (preferredLanguages.firstOrNull() as? String)
+    return first ?: NSLocale.currentLocale.languageCode ?: "en"
+}
 
 actual class HttpClientFactory actual constructor(
     private val json: Json,
@@ -102,7 +108,7 @@ actual class HttpClientFactory actual constructor(
             }
 
             defaultRequest {
-                header("Accept-Language", NSLocale.currentLocale.languageCode)
+                header("Accept-Language", preferredLanguageCode())
                 contentType(ContentType.Application.Json)
             }
         }

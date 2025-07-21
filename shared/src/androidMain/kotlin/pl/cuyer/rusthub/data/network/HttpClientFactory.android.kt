@@ -36,10 +36,21 @@ import pl.cuyer.rusthub.util.BuildType
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import java.util.Locale
+import androidx.appcompat.app.AppCompatDelegate
 import kotlin.random.Random
 
 private fun useCtLibrary(): Boolean {
     return Build.VERSION.SDK_INT < 36
+}
+
+private fun currentLanguageTag(): String {
+    val locales = AppCompatDelegate.getApplicationLocales()
+    val locale = if (!locales.isEmpty) {
+        locales[0]
+    } else {
+        Locale.getDefault()
+    }
+    return locale?.toLanguageTag() ?: Locale.getDefault().toLanguageTag()
 }
 
 actual class HttpClientFactory actual constructor(
@@ -111,7 +122,7 @@ actual class HttpClientFactory actual constructor(
             }
 
             defaultRequest {
-                header("Accept-Language", Locale.getDefault().toLanguageTag())
+                header("Accept-Language", currentLanguageTag())
                 contentType(ContentType.Application.Json)
             }
         }
