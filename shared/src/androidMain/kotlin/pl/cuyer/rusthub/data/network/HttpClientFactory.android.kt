@@ -32,6 +32,9 @@ import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
 import pl.cuyer.rusthub.data.network.AppCheckPlugin
 import pl.cuyer.rusthub.util.AppCheckTokenProvider
+import pl.cuyer.rusthub.util.TokenRefresher
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import pl.cuyer.rusthub.util.BuildType
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
@@ -57,7 +60,9 @@ actual class HttpClientFactory actual constructor(
     private val json: Json,
     private val authDataSource: AuthDataSource,
     private val appCheckTokenProvider: AppCheckTokenProvider
-) {
+) : KoinComponent {
+
+    private val tokenRefresher: TokenRefresher by inject()
 
     actual fun create(): HttpClient {
         return HttpClient(OkHttp) {
@@ -100,6 +105,7 @@ actual class HttpClientFactory actual constructor(
                             BearerTokens(newTokens.accessToken, newTokens.refreshToken)
                         } else {
                             authDataSource.deleteUser()
+                            tokenRefresher.clear()
                             null
                         }
                     }
