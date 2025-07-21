@@ -330,4 +330,7 @@
     <string name="error_not_found">Nie znaleziono zasobu.</string>
     <string name="error_too_many_requests">Wykonujesz tę akcję zbyt często. Poczekaj chwilę.</string>
     <string name="error_invalid_refresh_token">Sesja wygasła. Zaloguj się ponownie.</string>
+    <string name="synchronizing_data">Synchronizowanie danych</string>
+    <string name="skip">Pomiń</string>
+    <string name="fetching_in_background">Pobieranie przedmiotów będzie kontynuowane w tle.</string>
 </resources>

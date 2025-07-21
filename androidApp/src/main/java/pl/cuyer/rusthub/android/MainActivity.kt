@@ -87,7 +87,10 @@ class MainActivity : AppCompatActivity() {
             ) {
                 RustHubBackground {
                     if (state.value.isLoading) {
-                        StartupScreen()
+                        StartupScreen(
+                            showSkip = state.value.showSkip,
+                            onSkip = { startupViewModel.skipFetching() }
+                        )
                     } else {
                         NavigationRoot(startDestination = state.value.startDestination)
                     }

@@ -330,4 +330,7 @@
     <string name="error_not_found">Ресурс не найден.</string>
     <string name="error_too_many_requests">Слишком много запросов. Подождите немного.</string>
     <string name="error_invalid_refresh_token">Сессия истекла. Войдите снова.</string>
+    <string name="synchronizing_data">Синхронизация данных</string>
+    <string name="skip">Пропустить</string>
+    <string name="fetching_in_background">Мы продолжим загружать предметы в фоновом режиме.</string>
 </resources>

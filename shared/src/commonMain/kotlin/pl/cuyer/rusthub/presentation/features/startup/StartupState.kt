@@ -8,6 +8,7 @@ import pl.cuyer.rusthub.presentation.navigation.Onboarding
 data class StartupState(
     val startDestination: NavKey = Onboarding,
     val isLoading: Boolean = true,
+    val showSkip: Boolean = false,
     val theme: Theme = Theme.SYSTEM,
     val dynamicColors: Boolean = false,
 )

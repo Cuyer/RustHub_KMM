@@ -330,4 +330,7 @@
     <string name="error_not_found">Ressource introuvable.</string>
     <string name="error_too_many_requests">Vous effectuez cette action trop souvent. Veuillez patienter.</string>
     <string name="error_invalid_refresh_token">Session expirée. Veuillez vous reconnecter.</string>
+    <string name="synchronizing_data">Synchronisation des données</string>
+    <string name="skip">Ignorer</string>
+    <string name="fetching_in_background">Nous continuerons à récupérer les éléments en arrière-plan.</string>
 </resources>
