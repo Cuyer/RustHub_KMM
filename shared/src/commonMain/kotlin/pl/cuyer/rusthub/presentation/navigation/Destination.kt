@@ -40,6 +40,15 @@ data class ServerDetails(
 ) : NavKey
 
 @Serializable
+data object ItemList : NavKey
+
+@Serializable
+data class ItemDetails(
+    val id: String,
+    val name: String? = null
+) : NavKey
+
+@Serializable
 data object PrivacyPolicy : NavKey
 
 @Serializable

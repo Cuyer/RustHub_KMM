@@ -645,6 +645,21 @@ DELETE FROM itemEntity;
 countItems:
 SELECT COUNT(*) FROM itemEntity;
 
+-- Returns a page of items filtered by query and category
+findItemsPagedFiltered:
+SELECT *
+FROM itemEntity
+WHERE (:category IS NULL OR categories LIKE '%' || :category || '%')
+  AND (name LIKE '%' || :name || '%' COLLATE NOCASE)
+ORDER BY name
+LIMIT :limit OFFSET :offset;
+
+countPagedItemsFiltered:
+SELECT COUNT(*)
+FROM itemEntity
+WHERE (:category IS NULL OR categories LIKE '%' || :category || '%')
+  AND (name LIKE '%' || :name || '%' COLLATE NOCASE);
+
 CREATE TABLE itemSyncEntity (
     id TEXT NOT NULL PRIMARY KEY,
     sync_state TEXT NOT NULL

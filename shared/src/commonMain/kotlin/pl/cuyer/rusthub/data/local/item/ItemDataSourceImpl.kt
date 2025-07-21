@@ -7,7 +7,11 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.data.local.Queries
+import app.cash.paging.PagingSource
+import app.cash.sqldelight.paging3.QueryPagingSource
+import database.ItemEntity
 import pl.cuyer.rusthub.database.RustHubDatabase
+import pl.cuyer.rusthub.domain.model.ItemCategory
 import pl.cuyer.rusthub.domain.model.RustItem
 import pl.cuyer.rusthub.domain.model.Looting
 import pl.cuyer.rusthub.domain.model.Raiding
@@ -55,5 +59,27 @@ class ItemDataSourceImpl(
         return withContext(Dispatchers.IO) {
             queries.countItems().executeAsOne() == 0L
         }
+    }
+
+    override fun getItemsPagingSource(
+        name: String?,
+        category: ItemCategory?
+    ): PagingSource<Int, ItemEntity> {
+        return QueryPagingSource(
+            countQuery = queries.countPagedItemsFiltered(
+                name = name ?: "",
+                category = category?.name
+            ),
+            transacter = queries,
+            context = Dispatchers.IO,
+            queryProvider = { limit, offset ->
+                queries.findItemsPagedFiltered(
+                    name = name ?: "",
+                    category = category?.name,
+                    limit = limit,
+                    offset = offset
+                )
+            }
+        )
     }
 }
