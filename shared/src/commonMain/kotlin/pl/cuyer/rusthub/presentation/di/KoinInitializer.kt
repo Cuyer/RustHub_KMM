@@ -59,6 +59,7 @@ import pl.cuyer.rusthub.domain.usecase.GetFiltersOptionsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
+import pl.cuyer.rusthub.domain.usecase.GetPagedItemsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
@@ -120,6 +121,7 @@ val appModule = module {
     single { PasswordValidator(get()) }
     single { UsernameValidator(get()) }
     single { GetPagedServersUseCase(get(), get(), get(), get()) }
+    single { GetPagedItemsUseCase(get(), get()) }
     single { GetFiltersUseCase(get()) }
     single { SaveFiltersUseCase(get()) }
     single { SaveSearchQueryUseCase(get()) }

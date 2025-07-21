@@ -44,7 +44,9 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
+import kotlinx.coroutines.flow.flowOf
 import app.cash.paging.compose.collectAsLazyPagingItems
+import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -57,6 +59,8 @@ import pl.cuyer.rusthub.android.feature.auth.UpgradeAccountScreen
 import pl.cuyer.rusthub.android.feature.onboarding.OnboardingScreen
 import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
+import pl.cuyer.rusthub.android.feature.item.ItemScreen
+import pl.cuyer.rusthub.android.feature.item.ItemDetailsScreen
 import pl.cuyer.rusthub.android.feature.settings.ChangePasswordScreen
 import pl.cuyer.rusthub.android.feature.settings.DeleteAccountScreen
 import pl.cuyer.rusthub.android.feature.settings.PrivacyPolicyScreen
@@ -73,6 +77,8 @@ import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
+import pl.cuyer.rusthub.presentation.features.item.ItemViewModel
+import pl.cuyer.rusthub.presentation.features.item.ItemState
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
@@ -83,6 +89,8 @@ import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
 import pl.cuyer.rusthub.presentation.navigation.ResetPassword
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
+import pl.cuyer.rusthub.presentation.navigation.ItemList
+import pl.cuyer.rusthub.presentation.navigation.ItemDetails
 import pl.cuyer.rusthub.presentation.navigation.Settings
 import pl.cuyer.rusthub.presentation.navigation.Subscription
 import pl.cuyer.rusthub.presentation.navigation.Terms
@@ -209,6 +217,26 @@ fun NavigationRoot(startDestination: NavKey) {
                                 onNavigate = { dest -> backStack.add(dest) }
                             )
                         }
+                        entry<ItemList>(metadata = ListDetailSceneStrategy.listPane()) {
+                            val viewModel = koinViewModel<ItemViewModel>()
+                            val state = viewModel.state.collectAsStateWithLifecycle()
+                            val paging = viewModel.paging.collectAsLazyPagingItems()
+                            ItemScreen(
+                                stateProvider = { state },
+                                uiEvent = viewModel.uiEvent,
+                                onAction = viewModel::onAction,
+                                pagedList = paging,
+                                onNavigate = { dest -> backStack.add(dest) }
+                            )
+                        }
+                        entry<ItemDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
+                            ItemDetailsScreen(
+                                stateProvider = { mutableStateOf(ItemState(isRefreshing = false)) },
+                                onAction = {},
+                                onNavigate = {},
+                                uiEvent = flowOf()
+                            )
+                        }
                         entry<Settings> {
                             val viewModel = koinViewModel<SettingsViewModel>()
                             val state = viewModel.state.collectAsStateWithLifecycle()
@@ -315,7 +343,8 @@ fun NavigationRoot(startDestination: NavKey) {
     LaunchedEffect(current) {
         snackbarHostState.currentSnackbarData?.dismiss()
     }
-    val showNav = current is ServerList || current is ServerDetails || current is Settings
+    val showNav = current is ServerList || current is ServerDetails ||
+        current is ItemList || current is ItemDetails || current is Settings
 
 
     if (showNav) {
@@ -341,6 +370,24 @@ fun NavigationRoot(startDestination: NavKey) {
                         )
                     },
                     label = { Text(stringResource(SharedRes.strings.servers)) }
+                )
+                NavigationSuiteItem(
+                    selected = current is ItemList || current is ItemDetails,
+                    onClick = {
+                        if (backStack.lastOrNull() !is ItemList) {
+                            while (backStack.lastOrNull() !is ItemList && backStack.isNotEmpty()) {
+                                backStack.removeLastOrNull()
+                            }
+                            backStack.add(ItemList)
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            Icons.AutoMirrored.Filled.List,
+                            contentDescription = stringResource(SharedRes.strings.items)
+                        )
+                    },
+                    label = { Text(stringResource(SharedRes.strings.items)) }
                 )
                 NavigationSuiteItem(
                     selected = current is Settings,

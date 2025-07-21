@@ -330,4 +330,19 @@
     <string name="error_not_found">Ресурс не найден.</string>
     <string name="error_too_many_requests">Слишком много запросов. Подождите немного.</string>
     <string name="error_invalid_refresh_token">Сессия истекла. Войдите снова.</string>
+    <string name="weapons">Weapons</string>
+    <string name="ammo">Ammo</string>
+    <string name="clothes">Clothes</string>
+    <string name="fun_category">Fun</string>
+    <string name="items">Items</string>
+    <string name="food">Food</string>
+    <string name="components">Components</string>
+    <string name="medical">Medical</string>
+    <string name="electrical">Electrical</string>
+    <string name="tools">Tools</string>
+    <string name="construction">Construction</string>
+    <string name="resources">Resources</string>
+    <string name="misc">Misc</string>
+    <string name="traps">Traps</string>
+    <string name="uncategorized">Uncategorized</string>
 </resources>

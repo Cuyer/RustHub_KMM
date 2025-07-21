@@ -84,6 +84,7 @@ fun RustSearchBarTopAppBar(
     onDelete: (String) -> Unit,
     onClearSearchQuery: () -> Unit,
     isLoadingSearchHistory: Boolean,
+    showFiltersIcon: Boolean = true,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -158,7 +159,9 @@ fun RustSearchBarTopAppBar(
                             targetOffsetX = { it },
                             animationSpec = tween(durationMillis = 150)
                         ),
-                        visible = searchBarState.currentValue == SearchBarValue.Collapsed && textFieldState.text.isEmpty()
+                        visible = showFiltersIcon &&
+                            searchBarState.currentValue == SearchBarValue.Collapsed &&
+                            textFieldState.text.isEmpty()
                     ) {
                         IconButton(
                             onClick = onOpenFilters,

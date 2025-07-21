@@ -174,7 +174,8 @@ fun ServerScreen(
                         onClearSearchQuery = {
                             onAction(ServerAction.OnClearSearchQuery)
                         },
-                        isLoadingSearchHistory = state.value.isLoadingSearchHistory
+                        isLoadingSearchHistory = state.value.isLoadingSearchHistory,
+                        showFiltersIcon = true
                     )
                     ServerFilterChips(
                         selected = state.value.filter,

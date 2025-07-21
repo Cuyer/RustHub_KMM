@@ -20,6 +20,7 @@ import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
+import pl.cuyer.rusthub.presentation.features.item.ItemViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.domain.usecase.GetUserPreferencesUseCase
@@ -37,6 +38,7 @@ import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.InAppUpdateManager
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.domain.usecase.GetPagedItemsUseCase
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
@@ -130,6 +132,12 @@ actual val platformModule: Module = module {
             deleteSearchQueriesUseCase = get(),
             stringProvider = get(),
             connectivityObserver = get()
+        )
+    }
+    viewModel {
+        ItemViewModel(
+            getPagedItemsUseCase = get(),
+            stringProvider = get(),
         )
     }
     viewModel {
