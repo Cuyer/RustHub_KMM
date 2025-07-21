@@ -52,6 +52,7 @@ import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
 import pl.cuyer.rusthub.android.feature.item.ItemScreen
 import pl.cuyer.rusthub.android.feature.item.ItemDetailsScreen
+import pl.cuyer.rusthub.presentation.features.item.ItemDetailsViewModel
 import pl.cuyer.rusthub.android.feature.settings.ChangePasswordScreen
 import pl.cuyer.rusthub.android.feature.settings.DeleteAccountScreen
 import pl.cuyer.rusthub.android.feature.settings.PrivacyPolicyScreen
@@ -256,8 +257,12 @@ private fun AppScaffold(
                         )
                     }
                     entry<ItemDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
+                        val viewModel: ItemDetailsViewModel = koinViewModel(
+                            key = key.id.toString()
+                        ) { parametersOf(key.id) }
+                        val state = viewModel.state.collectAsStateWithLifecycle()
                         ItemDetailsScreen(
-                            stateProvider = { mutableStateOf(ItemState(isRefreshing = false)) },
+                            stateProvider = { state },
                             onAction = {},
                             onNavigate = {},
                             uiEvent = flowOf()

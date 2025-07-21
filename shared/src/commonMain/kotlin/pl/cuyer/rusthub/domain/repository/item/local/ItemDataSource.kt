@@ -12,4 +12,5 @@ interface ItemDataSource {
         name: String?,
         category: ItemCategory?
     ): PagingSource<Int, ItemEntity>
+    fun getItemById(id: Long): Flow<RustItem?>
 }

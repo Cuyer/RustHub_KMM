@@ -350,4 +350,8 @@
     <string name="synchronizing_data">Daten werden synchronisiert</string>
     <string name="skip">Überspringen</string>
     <string name="fetching_in_background">Wir setzen das Herunterladen im Hintergrund fort.</string>
+    <string name="looting">Beute</string>
+    <string name="crafting">Herstellung</string>
+    <string name="recycling">Recycling</string>
+    <string name="raiding">Raid</string>
 </resources>
