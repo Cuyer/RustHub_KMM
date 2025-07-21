@@ -24,7 +24,7 @@ data class RustItem(
     val recycling: Recycling? = null,
     val raiding: List<Raiding>? = null,
     val shortName: String? = null,
-    val id: String? = null,
+    val id: Long? = null,
     val iconUrl: String? = null,
     val language: Language? = null,
 )

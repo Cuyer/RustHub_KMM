@@ -29,7 +29,7 @@ class ItemDataSourceImpl(
             queries.transaction {
                 items.forEach { item ->
                     queries.upsertItem(
-                        id = item.id ?: item.slug ?: "",
+                        id = item.id,
                         slug = item.slug,
                         url = item.url,
                         name = item.name,

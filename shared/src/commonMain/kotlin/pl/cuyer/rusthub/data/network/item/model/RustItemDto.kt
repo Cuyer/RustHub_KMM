@@ -24,7 +24,7 @@ data class RustItemDto(
     val recycling: RecyclingDto? = null,
     val raiding: List<RaidingDto>? = null,
     @SerialName("short_name") val shortName: String? = null,
-    val id: String? = null,
+    val id: Long? = null,
     @SerialName("icon_url") val iconUrl: String? = null,
     val language: ItemLanguageDto? = null,
 )
