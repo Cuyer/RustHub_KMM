@@ -156,6 +156,7 @@ fun NavigationRoot(startDestination: NavKey) {
     }
 }
 
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 private fun AppScaffold(
     snackbarHostState: SnackbarHostState,
