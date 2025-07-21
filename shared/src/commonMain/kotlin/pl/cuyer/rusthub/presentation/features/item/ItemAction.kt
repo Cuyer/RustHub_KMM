@@ -7,5 +7,6 @@ sealed interface ItemAction {
     data class OnSearch(val query: String) : ItemAction
     data class OnCategoryChange(val category: ItemCategory?) : ItemAction
     data class OnError(val exception: Throwable) : ItemAction
+    data object OnRefresh : ItemAction
     data object OnClearSearchQuery : ItemAction
 }
