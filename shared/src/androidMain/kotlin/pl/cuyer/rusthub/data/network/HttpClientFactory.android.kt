@@ -59,11 +59,9 @@ private fun currentLanguageTag(): String {
 actual class HttpClientFactory actual constructor(
     private val json: Json,
     private val authDataSource: AuthDataSource,
-    private val appCheckTokenProvider: AppCheckTokenProvider
-) : KoinComponent {
-
-    private val tokenRefresher: TokenRefresher by inject()
-
+    private val appCheckTokenProvider: AppCheckTokenProvider,
+    private val tokenRefresher: TokenRefresher
+) {
     actual fun create(): HttpClient {
         return HttpClient(OkHttp) {
             engine {
