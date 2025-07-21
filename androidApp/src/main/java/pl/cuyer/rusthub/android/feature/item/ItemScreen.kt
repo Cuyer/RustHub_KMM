@@ -170,11 +170,12 @@ fun ItemScreen(
                 onSuccess { items ->
                     LazyColumn(state = lazyListState, modifier = Modifier.padding(innerPadding)) {
                         onPagingItems(key = { it.id ?: it.slug ?: it.hashCode() }) { item ->
-                            Text(
-                                text = item.name.orEmpty(),
+                            ItemListItem(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(12.dp)
+                                    .animateItem()
+                                    .padding(horizontal = spacing.xmedium),
+                                item = item
                             )
                         }
                     }
