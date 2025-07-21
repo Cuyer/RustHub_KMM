@@ -35,6 +35,7 @@ import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
+import pl.cuyer.rusthub.presentation.features.item.ItemViewModel
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
@@ -65,6 +66,12 @@ actual val platformModule: Module = module {
             getUserPreferencesUseCase = get(),
             itemsScheduler = get(),
             itemDataSource = get(),
+            itemSyncDataSource = get()
+        )
+    }
+    factory {
+        ItemViewModel(
+            getPagedItemsUseCase = get(),
             itemSyncDataSource = get()
         )
     }
@@ -116,7 +123,9 @@ actual val platformModule: Module = module {
             googleAuthClient = get(),
             snackbarController = get(),
             stringProvider = get(),
-            systemDarkThemeObserver = get()
+            systemDarkThemeObserver = get(),
+            itemsScheduler = get(),
+            itemSyncDataSource = get()
         )
     }
     factory {

@@ -67,6 +67,7 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.ItemListItem
+import pl.cuyer.rusthub.android.designsystem.ItemListItemShimmer
 import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
@@ -75,6 +76,7 @@ import pl.cuyer.rusthub.android.util.HandlePagingItems
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.ItemCategory
 import pl.cuyer.rusthub.domain.model.RustItem
+import pl.cuyer.rusthub.domain.model.ItemSyncState
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.presentation.features.item.ItemAction
@@ -95,6 +97,7 @@ fun ItemScreen(
     uiEvent: Flow<UiEvent>
 ) {
     val state = stateProvider()
+    val syncState = state.value.syncState
     val searchBarState = rememberSearchBarState()
     val textFieldState = rememberTextFieldState()
     val scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
@@ -156,8 +159,36 @@ fun ItemScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { innerPadding ->
         Box(Modifier.fillMaxSize()) {
-            HandlePagingItems(pagedList) {
-                onRefresh { Box(Modifier.fillMaxSize()) }
+            if (syncState == ItemSyncState.PENDING) {
+                LazyColumn(
+                    modifier = Modifier.padding(innerPadding),
+                    verticalArrangement = Arrangement.spacedBy(spacing.medium),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    items(6) {
+                        ItemListItemShimmer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .animateItem()
+                                .padding(horizontal = spacing.xmedium)
+                        )
+                    }
+                }
+            } else {
+                HandlePagingItems(pagedList) {
+                    onRefresh {
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(spacing.medium)
+                        ) {
+                            items(6) {
+                                ItemListItemShimmer(
+                                    modifier = Modifier
+                                        .animateItem()
+                                        .padding(horizontal = spacing.xmedium)
+                                )
+                            }
+                        }
+                    }
                 onError { }
                 onEmpty {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

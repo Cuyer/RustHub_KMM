@@ -22,13 +22,16 @@ import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.domain.model.ItemCategory
 import pl.cuyer.rusthub.domain.model.RustItem
+import pl.cuyer.rusthub.domain.model.ItemSyncState
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.presentation.navigation.ItemDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.domain.usecase.GetPagedItemsUseCase
+import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 
 class ItemViewModel(
     private val getPagedItemsUseCase: GetPagedItemsUseCase,
+    private val itemSyncDataSource: ItemSyncDataSource,
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -44,6 +47,10 @@ class ItemViewModel(
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = ItemState()
         )
+
+    init {
+        observeSyncState()
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val paging: Flow<PagingData<RustItem>> =
@@ -80,6 +87,17 @@ class ItemViewModel(
     private fun navigateToItem(id: Long) {
         coroutineScope.launch {
             _uiEvent.send(UiEvent.Navigate(ItemDetails(id)))
+        }
+    }
+
+    private fun observeSyncState() {
+        coroutineScope.launch {
+            itemSyncDataSource.observeState().collect { stateValue ->
+                stateValue ?: return@collect
+                _state.update { current ->
+                    current.copy(syncState = stateValue)
+                }
+            }
         }
     }
 }
