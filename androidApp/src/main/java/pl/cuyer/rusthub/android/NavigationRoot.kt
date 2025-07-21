@@ -1,16 +1,10 @@
 package pl.cuyer.rusthub.android
 
-import android.util.Log
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -32,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -135,243 +128,255 @@ fun NavigationRoot(startDestination: NavKey) {
         }
     }
 
-    @Composable
-    fun AppScaffold(modifier: Modifier = Modifier) {
-        Scaffold(
-            modifier = modifier
-                .fillMaxSize(),
-            contentWindowInsets = WindowInsets(0, 0, 0, 0),
-            containerColor = Color.Transparent,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-            snackbarHost = { SnackbarHost(snackbarHostState) },
-            content = { contentPadding ->
-                NavDisplay(
-                    modifier = Modifier
-                        .padding(contentPadding)
-                        .consumeWindowInsets(contentPadding),
-                    backStack = backStack,
-                    entryDecorators = listOf(
-                        rememberSceneSetupNavEntryDecorator(),
-                        rememberSavedStateNavEntryDecorator(),
-                        rememberViewModelStoreNavEntryDecorator()
-                    ),
-                    onBack = { keysToRemove ->
-                        repeat(keysToRemove) { backStack.removeLastOrNull() }
-                    },
-                    entryProvider = entryProvider {
-                        entry<Onboarding> {
-                            val viewModel = koinViewModel<OnboardingViewModel>()
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            OnboardingScreen(
-                                stateProvider = { state },
-                                onAction = viewModel::onAction,
-                                uiEvent = viewModel.uiEvent,
-                                onNavigate = { dest ->
-                                    backStack.apply {
-                                        if (dest is ServerList) clear()
-                                        add(dest)
-                                    }
-                                }
-                            )
-                        }
-                        entry<Credentials> { key ->
-                            val viewModel: CredentialsViewModel =
-                                koinViewModel { parametersOf(key.email, key.exists, key.provider) }
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            CredentialsScreen(
-                                stateProvider = { state },
-                                uiEvent = viewModel.uiEvent,
-                                onAction = viewModel::onAction,
-                                onNavigate = { dest ->
-                                    if (dest is ServerList) backStack.clear()
-                                    backStack.add(dest)
-                                },
-                                onNavigateUp = {
-                                    backStack.removeLastOrNull()
-                                }
-                            )
-                        }
-                        entry<ServerList>(metadata = ListDetailSceneStrategy.listPane()) {
-                            val viewModel = koinViewModel<ServerViewModel>()
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            val paging = viewModel.paging.collectAsLazyPagingItems()
-                            ServerScreen(
-                                stateProvider = { state },
-                                uiEvent = viewModel.uiEvent,
-                                onAction = viewModel::onAction,
-                                pagedList = paging,
-                                onNavigate = { dest ->
-                                    backStack.add(dest)
-                                }
-                            )
-                        }
-                        entry<ServerDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
-                            val viewModel: ServerDetailsViewModel = koinViewModel(
-                                key = key.id.toString()
-                            ) { parametersOf(key.id, key.name) }
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            ServerDetailsScreen(
-                                stateProvider = { state },
-                                uiEvent = viewModel.uiEvent,
-                                onAction = viewModel::onAction,
-                                onNavigate = { dest -> backStack.add(dest) }
-                            )
-                        }
-                        entry<ItemList>(metadata = ListDetailSceneStrategy.listPane()) {
-                            val viewModel = koinViewModel<ItemViewModel>()
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            val paging = viewModel.paging.collectAsLazyPagingItems()
-                            ItemScreen(
-                                stateProvider = { state },
-                                uiEvent = viewModel.uiEvent,
-                                onAction = viewModel::onAction,
-                                pagedList = paging,
-                                onNavigate = { dest -> backStack.add(dest) }
-                            )
-                        }
-                        entry<ItemDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
-                            ItemDetailsScreen(
-                                stateProvider = { mutableStateOf(ItemState(isRefreshing = false)) },
-                                onAction = {},
-                                onNavigate = {},
-                                uiEvent = flowOf()
-                            )
-                        }
-                        entry<Settings> {
-                            val viewModel = koinViewModel<SettingsViewModel>()
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            SettingsScreen(
-                                stateProvider = { state },
-                                uiEvent = viewModel.uiEvent,
-                                onAction = viewModel::onAction,
-                                onNavigate = { dest ->
-                                    if (dest is Onboarding) {
-                                        backStack.clear()
-                                    }
-                                    backStack.add(dest)
-                                }
-                            )
-                        }
-                        entry<DeleteAccount> {
-                            val viewModel = koinViewModel<DeleteAccountViewModel>()
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            DeleteAccountScreen(
-                                onNavigateUp = { backStack.removeLastOrNull() },
-                                onNavigate = { dest ->
-                                    if (dest is Onboarding) backStack.clear()
-                                    backStack.add(dest)
-                                },
-                                uiEvent = viewModel.uiEvent,
-                                stateProvider = { state },
-                                onAction = viewModel::onAction
-                            )
-                        }
-                        entry<UpgradeAccount> {
-                            val viewModel = koinViewModel<UpgradeViewModel>()
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            UpgradeAccountScreen(
-                                onNavigateUp = { backStack.removeLastOrNull() },
-                                uiEvent = viewModel.uiEvent,
-                                stateProvider = { state },
-                                onAction = viewModel::onAction
-                            )
-                        }
-                        entry<ConfirmEmail> {
-                            val viewModel = koinViewModel<ConfirmEmailViewModel>()
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            ConfirmEmailScreen(
-                                uiEvent = viewModel.uiEvent,
-                                stateProvider = { state },
-                                onAction = viewModel::onAction,
-                                onNavigate = { dest ->
-                                    backStack.clear()
-                                    backStack.add(dest)
-                                },
-                                onNavigateUp = { backStack.removeLastOrNull() }
-                            )
-                        }
-                        entry<ResetPassword> { key ->
-                            val viewModel: ResetPasswordViewModel =
-                                koinViewModel { parametersOf(key.email) }
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            ResetPasswordScreen(
-                                onNavigateUp = { backStack.removeLastOrNull() },
-                                uiEvent = viewModel.uiEvent,
-                                stateProvider = { state },
-                                onAction = viewModel::onAction
-                            )
-                        }
-                        entry<ChangePassword> {
-                            val viewModel = koinViewModel<ChangePasswordViewModel>()
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            ChangePasswordScreen(
-                                onNavigateUp = { backStack.removeLastOrNull() },
-                                uiEvent = viewModel.uiEvent,
-                                stateProvider = { state },
-                                onAction = viewModel::onAction
-                            )
-                        }
-
-                        entry<PrivacyPolicy> {
-                            PrivacyPolicyScreen(
-                                url = Urls.PRIVACY_POLICY_URL,
-                                onNavigateUp = { backStack.removeLastOrNull() }
-                            )
-                        }
-                        entry<Terms> {
-                            PrivacyPolicyScreen(
-                                url = Urls.TERMS_URL,
-                                title = stringResource(SharedRes.strings.terms_conditions),
-                                onNavigateUp = { backStack.removeLastOrNull() }
-                            )
-                        }
-                        entry<Subscription> {
-                            SubscriptionScreen(
-                                onNavigateUp = { backStack.removeLastOrNull() },
-                                onPrivacyPolicy = { backStack.add(PrivacyPolicy) },
-                                onTerms = { backStack.add(Terms) }
-                            )
-                        }
-                    },
-                    sceneStrategy = listDetailStrategy
-                )
-            }
-        )
-    }
-
     val current = backStack.lastOrNull()
-    LaunchedEffect(current) {
-        snackbarHostState.currentSnackbarData?.dismiss()
-    }
+    LaunchedEffect(current) { snackbarHostState.currentSnackbarData?.dismiss() }
     val showNav = bottomNavItems.any { it.isInHierarchy(current) }
-
 
     if (showNav) {
         NavigationSuiteScaffold(
             containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier
-                .navigationBarsPadding(),
-            navigationItems = {
-                bottomNavItems.forEach { item ->
-                    NavigationSuiteItem(
-                        selected = item.isInHierarchy(current),
-                        onClick = { navigateBottomBar(backStack, item) },
-                        icon = {
-                            Icon(
-                                item.icon,
-                                contentDescription = stringResource(item.label),
-                            )
-                        },
-                        label = { Text(stringResource(item.label)) }
-                    )
-                }
-            },
+            modifier = Modifier.navigationBarsPadding(),
+            navigationItems = { BottomBarItems(current, backStack) },
             content = {
-                AppScaffold()
+                AppScaffold(
+                    snackbarHostState = snackbarHostState,
+                    backStack = backStack,
+                    listDetailStrategy = listDetailStrategy
+                )
             }
         )
     } else {
-        AppScaffold(modifier = Modifier.navigationBarsPadding())
+        AppScaffold(
+            snackbarHostState = snackbarHostState,
+            backStack = backStack,
+            listDetailStrategy = listDetailStrategy,
+            modifier = Modifier.navigationBarsPadding()
+        )
+    }
+}
+
+@Composable
+private fun AppScaffold(
+    snackbarHostState: SnackbarHostState,
+    backStack: MutableList<NavKey>,
+    listDetailStrategy: ListDetailSceneStrategy<Any>,
+    modifier: Modifier = Modifier
+) {
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        content = { contentPadding ->
+            NavDisplay(
+                modifier = Modifier
+                    .padding(contentPadding)
+                    .consumeWindowInsets(contentPadding),
+                backStack = backStack,
+                entryDecorators = listOf(
+                    rememberSceneSetupNavEntryDecorator(),
+                    rememberSavedStateNavEntryDecorator(),
+                    rememberViewModelStoreNavEntryDecorator()
+                ),
+                onBack = { keysToRemove ->
+                    repeat(keysToRemove) { backStack.removeLastOrNull() }
+                },
+                entryProvider = entryProvider {
+                    entry<Onboarding> {
+                        val viewModel = koinViewModel<OnboardingViewModel>()
+                        val state = viewModel.state.collectAsStateWithLifecycle()
+                        OnboardingScreen(
+                            stateProvider = { state },
+                            onAction = viewModel::onAction,
+                            uiEvent = viewModel.uiEvent,
+                            onNavigate = { dest ->
+                                backStack.apply {
+                                    if (dest is ServerList) clear()
+                                    add(dest)
+                                }
+                            }
+                        )
+                    }
+                    entry<Credentials> { key ->
+                        val viewModel: CredentialsViewModel =
+                            koinViewModel { parametersOf(key.email, key.exists, key.provider) }
+                        val state = viewModel.state.collectAsStateWithLifecycle()
+                        CredentialsScreen(
+                            stateProvider = { state },
+                            uiEvent = viewModel.uiEvent,
+                            onAction = viewModel::onAction,
+                            onNavigate = { dest ->
+                                if (dest is ServerList) backStack.clear()
+                                backStack.add(dest)
+                            },
+                            onNavigateUp = {
+                                backStack.removeLastOrNull()
+                            }
+                        )
+                    }
+                    entry<ServerList>(metadata = ListDetailSceneStrategy.listPane()) {
+                        val viewModel = koinViewModel<ServerViewModel>()
+                        val state = viewModel.state.collectAsStateWithLifecycle()
+                        val paging = viewModel.paging.collectAsLazyPagingItems()
+                        ServerScreen(
+                            stateProvider = { state },
+                            uiEvent = viewModel.uiEvent,
+                            onAction = viewModel::onAction,
+                            pagedList = paging,
+                            onNavigate = { dest ->
+                                backStack.add(dest)
+                            }
+                        )
+                    }
+                    entry<ServerDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
+                        val viewModel: ServerDetailsViewModel = koinViewModel(
+                            key = key.id.toString()
+                        ) { parametersOf(key.id, key.name) }
+                        val state = viewModel.state.collectAsStateWithLifecycle()
+                        ServerDetailsScreen(
+                            stateProvider = { state },
+                            uiEvent = viewModel.uiEvent,
+                            onAction = viewModel::onAction,
+                            onNavigate = { dest -> backStack.add(dest) }
+                        )
+                    }
+                    entry<ItemList>(metadata = ListDetailSceneStrategy.listPane()) {
+                        val viewModel = koinViewModel<ItemViewModel>()
+                        val state = viewModel.state.collectAsStateWithLifecycle()
+                        val paging = viewModel.paging.collectAsLazyPagingItems()
+                        ItemScreen(
+                            stateProvider = { state },
+                            uiEvent = viewModel.uiEvent,
+                            onAction = viewModel::onAction,
+                            pagedList = paging,
+                            onNavigate = { dest -> backStack.add(dest) }
+                        )
+                    }
+                    entry<ItemDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
+                        ItemDetailsScreen(
+                            stateProvider = { mutableStateOf(ItemState(isRefreshing = false)) },
+                            onAction = {},
+                            onNavigate = {},
+                            uiEvent = flowOf()
+                        )
+                    }
+                    entry<Settings> {
+                        val viewModel = koinViewModel<SettingsViewModel>()
+                        val state = viewModel.state.collectAsStateWithLifecycle()
+                        SettingsScreen(
+                            stateProvider = { state },
+                            uiEvent = viewModel.uiEvent,
+                            onAction = viewModel::onAction,
+                            onNavigate = { dest ->
+                                if (dest is Onboarding) {
+                                    backStack.clear()
+                                }
+                                backStack.add(dest)
+                            }
+                        )
+                    }
+                    entry<DeleteAccount> {
+                        val viewModel = koinViewModel<DeleteAccountViewModel>()
+                        val state = viewModel.state.collectAsStateWithLifecycle()
+                        DeleteAccountScreen(
+                            onNavigateUp = { backStack.removeLastOrNull() },
+                            onNavigate = { dest ->
+                                if (dest is Onboarding) backStack.clear()
+                                backStack.add(dest)
+                            },
+                            uiEvent = viewModel.uiEvent,
+                            stateProvider = { state },
+                            onAction = viewModel::onAction
+                        )
+                    }
+                    entry<UpgradeAccount> {
+                        val viewModel = koinViewModel<UpgradeViewModel>()
+                        val state = viewModel.state.collectAsStateWithLifecycle()
+                        UpgradeAccountScreen(
+                            onNavigateUp = { backStack.removeLastOrNull() },
+                            uiEvent = viewModel.uiEvent,
+                            stateProvider = { state },
+                            onAction = viewModel::onAction
+                        )
+                    }
+                    entry<ConfirmEmail> {
+                        val viewModel = koinViewModel<ConfirmEmailViewModel>()
+                        val state = viewModel.state.collectAsStateWithLifecycle()
+                        ConfirmEmailScreen(
+                            uiEvent = viewModel.uiEvent,
+                            stateProvider = { state },
+                            onAction = viewModel::onAction,
+                            onNavigate = { dest ->
+                                backStack.clear()
+                                backStack.add(dest)
+                            },
+                            onNavigateUp = { backStack.removeLastOrNull() }
+                        )
+                    }
+                    entry<ResetPassword> { key ->
+                        val viewModel: ResetPasswordViewModel =
+                            koinViewModel { parametersOf(key.email) }
+                        val state = viewModel.state.collectAsStateWithLifecycle()
+                        ResetPasswordScreen(
+                            onNavigateUp = { backStack.removeLastOrNull() },
+                            uiEvent = viewModel.uiEvent,
+                            stateProvider = { state },
+                            onAction = viewModel::onAction
+                        )
+                    }
+                    entry<ChangePassword> {
+                        val viewModel = koinViewModel<ChangePasswordViewModel>()
+                        val state = viewModel.state.collectAsStateWithLifecycle()
+                        ChangePasswordScreen(
+                            onNavigateUp = { backStack.removeLastOrNull() },
+                            uiEvent = viewModel.uiEvent,
+                            stateProvider = { state },
+                            onAction = viewModel::onAction
+                        )
+                    }
+
+                    entry<PrivacyPolicy> {
+                        PrivacyPolicyScreen(
+                            url = Urls.PRIVACY_POLICY_URL,
+                            onNavigateUp = { backStack.removeLastOrNull() }
+                        )
+                    }
+                    entry<Terms> {
+                        PrivacyPolicyScreen(
+                            url = Urls.TERMS_URL,
+                            title = stringResource(SharedRes.strings.terms_conditions),
+                            onNavigateUp = { backStack.removeLastOrNull() }
+                        )
+                    }
+                    entry<Subscription> {
+                        SubscriptionScreen(
+                            onNavigateUp = { backStack.removeLastOrNull() },
+                            onPrivacyPolicy = { backStack.add(PrivacyPolicy) },
+                            onTerms = { backStack.add(Terms) }
+                        )
+                    }
+                },
+                sceneStrategy = listDetailStrategy
+            )
+        }
+    )
+}
+
+@Composable
+private fun BottomBarItems(current: NavKey?, backStack: MutableList<NavKey>) {
+    bottomNavItems.forEach { item ->
+        NavigationSuiteItem(
+            selected = item.isInHierarchy(current),
+            onClick = { navigateBottomBar(backStack, item) },
+            icon = {
+                Icon(
+                    item.icon,
+                    contentDescription = stringResource(item.label)
+                )
+            },
+            label = { Text(stringResource(item.label)) }
+        )
     }
 }
