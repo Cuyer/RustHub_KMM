@@ -44,6 +44,9 @@ import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import pl.cuyer.rusthub.util.anonymousAccountExpiresIn
 import pl.cuyer.rusthub.util.formatExpiration
+import pl.cuyer.rusthub.util.ItemsScheduler
+import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
+import pl.cuyer.rusthub.domain.model.ItemSyncState
 
 class SettingsViewModel(
     private val logoutUserUseCase: LogoutUserUseCase,
@@ -55,7 +58,9 @@ class SettingsViewModel(
     private val googleAuthClient: GoogleAuthClient,
     private val snackbarController: SnackbarController,
     private val stringProvider: StringProvider,
-    private val systemDarkThemeObserver: SystemDarkThemeObserver
+    private val systemDarkThemeObserver: SystemDarkThemeObserver,
+    private val itemsScheduler: ItemsScheduler,
+    private val itemSyncDataSource: ItemSyncDataSource
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -87,6 +92,7 @@ class SettingsViewModel(
             SettingsAction.OnUpgradeAccount -> navigateUpgrade()
             is SettingsAction.OnThemeChange -> setTheme(action.theme)
             is SettingsAction.OnDynamicColorsChange -> setDynamicColors(action.enabled)
+            is SettingsAction.OnLanguageChange -> changeLanguage(action.language)
         }
     }
 
@@ -197,7 +203,10 @@ class SettingsViewModel(
     }
 
     private fun changeLanguage(language: Language) {
-
+        coroutineScope.launch {
+            itemSyncDataSource.setState(ItemSyncState.PENDING)
+            itemsScheduler.startNow()
+        }
     }
 
     private fun openPrivacyPolicy() {

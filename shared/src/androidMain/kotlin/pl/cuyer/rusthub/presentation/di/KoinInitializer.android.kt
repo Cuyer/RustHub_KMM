@@ -136,7 +136,8 @@ actual val platformModule: Module = module {
     }
     viewModel {
         ItemViewModel(
-            getPagedItemsUseCase = get()
+            getPagedItemsUseCase = get(),
+            itemSyncDataSource = get()
         )
     }
     viewModel {
@@ -150,7 +151,9 @@ actual val platformModule: Module = module {
             googleAuthClient = get(),
             snackbarController = get(),
             stringProvider = get(),
-            systemDarkThemeObserver = get()
+            systemDarkThemeObserver = get(),
+            itemsScheduler = get(),
+            itemSyncDataSource = get()
         )
     }
     viewModel {

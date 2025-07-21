@@ -176,6 +176,7 @@ fun SettingsScreen(
                     current = currentLanguage,
                     onSelect = {
                         setLanguage(it)
+                        onAction(SettingsAction.OnLanguageChange(it))
                     },
                     onDismiss = { showLanguageSheet = false }
                 )
