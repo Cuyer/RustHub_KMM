@@ -564,3 +564,97 @@ SELECT * FROM userEntity LIMIT 1;
 
 updateEmailConfirmed:
 UPDATE userEntity SET email_confirmed = CASE WHEN :confirmed THEN 1 ELSE 0 END WHERE id = :id;
+
+CREATE TABLE itemEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    slug TEXT,
+    url TEXT,
+    name TEXT,
+    description TEXT,
+    image TEXT,
+    stack_size INTEGER,
+    health INTEGER,
+    categories TEXT,
+    short_name TEXT,
+    icon_url TEXT,
+    language TEXT,
+    looting TEXT,
+    crafting TEXT,
+    recycling TEXT,
+    raiding TEXT
+);
+
+upsertItem:
+INSERT INTO itemEntity (
+    id,
+    slug,
+    url,
+    name,
+    description,
+    image,
+    stack_size,
+    health,
+    categories,
+    short_name,
+    icon_url,
+    language,
+    looting,
+    crafting,
+    recycling,
+    raiding
+) VALUES (
+    :id,
+    :slug,
+    :url,
+    :name,
+    :description,
+    :image,
+    :stackSize,
+    :health,
+    :categories,
+    :shortName,
+    :iconUrl,
+    :language,
+    :looting,
+    :crafting,
+    :recycling,
+    :raiding
+) ON CONFLICT(id) DO UPDATE SET
+    slug = excluded.slug,
+    url = excluded.url,
+    name = excluded.name,
+    description = excluded.description,
+    image = excluded.image,
+    stack_size = excluded.stack_size,
+    health = excluded.health,
+    categories = excluded.categories,
+    short_name = excluded.short_name,
+    icon_url = excluded.icon_url,
+    language = excluded.language,
+    looting = excluded.looting,
+    crafting = excluded.crafting,
+    recycling = excluded.recycling,
+    raiding = excluded.raiding;
+
+getItems:
+SELECT * FROM itemEntity;
+
+deleteItems:
+DELETE FROM itemEntity;
+
+countItems:
+SELECT COUNT(*) FROM itemEntity;
+
+CREATE TABLE itemSyncEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    sync_state TEXT NOT NULL
+);
+
+upsertItemSync:
+INSERT INTO itemSyncEntity (id, sync_state)
+VALUES (:id, :sync_state)
+ON CONFLICT(id) DO UPDATE SET
+    sync_state = excluded.sync_state;
+
+getItemSync:
+SELECT * FROM itemSyncEntity WHERE id = :id;
