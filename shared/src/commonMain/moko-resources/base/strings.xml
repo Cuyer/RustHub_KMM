@@ -352,4 +352,8 @@
     <string name="synchronizing_data">Synchronizing data</string>
     <string name="skip">Skip</string>
     <string name="fetching_in_background">We'll continue fetching in the background.</string>
+    <string name="looting">Looting</string>
+    <string name="crafting">Crafting</string>
+    <string name="recycling">Recycling</string>
+    <string name="raiding">Raiding</string>
 </resources>

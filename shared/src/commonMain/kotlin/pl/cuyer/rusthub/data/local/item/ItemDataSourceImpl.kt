@@ -18,6 +18,10 @@ import pl.cuyer.rusthub.domain.model.Raiding
 import pl.cuyer.rusthub.domain.model.Crafting
 import pl.cuyer.rusthub.domain.model.Recycling
 import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToOneOrNull
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class ItemDataSourceImpl(
     db: RustHubDatabase,
@@ -82,4 +86,12 @@ class ItemDataSourceImpl(
             }
         )
     }
+
+    override fun getItemById(id: Long): Flow<RustItem?> {
+        return queries.getItemById(id)
+            .asFlow()
+            .mapToOneOrNull(Dispatchers.IO)
+            .map { it?.toRustItem(json) }
+    }
+
 }

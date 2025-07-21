@@ -350,4 +350,8 @@
     <string name="synchronizing_data">Синхронизация данных</string>
     <string name="skip">Пропустить</string>
     <string name="fetching_in_background">Загрузка будет продолжена в фоновом режиме.</string>
+    <string name="looting">Добыча</string>
+    <string name="crafting">Крафт</string>
+    <string name="recycling">Переработка</string>
+    <string name="raiding">Рейд</string>
 </resources>

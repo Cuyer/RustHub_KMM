@@ -37,6 +37,7 @@ import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.presentation.features.item.ItemViewModel
+import pl.cuyer.rusthub.presentation.features.item.ItemDetailsViewModel
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
@@ -74,6 +75,12 @@ actual val platformModule: Module = module {
             getPagedItemsUseCase = get(),
             itemSyncDataSource = get(),
             itemsScheduler = get()
+        )
+    }
+    factory { (itemId: Long) ->
+        ItemDetailsViewModel(
+            getItemDetailsUseCase = get(),
+            itemId = itemId,
         )
     }
     factory {

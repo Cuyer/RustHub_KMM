@@ -22,6 +22,7 @@ import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordViewMo
 import pl.cuyer.rusthub.presentation.features.auth.password.ResetPasswordViewModel
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
 import pl.cuyer.rusthub.presentation.features.item.ItemViewModel
+import pl.cuyer.rusthub.presentation.features.item.ItemDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
@@ -135,6 +136,12 @@ actual val platformModule: Module = module {
             itemsScheduler = get(),
             snackbarController = get(),
             stringProvider = get(),
+        )
+    }
+    viewModel { (itemId: Long) ->
+        ItemDetailsViewModel(
+            getItemDetailsUseCase = get(),
+            itemId = itemId,
         )
     }
     viewModel {

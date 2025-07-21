@@ -62,6 +62,7 @@ import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedItemsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
+import pl.cuyer.rusthub.domain.usecase.GetItemDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserPreferencesUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
@@ -130,6 +131,7 @@ val appModule = module {
     single { GetSearchQueriesUseCase(get()) }
     single { DeleteSearchQueriesUseCase(get()) }
     single { GetServerDetailsUseCase(get()) }
+    single { GetItemDetailsUseCase(get()) }
     single { RegisterUserUseCase(get(), get(), get(), get()) }
     single { LoginUserUseCase(get(), get(), get(), get()) }
     single { LoginWithGoogleUseCase(get(), get(), get(), get()) }

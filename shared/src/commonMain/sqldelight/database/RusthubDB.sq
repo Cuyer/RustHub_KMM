@@ -645,6 +645,9 @@ DELETE FROM itemEntity;
 countItems:
 SELECT COUNT(*) FROM itemEntity;
 
+getItemById:
+SELECT * FROM itemEntity WHERE id = :id;
+
 -- Returns a page of items filtered by query and category
 findItemsPagedFiltered:
 SELECT *
