@@ -33,10 +33,13 @@ import pl.cuyer.rusthub.util.ReviewRequester
 import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
+import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.InAppUpdateManager
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
+import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
+import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import kotlinx.coroutines.runBlocking
 import org.koin.dsl.bind
 import pl.cuyer.rusthub.BuildConfig
@@ -60,6 +63,8 @@ actual val platformModule: Module = module {
     single { SyncScheduler(get()) }
     single { SubscriptionSyncScheduler(get()) }
     single { MessagingTokenScheduler(get()) }
+    single { ItemsScheduler(get()) }
+    single { ItemSyncDataSourceImpl(get()) } bind ItemSyncDataSource::class
     single { InAppUpdateManager(androidContext(), get()) }
     single { ReviewRequester(androidContext()) }
     single { StoreNavigator(androidContext()) }
@@ -69,7 +74,17 @@ actual val platformModule: Module = module {
     single { StringProvider(androidContext()) }
     single { PermissionsController(androidContext()) }
     viewModel {
-        StartupViewModel(get(), get(), get(), get(), get(), get())
+        StartupViewModel(
+            snackbarController = get(),
+            getUserUseCase = get(),
+            checkEmailConfirmedUseCase = get(),
+            setEmailConfirmedUseCase = get(),
+            stringProvider = get(),
+            getUserPreferencesUseCase = get(),
+            itemsScheduler = get(),
+            itemDataSource = get(),
+            itemSyncDataSource = get()
+        )
     }
     viewModel {
         OnboardingViewModel(

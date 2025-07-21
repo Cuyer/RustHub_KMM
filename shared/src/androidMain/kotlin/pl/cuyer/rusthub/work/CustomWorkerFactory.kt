@@ -10,6 +10,8 @@ import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
 import pl.cuyer.rusthub.util.MessagingTokenManager
+import pl.cuyer.rusthub.domain.repository.item.ItemRepository
+import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 
 class CustomWorkerFactory(
     private val favouriteRepository: FavouriteRepository,
@@ -17,7 +19,10 @@ class CustomWorkerFactory(
     private val subscriptionRepository: SubscriptionRepository,
     private val subscriptionSyncDataSource: SubscriptionSyncDataSource,
     private val serverDataSource: ServerDataSource,
-    private val tokenManager: MessagingTokenManager
+    private val tokenManager: MessagingTokenManager,
+    private val itemRepository: ItemRepository,
+    private val itemDataSource: ItemDataSource,
+    private val itemSyncDataSource: pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 ) : WorkerFactory() {
 
     override fun createWorker(
@@ -42,6 +47,15 @@ class CustomWorkerFactory(
                     subscriptionRepository,
                     subscriptionSyncDataSource,
                     serverDataSource
+                )
+            }
+            ItemsWorker::class.qualifiedName -> {
+                ItemsWorker(
+                    appContext,
+                    workerParameters,
+                    itemRepository,
+                    itemDataSource,
+                    itemSyncDataSource
                 )
             }
             TokenRefreshWorker::class.qualifiedName -> {

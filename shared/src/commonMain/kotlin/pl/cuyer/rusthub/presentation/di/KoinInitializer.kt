@@ -17,6 +17,8 @@ import pl.cuyer.rusthub.data.local.filtersOptions.FiltersOptionsDataSourceImpl
 import pl.cuyer.rusthub.data.local.remotekey.RemoteKeyDataSourceImpl
 import pl.cuyer.rusthub.data.local.search.SearchQueryDataSourceImpl
 import pl.cuyer.rusthub.data.local.server.ServerDataSourceImpl
+import pl.cuyer.rusthub.data.local.item.ItemDataSourceImpl
+import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
 import pl.cuyer.rusthub.data.local.subscription.SubscriptionSyncDataSourceImpl
 import pl.cuyer.rusthub.data.network.auth.AuthRepositoryImpl
 import pl.cuyer.rusthub.data.network.config.ConfigRepositoryImpl
@@ -37,6 +39,8 @@ import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
 import pl.cuyer.rusthub.domain.repository.filtersOptions.FiltersOptionsDataSource
 import pl.cuyer.rusthub.domain.repository.filtersOptions.FiltersOptionsRepository
 import pl.cuyer.rusthub.domain.repository.item.ItemRepository
+import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
+import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.domain.repository.notification.MessagingTokenRepository
 import pl.cuyer.rusthub.domain.repository.search.SearchQueryDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
@@ -96,6 +100,8 @@ val appModule = module {
     singleOf(::FavouriteClientImpl) bind FavouriteRepository::class
     singleOf(::SubscriptionClientImpl) bind SubscriptionRepository::class
     singleOf(::ServerDataSourceImpl) bind ServerDataSource::class
+    singleOf(::ItemDataSourceImpl) bind ItemDataSource::class
+    singleOf(::ItemSyncDataSourceImpl) bind ItemSyncDataSource::class
     singleOf(::FavouriteSyncDataSourceImpl) bind FavouriteSyncDataSource::class
     singleOf(::SubscriptionSyncDataSourceImpl) bind SubscriptionSyncDataSource::class
     singleOf(::FiltersDataSourceImpl) bind FiltersDataSource::class

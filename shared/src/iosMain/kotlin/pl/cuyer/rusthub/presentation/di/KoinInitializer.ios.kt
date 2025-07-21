@@ -29,8 +29,12 @@ import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
+import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
+import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
+import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
+import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
@@ -42,6 +46,8 @@ actual val platformModule: Module = module {
     single { SyncScheduler() }
     single { SubscriptionSyncScheduler() }
     single { MessagingTokenScheduler() }
+    single { ItemsScheduler() }
+    single { ItemSyncDataSourceImpl(get()) } bind ItemSyncDataSource::class
     single { InAppUpdateManager() }
     single { ReviewRequester() }
     single { StoreNavigator() }
@@ -49,7 +55,19 @@ actual val platformModule: Module = module {
     single { ConnectivityObserver() }
     single { GoogleAuthClient() }
     single { StringProvider() }
-    factory { StartupViewModel(get(), get(), get(), get(), get(), get()) }
+    factory {
+        StartupViewModel(
+            snackbarController = get(),
+            getUserUseCase = get(),
+            checkEmailConfirmedUseCase = get(),
+            setEmailConfirmedUseCase = get(),
+            stringProvider = get(),
+            getUserPreferencesUseCase = get(),
+            itemsScheduler = get(),
+            itemDataSource = get(),
+            itemSyncDataSource = get()
+        )
+    }
     factory {
         ConfirmEmailViewModel(
             checkEmailConfirmedUseCase = get(),

@@ -32,6 +32,10 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.ItemsScheduler
+import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
+import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
+import pl.cuyer.rusthub.domain.model.ItemSyncState
 
 class StartupViewModel(
     private val snackbarController: SnackbarController,
@@ -40,6 +44,9 @@ class StartupViewModel(
     private val setEmailConfirmedUseCase: SetEmailConfirmedUseCase,
     private val stringProvider: StringProvider,
     private val getUserPreferencesUseCase: GetUserPreferencesUseCase,
+    private val itemsScheduler: ItemsScheduler,
+    private val itemDataSource: ItemDataSource,
+    private val itemSyncDataSource: ItemSyncDataSource,
 ) : BaseViewModel() {
 
     private val userFlow = getUserUseCase()
@@ -63,7 +70,17 @@ class StartupViewModel(
     init {
         observeUser()
         observePreferences()
-        coroutineScope.launch { initialize() }
+        coroutineScope.launch {
+            if (itemDataSource.isEmpty()) {
+                updateLoadingState(true)
+                itemSyncDataSource.setState(ItemSyncState.PENDING)
+                itemsScheduler.startNow()
+                itemSyncDataSource.observeState().first { it == ItemSyncState.DONE }
+            } else {
+                itemsScheduler.schedule()
+            }
+            initialize()
+        }
     }
 
     private fun observeUser() {
