@@ -22,6 +22,7 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import pl.cuyer.rusthub.data.local.mapper.toRustItem
 
 class ItemDataSourceImpl(
     db: RustHubDatabase,

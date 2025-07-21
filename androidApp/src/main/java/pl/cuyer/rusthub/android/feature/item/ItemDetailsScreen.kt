@@ -2,10 +2,12 @@ package pl.cuyer.rusthub.android.feature.item
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -31,6 +33,7 @@ private enum class DetailsPage(val title: StringResource) {
     RAIDING(SharedRes.strings.raiding)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemDetailsScreen(
     stateProvider: () -> State<ItemDetailsState>,
@@ -61,7 +64,11 @@ fun ItemDetailsScreen(
             )
         }
     ) { innerPadding ->
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) {
             HorizontalPager(state = pagerState) { page ->
                 when (DetailsPage.entries[page]) {
                     DetailsPage.LOOTING -> DetailsContent(state.item?.looting)

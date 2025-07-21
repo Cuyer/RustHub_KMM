@@ -284,9 +284,9 @@ private fun AppScaffold(
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         ItemDetailsScreen(
                             stateProvider = { state },
-                            onAction = {},
-                            onNavigate = {},
-                            uiEvent = flowOf()
+                            onNavigateUp = {
+                                backStack.removeLastOrNull()
+                            },
                         )
                     }
                     entry<Settings> {
