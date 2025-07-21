@@ -11,9 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Inventory
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -68,6 +65,7 @@ import pl.cuyer.rusthub.android.feature.settings.PrivacyPolicyScreen
 import pl.cuyer.rusthub.android.feature.settings.SettingsScreen
 import pl.cuyer.rusthub.android.feature.subscription.SubscriptionScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
+import pl.cuyer.rusthub.android.navigation.bottomNavItems
 import pl.cuyer.rusthub.common.Urls
 import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
@@ -344,8 +342,7 @@ fun NavigationRoot(startDestination: NavKey) {
     LaunchedEffect(current) {
         snackbarHostState.currentSnackbarData?.dismiss()
     }
-    val showNav = current is ServerList || current is ServerDetails ||
-        current is ItemList || current is ItemDetails || current is Settings
+    val showNav = bottomNavItems.any { it.isInHierarchy(current) }
 
 
     if (showNav) {
@@ -355,60 +352,26 @@ fun NavigationRoot(startDestination: NavKey) {
             modifier = Modifier
                 .navigationBarsPadding(),
             navigationItems = {
-                NavigationSuiteItem(
-                    selected = current is ServerList || current is ServerDetails,
-                    onClick = {
-                        if (backStack.lastOrNull() !is ServerList) {
-                            while (backStack.lastOrNull() !is ServerList && backStack.isNotEmpty()) {
-                                backStack.removeLastOrNull()
+                bottomNavItems.forEach { item ->
+                    NavigationSuiteItem(
+                        selected = item.isInHierarchy(current),
+                        onClick = {
+                            if (!item.isInHierarchy(backStack.lastOrNull())) {
+                                while (backStack.isNotEmpty() && !item.isInHierarchy(backStack.last())) {
+                                    backStack.removeLastOrNull()
+                                }
+                                backStack.add(item.root)
                             }
-                            backStack.add(ServerList)
-                        }
-                    },
-                    icon = {
-                        Icon(
-                            Icons.AutoMirrored.Filled.List,
-                            contentDescription = stringResource(SharedRes.strings.servers)
-                        )
-                    },
-                    label = { Text(stringResource(SharedRes.strings.servers)) }
-                )
-                NavigationSuiteItem(
-                    selected = current is ItemList || current is ItemDetails,
-                    onClick = {
-                        if (backStack.lastOrNull() !is ItemList) {
-                            while (backStack.lastOrNull() !is ItemList && backStack.isNotEmpty()) {
-                                backStack.removeLastOrNull()
-                            }
-                            backStack.add(ItemList)
-                        }
-                    },
-                    icon = {
-                        Icon(
-                            Icons.Filled.Inventory,
-                            contentDescription = stringResource(SharedRes.strings.items)
-                        )
-                    },
-                    label = { Text(stringResource(SharedRes.strings.items)) }
-                )
-                NavigationSuiteItem(
-                    selected = current is Settings,
-                    onClick = {
-                        if (backStack.lastOrNull() !is Settings) {
-                            while (backStack.lastOrNull() !is Settings && backStack.isNotEmpty()) {
-                                backStack.removeLastOrNull()
-                            }
-                            backStack.add(Settings)
-                        }
-                    },
-                    icon = {
-                        Icon(
-                            Icons.Default.Settings,
-                            contentDescription = stringResource(SharedRes.strings.settings)
-                        )
-                    },
-                    label = { Text(stringResource(SharedRes.strings.settings)) }
-                )
+                        },
+                        icon = {
+                            Icon(
+                                item.icon,
+                                contentDescription = stringResource(item.label),
+                            )
+                        },
+                        label = { Text(stringResource(item.label)) }
+                    )
+                }
             },
             content = {
                 AppScaffold()
