@@ -10,34 +10,40 @@ import pl.cuyer.rusthub.presentation.navigation.ItemDetails
 import pl.cuyer.rusthub.presentation.navigation.ItemList
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
-import pl.cuyer.rusthub.presentation.navigation.Settings
+import pl.cuyer.rusthub.presentation.navigation.Settings as SettingsNav
 import dev.icerock.moko.resources.StringResource
 import androidx.navigation3.runtime.NavKey
 
-internal data class BottomNavItem(
-    val root: NavKey,
-    val icon: ImageVector,
-    val label: StringResource,
+internal sealed interface BottomNavKey {
+    val root: NavKey
+    val icon: ImageVector
+    val label: StringResource
     val isInHierarchy: (NavKey?) -> Boolean
-)
 
-internal val bottomNavItems = listOf(
-    BottomNavItem(
-        root = ServerList,
-        icon = Icons.AutoMirrored.Filled.List,
-        label = SharedRes.strings.servers,
-        isInHierarchy = { it is ServerList || it is ServerDetails }
-    ),
-    BottomNavItem(
-        root = ItemList,
-        icon = Icons.Filled.Inventory,
-        label = SharedRes.strings.items,
-        isInHierarchy = { it is ItemList || it is ItemDetails }
-    ),
-    BottomNavItem(
-        root = Settings,
-        icon = Icons.Filled.Settings,
-        label = SharedRes.strings.settings,
-        isInHierarchy = { it is Settings }
-    )
+    data object Servers : BottomNavKey {
+        override val root = ServerList
+        override val icon = Icons.AutoMirrored.Filled.List
+        override val label = SharedRes.strings.servers
+        override val isInHierarchy: (NavKey?) -> Boolean = { it is ServerList || it is ServerDetails }
+    }
+
+    data object Items : BottomNavKey {
+        override val root = ItemList
+        override val icon = Icons.Filled.Inventory
+        override val label = SharedRes.strings.items
+        override val isInHierarchy: (NavKey?) -> Boolean = { it is ItemList || it is ItemDetails }
+    }
+
+    data object Settings : BottomNavKey {
+        override val root = SettingsNav
+        override val icon = Icons.Filled.Settings
+        override val label = SharedRes.strings.settings
+        override val isInHierarchy: (NavKey?) -> Boolean = { it is SettingsNav }
+    }
+}
+
+internal val bottomNavItems: List<BottomNavKey> = listOf(
+    BottomNavKey.Servers,
+    BottomNavKey.Items,
+    BottomNavKey.Settings
 )
