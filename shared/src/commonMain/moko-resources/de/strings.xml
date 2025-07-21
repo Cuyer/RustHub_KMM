@@ -330,4 +330,7 @@
     <string name="error_not_found">Ressource nicht gefunden.</string>
     <string name="error_too_many_requests">Du führst diese Aktion zu oft aus. Bitte warte einen Moment.</string>
     <string name="error_invalid_refresh_token">Sitzung abgelaufen. Bitte melde dich erneut an.</string>
+    <string name="synchronizing_data">Daten werden synchronisiert</string>
+    <string name="skip">Überspringen</string>
+    <string name="fetching_in_background">Wir laden die Elemente im Hintergrund weiter.</string>
 </resources>
