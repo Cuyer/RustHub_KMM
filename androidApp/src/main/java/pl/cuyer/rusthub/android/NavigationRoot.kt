@@ -35,7 +35,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -50,8 +49,6 @@ import kotlinx.coroutines.flow.flowOf
 import app.cash.paging.compose.collectAsLazyPagingItems
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.launch
-import pl.cuyer.rusthub.presentation.navigation.RootNavigator
-import dev.icerock.moko.resources.StringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pl.cuyer.rusthub.SharedRes
@@ -102,13 +99,6 @@ import pl.cuyer.rusthub.presentation.navigation.UpgradeAccount
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 
-private data class BottomNavItem(
-    val destination: NavKey,
-    val icon: ImageVector,
-    val label: StringResource,
-    val isSelected: (NavKey?) -> Boolean
-)
-
 @OptIn(
     ExperimentalMaterial3Api::class,
     ExperimentalMaterial3ExpressiveApi::class,
@@ -135,37 +125,9 @@ fun NavigationRoot(startDestination: NavKey) {
             }
         }
     }
-    ObserveAsEvents(flow = RootNavigator.events, backStack) { destination ->
-        scope.launch {
-            backStack.clear()
-            backStack.add(destination)
-        }
-    }
 
     val backStack = rememberNavBackStack(startDestination)
     val listDetailStrategy = rememberListDetailSceneStrategy<Any>()
-    val bottomItems = remember {
-        listOf(
-            BottomNavItem(
-                destination = ServerList,
-                icon = Icons.AutoMirrored.Filled.List,
-                label = SharedRes.strings.servers,
-                isSelected = { it is ServerList || it is ServerDetails }
-            ),
-            BottomNavItem(
-                destination = ItemList,
-                icon = Icons.Filled.Inventory,
-                label = SharedRes.strings.items,
-                isSelected = { it is ItemList || it is ItemDetails }
-            ),
-            BottomNavItem(
-                destination = Settings,
-                icon = Icons.Filled.Settings,
-                label = SharedRes.strings.settings,
-                isSelected = { it is Settings }
-            )
-        )
-    }
 
     LaunchedEffect(startDestination) {
         if (backStack.firstOrNull() != startDestination) {
@@ -296,6 +258,11 @@ fun NavigationRoot(startDestination: NavKey) {
                             val state = viewModel.state.collectAsStateWithLifecycle()
                             DeleteAccountScreen(
                                 onNavigateUp = { backStack.removeLastOrNull() },
+                                onNavigate = { dest ->
+                                    if (dest is Onboarding) backStack.clear()
+                                    backStack.add(dest)
+                                },
+                                uiEvent = viewModel.uiEvent,
                                 stateProvider = { state },
                                 onAction = viewModel::onAction
                             )
@@ -388,23 +355,60 @@ fun NavigationRoot(startDestination: NavKey) {
             modifier = Modifier
                 .navigationBarsPadding(),
             navigationItems = {
-                bottomItems.forEach { item ->
-                    NavigationSuiteItem(
-                        selected = item.isSelected(current),
-                        onClick = {
-                            if (!item.isSelected(current)) {
-                                scope.launch { RootNavigator.navigate(item.destination) }
+                NavigationSuiteItem(
+                    selected = current is ServerList || current is ServerDetails,
+                    onClick = {
+                        if (backStack.lastOrNull() !is ServerList) {
+                            while (backStack.lastOrNull() !is ServerList && backStack.isNotEmpty()) {
+                                backStack.removeLastOrNull()
                             }
-                        },
-                        icon = {
-                            Icon(
-                                item.icon,
-                                contentDescription = stringResource(item.label)
-                            )
-                        },
-                        label = { Text(stringResource(item.label)) }
-                    )
-                }
+                            backStack.add(ServerList)
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            Icons.AutoMirrored.Filled.List,
+                            contentDescription = stringResource(SharedRes.strings.servers)
+                        )
+                    },
+                    label = { Text(stringResource(SharedRes.strings.servers)) }
+                )
+                NavigationSuiteItem(
+                    selected = current is ItemList || current is ItemDetails,
+                    onClick = {
+                        if (backStack.lastOrNull() !is ItemList) {
+                            while (backStack.lastOrNull() !is ItemList && backStack.isNotEmpty()) {
+                                backStack.removeLastOrNull()
+                            }
+                            backStack.add(ItemList)
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            Icons.Filled.Inventory,
+                            contentDescription = stringResource(SharedRes.strings.items)
+                        )
+                    },
+                    label = { Text(stringResource(SharedRes.strings.items)) }
+                )
+                NavigationSuiteItem(
+                    selected = current is Settings,
+                    onClick = {
+                        if (backStack.lastOrNull() !is Settings) {
+                            while (backStack.lastOrNull() !is Settings && backStack.isNotEmpty()) {
+                                backStack.removeLastOrNull()
+                            }
+                            backStack.add(Settings)
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            Icons.Default.Settings,
+                            contentDescription = stringResource(SharedRes.strings.settings)
+                        )
+                    },
+                    label = { Text(stringResource(SharedRes.strings.settings)) }
+                )
             },
             content = {
                 AppScaffold()

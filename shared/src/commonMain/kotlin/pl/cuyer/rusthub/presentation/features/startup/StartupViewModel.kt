@@ -76,6 +76,7 @@ class StartupViewModel(
 
     init {
         observePreferences()
+        observeUser()
         startupJob = coroutineScope.launch {
             if (itemDataSource.isEmpty()) {
                 updateLoadingState(true)
@@ -88,6 +89,17 @@ class StartupViewModel(
             }
             initialize()
         }
+    }
+
+    private fun observeUser() {
+        userFlow
+            .onEach { user ->
+                updateStartDestination(user)
+            }
+            .catch {
+                showErrorSnackbar(stringProvider.get(SharedRes.strings.fetch_user_error))
+            }
+            .launchIn(coroutineScope)
     }
 
     private fun observePreferences() {
