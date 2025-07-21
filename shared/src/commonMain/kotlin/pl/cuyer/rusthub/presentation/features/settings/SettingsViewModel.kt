@@ -36,6 +36,7 @@ import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
 import pl.cuyer.rusthub.presentation.navigation.Subscription
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.navigation.UpgradeAccount
+import pl.cuyer.rusthub.presentation.navigation.NavigationManager
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
@@ -60,7 +61,8 @@ class SettingsViewModel(
     private val stringProvider: StringProvider,
     private val systemDarkThemeObserver: SystemDarkThemeObserver,
     private val itemsScheduler: ItemsScheduler,
-    private val itemSyncDataSource: ItemSyncDataSource
+    private val itemSyncDataSource: ItemSyncDataSource,
+    private val navigationManager: NavigationManager
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -164,6 +166,7 @@ class SettingsViewModel(
                                 googleAuthClient.signOut()
                             }
                             _uiEvent.send(UiEvent.Navigate(Onboarding))
+                            navigationManager.resetRoot(Onboarding)
                         }
 
                         is Result.Error -> showErrorSnackbar(stringProvider.get(SharedRes.strings.logout_error))

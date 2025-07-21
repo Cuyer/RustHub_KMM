@@ -30,6 +30,7 @@ import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
+import pl.cuyer.rusthub.presentation.navigation.NavigationManager
 import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
@@ -66,7 +67,8 @@ actual val platformModule: Module = module {
             getUserPreferencesUseCase = get(),
             itemsScheduler = get(),
             itemDataSource = get(),
-            itemSyncDataSource = get()
+            itemSyncDataSource = get(),
+            navigationManager = get()
         )
     }
     factory {
@@ -126,7 +128,8 @@ actual val platformModule: Module = module {
             stringProvider = get(),
             systemDarkThemeObserver = get(),
             itemsScheduler = get(),
-            itemSyncDataSource = get()
+            itemSyncDataSource = get(),
+            navigationManager = get()
         )
     }
     factory {
@@ -135,7 +138,8 @@ actual val platformModule: Module = module {
             snackbarController = get(),
             passwordValidator = get(),
             getUserUseCase = get(),
-            stringProvider = get()
+            stringProvider = get(),
+            navigationManager = get()
         )
     }
     factory {

@@ -10,10 +10,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Inventory
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -50,6 +46,7 @@ import app.cash.paging.compose.collectAsLazyPagingItems
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
@@ -68,7 +65,9 @@ import pl.cuyer.rusthub.android.feature.settings.PrivacyPolicyScreen
 import pl.cuyer.rusthub.android.feature.settings.SettingsScreen
 import pl.cuyer.rusthub.android.feature.subscription.SubscriptionScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
+import pl.cuyer.rusthub.android.navigation.BottomNavItem
 import pl.cuyer.rusthub.common.Urls
+import pl.cuyer.rusthub.presentation.navigation.NavigationManager
 import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
@@ -105,7 +104,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
     ExperimentalMaterial3AdaptiveApi::class
 )
 @Composable
-fun NavigationRoot(startDestination: NavKey) {
+fun NavigationRoot() {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     ObserveAsEvents(flow = SnackbarController.events, snackbarHostState) { event ->
@@ -126,13 +125,20 @@ fun NavigationRoot(startDestination: NavKey) {
         }
     }
 
+    val navigationManager = koinInject<NavigationManager>()
+    val startDestination = navigationManager.getStartDestination()
     val backStack = rememberNavBackStack(startDestination)
     val listDetailStrategy = rememberListDetailSceneStrategy<Any>()
-
     LaunchedEffect(startDestination) {
         if (backStack.firstOrNull() != startDestination) {
             backStack.clear()
             backStack.add(startDestination)
+        }
+    }
+    LaunchedEffect(Unit) {
+        navigationManager.resetFlow.collect { dest ->
+            backStack.clear()
+            backStack.add(dest)
         }
     }
 
@@ -347,7 +353,6 @@ fun NavigationRoot(startDestination: NavKey) {
     val showNav = current is ServerList || current is ServerDetails ||
         current is ItemList || current is ItemDetails || current is Settings
 
-
     if (showNav) {
         NavigationSuiteScaffold(
             containerColor = Color.Transparent,
@@ -355,60 +360,19 @@ fun NavigationRoot(startDestination: NavKey) {
             modifier = Modifier
                 .navigationBarsPadding(),
             navigationItems = {
-                NavigationSuiteItem(
-                    selected = current is ServerList || current is ServerDetails,
-                    onClick = {
-                        if (backStack.lastOrNull() !is ServerList) {
-                            while (backStack.lastOrNull() !is ServerList && backStack.isNotEmpty()) {
-                                backStack.removeLastOrNull()
+                BottomNavItem.values().forEach { item ->
+                    NavigationSuiteItem(
+                        selected = item.isFor(current ?: item.root),
+                        onClick = {
+                            if (!item.isFor(backStack.lastOrNull() ?: item.root)) {
+                                backStack.clear()
+                                backStack.add(item.root)
                             }
-                            backStack.add(ServerList)
-                        }
-                    },
-                    icon = {
-                        Icon(
-                            Icons.AutoMirrored.Filled.List,
-                            contentDescription = stringResource(SharedRes.strings.servers)
-                        )
-                    },
-                    label = { Text(stringResource(SharedRes.strings.servers)) }
-                )
-                NavigationSuiteItem(
-                    selected = current is ItemList || current is ItemDetails,
-                    onClick = {
-                        if (backStack.lastOrNull() !is ItemList) {
-                            while (backStack.lastOrNull() !is ItemList && backStack.isNotEmpty()) {
-                                backStack.removeLastOrNull()
-                            }
-                            backStack.add(ItemList)
-                        }
-                    },
-                    icon = {
-                        Icon(
-                            Icons.Filled.Inventory,
-                            contentDescription = stringResource(SharedRes.strings.items)
-                        )
-                    },
-                    label = { Text(stringResource(SharedRes.strings.items)) }
-                )
-                NavigationSuiteItem(
-                    selected = current is Settings,
-                    onClick = {
-                        if (backStack.lastOrNull() !is Settings) {
-                            while (backStack.lastOrNull() !is Settings && backStack.isNotEmpty()) {
-                                backStack.removeLastOrNull()
-                            }
-                            backStack.add(Settings)
-                        }
-                    },
-                    icon = {
-                        Icon(
-                            Icons.Default.Settings,
-                            contentDescription = stringResource(SharedRes.strings.settings)
-                        )
-                    },
-                    label = { Text(stringResource(SharedRes.strings.settings)) }
-                )
+                        },
+                        icon = { Icon(item.icon, contentDescription = stringResource(item.label)) },
+                        label = { Text(stringResource(item.label)) }
+                    )
+                }
             },
             content = {
                 AppScaffold()
@@ -418,3 +382,4 @@ fun NavigationRoot(startDestination: NavKey) {
         AppScaffold(modifier = Modifier.navigationBarsPadding())
     }
 }
+
