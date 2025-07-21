@@ -347,5 +347,5 @@
     <string name="uncategorized">Nieskategoryzowane</string>
     <string name="synchronizing_data">Synchronizowanie danych</string>
     <string name="skip">Pomiń</string>
-    <string name="fetching_in_background">Pobieranie przedmiotów będzie kontynuowane w tle.</string>
+    <string name="fetching_in_background">Pobieranie będzie kontynuowane w tle.</string>
 </resources>

@@ -136,8 +136,7 @@ actual val platformModule: Module = module {
     }
     viewModel {
         ItemViewModel(
-            getPagedItemsUseCase = get(),
-            stringProvider = get(),
+            getPagedItemsUseCase = get()
         )
     }
     viewModel {

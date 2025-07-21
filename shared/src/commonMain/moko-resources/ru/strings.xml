@@ -347,5 +347,5 @@
     <string name="uncategorized">Без категории</string>
     <string name="synchronizing_data">Синхронизация данных</string>
     <string name="skip">Пропустить</string>
-    <string name="fetching_in_background">Мы продолжим загружать предметы в фоновом режиме.</string>
+    <string name="fetching_in_background">Загрузка будет продолжена в фоновом режиме.</string>
 </resources>

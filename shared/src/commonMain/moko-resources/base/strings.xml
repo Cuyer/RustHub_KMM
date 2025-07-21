@@ -349,5 +349,5 @@
     <string name="uncategorized">Uncategorized</string>
     <string name="synchronizing_data">Synchronizing data</string>
     <string name="skip">Skip</string>
-    <string name="fetching_in_background">We'll continue fetching items in the background.</string>
+    <string name="fetching_in_background">We'll continue fetching in the background.</string>
 </resources>

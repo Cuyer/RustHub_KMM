@@ -1,6 +1,8 @@
 package pl.cuyer.rusthub.android.feature.item
 
 import android.app.Activity
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.animateBounds
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +26,9 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,7 +62,9 @@ import pl.cuyer.rusthub.presentation.features.item.ItemState
 import pl.cuyer.rusthub.presentation.navigation.ItemList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class,
+    ExperimentalSharedTransitionApi::class
+)
 @Composable
 fun ItemScreen(
     onNavigate: (NavKey) -> Unit,
@@ -174,14 +180,12 @@ private fun ItemCategoryChips(
 @Composable
 private fun ItemScreenPreview() {
     RustHubTheme {
-        Scaffold {
-            ItemScreen(
-                stateProvider = { MutableStateFlow(ItemState(isRefreshing = false)).collectAsState() },
-                onAction = {},
-                onNavigate = {},
-                uiEvent = flowOf(UiEvent.Navigate(ItemList)),
-                pagedList = flowOf(PagingData.from(emptyList<RustItem>())).collectAsLazyPagingItems()
-            )
-        }
+        ItemScreen(
+            stateProvider = { mutableStateOf(ItemState(isRefreshing = false)) },
+            onAction = {},
+            onNavigate = {},
+            uiEvent = flowOf(UiEvent.Navigate(ItemList)),
+            pagedList = flowOf(PagingData.from(emptyList<RustItem>())).collectAsLazyPagingItems()
+        )
     }
 }

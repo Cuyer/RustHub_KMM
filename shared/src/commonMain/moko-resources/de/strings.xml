@@ -347,5 +347,5 @@
     <string name="uncategorized">Nicht kategorisiert</string>
     <string name="synchronizing_data">Daten werden synchronisiert</string>
     <string name="skip">Überspringen</string>
-    <string name="fetching_in_background">Wir laden die Elemente im Hintergrund weiter.</string>
+    <string name="fetching_in_background">Wir setzen das Herunterladen im Hintergrund fort.</string>
 </resources>
