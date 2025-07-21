@@ -362,6 +362,7 @@ fun NavigationRoot(startDestination: NavKey) {
                             while (backStack.lastOrNull() !is ServerList && backStack.isNotEmpty()) {
                                 backStack.removeLastOrNull()
                             }
+                            backStack.add(ServerList)
                         }
                     },
                     icon = {
@@ -394,6 +395,9 @@ fun NavigationRoot(startDestination: NavKey) {
                     selected = current is Settings,
                     onClick = {
                         if (backStack.lastOrNull() !is Settings) {
+                            while (backStack.lastOrNull() !is Settings && backStack.isNotEmpty()) {
+                                backStack.removeLastOrNull()
+                            }
                             backStack.add(Settings)
                         }
                     },
