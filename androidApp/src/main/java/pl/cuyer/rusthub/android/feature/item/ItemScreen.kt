@@ -182,7 +182,10 @@ fun ItemScreen(
                                     .fillMaxWidth()
                                     .animateItem()
                                     .padding(horizontal = spacing.xmedium),
-                                item = item
+                                item = item,
+                                onClick = { id ->
+                                    onAction(ItemAction.OnItemClick(id))
+                                }
                             )
                         }
                     }

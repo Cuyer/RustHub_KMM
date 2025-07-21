@@ -58,7 +58,7 @@ class ItemViewModel(
 
     fun onAction(action: ItemAction) {
         when (action) {
-            is ItemAction.OnItemClick -> navigateToItem(action.id, action.name)
+            is ItemAction.OnItemClick -> navigateToItem(action.id)
             is ItemAction.OnSearch -> queryFlow.update { action.query }
             is ItemAction.OnCategoryChange -> changeCategory(action.category)
             ItemAction.OnClearSearchQuery -> queryFlow.update { "" }
@@ -77,9 +77,9 @@ class ItemViewModel(
         }
     }
 
-    private fun navigateToItem(id: String, name: String?) {
+    private fun navigateToItem(id: Long) {
         coroutineScope.launch {
-            _uiEvent.send(UiEvent.Navigate(ItemDetails(id, name)))
+            _uiEvent.send(UiEvent.Navigate(ItemDetails(id)))
         }
     }
 }

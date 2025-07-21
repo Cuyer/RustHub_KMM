@@ -26,9 +26,13 @@ import pl.cuyer.rusthub.domain.model.RustItem
 @Composable
 fun ItemListItem(
     modifier: Modifier = Modifier,
-    item: RustItem
+    item: RustItem,
+    onClick: (Long) -> Unit
 ) {
     ElevatedCard(
+        onClick = {
+            onClick(item.id ?: 0L)
+        },
         shape = RectangleShape,
         modifier = modifier.fillMaxWidth()
     ) {
@@ -64,6 +68,7 @@ fun ItemListItem(
 private fun ItemListItemPreview() {
     RustHubTheme {
         ItemListItem(
+            onClick = {},
             item = RustItem(
                 name = "Assault Rifle",
                 description = "High damage automatic rifle",

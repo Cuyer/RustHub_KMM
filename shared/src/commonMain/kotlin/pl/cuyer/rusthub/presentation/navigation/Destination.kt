@@ -44,8 +44,7 @@ data object ItemList : NavKey
 
 @Serializable
 data class ItemDetails(
-    val id: String,
-    val name: String? = null
+    val id: Long,
 ) : NavKey
 
 @Serializable
