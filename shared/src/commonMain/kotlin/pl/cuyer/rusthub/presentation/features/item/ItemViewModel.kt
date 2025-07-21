@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.domain.model.ItemCategory
 import pl.cuyer.rusthub.domain.model.RustItem
@@ -28,12 +29,20 @@ import pl.cuyer.rusthub.presentation.navigation.ItemDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.domain.usecase.GetPagedItemsUseCase
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
+import pl.cuyer.rusthub.presentation.snackbar.Duration
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.ItemsScheduler
+import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.toUserMessage
 
 class ItemViewModel(
     private val getPagedItemsUseCase: GetPagedItemsUseCase,
     private val itemSyncDataSource: ItemSyncDataSource,
     private val itemsScheduler: ItemsScheduler,
+    private val snackbarController: SnackbarController,
+    private val stringProvider: StringProvider,
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -72,7 +81,11 @@ class ItemViewModel(
             is ItemAction.OnCategoryChange -> changeCategory(action.category)
             ItemAction.OnClearSearchQuery -> queryFlow.update { "" }
             ItemAction.OnRefresh -> refreshItems()
-            is ItemAction.OnError -> Unit
+            is ItemAction.OnError -> sendSnackbarEvent(
+                action.exception.toUserMessage(stringProvider) ?: stringProvider.get(
+                    SharedRes.strings.error_unknown
+                )
+            )
         }
     }
 
@@ -108,6 +121,23 @@ class ItemViewModel(
         coroutineScope.launch {
             itemSyncDataSource.setState(ItemSyncState.PENDING)
             itemsScheduler.startNow()
+        }
+    }
+
+    private fun sendSnackbarEvent(
+        message: String,
+        actionText: String? = null,
+        action: () -> Unit = {},
+        duration: Duration? = null
+    ) {
+        coroutineScope.launch {
+            snackbarController.sendEvent(
+                event = SnackbarEvent(
+                    message = message,
+                    action = actionText?.let { SnackbarAction(name = it, action = action) },
+                    duration = duration ?: Duration.SHORT
+                )
+            )
         }
     }
 }

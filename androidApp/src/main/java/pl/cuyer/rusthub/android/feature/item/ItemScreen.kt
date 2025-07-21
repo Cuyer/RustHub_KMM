@@ -83,6 +83,7 @@ import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.presentation.features.item.ItemAction
 import pl.cuyer.rusthub.presentation.features.item.ItemState
+import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.navigation.ItemList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 
@@ -172,14 +173,12 @@ fun ItemScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            Box(Modifier.fillMaxSize()) {
             if (syncState == ItemSyncState.PENDING) {
                 LazyColumn(
-                    modifier = Modifier.padding(innerPadding),
                     verticalArrangement = Arrangement.spacedBy(spacing.medium),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    items(6) {
+                    items(8) {
                         ItemListItemShimmer(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -190,20 +189,13 @@ fun ItemScreen(
                 }
             } else {
                 HandlePagingItems(pagedList) {
-                    onRefresh {
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(spacing.medium)
-                        ) {
-                            items(6) {
-                                ItemListItemShimmer(
-                                    modifier = Modifier
-                                        .animateItem()
-                                        .padding(horizontal = spacing.xmedium)
-                                )
-                            }
-                        }
+                    onError { error ->
+                        onAction(
+                            ItemAction.OnError(
+                                error
+                            )
+                        )
                     }
-                    onError { }
                     onEmpty {
                         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             Text(
@@ -216,7 +208,6 @@ fun ItemScreen(
                     onSuccess { items ->
                         LazyColumn(
                             state = lazyListState,
-                            modifier = Modifier.padding(innerPadding),
                             verticalArrangement = Arrangement.spacedBy(spacing.medium),
                             horizontalAlignment = Alignment.CenterHorizontally
                         )

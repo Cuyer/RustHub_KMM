@@ -1,51 +1,46 @@
 package pl.cuyer.rusthub.presentation.di
 
 import dev.icerock.moko.permissions.PermissionsController
+import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
+import org.koin.dsl.bind
 import org.koin.dsl.module
+import pl.cuyer.rusthub.BuildConfig
 import pl.cuyer.rusthub.data.local.DatabaseDriverFactory
 import pl.cuyer.rusthub.data.local.DatabasePassphraseProvider
+import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
 import pl.cuyer.rusthub.data.network.HttpClientFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.AuthProvider
-import pl.cuyer.rusthub.util.AppCheckTokenProvider
+import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
 import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordViewModel
 import pl.cuyer.rusthub.presentation.features.auth.password.ResetPasswordViewModel
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
+import pl.cuyer.rusthub.presentation.features.item.ItemViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
-import pl.cuyer.rusthub.presentation.features.item.ItemViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
-import pl.cuyer.rusthub.domain.usecase.GetUserPreferencesUseCase
-import pl.cuyer.rusthub.domain.usecase.SetThemeConfigUseCase
-import pl.cuyer.rusthub.domain.usecase.SetDynamicColorPreferenceUseCase
+import pl.cuyer.rusthub.util.AppCheckTokenProvider
 import pl.cuyer.rusthub.util.ClipboardHandler
+import pl.cuyer.rusthub.util.ConnectivityObserver
 import pl.cuyer.rusthub.util.GoogleAuthClient
+import pl.cuyer.rusthub.util.InAppUpdateManager
+import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
-import pl.cuyer.rusthub.util.ShareHandler
 import pl.cuyer.rusthub.util.ReviewRequester
+import pl.cuyer.rusthub.util.ShareHandler
 import pl.cuyer.rusthub.util.StoreNavigator
+import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
-import pl.cuyer.rusthub.util.ItemsScheduler
-import pl.cuyer.rusthub.util.TokenRefresher
-import pl.cuyer.rusthub.util.InAppUpdateManager
-import pl.cuyer.rusthub.util.StringProvider
-import pl.cuyer.rusthub.domain.usecase.GetPagedItemsUseCase
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
-import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
-import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
-import kotlinx.coroutines.runBlocking
-import org.koin.dsl.bind
-import pl.cuyer.rusthub.BuildConfig
-import pl.cuyer.rusthub.util.ConnectivityObserver
 
 actual val platformModule: Module = module {
     single { DatabasePassphraseProvider(androidContext()) }
@@ -59,7 +54,6 @@ actual val platformModule: Module = module {
     }
     single { AppCheckTokenProvider() }
     single { HttpClientFactory(get(), get(), get()).create() }
-    single { TokenRefresher(get()) }
     single { ClipboardHandler(get()) }
     single { ShareHandler(get()) }
     single { SyncScheduler(get()) }
@@ -138,7 +132,9 @@ actual val platformModule: Module = module {
         ItemViewModel(
             getPagedItemsUseCase = get(),
             itemSyncDataSource = get(),
-            itemsScheduler = get()
+            itemsScheduler = get(),
+            snackbarController = get(),
+            stringProvider = get(),
         )
     }
     viewModel {

@@ -96,6 +96,7 @@ val appModule = module {
             explicitNulls = false
         }
     }
+    singleOf(::TokenRefresher)
     singleOf(::ServerClientImpl) bind ServerRepository::class
     singleOf(::ItemsClientImpl) bind ItemRepository::class
     singleOf(::FavouriteClientImpl) bind FavouriteRepository::class
@@ -116,7 +117,6 @@ val appModule = module {
     singleOf(::AuthDataSourceImpl) bind AuthDataSource::class
     singleOf(::UserRepositoryImpl) bind UserRepository::class
     singleOf(::ConfigRepositoryImpl) bind ConfigRepository::class
-    single { TokenRefresher(get()) }
     single { EmailValidator(get()) }
     single { PasswordValidator(get()) }
     single { UsernameValidator(get()) }

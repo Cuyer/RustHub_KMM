@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.presentation.di
 
 import org.koin.core.module.Module
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import pl.cuyer.rusthub.data.local.DatabaseDriverFactory
 import pl.cuyer.rusthub.data.network.HttpClientFactory
