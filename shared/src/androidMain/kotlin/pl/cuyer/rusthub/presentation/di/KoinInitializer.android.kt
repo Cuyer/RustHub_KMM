@@ -79,8 +79,7 @@ actual val platformModule: Module = module {
             getUserPreferencesUseCase = get(),
             itemsScheduler = get(),
             itemDataSource = get(),
-            itemSyncDataSource = get(),
-            navigationManager = get()
+            itemSyncDataSource = get()
         )
     }
     viewModel {
@@ -151,8 +150,7 @@ actual val platformModule: Module = module {
             stringProvider = get(),
             systemDarkThemeObserver = get(),
             itemsScheduler = get(),
-            itemSyncDataSource = get(),
-            navigationManager = get()
+            itemSyncDataSource = get()
         )
     }
     viewModel {
@@ -161,8 +159,7 @@ actual val platformModule: Module = module {
             snackbarController = get(),
             passwordValidator = get(),
             getUserUseCase = get(),
-            stringProvider = get(),
-            navigationManager = get()
+            stringProvider = get()
         )
     }
     viewModel {

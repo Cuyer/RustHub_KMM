@@ -38,7 +38,6 @@ import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.domain.model.ItemSyncState
-import pl.cuyer.rusthub.presentation.navigation.NavigationManager
 
 private const val SKIP_DELAY = 10_000L
 
@@ -52,7 +51,6 @@ class StartupViewModel(
     private val itemsScheduler: ItemsScheduler,
     private val itemDataSource: ItemDataSource,
     private val itemSyncDataSource: ItemSyncDataSource,
-    private val navigationManager: NavigationManager,
 ) : BaseViewModel() {
 
     private var startupJob: Job? = null
@@ -128,11 +126,9 @@ class StartupViewModel(
                 }
             }
             updateStartDestination(user)
-            navigationManager.setInitialDestination(_state.value.startDestination)
         } catch (e: Exception) {
             showErrorSnackbar(stringProvider.get(SharedRes.strings.fetch_user_error))
             updateStartDestination(null)
-            navigationManager.setInitialDestination(_state.value.startDestination)
         } finally {
             updateLoadingState(false)
         }

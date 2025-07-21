@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
                             onSkip = { startupViewModel.skipFetching() }
                         )
                     } else {
-                        NavigationRoot()
+                        NavigationRoot(startDestination = state.value.startDestination)
                     }
                 }
             }

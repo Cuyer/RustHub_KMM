@@ -29,7 +29,6 @@ import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.util.validator.PasswordValidator
-import pl.cuyer.rusthub.presentation.navigation.NavigationManager
 
 class DeleteAccountViewModel(
     private val deleteAccountUseCase: DeleteAccountUseCase,
@@ -37,7 +36,6 @@ class DeleteAccountViewModel(
     private val passwordValidator: PasswordValidator,
     private val getUserUseCase: GetUserUseCase,
     private val stringProvider: StringProvider,
-    private val navigationManager: NavigationManager,
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -90,7 +88,6 @@ class DeleteAccountViewModel(
                                     )
                                 )
                                 _uiEvent.send(UiEvent.Navigate(Onboarding))
-                                navigationManager.resetRoot(Onboarding)
                             }
                             is Result.Error -> showErrorSnackbar(
                                 result.exception.toUserMessage(stringProvider)
@@ -130,7 +127,6 @@ class DeleteAccountViewModel(
                                 )
                             )
                             _uiEvent.send(UiEvent.Navigate(Onboarding))
-                            navigationManager.resetRoot(Onboarding)
                         }
                         is Result.Error -> showErrorSnackbar(
                             result.exception.toUserMessage(stringProvider)
