@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.data.network.item.mapper.toDomain
-import pl.cuyer.rusthub.data.network.item.model.RustItemDto
+import pl.cuyer.rusthub.data.network.item.model.ItemsResponseDto
 import pl.cuyer.rusthub.data.network.util.BaseApiResponse
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
 import pl.cuyer.rusthub.domain.model.RustItem
@@ -18,11 +18,11 @@ class ItemsClientImpl(
     json: Json
 ) : ItemRepository, BaseApiResponse(json) {
     override fun getItems(): Flow<Result<List<RustItem>>> {
-        return safeApiCall<List<RustItemDto>> {
+        return safeApiCall<ItemsResponseDto> {
             httpClient.get(NetworkConstants.BASE_URL + "items")
         }.map { result ->
             when (result) {
-                is Result.Success -> Result.Success(result.data.map { it.toDomain() })
+                is Result.Success -> Result.Success(result.data.items.map { it.toDomain() })
                 is Result.Error -> result
             }
         }
