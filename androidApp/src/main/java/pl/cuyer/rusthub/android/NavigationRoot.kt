@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -383,7 +384,7 @@ fun NavigationRoot(startDestination: NavKey) {
                     },
                     icon = {
                         Icon(
-                            Icons.AutoMirrored.Filled.List,
+                            Icons.Filled.Inventory,
                             contentDescription = stringResource(SharedRes.strings.items)
                         )
                     },

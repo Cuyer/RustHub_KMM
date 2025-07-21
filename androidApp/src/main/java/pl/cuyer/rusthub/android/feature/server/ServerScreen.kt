@@ -17,7 +17,8 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
@@ -370,25 +371,31 @@ private fun ServerFilterChips(
     onSelectedChange: (ServerFilter) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    FlowRow(
+    LazyRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
-        FilterChip(
-            selected = selected == ServerFilter.ALL,
-            onClick = { onSelectedChange(ServerFilter.ALL) },
-            label = { Text(stringResource(SharedRes.strings.all)) }
-        )
-        FilterChip(
-            selected = selected == ServerFilter.FAVOURITES,
-            onClick = { onSelectedChange(ServerFilter.FAVOURITES) },
-            label = { Text(stringResource(SharedRes.strings.favourites)) }
-        )
-        FilterChip(
-            selected = selected == ServerFilter.SUBSCRIBED,
-            onClick = { onSelectedChange(ServerFilter.SUBSCRIBED) },
-            label = { Text(stringResource(SharedRes.strings.subscribed)) }
-        )
+        item {
+            FilterChip(
+                selected = selected == ServerFilter.ALL,
+                onClick = { onSelectedChange(ServerFilter.ALL) },
+                label = { Text(stringResource(SharedRes.strings.all)) }
+            )
+        }
+        item {
+            FilterChip(
+                selected = selected == ServerFilter.FAVOURITES,
+                onClick = { onSelectedChange(ServerFilter.FAVOURITES) },
+                label = { Text(stringResource(SharedRes.strings.favourites)) }
+            )
+        }
+        item {
+            FilterChip(
+                selected = selected == ServerFilter.SUBSCRIBED,
+                onClick = { onSelectedChange(ServerFilter.SUBSCRIBED) },
+                label = { Text(stringResource(SharedRes.strings.subscribed)) }
+            )
+        }
     }
 }
 

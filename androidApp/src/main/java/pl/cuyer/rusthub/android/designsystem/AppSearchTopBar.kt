@@ -68,6 +68,7 @@ import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.presentation.model.SearchQueryUi
+import dev.icerock.moko.resources.StringResource
 
 
 @OptIn(
@@ -85,6 +86,7 @@ fun RustSearchBarTopAppBar(
     onClearSearchQuery: () -> Unit,
     isLoadingSearchHistory: Boolean,
     showFiltersIcon: Boolean = true,
+    placeholderRes: StringResource = SharedRes.strings.search_servers,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -106,7 +108,7 @@ fun RustSearchBarTopAppBar(
                     onSearchTriggered()
                 }
             },
-            placeholder = { Text(stringResource(SharedRes.strings.search_servers)) },
+            placeholder = { Text(stringResource(placeholderRes)) },
             leadingIcon = {
                 if (searchBarState.currentValue == SearchBarValue.Expanded) {
                     IconButton(
@@ -320,7 +322,8 @@ private fun AppSearchTopBarPreview() {
                     searchQueryUi = emptyList(),
                     onDelete = {},
                     onClearSearchQuery = {},
-                    isLoadingSearchHistory = false
+                    isLoadingSearchHistory = false,
+                    placeholderRes = SharedRes.strings.search_servers
                 )
             }
         ) {

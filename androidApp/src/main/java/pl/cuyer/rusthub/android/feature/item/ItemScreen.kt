@@ -6,7 +6,8 @@ import androidx.compose.animation.animateBounds
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -107,7 +108,8 @@ fun ItemScreen(
                         onDelete = {},
                         onClearSearchQuery = { onAction(ItemAction.OnClearSearchQuery) },
                         isLoadingSearchHistory = false,
-                        showFiltersIcon = false
+                        showFiltersIcon = false,
+                        placeholderRes = SharedRes.strings.search_items
                     )
                     ItemCategoryChips(
                         selected = state.value.selectedCategory,
@@ -127,7 +129,7 @@ fun ItemScreen(
             onEmpty {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
-                        text = stringResource(SharedRes.strings.no_servers_available),
+                        text = stringResource(SharedRes.strings.no_items_available),
                         style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center
                     )
@@ -155,17 +157,19 @@ private fun ItemCategoryChips(
     onSelectedChange: (ItemCategory?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    FlowRow(
+    LazyRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
-        FilterChip(
-            selected = selected == null,
-            onClick = { onSelectedChange(null) },
-            label = { Text(stringResource(SharedRes.strings.all)) }
-        )
+        item {
+            FilterChip(
+                selected = selected == null,
+                onClick = { onSelectedChange(null) },
+                label = { Text(stringResource(SharedRes.strings.all)) }
+            )
+        }
         val sp = StringProvider(LocalContext.current)
-        ItemCategory.entries.forEach { category ->
+        items(ItemCategory.entries) { category ->
             val text by rememberUpdatedState(category.displayName(sp))
             FilterChip(
                 selected = selected == category,
