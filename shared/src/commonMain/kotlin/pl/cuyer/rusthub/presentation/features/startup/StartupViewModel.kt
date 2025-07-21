@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.presentation.features.startup
 
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import kotlinx.io.IOException
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
@@ -37,6 +39,8 @@ import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.domain.model.ItemSyncState
 
+private const val SKIP_DELAY = 10_000L
+
 class StartupViewModel(
     private val snackbarController: SnackbarController,
     private val getUserUseCase: GetUserUseCase,
@@ -48,6 +52,9 @@ class StartupViewModel(
     private val itemDataSource: ItemDataSource,
     private val itemSyncDataSource: ItemSyncDataSource,
 ) : BaseViewModel() {
+
+    private var startupJob: Job? = null
+    private var initialized = false
 
     private val userFlow = getUserUseCase()
         .distinctUntilChanged()
@@ -68,13 +75,13 @@ class StartupViewModel(
     )
 
     init {
-        observeUser()
         observePreferences()
-        coroutineScope.launch {
+        startupJob = coroutineScope.launch {
             if (itemDataSource.isEmpty()) {
                 updateLoadingState(true)
                 itemSyncDataSource.setState(ItemSyncState.PENDING)
                 itemsScheduler.startNow()
+                startSkipTimer()
                 itemSyncDataSource.observeState().first { it == ItemSyncState.DONE }
             } else {
                 itemsScheduler.schedule()
@@ -106,6 +113,9 @@ class StartupViewModel(
     }
 
     private suspend fun initialize() {
+        if (initialized) return
+        initialized = true
+        observeUser()
         updateLoadingState(true)
         try {
             val user = userFlow.first()
@@ -126,6 +136,19 @@ class StartupViewModel(
 
     private fun updateLoadingState(loading: Boolean) {
         _state.update { it.copy(isLoading = loading) }
+    }
+
+    private fun startSkipTimer() {
+        coroutineScope.launch {
+            delay(SKIP_DELAY)
+            _state.update { it.copy(showSkip = true) }
+        }
+    }
+
+    fun skipFetching() {
+        if (initialized) return
+        startupJob?.cancel()
+        coroutineScope.launch { initialize() }
     }
 
     private fun updateStartDestination(user: User?) {
