@@ -86,9 +86,11 @@ import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.validator.EmailValidator
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
+import pl.cuyer.rusthub.presentation.navigation.NavigationManager
 
 val appModule = module {
     single<SnackbarController> { SnackbarController }
+    single { NavigationManager() }
     single {
         Json {
             ignoreUnknownKeys = true
