@@ -10,15 +10,13 @@ import pl.cuyer.rusthub.util.TokenRefresher
 
 class DeleteAccountUseCase(
     private val repository: AuthRepository,
-    private val dataSource: AuthDataSource,
-    private val tokenRefresher: TokenRefresher,
+    private val dataSource: AuthDataSource
 ) {
     operator fun invoke(password: String): Flow<Result<Unit>> = channelFlow {
         repository.deleteAccount(password).collectLatest { result ->
             when (result) {
                 is Result.Success -> {
                     dataSource.deleteUser()
-                    tokenRefresher.clear()
                     send(Result.Success(Unit))
                 }
 

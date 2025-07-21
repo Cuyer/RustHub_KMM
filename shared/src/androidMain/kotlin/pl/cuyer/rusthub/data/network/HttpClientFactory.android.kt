@@ -60,8 +60,7 @@ actual class HttpClientFactory actual constructor(
     private val json: Json,
     private val authDataSource: AuthDataSource,
     private val appCheckTokenProvider: AppCheckTokenProvider,
-    private val tokenRefresher: TokenRefresher
-) {
+)  {
     actual fun create(): HttpClient {
         return HttpClient(OkHttp) {
             engine {
@@ -103,7 +102,6 @@ actual class HttpClientFactory actual constructor(
                             BearerTokens(newTokens.accessToken, newTokens.refreshToken)
                         } else {
                             authDataSource.deleteUser()
-                            tokenRefresher.clear()
                             null
                         }
                     }

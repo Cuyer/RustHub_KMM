@@ -52,7 +52,6 @@ actual val platformModule: Module = module {
     single { ReviewRequester() }
     single { StoreNavigator() }
     single { SystemDarkThemeObserver() }
-    single { ConnectivityObserver() }
     single { GoogleAuthClient() }
     single { StringProvider() }
     factory {

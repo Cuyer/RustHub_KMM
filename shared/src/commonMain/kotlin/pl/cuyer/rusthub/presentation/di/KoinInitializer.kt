@@ -143,8 +143,8 @@ val appModule = module {
     single { GetUserPreferencesUseCase(get()) }
     single { SetThemeConfigUseCase(get()) }
     single { SetDynamicColorPreferenceUseCase(get()) }
-    single { LogoutUserUseCase(get(), get(), get()) }
-    single { DeleteAccountUseCase(get(), get(), get()) }
+    single { LogoutUserUseCase(get(), get()) }
+    single { DeleteAccountUseCase(get(), get()) }
     single { ChangePasswordUseCase(get()) }
     single { RequestPasswordResetUseCase(get()) }
     single { UpgradeAccountUseCase(get(), get(), get(), get()) }

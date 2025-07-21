@@ -14,9 +14,11 @@ import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.User
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
+import pl.cuyer.rusthub.util.TokenRefresher
 
 class AuthDataSourceImpl(
-    private val db: RustHubDatabase
+    private val db: RustHubDatabase,
+    val tokenRefresher: TokenRefresher
 ) : AuthDataSource, Queries(db) {
 
     override suspend fun insertUser(
@@ -45,6 +47,7 @@ class AuthDataSourceImpl(
     override suspend fun deleteUser() {
         withContext(Dispatchers.IO) {
             queries.deleteUser()
+            tokenRefresher.clear()
         }
     }
 
