@@ -60,9 +60,20 @@ class ItemViewModel(
         when (action) {
             is ItemAction.OnItemClick -> navigateToItem(action.id, action.name)
             is ItemAction.OnSearch -> queryFlow.update { action.query }
-            is ItemAction.OnCategoryChange -> categoryFlow.update { action.category }
+            is ItemAction.OnCategoryChange -> changeCategory(action.category)
             ItemAction.OnClearSearchQuery -> queryFlow.update { "" }
             is ItemAction.OnError -> Unit
+        }
+    }
+
+    private fun changeCategory(category: ItemCategory?) {
+        categoryFlow.update {
+            category
+        }
+        _state.update { currentState ->
+            currentState.copy(
+                selectedCategory = category
+            )
         }
     }
 
