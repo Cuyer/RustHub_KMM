@@ -1,8 +1,12 @@
 package pl.cuyer.rusthub.android.feature.item
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
@@ -31,8 +35,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import pl.cuyer.rusthub.presentation.features.item.ItemDetailsState
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
+import pl.cuyer.rusthub.android.designsystem.LootingListItem
 import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.launch
+import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.domain.model.Looting
 
 private enum class DetailsPage(val title: StringResource) {
     LOOTING(SharedRes.strings.looting),
@@ -114,6 +121,23 @@ fun ItemDetailsScreen(
 
 @Composable
 private fun DetailsContent(page: DetailsPage, content: Any?) {
-    // Specialize per-page if needed
-    Text(content?.toString() ?: "")
+    when (page) {
+        DetailsPage.LOOTING -> {
+            val looting = content as? List<Looting> ?: emptyList()
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(spacing.medium),
+            ) {
+                items(looting, key = { it.from ?: it.hashCode().toString() }) { item ->
+                    LootingListItem(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .animateItem()
+                            .padding(horizontal = spacing.xmedium),
+                        looting = item
+                    )
+                }
+            }
+        }
+        else -> Text(content?.toString() ?: "")
+    }
 }
