@@ -71,7 +71,8 @@ actual val platformModule: Module = module {
     factory {
         ItemViewModel(
             getPagedItemsUseCase = get(),
-            itemSyncDataSource = get()
+            itemSyncDataSource = get(),
+            itemsScheduler = get()
         )
     }
     factory {

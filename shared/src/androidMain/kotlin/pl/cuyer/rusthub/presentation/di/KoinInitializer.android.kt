@@ -137,7 +137,8 @@ actual val platformModule: Module = module {
     viewModel {
         ItemViewModel(
             getPagedItemsUseCase = get(),
-            itemSyncDataSource = get()
+            itemSyncDataSource = get(),
+            itemsScheduler = get()
         )
     }
     viewModel {

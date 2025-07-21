@@ -28,10 +28,12 @@ import pl.cuyer.rusthub.presentation.navigation.ItemDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.domain.usecase.GetPagedItemsUseCase
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
+import pl.cuyer.rusthub.util.ItemsScheduler
 
 class ItemViewModel(
     private val getPagedItemsUseCase: GetPagedItemsUseCase,
     private val itemSyncDataSource: ItemSyncDataSource,
+    private val itemsScheduler: ItemsScheduler,
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -69,6 +71,7 @@ class ItemViewModel(
             is ItemAction.OnSearch -> queryFlow.update { action.query }
             is ItemAction.OnCategoryChange -> changeCategory(action.category)
             ItemAction.OnClearSearchQuery -> queryFlow.update { "" }
+            ItemAction.OnRefresh -> refreshItems()
             is ItemAction.OnError -> Unit
         }
     }
@@ -98,6 +101,13 @@ class ItemViewModel(
                     current.copy(syncState = stateValue)
                 }
             }
+        }
+    }
+
+    private fun refreshItems() {
+        coroutineScope.launch {
+            itemSyncDataSource.setState(ItemSyncState.PENDING)
+            itemsScheduler.startNow()
         }
     }
 }
