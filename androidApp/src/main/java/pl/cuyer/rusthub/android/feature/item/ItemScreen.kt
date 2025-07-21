@@ -6,6 +6,7 @@ import androidx.compose.animation.animateBounds
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.fillMaxSize
@@ -64,7 +65,8 @@ import pl.cuyer.rusthub.presentation.features.item.ItemState
 import pl.cuyer.rusthub.presentation.navigation.ItemList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class,
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class,
     ExperimentalSharedTransitionApi::class
 )
 @Composable
@@ -114,10 +116,15 @@ fun ItemScreen(
                     )
                     ItemCategoryChips(
                         selected = state.value.selectedCategory,
-                        onSelectedChange = { onAction(ItemAction.OnCategoryChange(it)) },
+                        onSelectedChange = {
+                            onAction(ItemAction.OnCategoryChange(it))
+                        },
                         modifier = Modifier
                             .navigationBarsPadding()
                             .padding(horizontal = spacing.xmedium)
+                            .then(
+                                if (isTabletMode) Modifier.displayCutoutPadding() else Modifier
+                            )
                     )
                 }
             }
