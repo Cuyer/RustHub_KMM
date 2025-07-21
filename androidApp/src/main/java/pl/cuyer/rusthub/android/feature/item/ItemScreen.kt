@@ -66,6 +66,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.designsystem.ItemListItem
 import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
@@ -102,7 +103,7 @@ fun ItemScreen(
     val isAtTop by remember {
         derivedStateOf {
             lazyListState.firstVisibleItemIndex == 0 &&
-                lazyListState.firstVisibleItemScrollOffset == 0
+                    lazyListState.firstVisibleItemScrollOffset == 0
         }
     }
 
@@ -168,7 +169,13 @@ fun ItemScreen(
                     }
                 }
                 onSuccess { items ->
-                    LazyColumn(state = lazyListState, modifier = Modifier.padding(innerPadding)) {
+                    LazyColumn(
+                        state = lazyListState,
+                        modifier = Modifier.padding(innerPadding),
+                        verticalArrangement = Arrangement.spacedBy(spacing.medium),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    )
+                    {
                         onPagingItems(key = { it.id ?: it.slug ?: it.hashCode() }) { item ->
                             ItemListItem(
                                 modifier = Modifier
