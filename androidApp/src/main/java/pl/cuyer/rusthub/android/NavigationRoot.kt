@@ -66,6 +66,7 @@ import pl.cuyer.rusthub.android.feature.settings.SettingsScreen
 import pl.cuyer.rusthub.android.feature.subscription.SubscriptionScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.navigation.bottomNavItems
+import pl.cuyer.rusthub.android.navigation.navigateBottomBar
 import pl.cuyer.rusthub.common.Urls
 import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
@@ -355,14 +356,7 @@ fun NavigationRoot(startDestination: NavKey) {
                 bottomNavItems.forEach { item ->
                     NavigationSuiteItem(
                         selected = item.isInHierarchy(current),
-                        onClick = {
-                            if (!item.isInHierarchy(backStack.lastOrNull())) {
-                                while (backStack.isNotEmpty() && !item.isInHierarchy(backStack.last())) {
-                                    backStack.removeLastOrNull()
-                                }
-                                backStack.add(item.root)
-                            }
-                        },
+                        onClick = { navigateBottomBar(backStack, item) },
                         icon = {
                             Icon(
                                 item.icon,
