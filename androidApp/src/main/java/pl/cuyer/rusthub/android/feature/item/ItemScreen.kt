@@ -47,6 +47,7 @@ import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
@@ -157,6 +158,7 @@ private fun ItemCategoryChips(
     onSelectedChange: (ItemCategory?) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val sp = koinInject<StringProvider>()
     LazyRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(spacing.small)
@@ -168,7 +170,6 @@ private fun ItemCategoryChips(
                 label = { Text(stringResource(SharedRes.strings.all)) }
             )
         }
-        val sp = StringProvider(LocalContext.current)
         items(ItemCategory.entries) { category ->
             val text by rememberUpdatedState(category.displayName(sp))
             FilterChip(
