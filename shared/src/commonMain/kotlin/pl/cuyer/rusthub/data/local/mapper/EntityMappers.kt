@@ -12,6 +12,7 @@ import database.SearchQueryEntity
 import database.ServerEntity
 import database.UserEntity
 import database.ItemEntity
+import database.ItemSearchQueryEntity
 import pl.cuyer.rusthub.data.local.model.DifficultyEntity
 import pl.cuyer.rusthub.data.local.model.FlagEntity
 import pl.cuyer.rusthub.data.local.model.MapsEntity
@@ -77,6 +78,14 @@ fun ServerFilter?.toEntity(): ServerFilterEntity? = this?.let { ServerFilterEnti
 
 fun WipeTypeEntity?.toDomain(): WipeType? = this?.let { WipeType.valueOf(it.name) }
 fun WipeType?.toEntity(): WipeTypeEntity? = this?.let { WipeTypeEntity.valueOf(it.name) }
+
+fun ItemSearchQueryEntity.toDomain(): SearchQuery {
+    return SearchQuery(
+        id = id,
+        query = query,
+        timestamp = Instant.parse(timestamp)
+    )
+}
 
 fun FiltersEntity.toServerQuery(): ServerQuery {
     return ServerQuery(
