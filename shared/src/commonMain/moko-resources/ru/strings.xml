@@ -361,4 +361,7 @@
     <string name="tech_tree_cost">Стоимость дерева технологий</string>
     <string name="radtown_recycler">Ресайклер в заброшенном городе</string>
     <string name="safezone_recycler">Ресайклер в безопасной зоне</string>
+    <string name="raw_material_cost">Стоимость сырья</string>
+    <string name="time_to_raid">Время рейда: %1$s</string>
+    <string name="hp">HP</string>
 </resources>

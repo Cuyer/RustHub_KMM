@@ -361,4 +361,7 @@
     <string name="tech_tree_cost">Coût de l'arbre technologique</string>
     <string name="radtown_recycler">Recycler de Radtown</string>
     <string name="safezone_recycler">Recycler de Safezone</string>
+    <string name="raw_material_cost">Coût des matières premières</string>
+    <string name="time_to_raid">Temps de raid : %1$s</string>
+    <string name="hp">HP</string>
 </resources>
