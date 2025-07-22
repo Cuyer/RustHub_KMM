@@ -7,6 +7,4 @@ plugins {
     alias(libs.plugins.kotlinCocoapods).apply(false)
     alias(libs.plugins.composeCompiler).apply(false)
     alias(libs.plugins.protobuf).apply(false)
-    alias(libs.plugins.androidTest) apply false
-    alias(libs.plugins.baselineprofile) apply false
 }
