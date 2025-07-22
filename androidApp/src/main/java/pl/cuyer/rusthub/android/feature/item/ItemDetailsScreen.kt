@@ -243,7 +243,7 @@ fun CraftingRecipeItemList(
                             shape = RectangleShape
                         ),
                     textAlign = TextAlign.Center,
-                    text = "Crafting Recipe",
+                    text = stringResource(SharedRes.strings.crafting_recipe),
                     style = MaterialTheme.typography.titleLargeEmphasized,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -329,7 +329,7 @@ private fun ResearchTableCostItem(
                             shape = RectangleShape
                         ),
                     textAlign = TextAlign.Center,
-                    text = "Research Table Cost",
+                    text = stringResource(SharedRes.strings.research_table_cost),
                     style = MaterialTheme.typography.titleLargeEmphasized,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -417,7 +417,7 @@ private fun TechTreeCostItem(
                             shape = RectangleShape
                         ),
                     textAlign = TextAlign.Center,
-                    text = "Tech Tree Cost",
+                    text = stringResource(SharedRes.strings.tech_tree_cost),
                     style = MaterialTheme.typography.titleLargeEmphasized,
                     fontWeight = FontWeight.SemiBold
                 )

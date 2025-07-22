@@ -356,4 +356,7 @@
     <string name="crafting">Herstellung</string>
     <string name="recycling">Recycling</string>
     <string name="raiding">Raiden</string>
+    <string name="crafting_recipe">Herstellungsrezept</string>
+    <string name="research_table_cost">Forschungstisch-Kosten</string>
+    <string name="tech_tree_cost">Technologiebaum-Kosten</string>
 </resources>
