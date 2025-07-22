@@ -44,6 +44,12 @@ playcore = "2.1.0"
 play-review = "2.0.2"
 protobufPlugin = "0.9.5"
 protobuf = "4.31.1"
+junit = "1.2.1"
+espressoCore = "3.6.1"
+uiautomator = "2.3.0"
+benchmarkMacroJunit4 = "1.3.4"
+baselineprofile = "1.3.4"
+profileinstaller = "1.4.1"
 
 [libraries]
 
@@ -149,6 +155,11 @@ google-play-app-update-ktx = { module = "com.google.android.play:app-update-ktx"
 desugar_jdk_libs-v215 = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
 protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
+androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
+androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -165,3 +176,5 @@ sqlDelightGradlePlugin = { id = "app.cash.sqldelight", version.ref = "sql-deligh
 mokoMultiplatformResources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko-resources" }
 buildKonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
+androidTest = { id = "com.android.test", version.ref = "agp" }
+baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }

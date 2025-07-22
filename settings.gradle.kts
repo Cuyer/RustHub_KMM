@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 rootProject.name = "RustHub"
 include(":androidApp")
 include(":shared")
+include(":baselineprofile")

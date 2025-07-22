@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.googleServices)
     alias(libs.plugins.crashlytics)
     alias(libs.plugins.performance)
+    alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -126,6 +127,8 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.messaging)
     implementation(libs.firebase.appcheck.playintegrity)
+    implementation(libs.androidx.profileinstaller)
+    "baselineProfile"(project(":baselineprofile"))
     debugImplementation(libs.firebase.appcheck.debug)
     implementation(libs.firebase.performance)
     implementation(libs.google.auth)
