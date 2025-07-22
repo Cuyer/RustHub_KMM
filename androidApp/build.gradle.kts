@@ -90,6 +90,11 @@ android {
     }
 }
 
+baselineProfile {
+    // Merge profile into the main app to enable optimizations on release builds.
+    mergeIntoMain = true
+}
+
 dependencies {
     implementation(projects.shared)
     implementation(project.dependencies.platform(libs.compose.bom))
