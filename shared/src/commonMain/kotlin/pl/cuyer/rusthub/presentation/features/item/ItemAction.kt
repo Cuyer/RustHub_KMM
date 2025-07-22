@@ -9,4 +9,6 @@ sealed interface ItemAction {
     data class OnError(val exception: Throwable) : ItemAction
     data object OnRefresh : ItemAction
     data object OnClearSearchQuery : ItemAction
+    data object DeleteSearchQueries : ItemAction
+    data class DeleteSearchQueryByQuery(val query: String) : ItemAction
 }
