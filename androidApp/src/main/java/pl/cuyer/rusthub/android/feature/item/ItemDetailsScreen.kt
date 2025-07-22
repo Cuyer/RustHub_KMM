@@ -732,7 +732,7 @@ private fun RaidingItem(
                         .fillMaxWidth()
                         .padding(vertical = spacing.medium),
                     textAlign = TextAlign.Center,
-                    text = stringResource(SharedRes.strings.time_to_raid, formatRaidDuration(it)),
+                    text = stringResource(SharedRes.strings.time_to_raid, formatRaidDuration((it * fraction).toInt())),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -841,5 +841,11 @@ private fun formatRaidDuration(seconds: Int): String {
     val totalMinutes = seconds / 60
     val hours = totalMinutes / 60
     val minutes = totalMinutes % 60
-    return if (hours > 0) "${hours}h ${minutes}m" else "${minutes}m"
+    val remainingSeconds = seconds % 60
+
+    return when {
+        hours > 0 -> "${hours}h ${minutes}m"
+        totalMinutes > 0 -> "${minutes}m ${remainingSeconds}s"
+        else -> "${seconds}s"
+    }
 }
