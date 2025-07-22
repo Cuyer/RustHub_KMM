@@ -8,7 +8,8 @@ import pl.cuyer.rusthub.util.AppCheckTokenProvider
 expect class HttpClientFactory(
     json: Json,
     authDataSource: AuthDataSource,
-    appCheckTokenProvider: AppCheckTokenProvider
+    appCheckTokenProvider: AppCheckTokenProvider,
+    tokenRefresher: TokenRefresher,
 ) {
     fun create(): HttpClient
 }

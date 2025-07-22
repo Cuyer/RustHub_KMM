@@ -33,6 +33,7 @@ import pl.cuyer.rusthub.util.AppCheckTokenProvider
 import pl.cuyer.rusthub.util.BuildType
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.model.AuthProvider
+import pl.cuyer.rusthub.util.TokenRefresher
 import platform.Foundation.NSLocale
 import platform.Foundation.currentLocale
 import platform.Foundation.languageCode
@@ -47,7 +48,8 @@ private fun preferredLanguageCode(): String {
 actual class HttpClientFactory actual constructor(
     private val json: Json,
     private val authDataSource: AuthDataSource,
-    private val appCheckTokenProvider: AppCheckTokenProvider
+    private val appCheckTokenProvider: AppCheckTokenProvider,
+    private val tokenRefresher: TokenRefresher
 ) {
     actual fun create(): HttpClient {
         return HttpClient(Darwin) {
@@ -83,7 +85,11 @@ actual class HttpClientFactory actual constructor(
                                 emailConfirmed = confirmed
                             )
                             BearerTokens(newTokens.accessToken, newTokens.refreshToken)
-                        } else null
+                        } else {
+                            authDataSource.deleteUser()
+                            tokenRefresher.clear()
+                            null
+                        }
                     }
                     sendWithoutRequest { request ->
                         val path = request.url.encodedPath
