@@ -492,6 +492,28 @@ DELETE FROM searchQueryEntity;
 deleteSearchQueryByQuery:
 DELETE FROM searchQueryEntity WHERE query = :query;
 
+CREATE TABLE itemSearchQueryEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    query TEXT NOT NULL UNIQUE,
+    timestamp TEXT NOT NULL
+);
+
+upsertItemSearchQuery:
+INSERT INTO itemSearchQueryEntity (query, timestamp)
+VALUES (:query, :timestamp)
+ON CONFLICT(query) DO UPDATE SET
+    timestamp = excluded.timestamp;
+
+getItemSearchQueries:
+SELECT * FROM itemSearchQueryEntity
+ORDER BY timestamp DESC;
+
+clearItemSearchQueries:
+DELETE FROM itemSearchQueryEntity;
+
+deleteItemSearchQueryByQuery:
+DELETE FROM itemSearchQueryEntity WHERE query = :query;
+
 CREATE TABLE favouriteSyncEntity (
     server_id INTEGER NOT NULL PRIMARY KEY,
     action INTEGER NOT NULL,

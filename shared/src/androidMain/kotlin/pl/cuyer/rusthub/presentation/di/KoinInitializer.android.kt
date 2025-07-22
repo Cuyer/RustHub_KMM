@@ -136,6 +136,9 @@ actual val platformModule: Module = module {
             itemsScheduler = get(),
             snackbarController = get(),
             stringProvider = get(),
+            saveSearchQueryUseCase = get(),
+            getSearchQueriesUseCase = get(),
+            deleteSearchQueriesUseCase = get(),
         )
     }
     viewModel { (itemId: Long) ->

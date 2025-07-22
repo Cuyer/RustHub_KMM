@@ -138,10 +138,13 @@ fun ItemScreen(
                             onAction(ItemAction.OnSearch(textFieldState.text.toString()))
                         },
                         onOpenFilters = {},
-                        searchQueryUi = emptyList(),
-                        onDelete = {},
+                        searchQueryUi = state.value.searchQuery,
+                        onDelete = {
+                            if (it.isBlank()) onAction(ItemAction.DeleteSearchQueries)
+                            else onAction(ItemAction.DeleteSearchQueryByQuery(it))
+                        },
                         onClearSearchQuery = { onAction(ItemAction.OnClearSearchQuery) },
-                        isLoadingSearchHistory = false,
+                        isLoadingSearchHistory = state.value.isLoadingSearchHistory,
                         showFiltersIcon = false,
                         placeholderRes = SharedRes.strings.search_items
                     )

@@ -16,6 +16,7 @@ import pl.cuyer.rusthub.data.local.filter.FiltersDataSourceImpl
 import pl.cuyer.rusthub.data.local.filtersOptions.FiltersOptionsDataSourceImpl
 import pl.cuyer.rusthub.data.local.remotekey.RemoteKeyDataSourceImpl
 import pl.cuyer.rusthub.data.local.search.SearchQueryDataSourceImpl
+import pl.cuyer.rusthub.data.local.search.ItemSearchQueryDataSourceImpl
 import pl.cuyer.rusthub.data.local.server.ServerDataSourceImpl
 import pl.cuyer.rusthub.data.local.item.ItemDataSourceImpl
 import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
@@ -43,6 +44,7 @@ import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.domain.repository.notification.MessagingTokenRepository
 import pl.cuyer.rusthub.domain.repository.search.SearchQueryDataSource
+import pl.cuyer.rusthub.domain.repository.search.ItemSearchQueryDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
@@ -55,12 +57,14 @@ import pl.cuyer.rusthub.domain.usecase.CheckUserExistsUseCase
 import pl.cuyer.rusthub.domain.usecase.ClearFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteSearchQueriesUseCase
+import pl.cuyer.rusthub.domain.usecase.DeleteItemSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetFiltersOptionsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedItemsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetSearchQueriesUseCase
+import pl.cuyer.rusthub.domain.usecase.GetItemSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetItemDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
@@ -74,6 +78,7 @@ import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
 import pl.cuyer.rusthub.domain.usecase.SetEmailConfirmedUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
+import pl.cuyer.rusthub.domain.usecase.SaveItemSearchQueryUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleSubscriptionUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeAccountUseCase
@@ -109,6 +114,7 @@ val appModule = module {
     singleOf(::SubscriptionSyncDataSourceImpl) bind SubscriptionSyncDataSource::class
     singleOf(::FiltersDataSourceImpl) bind FiltersDataSource::class
     singleOf(::SearchQueryDataSourceImpl) bind SearchQueryDataSource::class
+    singleOf(::ItemSearchQueryDataSourceImpl) bind ItemSearchQueryDataSource::class
     singleOf(::RemoteKeyDataSourceImpl) bind RemoteKeyDataSource::class
     singleOf(::MessagingTokenClientImpl) bind MessagingTokenRepository::class
     single { MessagingTokenManager(get(), get()) }
@@ -126,10 +132,13 @@ val appModule = module {
     single { GetFiltersUseCase(get()) }
     single { SaveFiltersUseCase(get()) }
     single { SaveSearchQueryUseCase(get()) }
+    single { SaveItemSearchQueryUseCase(get()) }
     single { ClearFiltersUseCase(get()) }
     single { GetFiltersOptionsUseCase(get(), get()) }
     single { GetSearchQueriesUseCase(get()) }
+    single { GetItemSearchQueriesUseCase(get()) }
     single { DeleteSearchQueriesUseCase(get()) }
+    single { DeleteItemSearchQueriesUseCase(get()) }
     single { GetServerDetailsUseCase(get()) }
     single { GetItemDetailsUseCase(get()) }
     single { RegisterUserUseCase(get(), get(), get(), get()) }

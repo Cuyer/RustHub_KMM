@@ -18,6 +18,10 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
@@ -36,6 +40,13 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.toUserMessage
+import pl.cuyer.rusthub.domain.usecase.SaveItemSearchQueryUseCase
+import pl.cuyer.rusthub.domain.usecase.GetItemSearchQueriesUseCase
+import pl.cuyer.rusthub.domain.usecase.DeleteItemSearchQueriesUseCase
+import pl.cuyer.rusthub.domain.model.SearchQuery
+import pl.cuyer.rusthub.presentation.model.SearchQueryUi
+import pl.cuyer.rusthub.presentation.model.toUi
+import kotlinx.datetime.Clock
 
 class ItemViewModel(
     private val getPagedItemsUseCase: GetPagedItemsUseCase,
@@ -43,6 +54,9 @@ class ItemViewModel(
     private val itemsScheduler: ItemsScheduler,
     private val snackbarController: SnackbarController,
     private val stringProvider: StringProvider,
+    private val saveSearchQueryUseCase: SaveItemSearchQueryUseCase,
+    private val getSearchQueriesUseCase: GetItemSearchQueriesUseCase,
+    private val deleteSearchQueriesUseCase: DeleteItemSearchQueriesUseCase,
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -61,6 +75,7 @@ class ItemViewModel(
 
     init {
         observeSyncState()
+        observeSearchQueries()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -77,9 +92,11 @@ class ItemViewModel(
     fun onAction(action: ItemAction) {
         when (action) {
             is ItemAction.OnItemClick -> navigateToItem(action.id)
-            is ItemAction.OnSearch -> queryFlow.update { action.query }
+            is ItemAction.OnSearch -> handleSearch(action.query)
             is ItemAction.OnCategoryChange -> changeCategory(action.category)
-            ItemAction.OnClearSearchQuery -> queryFlow.update { "" }
+            ItemAction.OnClearSearchQuery -> clearSearchQuery()
+            ItemAction.DeleteSearchQueries -> deleteSearchQueries(null)
+            is ItemAction.DeleteSearchQueryByQuery -> deleteSearchQueries(action.query)
             ItemAction.OnRefresh -> refreshItems()
             is ItemAction.OnError -> sendSnackbarEvent(
                 action.exception.toUserMessage(stringProvider) ?: stringProvider.get(
@@ -122,6 +139,67 @@ class ItemViewModel(
             itemSyncDataSource.setState(ItemSyncState.PENDING)
             itemsScheduler.startNow()
         }
+    }
+
+    private fun observeSearchQueries() {
+        getSearchQueriesUseCase()
+            .distinctUntilChanged()
+            .map { queries -> queries.map { it.toUi() } }
+            .flowOn(Dispatchers.Default)
+            .onEach { mapped ->
+                updateSearchQuery(mapped)
+                updateIsLoadingSearchHistory(false)
+            }
+            .onStart { updateIsLoadingSearchHistory(true) }
+            .catch {
+                sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_fetching_search_history))
+            }
+            .launchIn(coroutineScope)
+    }
+
+    private fun handleSearch(query: String) {
+        if (query.isNotEmpty()) {
+            coroutineScope.launch {
+                runCatching {
+                    saveSearchQueryUseCase(
+                        SearchQuery(query = query, timestamp = kotlinx.datetime.Clock.System.now(), id = null)
+                    )
+                }.onFailure {
+                    sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_search))
+                }.onSuccess {
+                    queryFlow.update { query }
+                }
+            }
+        } else {
+            sendSnackbarEvent(stringProvider.get(SharedRes.strings.query_cannot_be_empty))
+        }
+    }
+
+    private fun deleteSearchQueries(query: String?) {
+        coroutineScope.launch {
+            runCatching {
+                if (query != null) deleteSearchQueriesUseCase(query) else deleteSearchQueriesUseCase()
+            }.onFailure {
+                val msg = if (query != null) {
+                    stringProvider.get(SharedRes.strings.error_deleting_query)
+                } else {
+                    stringProvider.get(SharedRes.strings.error_deleting_queries)
+                }
+                sendSnackbarEvent(msg)
+            }
+        }
+    }
+
+    private fun clearSearchQuery() {
+        queryFlow.update { "" }
+    }
+
+    private fun updateSearchQuery(mappedQuery: List<SearchQueryUi>) {
+        _state.update { it.copy(searchQuery = mappedQuery) }
+    }
+
+    private fun updateIsLoadingSearchHistory(loading: Boolean) {
+        _state.update { it.copy(isLoadingSearchHistory = loading) }
     }
 
     private fun sendSnackbarEvent(
