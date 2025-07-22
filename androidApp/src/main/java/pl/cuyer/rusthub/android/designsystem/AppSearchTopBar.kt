@@ -36,7 +36,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
@@ -67,6 +66,7 @@ import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
+import pl.cuyer.rusthub.android.designsystem.SearchHistoryShimmer
 import pl.cuyer.rusthub.presentation.model.SearchQueryUi
 import dev.icerock.moko.resources.StringResource
 
@@ -282,9 +282,7 @@ fun RustSearchBarTopAppBar(
             inputField = inputField
         ) {
             if (isLoadingSearchHistory) {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    LoadingIndicator()
-                }
+                SearchHistoryShimmer(modifier = Modifier.fillMaxWidth())
             } else {
                 suggestions()
             }
@@ -295,9 +293,7 @@ fun RustSearchBarTopAppBar(
             inputField = inputField
         ) {
             if (isLoadingSearchHistory) {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    LoadingIndicator()
-                }
+                SearchHistoryShimmer(modifier = Modifier.fillMaxWidth())
             } else {
                 suggestions()
             }
