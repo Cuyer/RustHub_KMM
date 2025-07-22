@@ -80,12 +80,16 @@ fun ItemDetailsScreen(
 
     // Build list of only available details pages and their content
     val availablePages = remember(state.item) {
-        buildList {
-            state.item?.looting?.takeIf { it.isNotEmpty() }?.let { add(DetailsPage.LOOTING to it) }
-            state.item?.crafting?.let { add(DetailsPage.CRAFTING to it) }
-            state.item?.recycling?.let { add(DetailsPage.RECYCLING to it) }
-            state.item?.raiding?.takeIf { it.isNotEmpty() }?.let { add(DetailsPage.RAIDING to it) }
-        }
+        state.item?.let { item ->
+            buildList {
+                item.looting?.takeIf { it.isNotEmpty() }
+                    ?.let { add(DetailsPage.LOOTING to it) }
+                item.crafting?.let { add(DetailsPage.CRAFTING to it) }
+                item.recycling?.let { add(DetailsPage.RECYCLING to it) }
+                item.raiding?.takeIf { it.isNotEmpty() }
+                    ?.let { add(DetailsPage.RAIDING to (it to item)) }
+            }
+        } ?: emptyList()
     }
     val pagerState = rememberPagerState { availablePages.size }
     val scope = rememberCoroutineScope()
@@ -176,6 +180,16 @@ private fun DetailsContent(page: DetailsPage, content: Any?) {
         DetailsPage.RECYCLING -> {
             val recycling = content as? Recycling
             recycling?.let { RecyclingContent(it) }
+        }
+        DetailsPage.RAIDING -> {
+            val raidingPair = content as? Pair<List<Raiding>, RustItem>
+            raidingPair?.let { (raiding, item) ->
+                RaidingContent(
+                    iconUrl = item.iconUrl ?: item.image,
+                    health = item.health,
+                    raiding = raiding
+                )
+            }
         }
 
         else -> Text(content?.toString() ?: "")
@@ -611,6 +625,189 @@ private fun RecyclerOutputRow(
                         imageUrl = image,
                         text = outputString,
                         tooltipText = output.name
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RaidingContent(
+    iconUrl: String?,
+    health: Int?,
+    raiding: List<Raiding>
+) {
+    var currentHealth by rememberSaveable { mutableFloatStateOf(health?.toFloat() ?: 0f) }
+    val maxHealth = health?.toFloat() ?: 0f
+    val fraction = if (maxHealth > 0f) currentHealth / maxHealth else 1f
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(vertical = spacing.medium),
+        verticalArrangement = Arrangement.spacedBy(spacing.medium)
+    ) {
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateItem()
+                    .padding(horizontal = spacing.xmedium),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(spacing.small)
+            ) {
+                iconUrl?.let { ItemTooltipImage(imageUrl = it) }
+                Slider(
+                    value = currentHealth,
+                    onValueChange = { currentHealth = it },
+                    valueRange = 0f..maxHealth
+                )
+                Text(
+                    text = "${currentHealth.roundToInt()} / ${maxHealth.roundToInt()} HP",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+
+        items(raiding) { raid ->
+            RaidingItem(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateItem()
+                    .padding(horizontal = spacing.xmedium),
+                raiding = raid,
+                fraction = fraction
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun RaidingItem(
+    modifier: Modifier = Modifier,
+    raiding: Raiding,
+    fraction: Float
+) {
+    ElevatedCard(shape = RectangleShape, modifier = modifier) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(spacing.xxsmall),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            raiding.startingItem?.let { start ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                            shape = RectangleShape
+                        )
+                        .padding(vertical = spacing.xmedium),
+                    horizontalArrangement = Arrangement.spacedBy(spacing.small, Alignment.CenterHorizontally),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    start.icon?.let { ItemTooltipImage(imageUrl = it) }
+                    Text(
+                        textAlign = TextAlign.Center,
+                        text = start.name.orEmpty(),
+                        style = MaterialTheme.typography.titleLargeEmphasized,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+
+            raiding.amount?.let {
+                RaidingOutputRow(
+                    modifier = Modifier
+                        .padding(vertical = spacing.medium)
+                        .fillMaxWidth(),
+                    items = it,
+                    label = stringResource(SharedRes.strings.amount),
+                    fraction = fraction
+                )
+            }
+
+            raiding.rawMaterialCost?.let {
+                if (it.isNotEmpty()) {
+                    RaidingResourceRow(
+                        modifier = Modifier
+                            .padding(vertical = spacing.medium)
+                            .fillMaxWidth(),
+                        resources = it,
+                        label = "Raw Material Cost",
+                        fraction = fraction
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RaidingOutputRow(
+    modifier: Modifier = Modifier,
+    items: List<RaidItem>,
+    label: String,
+    fraction: Float
+) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(spacing.small)) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = label,
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.SemiBold
+        )
+
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(spacing.medium, Alignment.CenterHorizontally),
+            verticalArrangement = Arrangement.spacedBy(spacing.small),
+            itemVerticalAlignment = Alignment.CenterVertically
+        ) {
+            items.forEach { output ->
+                output.icon?.let { image ->
+                    val scaled = output.amount?.let { (it * fraction).roundToInt() }
+                    ItemTooltipImage(
+                        imageUrl = image,
+                        text = scaled?.let { "x$it" },
+                        tooltipText = output.name
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RaidingResourceRow(
+    modifier: Modifier = Modifier,
+    resources: List<RaidResource>,
+    label: String,
+    fraction: Float
+) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(spacing.small)) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = label,
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.SemiBold
+        )
+
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(spacing.medium, Alignment.CenterHorizontally),
+            verticalArrangement = Arrangement.spacedBy(spacing.small),
+            itemVerticalAlignment = Alignment.CenterVertically
+        ) {
+            resources.forEach { res ->
+                res.icon?.let { image ->
+                    val scaled = res.amount?.let { (it * fraction).roundToInt() }
+                    ItemTooltipImage(
+                        imageUrl = image,
+                        text = scaled?.let { "x$it" },
+                        tooltipText = res.name
                     )
                 }
             }
