@@ -356,4 +356,7 @@
     <string name="crafting">Крафт</string>
     <string name="recycling">Переработка</string>
     <string name="raiding">Рейды</string>
+    <string name="crafting_recipe">Рецепт крафта</string>
+    <string name="research_table_cost">Стоимость исследовательского стола</string>
+    <string name="tech_tree_cost">Стоимость дерева технологий</string>
 </resources>

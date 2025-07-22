@@ -358,4 +358,7 @@
     <string name="crafting">Crafting</string>
     <string name="recycling">Recycling</string>
     <string name="raiding">Raiding</string>
+    <string name="crafting_recipe">Crafting Recipe</string>
+    <string name="research_table_cost">Research Table Cost</string>
+    <string name="tech_tree_cost">Tech Tree Cost</string>
 </resources>
