@@ -359,4 +359,7 @@
     <string name="crafting_recipe">Przepis do craftowania</string>
     <string name="research_table_cost">Koszt odkrycia</string>
     <string name="tech_tree_cost">Koszt drzewa technologicznego</string>
+    <string name="raw_material_cost">Koszt surowców</string>
+    <string name="time_to_raid">Czas rajdu: %1$s</string>
+    <string name="hp">HP</string>
 </resources>

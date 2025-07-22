@@ -363,4 +363,7 @@
     <string name="safezone_recycler">Safezone-Recycler</string>
     <string name="guaranteed_output">Garantierte Ausgabe</string>
     <string name="extra_chance_output">Zusätzliche Chance Ausgabe</string>
+    <string name="raw_material_cost">Rohmaterialkosten</string>
+    <string name="time_to_raid">Raidzeit: %1$s</string>
+    <string name="hp">HP</string>
 </resources>

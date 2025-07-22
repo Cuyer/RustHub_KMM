@@ -672,7 +672,8 @@ private fun RaidingContent(
                     state = sliderState
                 )
                 Text(
-                    text = "${sliderState.value.roundToInt()} / ${maxHealth.roundToInt()} HP",
+                    text = "${sliderState.value.roundToInt()} / ${maxHealth.roundToInt()} " +
+                        stringResource(SharedRes.strings.hp),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -725,6 +726,18 @@ private fun RaidingItem(
                 }
             }
 
+            raiding.timeToRaid?.let {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = spacing.medium),
+                    textAlign = TextAlign.Center,
+                    text = stringResource(SharedRes.strings.time_to_raid, formatRaidDuration(it)),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
             raiding.amount?.let {
                 RaidingOutputRow(
                     modifier = Modifier
@@ -743,7 +756,7 @@ private fun RaidingItem(
                             .padding(vertical = spacing.medium)
                             .fillMaxWidth(),
                         resources = it,
-                        label = "Raw Material Cost",
+                        label = stringResource(SharedRes.strings.raw_material_cost),
                         fraction = fraction
                     )
                 }
@@ -822,4 +835,11 @@ private fun RaidingResourceRow(
             }
         }
     }
+}
+
+private fun formatRaidDuration(seconds: Int): String {
+    val totalMinutes = seconds / 60
+    val hours = totalMinutes / 60
+    val minutes = totalMinutes % 60
+    return if (hours > 0) "${hours}h ${minutes}m" else "${minutes}m"
 }
