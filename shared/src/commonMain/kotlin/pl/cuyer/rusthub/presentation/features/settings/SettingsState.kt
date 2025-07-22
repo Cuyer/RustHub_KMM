@@ -3,7 +3,9 @@ package pl.cuyer.rusthub.presentation.features.settings
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.Theme
+import androidx.compose.runtime.Immutable
 
+@Immutable
 data class SettingsState(
     val username: String? = null,
     val showSubscriptionDialog: Boolean = false,
