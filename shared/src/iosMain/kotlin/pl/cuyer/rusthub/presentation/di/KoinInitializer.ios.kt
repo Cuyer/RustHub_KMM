@@ -42,8 +42,8 @@ import pl.cuyer.rusthub.presentation.features.item.ItemDetailsViewModel
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
     single { AppCheckTokenProvider() }
-    single { HttpClientFactory(get(), get(), get()).create() }
-    single { TokenRefresher(get()) }
+    single { HttpClientFactory(get(), get(), get(), get()).create() }
+    single { TokenRefresher() }
     single { ClipboardHandler() }
     single { ShareHandler() }
     single { SyncScheduler() }

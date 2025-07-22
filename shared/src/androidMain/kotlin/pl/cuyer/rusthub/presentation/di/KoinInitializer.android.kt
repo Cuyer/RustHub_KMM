@@ -54,7 +54,7 @@ actual val platformModule: Module = module {
         }
     }
     single { AppCheckTokenProvider() }
-    single { HttpClientFactory(get(), get(), get()).create() }
+    single { HttpClientFactory(get(), get(), get(), get()).create() }
     single { ClipboardHandler(get()) }
     single { ShareHandler(get()) }
     single { SyncScheduler(get()) }
