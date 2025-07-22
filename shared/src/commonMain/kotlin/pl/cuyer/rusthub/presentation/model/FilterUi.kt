@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.presentation.model
 
 import kotlinx.serialization.Serializable
+import androidx.compose.runtime.Immutable
 import pl.cuyer.rusthub.domain.model.Difficulty
 import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Maps
@@ -12,6 +13,7 @@ import pl.cuyer.rusthub.domain.model.WipeSchedule
 import pl.cuyer.rusthub.util.StringProvider
 
 @Serializable
+@Immutable
 data class FilterUi(
     val lists: List<Triple<String, List<String>, Int?>> = listOf(),
     val checkboxes: List<Pair<String, Boolean>> = listOf(),

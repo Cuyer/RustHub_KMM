@@ -1,7 +1,9 @@
 package pl.cuyer.rusthub.presentation.features.auth.delete
 
 import pl.cuyer.rusthub.domain.model.AuthProvider
+import androidx.compose.runtime.Immutable
 
+@Immutable
 data class DeleteAccountState(
     val password: String = "",
     val passwordError: String? = null,

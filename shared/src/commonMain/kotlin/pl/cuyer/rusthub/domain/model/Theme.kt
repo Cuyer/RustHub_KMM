@@ -2,7 +2,9 @@ package pl.cuyer.rusthub.domain.model
 
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.util.StringProvider
+import androidx.compose.runtime.Immutable
 
+@Immutable
 enum class Theme {
     LIGHT,
     DARK,

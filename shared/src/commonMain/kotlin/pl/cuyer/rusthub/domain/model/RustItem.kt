@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.domain.model
 
 import kotlinx.serialization.Serializable
+import androidx.compose.runtime.Immutable
 
 // Nested item details
 import pl.cuyer.rusthub.domain.model.Looting
@@ -10,6 +11,7 @@ import pl.cuyer.rusthub.domain.model.Raiding
 
 @Serializable
 
+@Immutable
 data class RustItem(
     val slug: String? = null,
     val url: String? = null,

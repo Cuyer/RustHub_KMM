@@ -1,5 +1,8 @@
 package pl.cuyer.rusthub.presentation.features.auth.upgrade
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class UpgradeState(
     val username: String = "",
     val email: String = "",
