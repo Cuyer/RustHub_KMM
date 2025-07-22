@@ -10,7 +10,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
-import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
@@ -89,11 +88,12 @@ fun ItemTooltipImage(
             val tooltipState = rememberTooltipState()
             TooltipBox(
                 positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                    TooltipAnchorPosition.Above,
                     spacing.small
                 ),
                 tooltip = {
-                    PlainTooltip(caretShape = TooltipDefaults.caretShape()) {
+                    PlainTooltip(
+                        caretSize = TooltipDefaults.caretSize
+                    ) {
                         Text(
                             modifier = Modifier.padding(spacing.small),
                             text = tooltipText

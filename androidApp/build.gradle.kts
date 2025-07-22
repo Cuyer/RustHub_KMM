@@ -99,7 +99,6 @@ dependencies {
     implementation(libs.compose.material3)
     implementation(libs.kotlin.datetime)
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.ui.text.google.fonts)
     implementation(project.dependencies.platform(libs.koin.bom))
     implementation(libs.koin.compose)
     implementation(libs.koin.compose.viewmodel)

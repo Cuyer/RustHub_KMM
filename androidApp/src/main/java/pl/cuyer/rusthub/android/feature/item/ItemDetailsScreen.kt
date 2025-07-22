@@ -137,8 +137,7 @@ fun ItemDetailsScreen(
         ) {
             if (availablePages.isNotEmpty()) {
                 PrimaryScrollableTabRow(
-                    selectedTabIndex = pagerState.currentPage,
-                    edgePadding = 0.dp
+                    selectedTabIndex = pagerState.currentPage
                 ) {
                     availablePages.forEachIndexed { index, (page, _) ->
                         Tab(
