@@ -127,16 +127,13 @@ fun ItemDetailsScreen(
                 }
             }
 
-            LookaheadScope {
-                HorizontalPager(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .animateBounds(this),
-                    state = pagerState
-                ) { page ->
-                    val (detailsPage, data) = availablePages[page]
-                    DetailsContent(detailsPage, data)
-                }
+            HorizontalPager(
+                modifier = Modifier
+                    .fillMaxSize(),
+                state = pagerState
+            ) { page ->
+                val (detailsPage, data) = availablePages[page]
+                DetailsContent(detailsPage, data)
             }
         }
     }
