@@ -359,4 +359,6 @@
     <string name="crafting_recipe">Recette d'artisanat</string>
     <string name="research_table_cost">Coût de la table de recherche</string>
     <string name="tech_tree_cost">Coût de l'arbre technologique</string>
+    <string name="radtown_recycler">Recycler de Radtown</string>
+    <string name="safezone_recycler">Recycler de Safezone</string>
 </resources>

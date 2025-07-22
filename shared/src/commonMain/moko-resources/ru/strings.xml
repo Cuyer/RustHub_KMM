@@ -359,4 +359,6 @@
     <string name="crafting_recipe">Рецепт крафта</string>
     <string name="research_table_cost">Стоимость исследовательского стола</string>
     <string name="tech_tree_cost">Стоимость дерева технологий</string>
+    <string name="radtown_recycler">Ресайклер в заброшенном городе</string>
+    <string name="safezone_recycler">Ресайклер в безопасной зоне</string>
 </resources>
