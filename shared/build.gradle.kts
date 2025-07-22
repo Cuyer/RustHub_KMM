@@ -101,6 +101,10 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
+        androidInstrumentedTest.dependencies {
+            implementation(libs.androidx.junit)
+            implementation(libs.androidx.espresso.core)
+        }
         iosMain.dependencies {
             implementation(libs.sql.delight.native.driver)
             implementation(project.dependencies.platform(libs.koin.bom))
