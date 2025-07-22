@@ -29,13 +29,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -58,10 +65,15 @@ import pl.cuyer.rusthub.domain.model.CraftingRecipe
 import pl.cuyer.rusthub.domain.model.ResearchTableCost
 import pl.cuyer.rusthub.domain.model.TechTreeCost
 import pl.cuyer.rusthub.domain.model.Looting
+import pl.cuyer.rusthub.domain.model.RaidItem
+import pl.cuyer.rusthub.domain.model.RaidResource
+import pl.cuyer.rusthub.domain.model.Raiding
 
 import pl.cuyer.rusthub.domain.model.Recycling
 import pl.cuyer.rusthub.domain.model.Recycler
 import pl.cuyer.rusthub.domain.model.RecyclerOutput
+import pl.cuyer.rusthub.domain.model.RustItem
+import kotlin.math.roundToInt
 
 private enum class DetailsPage(val title: StringResource) {
     LOOTING(SharedRes.strings.looting),
@@ -191,8 +203,6 @@ private fun DetailsContent(page: DetailsPage, content: Any?) {
                 )
             }
         }
-
-        else -> Text(content?.toString() ?: "")
     }
 }
 
@@ -632,15 +642,16 @@ private fun RecyclerOutputRow(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RaidingContent(
     iconUrl: String?,
     health: Int?,
     raiding: List<Raiding>
 ) {
-    var currentHealth by rememberSaveable { mutableFloatStateOf(health?.toFloat() ?: 0f) }
-    val maxHealth = health?.toFloat() ?: 0f
-    val fraction = if (maxHealth > 0f) currentHealth / maxHealth else 1f
+    val maxHealth by remember { mutableFloatStateOf(health?.toFloat() ?: 0f) }
+    val sliderState = rememberSliderState(value = health?.toFloat() ?: 0f, valueRange = 0f..maxHealth)
+    val fraction = if (maxHealth > 0f) sliderState.value / maxHealth else 1f
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -656,14 +667,12 @@ private fun RaidingContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(spacing.small)
             ) {
-                iconUrl?.let { ItemTooltipImage(imageUrl = it) }
+                iconUrl?.let { ItemTooltipImage(imageUrl = it, size = 120) }
                 Slider(
-                    value = currentHealth,
-                    onValueChange = { currentHealth = it },
-                    valueRange = 0f..maxHealth
+                    state = sliderState
                 )
                 Text(
-                    text = "${currentHealth.roundToInt()} / ${maxHealth.roundToInt()} HP",
+                    text = "${sliderState.value.roundToInt()} / ${maxHealth.roundToInt()} HP",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }

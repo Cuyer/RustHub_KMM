@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -38,7 +39,8 @@ fun ItemTooltipImage(
     imageUrl: String,
     text: String? = null,
     tooltipText: String? = null,
-    addBlueprint: Boolean = false
+    addBlueprint: Boolean = false,
+    size: Int = 48
 ) {
     Column(
         modifier = modifier,
@@ -47,7 +49,7 @@ fun ItemTooltipImage(
     ) {
         val imageContent: @Composable () -> Unit = {
             Box(
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier.size(size.dp),
                 contentAlignment = Alignment.Center
             ) {
                 var success by rememberSaveable {
