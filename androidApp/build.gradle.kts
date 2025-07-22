@@ -9,6 +9,12 @@ plugins {
     alias(libs.plugins.baselineprofile)
 }
 
+composeCompiler {
+    reportsDestination = layout.buildDirectory.dir("composeReports")
+    metricsDestination = layout.buildDirectory.dir("composeMetrics")
+    includeSourceInformation.set(true)
+}
+
 android {
     namespace = "pl.cuyer.rusthub.android"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -140,4 +146,18 @@ dependencies {
     implementation(libs.androidx.appcompat)
     coreLibraryDesugaring(libs.desugar.jdk.libs.v215)
     debugImplementation(libs.compose.ui.tooling)
+}
+
+tasks.register("printComposeMetrics") {
+    group = "compose"
+    description = "Prints Compose compiler metrics and reports"
+    dependsOn("assemble")
+    doLast {
+        val metricsDir = layout.buildDirectory.dir("composeMetrics").get().asFile
+        val reportsDir = layout.buildDirectory.dir("composeReports").get().asFile
+        println("Compose metrics location: ${metricsDir}")
+        metricsDir.walk().filter { it.isFile }.forEach { println(it.readText()) }
+        println("Compose reports location: ${reportsDir}")
+        reportsDir.walk().filter { it.isFile }.forEach { println(it.readText()) }
+    }
 }
