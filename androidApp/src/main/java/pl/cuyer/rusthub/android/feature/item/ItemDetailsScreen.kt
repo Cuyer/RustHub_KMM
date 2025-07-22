@@ -58,6 +58,10 @@ import pl.cuyer.rusthub.domain.model.ResearchTableCost
 import pl.cuyer.rusthub.domain.model.TechTreeCost
 import pl.cuyer.rusthub.domain.model.Looting
 
+import pl.cuyer.rusthub.domain.model.Recycling
+import pl.cuyer.rusthub.domain.model.Recycler
+import pl.cuyer.rusthub.domain.model.RecyclerOutput
+
 private enum class DetailsPage(val title: StringResource) {
     LOOTING(SharedRes.strings.looting),
     CRAFTING(SharedRes.strings.crafting),
@@ -167,6 +171,10 @@ private fun DetailsContent(page: DetailsPage, content: Any?) {
         DetailsPage.CRAFTING -> {
             val crafting = content as? Crafting
             crafting?.let { CraftingContent(it) }
+        }
+        DetailsPage.RECYCLING -> {
+            val recycling = content as? Recycling
+            recycling?.let { RecyclingContent(it) }
         }
 
         else -> Text(content?.toString() ?: "")
@@ -463,6 +471,125 @@ private fun TechTreeCostRow(
                 text = "x${cost.scrapAmount}",
                 tooltipText = cost.scrapName
             )
+        }
+    }
+}
+
+@Composable
+private fun RecyclingContent(recycling: Recycling) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(vertical = spacing.medium),
+        verticalArrangement = Arrangement.spacedBy(spacing.medium)
+    ) {
+        recycling.safezoneRecycler?.let { recycler ->
+            item {
+                RecyclerItem(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateItem()
+                        .padding(horizontal = spacing.xmedium),
+                    recycler = recycler,
+                    title = stringResource(SharedRes.strings.safezone_recycler)
+                )
+            }
+        }
+
+        recycling.radtownRecycler?.let { recycler ->
+            item {
+                RecyclerItem(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateItem()
+                        .padding(horizontal = spacing.xmedium),
+                    recycler = recycler,
+                    title = stringResource(SharedRes.strings.radtown_recycler)
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun RecyclerItem(
+    modifier: Modifier = Modifier,
+    recycler: Recycler,
+    title: String
+) {
+    ElevatedCard(shape = RectangleShape, modifier = modifier) {
+        Column(verticalArrangement = Arrangement.spacedBy(spacing.xxsmall)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(spacing.xxsmall, Alignment.Start),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                            shape = RectangleShape
+                        ),
+                    textAlign = TextAlign.Center,
+                    text = title,
+                    style = MaterialTheme.typography.titleLargeEmphasized,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            recycler.guarantedOutput?.let {
+                RecyclerOutputRow(
+                    modifier = Modifier
+                        .padding(vertical = spacing.medium)
+                        .fillMaxWidth(),
+                    outputs = it,
+                    label = stringResource(SharedRes.strings.guaranteed_output)
+                )
+            }
+
+            recycler.extraChanceOutput?.let {
+                RecyclerOutputRow(
+                    modifier = Modifier
+                        .padding(vertical = spacing.medium)
+                        .fillMaxWidth(),
+                    outputs = it,
+                    label = stringResource(SharedRes.strings.extra_chance_output)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun RecyclerOutputRow(
+    modifier: Modifier = Modifier,
+    outputs: List<RecyclerOutput>,
+    label: String
+) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(spacing.small)) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = label,
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.SemiBold
+        )
+
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(spacing.medium, Alignment.CenterHorizontally),
+            verticalArrangement = Arrangement.spacedBy(spacing.small),
+            itemVerticalAlignment = Alignment.CenterVertically
+        ) {
+            outputs.forEach { output ->
+                output.image?.let { image ->
+                    ItemTooltipImage(
+                        imageUrl = image,
+                        text = output.amount?.let { "x${it}" },
+                        tooltipText = output.name
+                    )
+                }
+            }
         }
     }
 }

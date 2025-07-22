@@ -359,4 +359,8 @@
     <string name="crafting_recipe">Herstellungsrezept</string>
     <string name="research_table_cost">Forschungstisch-Kosten</string>
     <string name="tech_tree_cost">Technologiebaum-Kosten</string>
+    <string name="safezone_recycler">Safezone Recycler</string>
+    <string name="radtown_recycler">Radtown Recycler</string>
+    <string name="guaranteed_output">Garantierte Ausgabe</string>
+    <string name="extra_chance_output">Zusätzliche Chance Ausgabe</string>
 </resources>
