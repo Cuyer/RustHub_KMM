@@ -285,7 +285,9 @@ private fun AppScaffold(
                         ItemDetailsScreen(
                             stateProvider = { state },
                             onNavigateUp = {
-                                backStack.removeLastOrNull()
+                                while (backStack.lastOrNull() is ItemDetails) {
+                                    backStack.removeLastOrNull()
+                                }
                             },
                         )
                     }
