@@ -26,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -112,7 +113,10 @@ fun ItemDetailsScreen(
                 .fillMaxSize()
         ) {
             if (availablePages.isNotEmpty()) {
-                PrimaryTabRow(selectedTabIndex = pagerState.currentPage) {
+                PrimaryScrollableTabRow(
+                    selectedTabIndex = pagerState.currentPage,
+                    edgePadding = 0.dp
+                ) {
                     availablePages.forEachIndexed { index, (page, _) ->
                         Tab(
                             selected = pagerState.currentPage == index,
