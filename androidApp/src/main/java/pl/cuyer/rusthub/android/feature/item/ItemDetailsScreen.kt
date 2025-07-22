@@ -250,7 +250,8 @@ fun CraftingRecipeItemList(
                         .background(
                             color = MaterialTheme.colorScheme.surfaceContainerHighest,
                             shape = RectangleShape
-                        ),
+                        )
+                        .padding(vertical = spacing.medium),
                     textAlign = TextAlign.Center,
                     text = stringResource(SharedRes.strings.crafting_recipe),
                     style = MaterialTheme.typography.titleLargeEmphasized,
@@ -336,7 +337,8 @@ private fun ResearchTableCostItem(
                         .background(
                             color = MaterialTheme.colorScheme.surfaceContainerHighest,
                             shape = RectangleShape
-                        ),
+                        )
+                        .padding(vertical = spacing.medium),
                     textAlign = TextAlign.Center,
                     text = stringResource(SharedRes.strings.research_table_cost),
                     style = MaterialTheme.typography.titleLargeEmphasized,
@@ -424,7 +426,8 @@ private fun TechTreeCostItem(
                         .background(
                             color = MaterialTheme.colorScheme.surfaceContainerHighest,
                             shape = RectangleShape
-                        ),
+                        )
+                        .padding(vertical = spacing.medium),
                     textAlign = TextAlign.Center,
                     text = stringResource(SharedRes.strings.tech_tree_cost),
                     style = MaterialTheme.typography.titleLargeEmphasized,
@@ -519,19 +522,28 @@ private fun RecyclerItem(
     title: String
 ) {
     ElevatedCard(shape = RectangleShape, modifier = modifier) {
-        Column(verticalArrangement = Arrangement.spacedBy(spacing.xxsmall)) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(spacing.xxsmall),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(spacing.xxsmall, Alignment.Start),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        shape = RectangleShape
+                    )
+                    .padding(vertical = spacing.xmedium),
+                horizontalArrangement = Arrangement.spacedBy(spacing.small, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                recycler.image?.let { imageUrl ->
+                    ItemTooltipImage(
+                        imageUrl = imageUrl
+                    )
+                }
+
                 Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                            shape = RectangleShape
-                        ),
                     textAlign = TextAlign.Center,
                     text = title,
                     style = MaterialTheme.typography.titleLargeEmphasized,
@@ -550,13 +562,16 @@ private fun RecyclerItem(
             }
 
             recycler.extraChanceOutput?.let {
-                RecyclerOutputRow(
-                    modifier = Modifier
-                        .padding(vertical = spacing.medium)
-                        .fillMaxWidth(),
-                    outputs = it,
-                    label = stringResource(SharedRes.strings.extra_chance_output)
-                )
+                if (it.isNotEmpty()) {
+                    RecyclerOutputRow(
+                        modifier = Modifier
+                            .padding(vertical = spacing.medium)
+                            .fillMaxWidth(),
+                        outputs = it,
+                        label = stringResource(SharedRes.strings.extra_chance_output),
+                        extraChance = true
+                    )
+                }
             }
         }
     }
@@ -566,7 +581,8 @@ private fun RecyclerItem(
 private fun RecyclerOutputRow(
     modifier: Modifier = Modifier,
     outputs: List<RecyclerOutput>,
-    label: String
+    label: String,
+    extraChance: Boolean = false
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(spacing.small)) {
         Text(
@@ -578,15 +594,22 @@ private fun RecyclerOutputRow(
         )
 
         FlowRow(
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(spacing.medium, Alignment.CenterHorizontally),
             verticalArrangement = Arrangement.spacedBy(spacing.small),
             itemVerticalAlignment = Alignment.CenterVertically
         ) {
             outputs.forEach { output ->
                 output.image?.let { image ->
+                    val outputString = if (extraChance) {
+                        "${output.amount?.times(100)}%"
+                    } else {
+                        "x${output.amount?.toInt()}"
+                    }
+
                     ItemTooltipImage(
                         imageUrl = image,
-                        text = output.amount?.let { "x${it}" },
+                        text = outputString,
                         tooltipText = output.name
                     )
                 }
