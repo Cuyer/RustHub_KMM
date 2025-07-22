@@ -73,6 +73,7 @@ import pl.cuyer.rusthub.domain.model.Recycling
 import pl.cuyer.rusthub.domain.model.Recycler
 import pl.cuyer.rusthub.domain.model.RecyclerOutput
 import pl.cuyer.rusthub.domain.model.RustItem
+import pl.cuyer.rusthub.domain.model.hasContent
 import kotlin.math.roundToInt
 
 private enum class DetailsPage(val title: StringResource) {
@@ -96,8 +97,10 @@ fun ItemDetailsScreen(
             buildList {
                 item.looting?.takeIf { it.isNotEmpty() }
                     ?.let { add(DetailsPage.LOOTING to it) }
-                item.crafting?.let { add(DetailsPage.CRAFTING to it) }
-                item.recycling?.let { add(DetailsPage.RECYCLING to it) }
+                item.crafting?.takeIf { it.hasContent() }
+                    ?.let { add(DetailsPage.CRAFTING to it) }
+                item.recycling?.takeIf { it.hasContent() }
+                    ?.let { add(DetailsPage.RECYCLING to it) }
                 item.raiding?.takeIf { it.isNotEmpty() }
                     ?.let { add(DetailsPage.RAIDING to (it to item)) }
             }
