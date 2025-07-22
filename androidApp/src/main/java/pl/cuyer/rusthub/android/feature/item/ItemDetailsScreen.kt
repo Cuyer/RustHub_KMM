@@ -826,10 +826,18 @@ private fun RaidingResourceRow(
             resources.forEach { res ->
                 res.icon?.let { image ->
                     val scaled = res.amount?.let { (it * fraction).roundToInt() }
+                    val tooltip = res.mixingTableAmount?.let {
+                        res.name?.let { name ->
+                            "$name\n" + stringResource(
+                                SharedRes.strings.using_mixing_table,
+                                it
+                            )
+                        }
+                    } ?: res.name
                     ItemTooltipImage(
                         imageUrl = image,
                         text = scaled?.let { "x$it" },
-                        tooltipText = res.name
+                        tooltipText = tooltip
                     )
                 }
             }
