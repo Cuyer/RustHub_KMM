@@ -41,6 +41,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -191,10 +192,12 @@ private fun DetailsContent(page: DetailsPage, content: Any?) {
             val crafting = content as? Crafting
             crafting?.let { CraftingContent(it) }
         }
+
         DetailsPage.RECYCLING -> {
             val recycling = content as? Recycling
             recycling?.let { RecyclingContent(it) }
         }
+
         DetailsPage.RAIDING -> {
             val raidingPair = content as? Pair<List<Raiding>, RustItem>
             raidingPair?.let { (raiding, item) ->
@@ -560,7 +563,10 @@ private fun RecyclerItem(
                         shape = RectangleShape
                     )
                     .padding(vertical = spacing.xmedium),
-                horizontalArrangement = Arrangement.spacedBy(spacing.small, Alignment.CenterHorizontally),
+                horizontalArrangement = Arrangement.spacedBy(
+                    spacing.small,
+                    Alignment.CenterHorizontally
+                ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 recycler.image?.let { imageUrl ->
@@ -621,7 +627,10 @@ private fun RecyclerOutputRow(
 
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(spacing.medium, Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.spacedBy(
+                spacing.medium,
+                Alignment.CenterHorizontally
+            ),
             verticalArrangement = Arrangement.spacedBy(spacing.small),
             itemVerticalAlignment = Alignment.CenterVertically
         ) {
@@ -652,8 +661,8 @@ private fun RaidingContent(
     raiding: List<Raiding>
 ) {
     val maxHealth by remember { mutableFloatStateOf(health?.toFloat() ?: 0f) }
-    val sliderState = rememberSliderState(value = health?.toFloat() ?: 0f, valueRange = 0f..maxHealth)
-    val fraction = if (maxHealth > 0f) sliderState.value / maxHealth else 1f
+    val sliderState =
+        rememberSliderState(value = health?.toFloat() ?: 0f, valueRange = 0f..maxHealth)
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -675,7 +684,7 @@ private fun RaidingContent(
                 )
                 Text(
                     text = "${sliderState.value.roundToInt()} / ${maxHealth.roundToInt()} " +
-                        stringResource(SharedRes.strings.hp),
+                            stringResource(SharedRes.strings.hp),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -688,7 +697,9 @@ private fun RaidingContent(
                     .animateItem()
                     .padding(horizontal = spacing.xmedium),
                 raiding = raid,
-                fraction = fraction
+                fraction = {
+                    if (maxHealth > 0f) sliderState.value / maxHealth else 1f
+                }
             )
         }
     }
@@ -699,7 +710,7 @@ private fun RaidingContent(
 private fun RaidingItem(
     modifier: Modifier = Modifier,
     raiding: Raiding,
-    fraction: Float
+    fraction: () -> Float
 ) {
     ElevatedCard(shape = RectangleShape, modifier = modifier) {
         Column(
@@ -715,7 +726,10 @@ private fun RaidingItem(
                             shape = RectangleShape
                         )
                         .padding(vertical = spacing.xmedium),
-                    horizontalArrangement = Arrangement.spacedBy(spacing.small, Alignment.CenterHorizontally),
+                    horizontalArrangement = Arrangement.spacedBy(
+                        spacing.small,
+                        Alignment.CenterHorizontally
+                    ),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     start.icon?.let { ItemTooltipImage(imageUrl = it) }
@@ -734,7 +748,10 @@ private fun RaidingItem(
                         .fillMaxWidth()
                         .padding(vertical = spacing.medium),
                     textAlign = TextAlign.Center,
-                    text = stringResource(SharedRes.strings.time_to_raid, formatRaidDuration((it * fraction).toInt())),
+                    text = stringResource(
+                        SharedRes.strings.time_to_raid,
+                        formatRaidDuration((it * fraction()).toInt())
+                    ),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -772,7 +789,7 @@ private fun RaidingOutputRow(
     modifier: Modifier = Modifier,
     items: List<RaidItem>,
     label: String,
-    fraction: Float
+    fraction: () -> Float
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(spacing.small)) {
         Text(
@@ -785,16 +802,19 @@ private fun RaidingOutputRow(
 
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(spacing.medium, Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.spacedBy(
+                spacing.medium,
+                Alignment.CenterHorizontally
+            ),
             verticalArrangement = Arrangement.spacedBy(spacing.small),
             itemVerticalAlignment = Alignment.CenterVertically
         ) {
             items.forEach { output ->
                 output.icon?.let { image ->
-                    val scaled = output.amount?.let { (it * fraction).roundToInt() }
                     ItemTooltipImage(
                         imageUrl = image,
-                        text = scaled?.let { "x$it" },
+                        text = output.amount?.let { (it * fraction()).roundToInt() }
+                            ?.let { "x$it" },
                         tooltipText = output.name
                     )
                 }
@@ -808,7 +828,7 @@ private fun RaidingResourceRow(
     modifier: Modifier = Modifier,
     resources: List<RaidResource>,
     label: String,
-    fraction: Float
+    fraction: () -> Float
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(spacing.small)) {
         Text(
@@ -821,13 +841,15 @@ private fun RaidingResourceRow(
 
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(spacing.medium, Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.spacedBy(
+                spacing.medium,
+                Alignment.CenterHorizontally
+            ),
             verticalArrangement = Arrangement.spacedBy(spacing.small),
             itemVerticalAlignment = Alignment.CenterVertically
         ) {
             resources.forEach { res ->
                 res.icon?.let { image ->
-                    val scaled = res.amount?.let { (it * fraction).roundToInt() }
                     val tooltip = res.mixingTableAmount?.let {
                         res.name?.let { name ->
                             "$name\n" + stringResource(
@@ -838,7 +860,7 @@ private fun RaidingResourceRow(
                     } ?: res.name
                     ItemTooltipImage(
                         imageUrl = image,
-                        text = scaled?.let { "x$it" },
+                        text = res.amount?.let { (it * fraction()).roundToInt() }?.let { "x$it" },
                         tooltipText = tooltip
                     )
                 }
