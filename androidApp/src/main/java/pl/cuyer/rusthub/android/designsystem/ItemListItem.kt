@@ -15,11 +15,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.RustItem
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -43,9 +48,13 @@ fun ItemListItem(
         ) {
             AsyncImage(
                 modifier = Modifier.size(48.dp),
-                model = item.iconUrl ?: item.image,
-                contentDescription = item.name,
-                contentScale = ContentScale.Crop
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(item.iconUrl ?: item.image)
+                    .crossfade(true)
+                    .build(),
+                placeholder = painterResource(getImageByFileName("ic_placeholder").drawableResId),
+                error = painterResource(getImageByFileName("ic_error").drawableResId),
+                contentDescription = item.name
             )
             Column(verticalArrangement = Arrangement.spacedBy(spacing.xxsmall)) {
                 Text(

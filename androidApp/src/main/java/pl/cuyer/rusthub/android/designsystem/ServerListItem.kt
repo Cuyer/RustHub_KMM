@@ -119,8 +119,7 @@ fun ServerListItem(
                         modifier = modifier
                             .size(24.dp),
                         painter = painterResource(flag.toDrawable()),
-                        contentDescription = flag?.displayName ?: stringResource(SharedRes.strings.server_flag),
-                        contentScale = ContentScale.Fit
+                        contentDescription = flag?.displayName ?: stringResource(SharedRes.strings.server_flag)
                     )
                 }
             }

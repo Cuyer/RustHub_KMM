@@ -15,15 +15,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.LootAmount
 import pl.cuyer.rusthub.domain.model.Looting
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.common.getImageByFileName
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -42,9 +47,13 @@ fun LootingListItem(
         ) {
             AsyncImage(
                 modifier = Modifier.size(48.dp),
-                model = looting.image,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(looting.image)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = looting.from,
-                contentScale = ContentScale.Crop
+                placeholder = painterResource(getImageByFileName("ic_placeholder").drawableResId),
+                error = painterResource(getImageByFileName("ic_error").drawableResId),
             )
             Column(verticalArrangement = Arrangement.spacedBy(spacing.xxsmall)) {
                 Text(
