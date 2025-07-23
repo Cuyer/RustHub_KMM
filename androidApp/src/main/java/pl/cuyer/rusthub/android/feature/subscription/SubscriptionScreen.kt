@@ -183,7 +183,7 @@ fun SubscriptionScreen(
                     .fillMaxSize()
                     .padding(innerPadding),
                 pagerState = pagerState,
-                selectedPlan = selectedPlan,
+                selectedPlan = { selectedPlan },
                 onPlanSelect = { selectedPlan = it },
                 onNavigateUp = onNavigateUp,
                 onPrivacyPolicy = onPrivacyPolicy,
@@ -195,7 +195,7 @@ fun SubscriptionScreen(
                     .fillMaxSize()
                     .padding(innerPadding),
                 pagerState = pagerState,
-                selectedPlan = selectedPlan,
+                selectedPlan = { selectedPlan },
                 onPlanSelect = { selectedPlan = it },
                 onNavigateUp = onNavigateUp,
                 onPrivacyPolicy = onPrivacyPolicy,
@@ -209,7 +209,7 @@ fun SubscriptionScreen(
 private fun SubscriptionScreenCompact(
     modifier: Modifier = Modifier,
     pagerState: PagerState,
-    selectedPlan: Plan,
+    selectedPlan: () -> Plan,
     onPlanSelect: (Plan) -> Unit,
     onNavigateUp: () -> Unit,
     onPrivacyPolicy: () -> Unit,
@@ -222,7 +222,9 @@ private fun SubscriptionScreenCompact(
         verticalArrangement = Arrangement.spacedBy(spacing.medium),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        SubscriptionMainContent(pagerState, selectedPlan, onPlanSelect, onNavigateUp, onPrivacyPolicy, onTerms)
+        BenefitCarousel(pagerState = pagerState)
+        PlanSelector(selectedPlan = selectedPlan, onPlanSelect = onPlanSelect)
+        SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms)
         Spacer(modifier = Modifier.height(spacing.medium))
         ComparisonSection()
         Spacer(modifier = Modifier.height(spacing.medium))
@@ -234,7 +236,7 @@ private fun SubscriptionScreenCompact(
 private fun SubscriptionScreenExpanded(
     modifier: Modifier = Modifier,
     pagerState: PagerState,
-    selectedPlan: Plan,
+    selectedPlan: () -> Plan,
     onPlanSelect: (Plan) -> Unit,
     onNavigateUp: () -> Unit,
     onPrivacyPolicy: () -> Unit,
@@ -251,7 +253,9 @@ private fun SubscriptionScreenExpanded(
             verticalArrangement = Arrangement.spacedBy(spacing.medium),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SubscriptionMainContent(pagerState, selectedPlan, onPlanSelect, onNavigateUp, onPrivacyPolicy, onTerms)
+            BenefitCarousel(pagerState = pagerState)
+            PlanSelector(selectedPlan = selectedPlan, onPlanSelect = onPlanSelect)
+            SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms)
         }
 
         Column(
@@ -269,14 +273,7 @@ private fun SubscriptionScreenExpanded(
 }
 
 @Composable
-private fun SubscriptionMainContent(
-    pagerState: PagerState,
-    selectedPlan: Plan,
-    onPlanSelect: (Plan) -> Unit,
-    onNavigateUp: () -> Unit,
-    onPrivacyPolicy: () -> Unit,
-    onTerms: () -> Unit
-) {
+private fun BenefitCarousel(pagerState: PagerState) {
     HorizontalPager(state = pagerState) { page ->
         val benefit = benefits[page]
         Column(
@@ -318,6 +315,13 @@ private fun SubscriptionMainContent(
             )
         }
     }
+}
+
+@Composable
+private fun PlanSelector(
+    selectedPlan: () -> Plan,
+    onPlanSelect: (Plan) -> Unit
+) {
     Row(
         modifier = Modifier
             .height(IntrinsicSize.Max)
@@ -328,7 +332,7 @@ private fun SubscriptionMainContent(
         )
     ) {
         Plan.entries.forEach { plan ->
-            val isSelected = plan == selectedPlan
+            val isSelected = plan == selectedPlan()
             val sd = if (isSelected) {
                 stringResource(SharedRes.strings.plan_selected)
             } else {
@@ -376,10 +380,19 @@ private fun SubscriptionMainContent(
             }
         }
     }
+}
+
+@Composable
+private fun SubscribeActions(
+    selectedPlan: () -> Plan,
+    onNavigateUp: () -> Unit,
+    onPrivacyPolicy: () -> Unit,
+    onTerms: () -> Unit
+) {
     AppButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = {}) {
-        Text(stringResource(SharedRes.strings.subscribe_to_plan, stringResource(selectedPlan.label)))
+        Text(stringResource(SharedRes.strings.subscribe_to_plan, stringResource(selectedPlan().label)))
     }
     AppTextButton(onClick = onNavigateUp) {
         Text(stringResource(SharedRes.strings.not_now))
