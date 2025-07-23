@@ -14,7 +14,7 @@ import pl.cuyer.rusthub.android.theme.spacing
 @Composable
 fun SwitchWithText(
     text: String,
-    isChecked: Boolean,
+    isChecked: () -> Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
     Text(text)
@@ -25,7 +25,7 @@ fun SwitchWithText(
 fun SwitchWithTextHorizontal(
     modifier: Modifier = Modifier,
     text: String,
-    isChecked: Boolean,
+    isChecked: () -> Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
     Row(

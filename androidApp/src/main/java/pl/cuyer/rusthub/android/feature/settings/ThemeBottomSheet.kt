@@ -65,13 +65,13 @@ fun ThemeBottomSheet(
             HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
             SwitchWithTextHorizontal(
                 text = stringResource(SharedRes.strings.dark_mode),
-                isChecked = current == Theme.DARK,
+                isChecked = { current == Theme.DARK },
                 onCheckedChange = { onThemeChange(if (it) Theme.DARK else Theme.LIGHT) }
             )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 SwitchWithTextHorizontal(
                     text = stringResource(SharedRes.strings.dynamic_colors),
-                    isChecked = dynamicColors,
+                    isChecked = { dynamicColors },
                     onCheckedChange = onDynamicColorsChange
                 )
             }

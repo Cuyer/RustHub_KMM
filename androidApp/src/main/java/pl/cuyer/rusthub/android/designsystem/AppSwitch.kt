@@ -21,11 +21,10 @@ import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @Composable
 fun AppSwitch(
-    isChecked: Boolean,
+    isChecked: () -> Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
-    var checked by remember(isChecked) { mutableStateOf(isChecked) }
-    val sd = if (checked) {
+    val sd = if (isChecked()) {
         stringResource(SharedRes.strings.enabled)
     } else {
         stringResource(SharedRes.strings.disabled)
@@ -36,13 +35,12 @@ fun AppSwitch(
             role = Role.Switch
             stateDescription = sd
         },
-        checked = checked,
+        checked = isChecked(),
         onCheckedChange = {
-            checked = it
             onCheckedChange(it)
         },
         thumbContent = {
-            if (checked) {
+            if (isChecked()) {
                 // Decorative check mark shown inside the switch
                 Icon(
                     imageVector = Icons.Filled.Check,

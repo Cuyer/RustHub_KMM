@@ -280,7 +280,7 @@ private fun CheckboxFilters(
             ) {
                 SwitchWithText(
                     text = option.label,
-                    isChecked = option.isChecked,
+                    isChecked = { option.isChecked },
                     onCheckedChange = { checked ->
                         val updated = options.toMutableList()
                         updated[index] = option.copy(isChecked = checked)
