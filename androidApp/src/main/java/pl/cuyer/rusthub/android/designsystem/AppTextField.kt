@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
-import androidx.compose.foundation.text.input.KeyboardAction
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.maxLength
@@ -75,9 +74,33 @@ fun AppTextField(
         }
     }
 
+    val keyboardActionHandler =
+        KeyboardActionHandler { performDefaultAction ->
+            performDefaultAction()
+
+            when (imeAction) {
+
+                ImeAction.Next -> {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+
+                ImeAction.Done -> {
+                    focusManager.clearFocus()
+                }
+
+                ImeAction.Send -> {
+                    focusManager.clearFocus()
+                    onSubmit()
+                }
+
+                else -> {
+                    performDefaultAction()
+                }
+            }
+        }
+
     OutlinedTextField(
-        modifier = if (requestFocus) modifier
-            .focusRequester(focusRequester) else modifier,
+        modifier = if (requestFocus) modifier.focusRequester(focusRequester) else modifier,
         state = textFieldState,
         lineLimits = TextFieldLineLimits.SingleLine,
         keyboardOptions = KeyboardOptions(
@@ -85,39 +108,15 @@ fun AppTextField(
             keyboardType = keyboardType,
             imeAction = imeAction
         ),
-        onKeyboardAction = KeyboardActionHandler { action ->
-            when (action) {
-                KeyboardAction.Next -> {
-                    focusManager.moveFocus(FocusDirection.Down)
-                    true
-                }
-                KeyboardAction.Send -> {
-                    focusManager.clearFocus()
-                    onSubmit()
-                    true
-                }
-                KeyboardAction.Done -> {
-                    focusManager.clearFocus()
-                    true
-                }
-                else -> false
-            }
-        },
-        trailingIcon = trailingIcon,
+        onKeyboardAction = keyboardActionHandler,
         label = {
-            Text(
-                text = labelText
-            )
+            Text(text = labelText)
         },
         placeholder = {
-            Text(
-                text = placeholderText
-            )
+            Text(text = placeholderText)
         },
         interactionSource = interactionSource,
-        inputTransformation = maxLength?.let { maxLength(it) },
-        visualTransformation = VisualTransformation.None,
-        colors = OutlinedTextFieldDefaults.colors(),
+        inputTransformation = maxLength?.let { InputTransformation.maxLength(it) },
         suffix = suffix,
         isError = isError,
         supportingText = if (isError && errorText != null) {

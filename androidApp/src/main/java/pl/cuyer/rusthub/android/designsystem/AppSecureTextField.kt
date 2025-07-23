@@ -3,20 +3,23 @@ package pl.cuyer.rusthub.android.designsystem
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.KeyboardAction
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.TextObfuscationMode
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.SecureTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
@@ -70,30 +74,46 @@ fun AppSecureTextField(
         }
     }
 
-    OutlinedTextField(
-        modifier = if (requestFocus) modifier
-            .focusRequester(focusRequester) else modifier,
-        state = textFieldState,
-        readOnly = false,
-        lineLimits = TextFieldLineLimits.SingleLine,
-        keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.None,
-            keyboardType = KeyboardType.Password,
-            imeAction = imeAction
-        ),
-        onKeyboardAction = KeyboardActionHandler { action ->
-            when (action) {
-                KeyboardAction.Send -> {
+    val keyboardActionHandler =
+        KeyboardActionHandler { performDefaultAction ->
+            // Define the default behavior
+            performDefaultAction()
+
+            // Additional custom behaviors
+            when (imeAction) {
+
+                ImeAction.Next -> {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+
+                ImeAction.Done -> {
+                    focusManager.clearFocus()
+                }
+
+                ImeAction.Send -> {
                     focusManager.clearFocus()
                     onSubmit()
-                    true
                 }
-                KeyboardAction.Done -> {
-                    focusManager.clearFocus()
-                    true
+
+                else -> {
+                    performDefaultAction()
                 }
-                else -> false
             }
+        }
+
+    OutlinedSecureTextField(
+        textObfuscationMode = if (passwordVisible) TextObfuscationMode.Visible else TextObfuscationMode.RevealLastTyped,
+        modifier = if (requestFocus) modifier.focusRequester(focusRequester) else modifier,
+        state = textFieldState,
+        label = {
+            Text(
+                text = labelText
+            )
+        },
+        placeholder = {
+            Text(
+                text = placeholderText
+            )
         },
         trailingIcon = {
             Crossfade(targetState = textFieldState.text.isNotEmpty()) { hasText ->
@@ -120,21 +140,10 @@ fun AppSecureTextField(
             }
         },
         isError = isError,
-        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        label = {
-            Text(
-                text = labelText
-            )
-        },
-        placeholder = {
-            Text(
-                text = placeholderText
-            )
-        },
         interactionSource = interactionSource,
-        colors = OutlinedTextFieldDefaults.colors(),
         supportingText = if (isError && errorText != null) {
             { Text(errorText) }
-        } else null
+        } else null,
+        onKeyboardAction = keyboardActionHandler
     )
 }
