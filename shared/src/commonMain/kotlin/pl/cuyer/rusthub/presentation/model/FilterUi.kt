@@ -15,26 +15,26 @@ import pl.cuyer.rusthub.util.StringProvider
 @Serializable
 @Immutable
 data class FilterUi(
-    val lists: List<Triple<String, List<String>, Int?>> = listOf(),
-    val checkboxes: List<Pair<String, Boolean>> = listOf(),
-    val ranges: List<Triple<String, Int, Int?>> = listOf(),
+    val lists: List<FilterDropdownOption> = listOf(),
+    val checkboxes: List<FilterCheckboxOption> = listOf(),
+    val ranges: List<FilterRangeOption> = listOf(),
     val filter: ServerFilter = ServerFilter.ALL
 )
 
 fun FilterUi.toDomain(stringProvider: StringProvider): ServerQuery {
-    val selectedMap = lists.getOrNull(0)?.let { it.second.getOrNull(it.third ?: -1) }
-    val selectedFlag = lists.getOrNull(1)?.let { it.second.getOrNull(it.third ?: -1) }
-    val selectedRegion = lists.getOrNull(2)?.let { it.second.getOrNull(it.third ?: -1) }
-    val selectedDifficulty = lists.getOrNull(3)?.let { it.second.getOrNull(it.third ?: -1) }
-    val selectedWipeSchedule = lists.getOrNull(4)?.let { it.second.getOrNull(it.third ?: -1) }
-    val selectedOrder = lists.getOrNull(5)?.let { it.second.getOrNull(it.third ?: -1) }
+    val selectedMap = lists.getOrNull(0)?.let { it.options.getOrNull(it.selectedIndex ?: -1) }
+    val selectedFlag = lists.getOrNull(1)?.let { it.options.getOrNull(it.selectedIndex ?: -1) }
+    val selectedRegion = lists.getOrNull(2)?.let { it.options.getOrNull(it.selectedIndex ?: -1) }
+    val selectedDifficulty = lists.getOrNull(3)?.let { it.options.getOrNull(it.selectedIndex ?: -1) }
+    val selectedWipeSchedule = lists.getOrNull(4)?.let { it.options.getOrNull(it.selectedIndex ?: -1) }
+    val selectedOrder = lists.getOrNull(5)?.let { it.options.getOrNull(it.selectedIndex ?: -1) }
 
-    val official = checkboxes.getOrNull(0)?.second
-    val modded = checkboxes.getOrNull(1)?.second
+    val official = checkboxes.getOrNull(0)?.isChecked
+    val modded = checkboxes.getOrNull(1)?.isChecked
 
-    val playerCount = ranges.getOrNull(0)?.third?.toLong()
-    val groupLimit = ranges.getOrNull(1)?.third?.toLong()
-    val ranking = ranges.getOrNull(2)?.third?.toLong()
+    val playerCount = ranges.getOrNull(0)?.value?.toLong()
+    val groupLimit = ranges.getOrNull(1)?.value?.toLong()
+    val ranking = ranges.getOrNull(2)?.value?.toLong()
 
     return ServerQuery(
         map = selectedMap?.let { Maps.fromDisplayName(it) },
