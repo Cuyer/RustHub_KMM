@@ -77,7 +77,6 @@ fun FilterBottomSheet(
     onAction: (ServerAction) -> Unit
 ) {
     val json = koinInject<Json>()
-    val stringProvider = koinInject<StringProvider>()
     val filterUiSaver = remember {
         Saver<FilterUi?, String>(
             save = { it?.let { json.encodeToString(FilterUi.serializer(), it) } },
@@ -158,41 +157,62 @@ fun FilterBottomSheet(
                                 onFiltersChange = { newFilters = it }
                             )
                             Spacer(Modifier.height(spacing.medium))
-                            AppButton(
-                                colors = ButtonDefaults.elevatedButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.background,
-                                    contentColor = MaterialTheme.colorScheme.onBackground
-                                ),
-                                onClick = {
-                                    onAction(ServerAction.OnSaveFilters(filters = it.toDomain(stringProvider)))
-                                    onDismissAndRefresh()
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = spacing.large)
-                            ) {
-                                Text(stringResource(SharedRes.strings.apply_filters))
-                            }
-                            AppOutlinedButton(
-                                colors = ButtonDefaults.outlinedButtonColors().copy(
-                                    contentColor = contentColorFor(BottomSheetDefaults.ContainerColor)
-                                ),
-                                onClick = {
-                                    onAction(ServerAction.OnClearFilters)
-                                    onDismissAndRefresh()
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = spacing.small, horizontal = spacing.large)
-                            ) {
-                                Text(
-                                    text = stringResource(SharedRes.strings.reset_filters),
-                                )
-                            }
+                            ButtonsSection(
+                                modifier = Modifier.fillMaxWidth(),
+                                onAction = onAction,
+                                onDismissAndRefresh = onDismissAndRefresh,
+                                filters = { it }
+                            )
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ButtonsSection(
+    modifier: Modifier = Modifier,
+    onAction: (ServerAction) -> Unit,
+    onDismissAndRefresh: () -> Unit,
+    filters: () -> FilterUi
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = spacing.large, vertical = spacing.small)
+    ) {
+        val stringProvider = koinInject<StringProvider>()
+        AppButton(
+            colors = ButtonDefaults.elevatedButtonColors(
+                containerColor = MaterialTheme.colorScheme.background,
+                contentColor = MaterialTheme.colorScheme.onBackground
+            ),
+            onClick = {
+                onAction(ServerAction.OnSaveFilters(filters = filters().toDomain(stringProvider)))
+                onDismissAndRefresh()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(stringResource(SharedRes.strings.apply_filters))
+        }
+        AppOutlinedButton(
+            colors = ButtonDefaults.outlinedButtonColors().copy(
+                contentColor = contentColorFor(BottomSheetDefaults.ContainerColor)
+            ),
+            onClick = {
+                onAction(ServerAction.OnClearFilters)
+                onDismissAndRefresh()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(SharedRes.strings.reset_filters),
+            )
         }
     }
 }
