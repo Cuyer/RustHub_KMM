@@ -62,6 +62,9 @@ import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.features.server.ServerState
 import pl.cuyer.rusthub.presentation.model.FilterUi
+import pl.cuyer.rusthub.presentation.model.FilterCheckboxOption
+import pl.cuyer.rusthub.presentation.model.FilterDropdownOption
+import pl.cuyer.rusthub.presentation.model.FilterRangeOption
 import pl.cuyer.rusthub.presentation.model.toDomain
 import pl.cuyer.rusthub.util.StringProvider
 
@@ -209,70 +212,92 @@ fun FilterBottomSheetContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
-        filters.lists.forEachIndexed { index, (label, options, selectedIndex) ->
-            AppExposedDropdownMenu(
-                label = label,
-                options = options,
-                selectedValue = selectedIndex ?: 0,
-                onSelectionChanged = { selected ->
-                    val updated = filters.lists.toMutableList()
-                    val old = updated[index]
-                    updated[index] = Triple(old.first, old.second, selected)
-                    onFiltersChange(filters.copy(lists = updated))
-                }
-            )
-        }
-        Row(
-            modifier = modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            filters.checkboxes.forEachIndexed { index, (label, isChecked) ->
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    SwitchWithText(
-                        text = label,
-                        isChecked = isChecked,
-                        onCheckedChange = { checked ->
-                            val updated = filters.checkboxes.toMutableList()
-                            updated[index] = label to checked
-                            onFiltersChange(filters.copy(checkboxes = updated))
-                        }
-                    )
-                }
+        DropdownFilters(
+            options = filters.lists,
+            onOptionsChange = { onFiltersChange(filters.copy(lists = it)) }
+        )
+        CheckboxFilters(
+            options = filters.checkboxes,
+            onOptionsChange = { onFiltersChange(filters.copy(checkboxes = it)) }
+        )
+        RangeFilters(
+            options = filters.ranges,
+            onOptionsChange = { onFiltersChange(filters.copy(ranges = it)) }
+        )
+    }
+}
+
+@Composable
+private fun DropdownFilters(
+    options: List<FilterDropdownOption>,
+    onOptionsChange: (List<FilterDropdownOption>) -> Unit
+) {
+    options.forEachIndexed { index, option ->
+        AppExposedDropdownMenu(
+            label = option.label,
+            options = option.options,
+            selectedValue = option.selectedIndex ?: 0,
+            onSelectionChanged = { selected ->
+                val updated = options.toMutableList()
+                updated[index] = option.copy(selectedIndex = selected)
+                onOptionsChange(updated)
+            }
+        )
+    }
+}
+
+@Composable
+private fun CheckboxFilters(
+    options: List<FilterCheckboxOption>,
+    onOptionsChange: (List<FilterCheckboxOption>) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        options.forEachIndexed { index, option ->
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                SwitchWithText(
+                    text = option.label,
+                    isChecked = option.isChecked,
+                    onCheckedChange = { checked ->
+                        val updated = options.toMutableList()
+                        updated[index] = option.copy(isChecked = checked)
+                        onOptionsChange(updated)
+                    }
+                )
             }
         }
+    }
+}
 
-
-        filters.ranges.forEachIndexed { index, (label, max, value) ->
-            val textFieldState =
-                remember(value) { TextFieldState(initialText = value?.toString() ?: "") }
-            OutlinedTextField(
-                state = textFieldState,
-                label = {
-                    Text(
-                        text = label
-                    )
-                },
-                inputTransformation = InputTransformation.maxLength(max.toString().length),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.NumberPassword,
-                    imeAction = ImeAction.Done
-                ),
-                placeholder = {
-                    Text(
-                        text = stringResource(SharedRes.strings.enter_a_number)
-                    )
-                }
-            )
-            LaunchedEffect(textFieldState.text) {
-                val updated = filters.ranges.toMutableList()
-                val newValue = textFieldState.text.toString().toIntOrNull()
-                val old = updated[index]
-                updated[index] = Triple(old.first, old.second, newValue)
-                onFiltersChange(filters.copy(ranges = updated))
-            }
+@Composable
+private fun RangeFilters(
+    options: List<FilterRangeOption>,
+    onOptionsChange: (List<FilterRangeOption>) -> Unit
+) {
+    options.forEachIndexed { index, option ->
+        val textFieldState = remember(option.value) {
+            TextFieldState(initialText = option.value?.toString() ?: "")
+        }
+        OutlinedTextField(
+            state = textFieldState,
+            label = { Text(text = option.label) },
+            inputTransformation = InputTransformation.maxLength(option.max.toString().length),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.NumberPassword,
+                imeAction = ImeAction.Done
+            ),
+            placeholder = { Text(text = stringResource(SharedRes.strings.enter_a_number)) }
+        )
+        LaunchedEffect(textFieldState.text) {
+            val updated = options.toMutableList()
+            val newValue = textFieldState.text.toString().toIntOrNull()
+            updated[index] = option.copy(value = newValue)
+            onOptionsChange(updated)
         }
     }
 }

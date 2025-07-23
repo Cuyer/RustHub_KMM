@@ -24,56 +24,62 @@ fun ServerQuery?.toUi(
 
     return FilterUi(
         lists = listOf(
-            Triple(
-                stringProvider.get(SharedRes.strings.map),
-                maps,
-                maps.indexOf(this?.map?.displayName ?: "")
+            FilterDropdownOption(
+                label = stringProvider.get(SharedRes.strings.map),
+                options = maps,
+                selectedIndex = maps.indexOf(this?.map?.displayName ?: "")
             ),
-            Triple(
-                stringProvider.get(SharedRes.strings.country),
-                flags,
-                flags.indexOf(this?.flag?.displayName ?: "")
+            FilterDropdownOption(
+                label = stringProvider.get(SharedRes.strings.country),
+                options = flags,
+                selectedIndex = flags.indexOf(this?.flag?.displayName ?: "")
             ),
-            Triple(
-                stringProvider.get(SharedRes.strings.region),
-                regions,
-                regions.indexOf(this?.region?.displayName(stringProvider) ?: "")
+            FilterDropdownOption(
+                label = stringProvider.get(SharedRes.strings.region),
+                options = regions,
+                selectedIndex = regions.indexOf(this?.region?.displayName(stringProvider) ?: "")
             ),
-            Triple(
-                stringProvider.get(SharedRes.strings.difficulty),
-                difficulties,
-                difficulties.indexOf(this?.difficulty?.displayName ?: "")
+            FilterDropdownOption(
+                label = stringProvider.get(SharedRes.strings.difficulty),
+                options = difficulties,
+                selectedIndex = difficulties.indexOf(this?.difficulty?.displayName ?: "")
             ),
-            Triple(
-                stringProvider.get(SharedRes.strings.wipe_schedule),
-                schedules,
-                schedules.indexOf(this?.wipeSchedule?.displayName(stringProvider) ?: "")
+            FilterDropdownOption(
+                label = stringProvider.get(SharedRes.strings.wipe_schedule),
+                options = schedules,
+                selectedIndex = schedules.indexOf(this?.wipeSchedule?.displayName(stringProvider) ?: "")
             ),
-            Triple(
-                stringProvider.get(SharedRes.strings.order),
-                order,
-                order.indexOf(this?.order?.displayName(stringProvider))
+            FilterDropdownOption(
+                label = stringProvider.get(SharedRes.strings.order),
+                options = order,
+                selectedIndex = order.indexOf(this?.order?.displayName(stringProvider))
             )
         ),
         checkboxes = listOf(
-            stringProvider.get(SharedRes.strings.official) to (this?.official == true),
-            stringProvider.get(SharedRes.strings.modded) to (this?.modded == true)
+            FilterCheckboxOption(
+                label = stringProvider.get(SharedRes.strings.official),
+                isChecked = this?.official == true
+            ),
+            FilterCheckboxOption(
+                label = stringProvider.get(SharedRes.strings.modded),
+                isChecked = this?.modded == true
+            )
         ),
         ranges = listOf(
-            Triple(
-                stringProvider.get(SharedRes.strings.max_player_count),
-                playerCount,
-                (this?.playerCount)?.toInt()
+            FilterRangeOption(
+                label = stringProvider.get(SharedRes.strings.max_player_count),
+                max = playerCount,
+                value = this?.playerCount?.toInt()
             ),
-            Triple(
-                stringProvider.get(SharedRes.strings.group_limit),
-                groupLimit,
-                (this?.groupLimit)?.toInt()
+            FilterRangeOption(
+                label = stringProvider.get(SharedRes.strings.group_limit),
+                max = groupLimit,
+                value = this?.groupLimit?.toInt()
             ),
-            Triple(
-                stringProvider.get(SharedRes.strings.max_ranking),
-                ranking,
-                (this?.ranking)?.toInt()
+            FilterRangeOption(
+                label = stringProvider.get(SharedRes.strings.max_ranking),
+                max = ranking,
+                value = this?.ranking?.toInt()
             )
         ),
         filter = this?.filter ?: ServerFilter.ALL
