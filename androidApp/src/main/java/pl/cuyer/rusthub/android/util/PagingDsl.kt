@@ -15,17 +15,17 @@ annotation class PagingDSL
 
 @PagingDSL
 class PagingHandlerScope<T : Any>(
-    private val items: LazyPagingItems<T>
+    private val items: () -> LazyPagingItems<T>
 ) {
     private var handled = false
-    private val loadState = derivedStateOf { items.loadState }.value
+    private val loadState = derivedStateOf { items().loadState }.value
 
     @Composable
     fun onEmpty(body: @Composable () -> Unit) {
         if (handled) return
         if (
             loadState.refresh is LoadState.NotLoading &&
-            items.itemCount == 0 &&
+            items().itemCount == 0 &&
             loadState.append.endOfPaginationReached
         ) {
             handled = true
@@ -43,10 +43,10 @@ class PagingHandlerScope<T : Any>(
     }
 
     @Composable
-    fun onSuccess(body: @Composable (LazyPagingItems<T>) -> Unit) {
+    fun onSuccess(body: @Composable () -> Unit) {
         if (!handled) {
             handled = true
-            body(items)
+            body()
         }
     }
 
@@ -78,10 +78,10 @@ class PagingHandlerScope<T : Any>(
         body: @Composable LazyItemScope.(T) -> Unit
     ) {
         items(
-            count = items.itemCount,
-            key = items.itemKey(key),
+            count = items().itemCount,
+            key = items().itemKey(key),
         ) { index ->
-            val item = items[index]
+            val item = items()[index]
             item?.let {
                 body(it)
             }
@@ -91,7 +91,7 @@ class PagingHandlerScope<T : Any>(
 
 @Composable
 fun <T : Any> HandlePagingItems(
-    items: LazyPagingItems<T>,
+    items: () -> LazyPagingItems<T>,
     content: @Composable PagingHandlerScope<T>.() -> Unit
 ) {
     PagingHandlerScope(items).content()

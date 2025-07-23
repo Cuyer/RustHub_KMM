@@ -74,31 +74,30 @@ import pl.cuyer.rusthub.util.StringProvider
 @Composable
 fun FilterBottomSheet(
     modifier: Modifier = Modifier,
-    state: State<ServerState>,
+    filters: FilterUi?,
+    isLoadingFilters: Boolean,
     sheetState: SheetState,
     onDismiss: () -> Unit,
     onDismissAndRefresh: () -> Unit,
     onAction: (ServerAction) -> Unit
 ) {
-    // Use local state for filters - initialized only from the incoming state
-    val initialFilters = state.value.filters
     // Use rememberSaveable with manual restoration for navigation or recomposition
-    var localLists by rememberSaveable(inputs = arrayOf(initialFilters?.lists)) {
-        mutableStateOf(initialFilters?.lists ?: emptyList())
+    var localLists by rememberSaveable(inputs = arrayOf(filters?.lists)) {
+        mutableStateOf(filters?.lists ?: emptyList())
     }
-    var localCheckboxes by rememberSaveable(inputs = arrayOf(initialFilters?.checkboxes)) {
-        mutableStateOf(initialFilters?.checkboxes ?: emptyList())
+    var localCheckboxes by rememberSaveable(inputs = arrayOf(filters?.checkboxes)) {
+        mutableStateOf(filters?.checkboxes ?: emptyList())
     }
-    var localRanges by rememberSaveable(inputs = arrayOf(initialFilters?.ranges)) {
-        mutableStateOf(initialFilters?.ranges ?: emptyList())
+    var localRanges by rememberSaveable(inputs = arrayOf(filters?.ranges)) {
+        mutableStateOf(filters?.ranges ?: emptyList())
     }
 
     // When filters are loaded/reset, update local state (but do not reset on every parent recomposition!)
-    LaunchedEffect(initialFilters) {
-        if (initialFilters != null) {
-            localLists = initialFilters.lists
-            localCheckboxes = initialFilters.checkboxes
-            localRanges = initialFilters.ranges
+    LaunchedEffect(filters) {
+        if (filters != null) {
+            localLists = filters.lists
+            localCheckboxes = filters.checkboxes
+            localRanges = filters.ranges
         }
     }
 
@@ -127,7 +126,7 @@ fun FilterBottomSheet(
         )
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
         AnimatedContent(
-            targetState = state.value.isLoadingFilters,
+            targetState = isLoadingFilters,
             transitionSpec = { defaultFadeTransition() }
         ) { loading ->
             if (loading) {
@@ -364,7 +363,6 @@ fun ButtonsSection(
 private fun FilterBottomSheetPreview() {
     val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
-    val state = remember { mutableStateOf(ServerState(loadingMore = true)) }
     RustHubTheme {
         Surface(
             modifier = Modifier
@@ -378,8 +376,9 @@ private fun FilterBottomSheetPreview() {
                         sheetState.hide()
                     }
                 },
-                state = state,
+                filters = null,
                 onAction = { },
+                isLoadingFilters = false,
                 onDismissAndRefresh = { }
             )
         }

@@ -190,7 +190,7 @@ fun ItemScreen(
                     }
                 }
             } else {
-                HandlePagingItems(pagedList) {
+                HandlePagingItems(items = { pagedList }) {
                     onError { error ->
                         onAction(
                             ItemAction.OnError(
@@ -207,7 +207,7 @@ fun ItemScreen(
                             )
                         }
                     }
-                    onSuccess { items ->
+                    onSuccess {
                         LazyColumn(
                             state = lazyListState,
                             verticalArrangement = Arrangement.spacedBy(spacing.medium),

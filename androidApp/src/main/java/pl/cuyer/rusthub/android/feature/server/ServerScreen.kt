@@ -221,7 +221,9 @@ fun ServerScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            HandlePagingItems(pagedList) {
+            HandlePagingItems(
+                items = { pagedList }
+            ) {
                 onRefresh {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(spacing.medium)
@@ -261,7 +263,7 @@ fun ServerScreen(
                         )
                     )
                 }
-                onSuccess { items ->
+                onSuccess {
                     LazyColumn(
                         state = lazyListState,
                         verticalArrangement = Arrangement.spacedBy(spacing.medium),
@@ -307,7 +309,8 @@ fun ServerScreen(
             }
             if (showSheet) {
                 FilterBottomSheet(
-                    state = state,
+                    filters = state.value.filters,
+                    isLoadingFilters = state.value.isLoadingFilters,
                     sheetState = sheetState,
                     onDismiss = {
                         showSheet = false

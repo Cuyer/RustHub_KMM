@@ -12,6 +12,11 @@ import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.maxLength
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -35,8 +40,10 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @Composable
 fun AppTextField(
@@ -45,7 +52,6 @@ fun AppTextField(
     labelText: String,
     placeholderText: String,
     keyboardType: KeyboardType,
-    trailingIcon: @Composable (() -> Unit)? = null,
     suffix: @Composable (() -> Unit)? = null,
     imeAction: ImeAction,
     requestFocus: Boolean = false,
@@ -114,6 +120,18 @@ fun AppTextField(
         },
         placeholder = {
             Text(text = placeholderText)
+        },
+        trailingIcon = {
+            if (textFieldState.text.toString().isNotEmpty()) {
+                IconButton(
+                    onClick = { textFieldState.setTextAndPlaceCursorAtEnd("") }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = stringResource(SharedRes.strings.clear)
+                    )
+                }
+            }
         },
         interactionSource = interactionSource,
         inputTransformation = maxLength?.let { InputTransformation.maxLength(it) },
