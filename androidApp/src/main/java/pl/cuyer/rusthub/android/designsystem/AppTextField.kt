@@ -1,12 +1,18 @@
 package pl.cuyer.rusthub.android.designsystem
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.KeyboardAction
+import androidx.compose.foundation.text.input.KeyboardActionHandler
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -31,13 +37,12 @@ import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import pl.cuyer.rusthub.android.theme.RustHubTheme
-import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
 
 @Composable
 fun AppTextField(
     modifier: Modifier = Modifier,
-    value: String,
+    textFieldState: TextFieldState,
     labelText: String,
     placeholderText: String,
     keyboardType: KeyboardType,
@@ -46,7 +51,6 @@ fun AppTextField(
     imeAction: ImeAction,
     requestFocus: Boolean = false,
     onSubmit: () -> Unit = { },
-    onValueChange: (String) -> Unit = {},
     isError: Boolean = false,
     errorText: String? = null,
     maxLength: Int? = null
@@ -74,33 +78,31 @@ fun AppTextField(
     OutlinedTextField(
         modifier = if (requestFocus) modifier
             .focusRequester(focusRequester) else modifier,
-        value = value,
-        onValueChange = {
-            if (maxLength == null || it.length <= maxLength) {
-                onValueChange(it)
-            } else {
-                onValueChange(it.take(maxLength))
-            }
-        },
-        singleLine = true,
+        state = textFieldState,
+        lineLimits = TextFieldLineLimits.SingleLine,
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.None,
             keyboardType = keyboardType,
             imeAction = imeAction
         ),
-        keyboardActions = KeyboardActions(
-            onNext = {
-                if (imeAction == ImeAction.Next) {
+        onKeyboardAction = KeyboardActionHandler { action ->
+            when (action) {
+                KeyboardAction.Next -> {
                     focusManager.moveFocus(FocusDirection.Down)
+                    true
                 }
-            },
-            onSend = {
-                if (imeAction == ImeAction.Send) {
+                KeyboardAction.Send -> {
                     focusManager.clearFocus()
                     onSubmit()
+                    true
                 }
+                KeyboardAction.Done -> {
+                    focusManager.clearFocus()
+                    true
+                }
+                else -> false
             }
-        ),
+        },
         trailingIcon = trailingIcon,
         label = {
             Text(
@@ -113,6 +115,7 @@ fun AppTextField(
             )
         },
         interactionSource = interactionSource,
+        inputTransformation = maxLength?.let { maxLength(it) },
         visualTransformation = VisualTransformation.None,
         colors = OutlinedTextFieldDefaults.colors(),
         suffix = suffix,
@@ -128,17 +131,17 @@ fun AppTextField(
 private fun AppTextFieldPreview() {
     RustHubTheme {
         Column(modifier = Modifier.fillMaxSize()) {
+            val state = rememberTextFieldState()
             AppTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
+                textFieldState = state,
                 labelText = "E-mail",
                 placeholderText = "Wpisz swój email",
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next,
-                requestFocus = false,
-                value = "",
-                onValueChange = {}
+                requestFocus = false
             )
         }
     }
