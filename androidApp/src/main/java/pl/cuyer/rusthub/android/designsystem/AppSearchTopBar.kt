@@ -81,10 +81,10 @@ fun RustSearchBarTopAppBar(
     textFieldState: TextFieldState,
     onSearchTriggered: () -> Unit,
     onOpenFilters: () -> Unit,
-    searchQueryUi: List<SearchQueryUi>,
+    searchQueryUi: () -> List<SearchQueryUi>,
     onDelete: (String) -> Unit,
     onClearSearchQuery: () -> Unit,
-    isLoadingSearchHistory: Boolean,
+    isLoadingSearchHistory: () -> Boolean,
     showFiltersIcon: Boolean = true,
     placeholderRes: StringResource = SharedRes.strings.search_servers,
 ) {
@@ -220,17 +220,18 @@ fun RustSearchBarTopAppBar(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchHistorySuggestions(
-    searchQueryUi: List<SearchQueryUi>,
-    isLoadingSearchHistory: Boolean,
+    searchQueryUi:() -> List<SearchQueryUi>,
+    isLoadingSearchHistory: () -> Boolean,
     textFieldState: TextFieldState,
     searchBarState: SearchBarState,
     onDelete: (String) -> Unit,
     onSearchTriggered: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    if (isLoadingSearchHistory) {
+    if (isLoadingSearchHistory()) {
         SearchHistoryShimmer(modifier = Modifier.fillMaxWidth())
     } else {
         LazyColumn(
@@ -238,7 +239,7 @@ private fun SearchHistorySuggestions(
             verticalArrangement = Arrangement.spacedBy(spacing.xxmedium)
         ) {
             item {
-                AnimatedVisibility(visible = searchQueryUi.isNotEmpty()) {
+                AnimatedVisibility(visible = searchQueryUi().isNotEmpty()) {
                     Row {
                         Text(
                             modifier = Modifier
@@ -249,7 +250,7 @@ private fun SearchHistorySuggestions(
                     }
                 }
             }
-            items(searchQueryUi, key = { it.query }) { item ->
+            items(searchQueryUi(), key = { it.query }) { item ->
                 val swipeState = rememberSwipeToDismissBoxState()
                 SwipeToDismissBox(
                     state = swipeState,
@@ -292,7 +293,7 @@ private fun SearchHistorySuggestions(
                     }
                 }
             }
-            if (searchQueryUi.isNotEmpty()) {
+            if (searchQueryUi().isNotEmpty()) {
                 item {
                     Row(
                         modifier = Modifier
@@ -335,10 +336,10 @@ private fun AppSearchTopBarPreview() {
                     textFieldState = TextFieldState(""),
                     onSearchTriggered = {},
                     onOpenFilters = {},
-                    searchQueryUi = emptyList(),
+                    searchQueryUi = { emptyList() },
                     onDelete = {},
                     onClearSearchQuery = {},
-                    isLoadingSearchHistory = false,
+                    isLoadingSearchHistory = { false },
                     placeholderRes = SharedRes.strings.search_servers
                 )
             }

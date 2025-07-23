@@ -163,7 +163,7 @@ fun ServerScreen(
                             onAction(ServerAction.OnSearch(textFieldState.text.toString()))
                         },
                         onOpenFilters = { showSheet = true },
-                        searchQueryUi = state.value.searchQuery,
+                        searchQueryUi = { state.value.searchQuery },
                         onDelete = {
                             if (it.isBlank()) onAction(ServerAction.DeleteSearchQueries) else onAction(
                                 ServerAction.DeleteSearchQueryByQuery(it)
@@ -172,7 +172,7 @@ fun ServerScreen(
                         onClearSearchQuery = {
                             onAction(ServerAction.OnClearSearchQuery)
                         },
-                        isLoadingSearchHistory = state.value.isLoadingSearchHistory,
+                        isLoadingSearchHistory = { state.value.isLoadingSearchHistory },
                         showFiltersIcon = true
                     )
                     ServerFilterChips(
