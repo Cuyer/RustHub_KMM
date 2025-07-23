@@ -48,7 +48,8 @@ fun AppTextField(
     onSubmit: () -> Unit = { },
     onValueChange: (String) -> Unit = {},
     isError: Boolean = false,
-    errorText: String? = null
+    errorText: String? = null,
+    maxLength: Int? = null
 ) {
 
     val interactionSource = remember {
@@ -74,7 +75,13 @@ fun AppTextField(
         modifier = if (requestFocus) modifier
             .focusRequester(focusRequester) else modifier,
         value = value,
-        onValueChange = onValueChange,
+        onValueChange = {
+            if (maxLength == null || it.length <= maxLength) {
+                onValueChange(it)
+            } else {
+                onValueChange(it.take(maxLength))
+            }
+        },
         singleLine = true,
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.None,

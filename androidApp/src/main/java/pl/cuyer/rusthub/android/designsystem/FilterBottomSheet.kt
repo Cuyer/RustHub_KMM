@@ -355,25 +355,21 @@ private fun RangeFilters(
     onOptionsChange: (List<FilterRangeOption>) -> Unit
 ) {
     options.forEachIndexed { index, option ->
-        val textFieldState = remember(option.value) {
-            TextFieldState(initialText = option.value?.toString() ?: "")
-        }
-        OutlinedTextField(
-            state = textFieldState,
-            label = { Text(text = option.label) },
-            inputTransformation = InputTransformation.maxLength(option.max.toString().length),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.NumberPassword,
-                imeAction = ImeAction.Done
-            ),
-            placeholder = { Text(text = stringResource(SharedRes.strings.enter_a_number)) }
+        AppTextField(
+            modifier = Modifier,
+            value = option.value?.toString() ?: "",
+            labelText = option.label,
+            maxLength = option.max.toString().length,
+            placeholderText = stringResource(SharedRes.strings.enter_a_number),
+            keyboardType = KeyboardType.NumberPassword,
+            imeAction = ImeAction.Done,
+            onValueChange = { text ->
+                val updated = options.toMutableList()
+                val newValue = text.toIntOrNull()
+                updated[index] = option.copy(value = newValue)
+                onOptionsChange(updated)
+            }
         )
-        LaunchedEffect(textFieldState.text) {
-            val updated = options.toMutableList()
-            val newValue = textFieldState.text.toString().toIntOrNull()
-            updated[index] = option.copy(value = newValue)
-            onOptionsChange(updated)
-        }
     }
 }
 
