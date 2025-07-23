@@ -184,9 +184,7 @@ private val features = listOf(
 private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: OnboardingState) {
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
-
     val pagerState = rememberPagerState(pageCount = { features.size })
-
 
     Column(
         modifier = Modifier
@@ -203,44 +201,10 @@ private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: Onboa
         verticalArrangement = Arrangement.spacedBy(spacing.medium, Alignment.CenterVertically)
     ) {
         HeaderSection()
-
         Spacer(modifier = Modifier.height(spacing.medium))
-
-        HorizontalPager(state = pagerState) { page ->
-            val feature = features[page]
-            FeatureItem(feature.icon, feature.title, feature.description)
-        }
-
-        CarouselAutoPlayHandler(pagerState, features.size)
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(spacing.xsmall),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            repeat(features.size) { index ->
-                val cd = stringResource(
-                    SharedRes.strings.page_indicator,
-                    index + 1,
-                    features.size
-                )
-                val selected = pagerState.currentPage == index
-                Box(
-                    modifier = Modifier
-                        .size(if (selected) 8.dp else 6.dp)
-                        .background(
-                            color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                            shape = CircleShape
-                        )
-                        .semantics {
-                            contentDescription = cd
-                        }
-                )
-            }
-        }
-
+        FeatureCarousel(pagerState = pagerState)
         Spacer(modifier = Modifier.height(spacing.medium))
         AuthSection(state, onAction)
-
         AnimatedVisibility(
             visible = state.showOtherOptions,
             enter = slideInVertically() + scaleIn(),
@@ -287,38 +251,8 @@ private fun OnboardingContentExpanded(
             )
         ) {
             HeaderSection()
-
             Spacer(modifier = Modifier.height(spacing.medium))
-
-            HorizontalPager(state = pagerState) { page ->
-                val feature = features[page]
-                FeatureItem(feature.icon, feature.title, feature.description)
-            }
-
-            CarouselAutoPlayHandler(pagerState, features.size)
-
-            Row(horizontalArrangement = Arrangement.spacedBy(spacing.xsmall)) {
-                repeat(features.size) { index ->
-                    val selected = pagerState.currentPage == index
-                    val cd = stringResource(
-                        SharedRes.strings.page_indicator,
-                        index + 1,
-                        features.size
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(if (selected) 8.dp else 6.dp)
-                            .background(
-                                color = if (selected) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.onSurfaceVariant,
-                                shape = CircleShape
-                            )
-                            .semantics {
-                                contentDescription = cd
-                            }
-                    )
-                }
-            }
+            FeatureCarousel(pagerState = pagerState)
         }
 
         Column(
@@ -332,7 +266,6 @@ private fun OnboardingContentExpanded(
             )
         ) {
             AuthSection(state, onAction)
-
             AnimatedVisibility(
                 visible = state.showOtherOptions,
                 enter = slideInVertically() + scaleIn(),
@@ -341,6 +274,44 @@ private fun OnboardingContentExpanded(
                 ActionButtons(
                     onAction = onAction,
                     continueAsGuestLoading = state.continueAsGuestLoading
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun FeatureCarousel(pagerState: PagerState) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        HorizontalPager(state = pagerState) { page ->
+            val feature = features[page]
+            FeatureItem(feature.icon, feature.title, feature.description)
+        }
+
+        CarouselAutoPlayHandler(pagerState, features.size)
+
+        Spacer(modifier = Modifier.height(spacing.xmedium))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(spacing.xsmall),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            repeat(features.size) { index ->
+                val cd = stringResource(
+                    SharedRes.strings.page_indicator,
+                    index + 1,
+                    features.size
+                )
+                val selected = pagerState.currentPage == index
+                Box(
+                    modifier = Modifier
+                        .size(if (selected) 8.dp else 6.dp)
+                        .background(
+                            color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                            shape = CircleShape
+                        )
+                        .semantics { contentDescription = cd }
                 )
             }
         }
