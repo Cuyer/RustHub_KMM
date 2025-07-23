@@ -211,7 +211,7 @@ private fun AppScaffold(
                         val viewModel = koinViewModel<OnboardingViewModel>()
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         OnboardingScreen(
-                            stateProvider = { state },
+                            state = state,
                             onAction = viewModel::onAction,
                             uiEvent = viewModel.uiEvent,
                             onNavigate = { dest ->
@@ -227,7 +227,7 @@ private fun AppScaffold(
                             koinViewModel { parametersOf(key.email, key.exists, key.provider) }
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         CredentialsScreen(
-                            stateProvider = { state },
+                            state = state,
                             uiEvent = viewModel.uiEvent,
                             onAction = viewModel::onAction,
                             onNavigate = { dest ->
@@ -244,7 +244,7 @@ private fun AppScaffold(
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         val paging = viewModel.paging.collectAsLazyPagingItems()
                         ServerScreen(
-                            stateProvider = { state },
+                            state = state,
                             uiEvent = viewModel.uiEvent,
                             onAction = viewModel::onAction,
                             pagedList = paging,
@@ -259,7 +259,7 @@ private fun AppScaffold(
                         ) { parametersOf(key.id, key.name) }
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         ServerDetailsScreen(
-                            stateProvider = { state },
+                            state = state,
                             uiEvent = viewModel.uiEvent,
                             onAction = viewModel::onAction,
                             onNavigate = { dest -> backStack.add(dest) }
@@ -270,7 +270,7 @@ private fun AppScaffold(
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         val paging = viewModel.paging.collectAsLazyPagingItems()
                         ItemScreen(
-                            stateProvider = { state },
+                            state = state,
                             uiEvent = viewModel.uiEvent,
                             onAction = viewModel::onAction,
                             pagedList = paging,
@@ -283,7 +283,7 @@ private fun AppScaffold(
                         ) { parametersOf(key.id) }
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         ItemDetailsScreen(
-                            stateProvider = { state },
+                            state = state,
                             onNavigateUp = {
                                 while (backStack.lastOrNull() is ItemDetails) {
                                     backStack.removeLastOrNull()
@@ -295,7 +295,7 @@ private fun AppScaffold(
                         val viewModel = koinViewModel<SettingsViewModel>()
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         SettingsScreen(
-                            stateProvider = { state },
+                            state = state,
                             uiEvent = viewModel.uiEvent,
                             onAction = viewModel::onAction,
                             onNavigate = { dest ->
@@ -316,7 +316,7 @@ private fun AppScaffold(
                                 backStack.add(dest)
                             },
                             uiEvent = viewModel.uiEvent,
-                            stateProvider = { state },
+                            state = state,
                             onAction = viewModel::onAction
                         )
                     }
@@ -326,7 +326,7 @@ private fun AppScaffold(
                         UpgradeAccountScreen(
                             onNavigateUp = { backStack.removeLastOrNull() },
                             uiEvent = viewModel.uiEvent,
-                            stateProvider = { state },
+                            state = state,
                             onAction = viewModel::onAction
                         )
                     }
@@ -335,7 +335,7 @@ private fun AppScaffold(
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         ConfirmEmailScreen(
                             uiEvent = viewModel.uiEvent,
-                            stateProvider = { state },
+                            state = state,
                             onAction = viewModel::onAction,
                             onNavigate = { dest ->
                                 backStack.clear()
@@ -351,7 +351,7 @@ private fun AppScaffold(
                         ResetPasswordScreen(
                             onNavigateUp = { backStack.removeLastOrNull() },
                             uiEvent = viewModel.uiEvent,
-                            stateProvider = { state },
+                            state = state,
                             onAction = viewModel::onAction
                         )
                     }
@@ -361,7 +361,7 @@ private fun AppScaffold(
                         ChangePasswordScreen(
                             onNavigateUp = { backStack.removeLastOrNull() },
                             uiEvent = viewModel.uiEvent,
-                            stateProvider = { state },
+                            state = state,
                             onAction = viewModel::onAction
                         )
                     }

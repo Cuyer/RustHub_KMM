@@ -103,13 +103,12 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 @Composable
 fun ServerDetailsScreen(
     onNavigate: (NavKey) -> Unit,
-    stateProvider: () -> State<ServerDetailsState>,
+    state: State<ServerDetailsState>,
     onAction: (ServerDetailsAction) -> Unit,
     uiEvent: Flow<UiEvent>
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val lazyListState = rememberLazyListState()
-    val state = stateProvider().value
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
@@ -117,7 +116,7 @@ fun ServerDetailsScreen(
     val permissionsController = koinInject<PermissionsController>()
     BindEffect(permissionsController)
 
-    if (state.showNotificationInfo) {
+    if (state.value.showNotificationInfo) {
         NotificationInfoDialog(
             showDialog = true,
             onConfirm = { onAction(ServerDetailsAction.OnSubscribe) },
@@ -125,8 +124,8 @@ fun ServerDetailsScreen(
         )
     }
 
-    state.details?.mapImage?.let { mapUrl ->
-        if (state.showMap) {
+    state.value.details?.mapImage?.let { mapUrl ->
+        if (state.value.showMap) {
             MapDialog(mapUrl = mapUrl) {
                 onAction(ServerDetailsAction.OnDismissMap)
             }
@@ -142,7 +141,7 @@ fun ServerDetailsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = state.serverName ?: "",
+                        text = state.value.serverName ?: "",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         fontWeight = FontWeight.SemiBold
@@ -166,7 +165,7 @@ fun ServerDetailsScreen(
                         DropdownMenuItem(
                             text = {
                                 Text(
-                                    if (state.details?.isFavorite == true) {
+                                    if (state.value.details?.isFavorite == true) {
                                         stringResource(SharedRes.strings.remove_from_favourites)
                                     } else {
                                         stringResource(SharedRes.strings.add_to_favourites)
@@ -178,12 +177,12 @@ fun ServerDetailsScreen(
                                 onAction(ServerDetailsAction.OnToggleFavourite)
                             },
                             leadingIcon = {
-                                val icon = if (state.details?.isFavorite == true) {
+                                val icon = if (state.value.details?.isFavorite == true) {
                                     Icons.Filled.Favorite
                                 } else {
                                     Icons.Outlined.FavoriteBorder
                                 }
-                                val cd = if (state.details?.isFavorite == true) {
+                                val cd = if (state.value.details?.isFavorite == true) {
                                     stringResource(SharedRes.strings.remove_from_favourites)
                                 } else {
                                     stringResource(SharedRes.strings.add_to_favourites)
@@ -194,7 +193,7 @@ fun ServerDetailsScreen(
                         DropdownMenuItem(
                             text = {
                                 Text(
-                                    if (state.details?.isSubscribed == true) {
+                                    if (state.value.details?.isSubscribed == true) {
                                         stringResource(SharedRes.strings.turn_off_notifications)
                                     } else {
                                         stringResource(SharedRes.strings.turn_on_notifications)
@@ -206,12 +205,12 @@ fun ServerDetailsScreen(
                                 onAction(ServerDetailsAction.OnSubscribe)
                             },
                             leadingIcon = {
-                                val icon = if (state.details?.isSubscribed == true) {
+                                val icon = if (state.value.details?.isSubscribed == true) {
                                     Icons.Filled.Notifications
                                 } else {
                                     Icons.Outlined.NotificationsNone
                                 }
-                                val cd = if (state.details?.isSubscribed == true) {
+                                val cd = if (state.value.details?.isSubscribed == true) {
                                     stringResource(SharedRes.strings.turn_off_notifications)
                                 } else {
                                     stringResource(SharedRes.strings.turn_on_notifications)
@@ -246,7 +245,7 @@ fun ServerDetailsScreen(
                     .animateBounds(this)
             ) {
                 AnimatedVisibility(
-                    visible = !state.isConnected,
+                    visible = !state.value.isConnected,
                     enter = slideInVertically(),
                     exit = slideOutVertically()
                 ) {
@@ -261,12 +260,12 @@ fun ServerDetailsScreen(
                             .background(MaterialTheme.colorScheme.secondary)
                     )
                 }
-                if (state.details != null) {
+                if (state.value.details != null) {
                     LazyColumn(
                         state = lazyListState,
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        state.details?.let {
+                        state.value.details?.let {
                             item {
                                 Text(
                                     modifier = Modifier.padding(spacing.medium),
@@ -719,7 +718,7 @@ private fun ServerDetailsPrev() {
         ) {
             ServerDetailsScreen(
                 onNavigate = {},
-                stateProvider = { mutableStateOf(ServerDetailsState()) },
+                state = mutableStateOf(ServerDetailsState()),
                 onAction = {},
                 uiEvent = MutableStateFlow(
                     UiEvent.Navigate(

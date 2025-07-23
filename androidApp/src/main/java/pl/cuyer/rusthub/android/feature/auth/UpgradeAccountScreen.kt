@@ -70,11 +70,10 @@ import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 @Composable
 fun UpgradeAccountScreen(
     uiEvent: Flow<UiEvent>,
-    stateProvider: () -> State<UpgradeState>,
+    state: State<UpgradeState>,
     onAction: (UpgradeAction) -> Unit,
     onNavigateUp: () -> Unit = {},
 ) {
-    val state = stateProvider()
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }

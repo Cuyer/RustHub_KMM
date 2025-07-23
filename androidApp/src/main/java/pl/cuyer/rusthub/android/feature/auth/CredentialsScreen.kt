@@ -77,11 +77,10 @@ import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 fun CredentialsScreen(
     onNavigate: (NavKey) -> Unit,
     uiEvent: Flow<UiEvent>,
-    stateProvider: () -> State<CredentialsState>,
+    state: State<CredentialsState>,
     onAction: (CredentialsAction) -> Unit,
     onNavigateUp: () -> Unit = {},
 ) {
-    val state = stateProvider()
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }

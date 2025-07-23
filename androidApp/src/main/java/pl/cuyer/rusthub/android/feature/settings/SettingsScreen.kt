@@ -80,10 +80,9 @@ import java.util.Locale
 fun SettingsScreen(
     onNavigate: (NavKey) -> Unit,
     uiEvent: Flow<UiEvent>,
-    stateProvider: () -> State<SettingsState>,
+    state: State<SettingsState>,
     onAction: (SettingsAction) -> Unit
 ) {
-    val state = stateProvider()
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
@@ -471,7 +470,7 @@ private fun SettingsPreview() {
         SettingsScreen(
             onNavigate = {},
             uiEvent = MutableStateFlow(UiEvent.Navigate(Onboarding)),
-            stateProvider = { androidx.compose.runtime.mutableStateOf(SettingsState()) },
+            state = mutableStateOf(SettingsState()),
             onAction = {}
         )
     }

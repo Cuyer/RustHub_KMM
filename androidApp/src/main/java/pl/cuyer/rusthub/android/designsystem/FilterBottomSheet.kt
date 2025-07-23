@@ -69,7 +69,7 @@ import pl.cuyer.rusthub.util.StringProvider
 @Composable
 fun FilterBottomSheet(
     modifier: Modifier = Modifier,
-    stateProvider: () -> State<ServerState>,
+    state: State<ServerState>,
     sheetState: SheetState,
     onDismiss: () -> Unit,
     onDismissAndRefresh: () -> Unit,
@@ -84,12 +84,12 @@ fun FilterBottomSheet(
         )
     }
     var newFilters by rememberSaveable(stateSaver = filterUiSaver) {
-        mutableStateOf(stateProvider().value.filters)
+        mutableStateOf(state.value.filters)
     }
 
-    LaunchedEffect(stateProvider().value.filters) {
-        if (newFilters == null && stateProvider().value.filters?.lists?.isNotEmpty() == true) {
-            newFilters = stateProvider().value.filters
+    LaunchedEffect(state.value.filters) {
+        if (newFilters == null && state.value.filters?.lists?.isNotEmpty() == true) {
+            newFilters = state.value.filters
         }
     }
 
@@ -118,7 +118,7 @@ fun FilterBottomSheet(
         )
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
         AnimatedContent(
-            targetState = stateProvider().value.isLoadingFilters,
+            targetState = state.value.isLoadingFilters,
             transitionSpec = { defaultFadeTransition() }
         ) { loading ->
             if (loading) {
@@ -133,7 +133,7 @@ fun FilterBottomSheet(
                     )
                 }
             } else {
-                if (stateProvider().value.filters?.lists?.isEmpty() == true) {
+                if (state.value.filters?.lists?.isEmpty() == true) {
                     Box(
                         modifier = Modifier
                             .fillMaxHeight(0.85f)
@@ -298,7 +298,7 @@ private fun FilterBottomSheetPreview() {
                         sheetState.hide()
                     }
                 },
-                stateProvider = { mutableStateOf(ServerState(loadingMore = true)) },
+                state = mutableStateOf(ServerState(loadingMore = true)),
                 onAction = { },
                 onDismissAndRefresh = { }
             )

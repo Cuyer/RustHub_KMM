@@ -65,10 +65,9 @@ import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 fun ChangePasswordScreen(
     onNavigateUp: () -> Unit,
     uiEvent: Flow<UiEvent>,
-    stateProvider: () -> State<ChangePasswordState>,
+    state: State<ChangePasswordState>,
     onAction: (ChangePasswordAction) -> Unit
 ) {
-    val state = stateProvider()
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.NavigateUp) onNavigateUp()
     }

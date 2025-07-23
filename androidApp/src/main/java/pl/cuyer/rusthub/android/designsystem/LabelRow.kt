@@ -16,7 +16,7 @@ import pl.cuyer.rusthub.domain.model.Theme
 @Composable
 fun LabelRow(
     modifier: Modifier = Modifier,
-    labels: List<Label>
+    labels: () -> List<String>
 ) {
     FlowRow(
         modifier = modifier
@@ -24,9 +24,9 @@ fun LabelRow(
             .wrapContentHeight(),
         horizontalArrangement = Arrangement.spacedBy(space = spacing.small, alignment = Alignment.Start)
     ) {
-        labels.forEach { label ->
+        labels().forEach { label ->
             AppLabel(
-                text = label.text.uppercase()
+                text = label.uppercase()
             )
         }
     }
@@ -37,14 +37,12 @@ fun LabelRow(
 private fun LabelRowPreview() {
     RustHubTheme() {
         LabelRow(
-            labels = listOf(
-                Label(
-                    text = "Monthly"
-                ),
-                Label(
-                    text = "Weekly"
+            labels = {
+                listOf(
+                    "Monthly",
+                    "Weekly"
                 )
-            )
+            }
         )
     }
 }

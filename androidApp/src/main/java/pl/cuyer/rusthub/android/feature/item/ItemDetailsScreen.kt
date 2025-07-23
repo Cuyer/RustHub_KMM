@@ -87,14 +87,12 @@ private enum class DetailsPage(val title: StringResource) {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun ItemDetailsScreen(
-    stateProvider: () -> State<ItemDetailsState>,
+    state: State<ItemDetailsState>,
     onNavigateUp: () -> Unit,
 ) {
-    val state = stateProvider().value
-
     // Build list of only available details pages and their content
-    val availablePages = remember(state.item) {
-        state.item?.let { item ->
+    val availablePages = remember(state.value.item) {
+        state.value.item?.let { item ->
             buildList {
                 item.looting?.takeIf { it.isNotEmpty() }
                     ?.let { add(DetailsPage.LOOTING to it) }
@@ -114,7 +112,7 @@ fun ItemDetailsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = state.item?.name.orEmpty(),
+                        text = state.value.item?.name.orEmpty(),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         fontWeight = FontWeight.SemiBold

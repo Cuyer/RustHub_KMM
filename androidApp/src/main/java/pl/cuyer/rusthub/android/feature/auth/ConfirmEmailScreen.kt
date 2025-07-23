@@ -75,12 +75,11 @@ import pl.cuyer.rusthub.util.StringProvider
 @Composable
 fun ConfirmEmailScreen(
     uiEvent: Flow<UiEvent>,
-    stateProvider: () -> State<ConfirmEmailState>,
+    state: State<ConfirmEmailState>,
     onAction: (ConfirmEmailAction) -> Unit,
     onNavigateUp: () -> Unit = {},
     onNavigate: (NavKey) -> Unit,
 ) {
-    val state = stateProvider()
     val context = LocalContext.current
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium

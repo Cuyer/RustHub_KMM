@@ -67,10 +67,9 @@ import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 fun ResetPasswordScreen(
     onNavigateUp: () -> Unit,
     uiEvent: Flow<UiEvent>,
-    stateProvider: () -> State<ResetPasswordState>,
+    state: State<ResetPasswordState>,
     onAction: (ResetPasswordAction) -> Unit
 ) {
-    val state = stateProvider()
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.NavigateUp) onNavigateUp()
     }

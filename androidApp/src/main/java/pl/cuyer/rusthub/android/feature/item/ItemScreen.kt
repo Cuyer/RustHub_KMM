@@ -94,12 +94,11 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 @Composable
 fun ItemScreen(
     onNavigate: (NavKey) -> Unit,
-    stateProvider: () -> State<ItemState>,
+    state: State<ItemState>,
     onAction: (ItemAction) -> Unit,
     pagedList: LazyPagingItems<RustItem>,
     uiEvent: Flow<UiEvent>
 ) {
-    val state = stateProvider()
     val syncState = state.value.syncState
     val searchBarState = rememberSearchBarState()
     val textFieldState = rememberTextFieldState()
@@ -306,7 +305,7 @@ private fun ItemCategoryChips(
 private fun ItemScreenPreview() {
     RustHubTheme {
         ItemScreen(
-            stateProvider = { mutableStateOf(ItemState(isRefreshing = false)) },
+            state = mutableStateOf(ItemState(isRefreshing = false)),
             onAction = {},
             onNavigate = {},
             uiEvent = flowOf(UiEvent.Navigate(ItemList)),

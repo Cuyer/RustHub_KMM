@@ -111,11 +111,10 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 @Composable
 fun OnboardingScreen(
     onNavigate: (NavKey) -> Unit,
-    stateProvider: () -> State<OnboardingState>,
+    state: State<OnboardingState>,
     onAction: (OnboardingAction) -> Unit,
     uiEvent: Flow<UiEvent>
 ) {
-    val state = stateProvider()
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
@@ -542,7 +541,7 @@ private fun OnboardingPrev() {
     RustHubTheme() {
         OnboardingScreen(
             onNavigate = {},
-            stateProvider = { mutableStateOf(OnboardingState()) },
+            state = mutableStateOf(OnboardingState()),
             onAction = {},
             uiEvent = MutableStateFlow(UiEvent.Navigate(object : NavKey {}))
         )

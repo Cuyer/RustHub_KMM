@@ -51,25 +51,18 @@ fun ServerListItem(
     serverName: String,
     isOnline: Boolean,
     flag: Flag?,
-    labels: List<Label>,
-    details: Map<String, String>
+    labels: () -> List<String>,
+    details: () -> Map<String, String>
 ) {
     val statusText = if (isOnline) {
         stringResource(SharedRes.strings.online)
     } else {
         stringResource(SharedRes.strings.offline)
     }
-
-    val playersKey = stringResource(SharedRes.strings.players)
-    val playersInfo = details[playersKey]?.let { "$playersKey $it" }
     val semanticsDescription = buildString {
         append(serverName)
         append(", ")
         append(statusText)
-        playersInfo?.let {
-            append(", ")
-            append(it)
-        }
     }
     ElevatedCard(
         shape = RectangleShape,
@@ -222,24 +215,23 @@ private fun ServerListItemPreview() {
                 modifier = Modifier
                     .padding(horizontal = spacing.small),
                 serverName = "Rustoria [EU/UK] WIPE WIPE WIPE WIPE",
-                labels = listOf(
-                    Label(
-                        text = "Monthly"
-                    ),
-                    Label(
-                        text = "Weekly"
+                labels = {
+                    listOf("Monthly",
+                        "Weekly"
                     )
-                ),
+                },
                 flag = Flag.GB,
                 isOnline = true,
-                details = mapOf(
-                    "Wipe" to "4hrs ago",
-                    "Rating" to "72%",
-                    "Cycle" to "6.8 days",
-                    "Players" to "132/150",
-                    "Map" to "Custom",
-                    "Modded" to "Yes"
-                )
+                details = {
+                    mapOf(
+                        "Wipe" to "4hrs ago",
+                        "Rating" to "72%",
+                        "Cycle" to "6.8 days",
+                        "Players" to "132/150",
+                        "Map" to "Custom",
+                        "Modded" to "Yes"
+                    )
+                }
             )
         }
     }

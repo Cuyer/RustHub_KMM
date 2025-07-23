@@ -9,23 +9,21 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
@@ -57,7 +55,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -67,8 +64,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
-import pl.cuyer.rusthub.SharedRes
-import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
@@ -79,6 +74,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import org.koin.compose.koinInject
+import org.koin.java.KoinJavaComponent.inject
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.FilterBottomSheet
 import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.designsystem.ServerListItem
@@ -88,24 +88,21 @@ import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.HandlePagingItems
-import pl.cuyer.rusthub.domain.exception.NetworkUnavailableException
-import pl.cuyer.rusthub.domain.exception.TimeoutException
-import pl.cuyer.rusthub.domain.exception.ServiceUnavailableException
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerStatus
-import pl.cuyer.rusthub.domain.model.Theme
-import pl.cuyer.rusthub.domain.model.WipeType
 import pl.cuyer.rusthub.domain.model.WipeSchedule
+import pl.cuyer.rusthub.domain.model.WipeType
 import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.features.server.ServerState
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
+import pl.cuyer.rusthub.presentation.model.createDetails
+import pl.cuyer.rusthub.presentation.model.createLabels
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import pl.cuyer.rusthub.util.StringProvider
 import java.util.Locale
 import java.util.UUID
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import pl.cuyer.rusthub.domain.exception.ConnectivityException
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class,
@@ -114,13 +111,11 @@ import pl.cuyer.rusthub.domain.exception.ConnectivityException
 @Composable
 fun ServerScreen(
     onNavigate: (NavKey) -> Unit,
-    stateProvider: () -> State<ServerState>,
+    state: State<ServerState>,
     onAction: (ServerAction) -> Unit,
     pagedList: LazyPagingItems<ServerInfoUi>,
     uiEvent: Flow<UiEvent>
 ) {
-    val state = stateProvider()
-
     var showSheet by rememberSaveable { mutableStateOf(false) }
     val searchBarState = rememberSearchBarState()
     val textFieldState = rememberTextFieldState()
@@ -147,6 +142,8 @@ fun ServerScreen(
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
 
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
+
+    val stringProvider = koinInject<StringProvider>()
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     Scaffold(
@@ -272,8 +269,6 @@ fun ServerScreen(
                     ) {
                         onPagingItems(key = { it.id ?: UUID.randomUUID() }) { item ->
                             val interactionSource = remember { MutableInteractionSource() }
-                            val labels by rememberUpdatedState(createLabels(item))
-                            val details by rememberUpdatedState(createDetails(item))
                             ServerListItem(
                                 modifier = Modifier
                                     .animateItem()
@@ -295,8 +290,8 @@ fun ServerScreen(
                                     ),
                                 serverName = item.name.orEmpty(),
                                 flag = item.serverFlag,
-                                labels = labels,
-                                details = details,
+                                labels = { item.createLabels(stringProvider) },
+                                details = { item.createDetails(stringProvider) },
                                 isOnline = item.serverStatus == ServerStatus.ONLINE
                             )
                         }
@@ -312,7 +307,7 @@ fun ServerScreen(
             }
             if (showSheet) {
                 FilterBottomSheet(
-                    stateProvider = { state },
+                    state = state,
                     sheetState = sheetState,
                     onDismiss = {
                         showSheet = false
@@ -399,89 +394,6 @@ private fun ServerFilterChips(
     }
 }
 
-@Composable
-private fun createDetails(item: ServerInfoUi): Map<String, String> {
-    val details = mutableMapOf<String, String>()
-
-    item.wipe?.let { wipeInstant: Instant ->
-        val now = Clock.System.now()
-        val duration = now - wipeInstant
-        val minutesAgo = duration.inWholeMinutes
-
-        val parsedTimeAgo = when (minutesAgo) {
-            in 0..60 ->
-                stringResource(SharedRes.strings.minutes_ago, minutesAgo)
-
-            in 61..1440 ->
-                stringResource(SharedRes.strings.hours_ago, minutesAgo / 60)
-
-            in 1441..10080 ->
-                stringResource(SharedRes.strings.days_ago, minutesAgo / 1440)
-
-            else ->
-                stringResource(SharedRes.strings.weeks_ago, minutesAgo / 10080)
-        }
-
-        details[stringResource(SharedRes.strings.wipe).trim()] = parsedTimeAgo
-    }
-
-    item.ranking?.let {
-        details[stringResource(SharedRes.strings.ranking)] = it.toInt().toString()
-    }
-    item.cycle?.let {
-        val cycleValue = "~ " + String.format(Locale.getDefault(), "%.2f", it) +
-                " " + stringResource(SharedRes.strings.days).trim()
-        details[stringResource(SharedRes.strings.cycle)] = cycleValue
-    }
-    item.serverCapacity?.let {
-        details[stringResource(SharedRes.strings.players)] =
-            "${item.playerCount ?: 0}/$it"
-    }
-    item.mapName?.let {
-        details[stringResource(SharedRes.strings.map)] = it.name
-    }
-    item.modded?.let {
-        details[stringResource(SharedRes.strings.modded)] =
-            if (it) stringResource(SharedRes.strings.yes)
-            else stringResource(SharedRes.strings.no)
-    }
-
-    return details
-}
-
-@Composable
-private fun createLabels(item: ServerInfoUi): List<Label> {
-    val labels = mutableListOf<Label>()
-
-    item.wipeSchedule?.let {
-        val text = when (it) {
-            WipeSchedule.WEEKLY -> stringResource(SharedRes.strings.weekly)
-            WipeSchedule.BIWEEKLY -> stringResource(SharedRes.strings.biweekly)
-            WipeSchedule.MONTHLY -> stringResource(SharedRes.strings.monthly)
-        }
-        labels.add(Label(text = text))
-    }
-    item.difficulty?.let {
-        labels.add(Label(text = it.name))
-    }
-    if (item.isOfficial == true) {
-        labels.add(Label(text = stringResource(SharedRes.strings.official)))
-    }
-
-    item.wipeType?.let {
-        if (it != WipeType.UNKNOWN) {
-            labels.add(
-                Label(
-                    text = it.name + " " +
-                            stringResource(SharedRes.strings.wipe)
-                )
-            )
-        }
-    }
-
-    return labels
-}
-
 @Preview
 @Composable
 private fun ServerScreenPreview() {
@@ -490,8 +402,9 @@ private fun ServerScreenPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
+            val state = remember { mutableStateOf(ServerState(isRefreshing = false)) }
             ServerScreen(
-                stateProvider = { mutableStateOf(ServerState(isRefreshing = false)) },
+                state = state,
                 onAction = {},
                 onNavigate = {},
                 uiEvent = MutableStateFlow(

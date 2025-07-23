@@ -70,10 +70,9 @@ fun DeleteAccountScreen(
     onNavigateUp: () -> Unit,
     onNavigate: (NavKey) -> Unit,
     uiEvent: Flow<UiEvent>,
-    stateProvider: () -> State<DeleteAccountState>,
+    state: State<DeleteAccountState>,
     onAction: (DeleteAccountAction) -> Unit
 ) {
-    val state = stateProvider()
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
