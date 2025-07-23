@@ -226,7 +226,7 @@ class ServerViewModel(
                 }
             }
         } else {
-            sendSnackbarEvent(stringProvider.get(SharedRes.strings.query_cannot_be_empty))
+            sendSnackbarEvent(stringProvider.get(SharedRes.strings.server_query_cannot_be_empty))
         }
     }
 

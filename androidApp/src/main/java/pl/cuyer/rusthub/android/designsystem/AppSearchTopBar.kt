@@ -103,10 +103,8 @@ fun RustSearchBarTopAppBar(
             searchBarState = searchBarState,
             textFieldState = textFieldState,
             onSearch = {
-                coroutineScope.launch {
-                    searchBarState.animateToCollapsed()
-                    onSearchTriggered()
-                }
+                onSearchTriggered()
+                coroutineScope.launch { searchBarState.animateToCollapsed() }
             },
             placeholder = { Text(stringResource(placeholderRes)) },
             leadingIcon = {
@@ -275,10 +273,8 @@ private fun SearchHistorySuggestions(
                     ElevatedCard(
                         onClick = {
                             textFieldState.setTextAndPlaceCursorAtEnd(item.query)
-                            coroutineScope.launch {
-                                searchBarState.animateToCollapsed()
-                                onSearchTriggered()
-                            }
+                            onSearchTriggered()
+                            coroutineScope.launch { searchBarState.animateToCollapsed() }
                         },
                         modifier = Modifier
                             .animateItem()

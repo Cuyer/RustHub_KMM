@@ -316,7 +316,8 @@
     <string name="email_not_confirmed">E-mail не подтверждён</string>
     <string name="resend">Отправить ещё раз</string>
     <string name="error_fetching_server_data">Ошибка при получении данных о сервере.</string>
-    <string name="query_cannot_be_empty">Введите имя сервера.</string>
+    <string name="server_query_cannot_be_empty">Введите имя сервера.</string>
+    <string name="item_query_cannot_be_empty">Введите название предмета.</string>
     <string name="error_network">Ошибка сети. Проверьте подключение.</string>
     <string name="offline_cached_servers_info">Нет сети. Отображаются кэшированные серверы.</string>
     <string name="offline">Нет подключения к интернету.</string>

@@ -318,7 +318,8 @@
     <string name="email_not_confirmed">Email not confirmed</string>
     <string name="resend">Resend</string>
     <string name="error_fetching_server_data">An error occurred while fetching data about the server.</string>
-    <string name="query_cannot_be_empty">Enter the server name.</string>
+    <string name="server_query_cannot_be_empty">Enter the server name.</string>
+    <string name="item_query_cannot_be_empty">Enter the item name.</string>
     <string name="error_network">Network error. Please check your connection.</string>
     <string name="offline_cached_servers_info">Network unavailable. Showing cached servers.</string>
     <string name="offline">No internet connection.</string>

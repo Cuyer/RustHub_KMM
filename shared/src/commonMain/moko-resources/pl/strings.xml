@@ -316,7 +316,8 @@
     <string name="email_not_confirmed">E-mail niepotwierdzony</string>
     <string name="resend">Wyślij ponownie</string>
     <string name="error_fetching_server_data">Błąd pobierania danych o serwerze.</string>
-    <string name="query_cannot_be_empty">Wpisz nazwę serwera.</string>
+    <string name="server_query_cannot_be_empty">Wpisz nazwę serwera.</string>
+    <string name="item_query_cannot_be_empty">Wpisz nazwę przedmiotu.</string>
     <string name="error_network">Błąd sieci. Sprawdź swoje połączenie.</string>
     <string name="offline_cached_servers_info">Brak sieci. Wyświetlana jest zapisana lista serwerów.</string>
     <string name="offline">Brak połączenia z internetem.</string>

@@ -316,7 +316,8 @@
     <string name="email_not_confirmed">E-mail non confirmé</string>
     <string name="resend">Renvoyer</string>
     <string name="error_fetching_server_data">Erreur lors de la récupération des données du serveur.</string>
-    <string name="query_cannot_be_empty">Veuillez saisir le nom du serveur.</string>
+    <string name="server_query_cannot_be_empty">Veuillez saisir le nom du serveur.</string>
+    <string name="item_query_cannot_be_empty">Entrez le nom de l'objet.</string>
     <string name="error_network">Erreur réseau. Veuillez vérifier votre connexion.</string>
     <string name="offline_cached_servers_info">Réseau indisponible. Affichage des serveurs en cache.</string>
     <string name="offline">Pas de connexion Internet.</string>
