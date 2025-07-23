@@ -52,6 +52,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.builtins.ListSerializer
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.theme.RustHubTheme
@@ -59,10 +60,10 @@ import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.features.server.ServerState
-import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.presentation.model.FilterCheckboxOption
 import pl.cuyer.rusthub.presentation.model.FilterDropdownOption
 import pl.cuyer.rusthub.presentation.model.FilterRangeOption
+import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.presentation.model.toDomain
 import pl.cuyer.rusthub.util.StringProvider
 
@@ -77,19 +78,71 @@ fun FilterBottomSheet(
     onAction: (ServerAction) -> Unit
 ) {
     val json = koinInject<Json>()
-    val filterUiSaver = remember {
-        Saver<FilterUi?, String>(
-            save = { it?.let { json.encodeToString(FilterUi.serializer(), it) } },
-            restore = { it.let { json.decodeFromString(FilterUi.serializer(), it) } }
+    val dropdownSaver = remember {
+        Saver<List<FilterDropdownOption>, String>(
+            save = {
+                json.encodeToString(
+                    ListSerializer(FilterDropdownOption.serializer()),
+                    it
+                )
+            },
+            restore = {
+                json.decodeFromString(
+                    ListSerializer(FilterDropdownOption.serializer()),
+                    it
+                )
+            }
         )
     }
-    var newFilters by rememberSaveable(stateSaver = filterUiSaver) {
-        mutableStateOf(state.value.filters)
+    val checkboxSaver = remember {
+        Saver<List<FilterCheckboxOption>, String>(
+            save = {
+                json.encodeToString(
+                    ListSerializer(FilterCheckboxOption.serializer()),
+                    it
+                )
+            },
+            restore = {
+                json.decodeFromString(
+                    ListSerializer(FilterCheckboxOption.serializer()),
+                    it
+                )
+            }
+        )
+    }
+    val rangeSaver = remember {
+        Saver<List<FilterRangeOption>, String>(
+            save = {
+                json.encodeToString(
+                    ListSerializer(FilterRangeOption.serializer()),
+                    it
+                )
+            },
+            restore = {
+                json.decodeFromString(
+                    ListSerializer(FilterRangeOption.serializer()),
+                    it
+                )
+            }
+        )
+    }
+
+    var lists by rememberSaveable(stateSaver = dropdownSaver) {
+        mutableStateOf(state.value.filters?.lists ?: emptyList())
+    }
+    var checkboxes by rememberSaveable(stateSaver = checkboxSaver) {
+        mutableStateOf(state.value.filters?.checkboxes ?: emptyList())
+    }
+    var ranges by rememberSaveable(stateSaver = rangeSaver) {
+        mutableStateOf(state.value.filters?.ranges ?: emptyList())
     }
 
     LaunchedEffect(state.value.filters) {
-        if (newFilters == null && state.value.filters?.lists?.isNotEmpty() == true) {
-            newFilters = state.value.filters
+        val filters = state.value.filters
+        if (lists.isEmpty() && filters?.lists?.isNotEmpty() == true) {
+            lists = filters.lists
+            checkboxes = filters.checkboxes
+            ranges = filters.ranges
         }
     }
 
@@ -151,19 +204,21 @@ fun FilterBottomSheet(
                             .fillMaxHeight(0.85f)
                             .verticalScroll(scrollState)
                     ) {
-                        newFilters?.let {
-                            FilterBottomSheetContent(
-                                filters = it,
-                                onFiltersChange = { newFilters = it }
-                            )
-                            Spacer(Modifier.height(spacing.medium))
-                            ButtonsSection(
-                                modifier = Modifier.fillMaxWidth(),
-                                onAction = onAction,
-                                onDismissAndRefresh = onDismissAndRefresh,
-                                filters = { it }
-                            )
-                        }
+                        FilterBottomSheetContent(
+                            lists = lists,
+                            onListsChange = { lists = it },
+                            checkboxes = checkboxes,
+                            onCheckboxesChange = { checkboxes = it },
+                            ranges = ranges,
+                            onRangesChange = { ranges = it }
+                        )
+                        Spacer(Modifier.height(spacing.medium))
+                        ButtonsSection(
+                            modifier = Modifier.fillMaxWidth(),
+                            onAction = onAction,
+                            onDismissAndRefresh = onDismissAndRefresh,
+                            filters = { FilterUi(lists, checkboxes, ranges) }
+                        )
                     }
                 }
             }
@@ -220,27 +275,29 @@ fun ButtonsSection(
 
 @Composable
 fun FilterBottomSheetContent(
-    modifier: Modifier = Modifier,
-    filters: FilterUi,
-    onFiltersChange: (FilterUi) -> Unit
+    lists: List<FilterDropdownOption>,
+    onListsChange: (List<FilterDropdownOption>) -> Unit,
+    checkboxes: List<FilterCheckboxOption>,
+    onCheckboxesChange: (List<FilterCheckboxOption>) -> Unit,
+    ranges: List<FilterRangeOption>,
+    onRangesChange: (List<FilterRangeOption>) -> Unit
 ) {
     Column(
-        modifier = modifier
-            .padding(spacing.medium),
+        modifier = Modifier.padding(spacing.medium),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
         DropdownFilters(
-            options = filters.lists,
-            onOptionsChange = { onFiltersChange(filters.copy(lists = it)) }
+            options = lists,
+            onOptionsChange = onListsChange
         )
         CheckboxFilters(
-            options = filters.checkboxes,
-            onOptionsChange = { onFiltersChange(filters.copy(checkboxes = it)) }
+            options = checkboxes,
+            onOptionsChange = onCheckboxesChange
         )
         RangeFilters(
-            options = filters.ranges,
-            onOptionsChange = { onFiltersChange(filters.copy(ranges = it)) }
+            options = ranges,
+            onOptionsChange = onRangesChange
         )
     }
 }
