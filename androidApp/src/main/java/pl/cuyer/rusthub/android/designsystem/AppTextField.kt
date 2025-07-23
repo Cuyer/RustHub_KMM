@@ -1,10 +1,6 @@
 package pl.cuyer.rusthub.android.designsystem
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.text.input.InputTransformation
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.maxLength
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,12 +31,13 @@ import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import pl.cuyer.rusthub.android.theme.RustHubTheme
+import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
 
 @Composable
 fun AppTextField(
     modifier: Modifier = Modifier,
-    textFieldState: TextFieldState,
+    value: String,
     labelText: String,
     placeholderText: String,
     keyboardType: KeyboardType,
@@ -49,6 +46,7 @@ fun AppTextField(
     imeAction: ImeAction,
     requestFocus: Boolean = false,
     onSubmit: () -> Unit = { },
+    onValueChange: (String) -> Unit = {},
     isError: Boolean = false,
     errorText: String? = null,
     maxLength: Int? = null
@@ -73,14 +71,17 @@ fun AppTextField(
         }
     }
 
-    val lengthTransformation: InputTransformation? =
-        remember(maxLength) { maxLength?.let { maxLength(it) } }
-
     OutlinedTextField(
         modifier = if (requestFocus) modifier
             .focusRequester(focusRequester) else modifier,
-        state = textFieldState,
-        inputTransformation = lengthTransformation,
+        value = value,
+        onValueChange = {
+            if (maxLength == null || it.length <= maxLength) {
+                onValueChange(it)
+            } else {
+                onValueChange(it.take(maxLength))
+            }
+        },
         singleLine = true,
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.None,
@@ -127,17 +128,17 @@ fun AppTextField(
 private fun AppTextFieldPreview() {
     RustHubTheme {
         Column(modifier = Modifier.fillMaxSize()) {
-            val state = rememberTextFieldState()
             AppTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                textFieldState = state,
                 labelText = "E-mail",
                 placeholderText = "Wpisz swój email",
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next,
-                requestFocus = false
+                requestFocus = false,
+                value = "",
+                onValueChange = {}
             )
         }
     }

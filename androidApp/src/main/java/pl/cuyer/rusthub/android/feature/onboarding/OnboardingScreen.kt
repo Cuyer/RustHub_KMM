@@ -59,8 +59,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -350,8 +348,6 @@ private fun OnboardingContentExpanded(
 @Composable
 private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> Unit) {
     val focusManager = LocalFocusManager.current
-    val emailState = rememberTextFieldState(state.email)
-    LaunchedEffect(state.email) { emailState.setTextAndPlaceCursorAtEnd(state.email) }
     Column(
         modifier = Modifier
             .imePadding()
@@ -365,15 +361,15 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         AppTextField(
-            textFieldState = emailState,
+            value = state.email,
+            onValueChange = { onAction(OnboardingAction.OnEmailChange(it)) },
             labelText = stringResource(SharedRes.strings.e_mail),
             placeholderText = stringResource(SharedRes.strings.enter_your_e_mail),
             keyboardType = KeyboardType.Email,
-            imeAction = if (emailState.text.isNotBlank()) ImeAction.Send else ImeAction.Done,
+            imeAction = if (state.email.isNotBlank()) ImeAction.Send else ImeAction.Done,
             isError = state.emailError != null,
             errorText = state.emailError,
             onSubmit = {
-                onAction(OnboardingAction.OnEmailChange(emailState.text))
                 onAction(OnboardingAction.OnContinueWithEmail)
             },
             modifier = Modifier.fillMaxWidth()
@@ -381,12 +377,11 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
         AppButton(
             onClick = {
                 focusManager.clearFocus()
-                onAction(OnboardingAction.OnEmailChange(emailState.text))
                 onAction(OnboardingAction.OnContinueWithEmail)
             },
             isLoading = state.isLoading,
             modifier = Modifier.fillMaxWidth(),
-            enabled = emailState.text.isNotBlank()
+            enabled = state.email.isNotBlank()
         ) { Text(stringResource(SharedRes.strings.continue_with_e_mail)) }
 
         Row(
