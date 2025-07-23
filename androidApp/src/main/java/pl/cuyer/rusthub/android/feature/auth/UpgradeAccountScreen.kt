@@ -120,9 +120,29 @@ fun UpgradeAccountScreen(
                     .clickable(interactionSource, null) { focusManager.clearFocus() }
             ) {
                 if (isTabletMode) {
-                    UpgradeScreenExpanded(state.value, onAction)
+                    UpgradeScreenExpanded(
+                        username = state.value.username,
+                        usernameError = state.value.usernameError,
+                        email = state.value.email,
+                        emailError = state.value.emailError,
+                        password = state.value.password,
+                        passwordError = state.value.passwordError,
+                        isLoading = state.value.isLoading,
+                        googleLoading = state.value.googleLoading,
+                        onAction = onAction
+                    )
                 } else {
-                    UpgradeScreenCompact(state.value, onAction)
+                    UpgradeScreenCompact(
+                        username = state.value.username,
+                        usernameError = state.value.usernameError,
+                        email = state.value.email,
+                        emailError = state.value.emailError,
+                        password = state.value.password,
+                        passwordError = state.value.passwordError,
+                        isLoading = state.value.isLoading,
+                        googleLoading = state.value.googleLoading,
+                        onAction = onAction
+                    )
                 }
             }
         }
@@ -130,7 +150,17 @@ fun UpgradeAccountScreen(
 }
 
 @Composable
-private fun UpgradeScreenCompact(state: UpgradeState, onAction: (UpgradeAction) -> Unit) {
+private fun UpgradeScreenCompact(
+    username: String,
+    usernameError: String?,
+    email: String,
+    emailError: String?,
+    password: String,
+    passwordError: String?,
+    isLoading: Boolean,
+    googleLoading: Boolean,
+    onAction: (UpgradeAction) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -139,13 +169,21 @@ private fun UpgradeScreenCompact(state: UpgradeState, onAction: (UpgradeAction) 
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
         UpgradeStaticContent()
-        UpgradeFields(state, onAction)
+        UpgradeFields(
+            username = username,
+            usernameError = usernameError,
+            email = email,
+            emailError = emailError,
+            password = password,
+            passwordError = passwordError,
+            onAction = onAction
+        )
         AppButton(
             onClick = { onAction(UpgradeAction.OnSubmit) },
-            isLoading = state.isLoading,
-            enabled = state.username.isNotBlank() &&
-                state.password.isNotBlank() &&
-                state.email.isNotBlank(),
+            isLoading = isLoading,
+            enabled = username.isNotBlank() &&
+                password.isNotBlank() &&
+                email.isNotBlank(),
             modifier = Modifier
                 .imePadding()
                 .fillMaxWidth()
@@ -165,7 +203,7 @@ private fun UpgradeScreenCompact(state: UpgradeState, onAction: (UpgradeAction) 
             contentDescription = stringResource(SharedRes.strings.google_logo),
             text = stringResource(SharedRes.strings.upgrade_with_google),
             modifier = Modifier.fillMaxWidth(),
-            isLoading = state.googleLoading,
+            isLoading = googleLoading,
             backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
             contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
         ) { onAction(UpgradeAction.OnGoogleLogin) }
@@ -173,7 +211,17 @@ private fun UpgradeScreenCompact(state: UpgradeState, onAction: (UpgradeAction) 
 }
 
 @Composable
-private fun UpgradeScreenExpanded(state: UpgradeState, onAction: (UpgradeAction) -> Unit) {
+private fun UpgradeScreenExpanded(
+    username: String,
+    usernameError: String?,
+    email: String,
+    emailError: String?,
+    password: String,
+    passwordError: String?,
+    isLoading: Boolean,
+    googleLoading: Boolean,
+    onAction: (UpgradeAction) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxSize()
@@ -187,13 +235,21 @@ private fun UpgradeScreenExpanded(state: UpgradeState, onAction: (UpgradeAction)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(spacing.small)
         ) {
-            UpgradeFields(state, onAction)
+            UpgradeFields(
+                username = username,
+                usernameError = usernameError,
+                email = email,
+                emailError = emailError,
+                password = password,
+                passwordError = passwordError,
+                onAction = onAction
+            )
             AppButton(
                 onClick = { onAction(UpgradeAction.OnSubmit) },
-                isLoading = state.isLoading,
-                enabled = state.username.isNotBlank() &&
-                    state.password.isNotBlank() &&
-                    state.email.isNotBlank(),
+                isLoading = isLoading,
+                enabled = username.isNotBlank() &&
+                    password.isNotBlank() &&
+                    email.isNotBlank(),
                 modifier = Modifier
                     .imePadding()
                     .fillMaxWidth()
@@ -213,7 +269,7 @@ private fun UpgradeScreenExpanded(state: UpgradeState, onAction: (UpgradeAction)
                 contentDescription = stringResource(SharedRes.strings.google_logo),
                 text = stringResource(SharedRes.strings.upgrade_with_google),
                 modifier = Modifier.fillMaxWidth(),
-                isLoading = state.googleLoading,
+                isLoading = googleLoading,
                 backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
                 contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
             ) { onAction(UpgradeAction.OnGoogleLogin) }
@@ -238,44 +294,52 @@ private fun UpgradeStaticContent(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun UpgradeFields(state: UpgradeState, onAction: (UpgradeAction) -> Unit) {
+private fun UpgradeFields(
+    username: String,
+    usernameError: String?,
+    email: String,
+    emailError: String?,
+    password: String,
+    passwordError: String?,
+    onAction: (UpgradeAction) -> Unit
+) {
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(spacing.small)) {
         AppTextField(
             requestFocus = true,
-            value = state.username,
+            value = username,
             onValueChange = { onAction(UpgradeAction.OnUsernameChange(it)) },
             labelText = stringResource(SharedRes.strings.username),
             placeholderText = stringResource(SharedRes.strings.enter_username),
-            isError = state.usernameError != null,
-            errorText = state.usernameError,
+            isError = usernameError != null,
+            errorText = usernameError,
             modifier = Modifier.fillMaxWidth(),
             imeAction = ImeAction.Next,
             keyboardType = KeyboardType.Text
         )
         AppTextField(
-            value = state.email,
+            value = email,
             onValueChange = { onAction(UpgradeAction.OnEmailChange(it)) },
             labelText = stringResource(SharedRes.strings.e_mail),
             placeholderText = stringResource(SharedRes.strings.enter_your_e_mail),
-            isError = state.emailError != null,
-            errorText = state.emailError,
+            isError = emailError != null,
+            errorText = emailError,
             modifier = Modifier.fillMaxWidth(),
             imeAction = ImeAction.Next,
             keyboardType = KeyboardType.Email
         )
         AppSecureTextField(
-            value = state.password,
+            value = password,
             onValueChange = { onAction(UpgradeAction.OnPasswordChange(it)) },
             labelText = stringResource(SharedRes.strings.password),
             placeholderText = stringResource(SharedRes.strings.enter_password),
             onSubmit = { onAction(UpgradeAction.OnSubmit) },
-            isError = state.passwordError != null,
-            errorText = state.passwordError,
+            isError = passwordError != null,
+            errorText = passwordError,
             modifier = Modifier.fillMaxWidth(),
             imeAction = if (
-                state.username.isNotBlank() &&
-                    state.email.isNotBlank() &&
-                    state.password.isNotBlank()
+                username.isNotBlank() &&
+                    email.isNotBlank() &&
+                    password.isNotBlank()
             ) ImeAction.Send else ImeAction.Done
         )
     }
