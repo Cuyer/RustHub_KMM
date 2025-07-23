@@ -38,6 +38,7 @@ import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -139,15 +140,19 @@ fun ItemDetailsScreen(
                     selectedTabIndex = pagerState.currentPage
                 ) {
                     availablePages.forEachIndexed { index, (page, _) ->
-                        Tab(
-                            selected = pagerState.currentPage == index,
-                            onClick = {
-                                scope.launch {
-                                    pagerState.animateScrollToPage(index)
-                                }
-                            },
-                            text = { Text(stringResource(page.title)) }
-                        )
+                        key(
+                            page.title
+                        ) {
+                            Tab(
+                                selected = pagerState.currentPage == index,
+                                onClick = {
+                                    scope.launch {
+                                        pagerState.animateScrollToPage(index)
+                                    }
+                                },
+                                text = { Text(stringResource(page.title)) }
+                            )
+                        }
                     }
                 }
             }
