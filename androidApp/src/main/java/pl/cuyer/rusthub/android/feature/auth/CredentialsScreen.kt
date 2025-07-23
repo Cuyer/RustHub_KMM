@@ -36,12 +36,8 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -234,10 +230,6 @@ private fun CredentialsScreenCompact(
     onAction: (CredentialsAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-    val usernameState = rememberTextFieldState(username)
-    LaunchedEffect(username) { usernameState.setTextAndPlaceCursorAtEnd(username) }
-    val passwordState = rememberTextFieldState(password)
-    LaunchedEffect(password) { passwordState.setTextAndPlaceCursorAtEnd(password) }
 
     Column(
         modifier = Modifier
@@ -255,8 +247,8 @@ private fun CredentialsScreenCompact(
             userExists = userExists,
             provider = provider,
             googleLoading = googleLoading,
-            usernameState = usernameState,
-            passwordState = passwordState,
+            username = username,
+            password = password,
             passwordError = passwordError,
             usernameError = usernameError,
             onAction = onAction
@@ -265,16 +257,12 @@ private fun CredentialsScreenCompact(
             AppButton(
                 onClick = {
                     focusManager.clearFocus()
-                    if (!userExists) {
-                        onAction(CredentialsAction.OnUsernameChange(usernameState.text.toString()))
-                    }
-                    onAction(CredentialsAction.OnPasswordChange(passwordState.text.toString()))
                     onAction(CredentialsAction.OnSubmit)
                 },
                 isLoading = isLoading,
                 enabled = when (userExists) {
-                    true -> passwordState.text.isNotBlank()
-                    false -> usernameState.text.isNotBlank() && passwordState.text.isNotBlank()
+                    true -> password.isNotBlank()
+                    false -> username.isNotBlank() && password.isNotBlank()
                 },
                 modifier = Modifier
                     .imePadding()
@@ -298,10 +286,6 @@ private fun CredentialsScreenExpanded(
     onAction: (CredentialsAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-    val usernameState = rememberTextFieldState(username)
-    LaunchedEffect(username) { usernameState.setTextAndPlaceCursorAtEnd(username) }
-    val passwordState = rememberTextFieldState(password)
-    LaunchedEffect(password) { passwordState.setTextAndPlaceCursorAtEnd(password) }
 
     Row(
         modifier = Modifier
@@ -326,8 +310,8 @@ private fun CredentialsScreenExpanded(
                 userExists = userExists,
                 provider = provider,
                 googleLoading = googleLoading,
-                usernameState = usernameState,
-                passwordState = passwordState,
+                username = username,
+                password = password,
                 passwordError = passwordError,
                 usernameError = usernameError,
                 onAction = onAction
@@ -336,16 +320,12 @@ private fun CredentialsScreenExpanded(
                 AppButton(
                     onClick = {
                         focusManager.clearFocus()
-                        if (!userExists) {
-                            onAction(CredentialsAction.OnUsernameChange(usernameState.text.toString()))
-                        }
-                        onAction(CredentialsAction.OnPasswordChange(passwordState.text.toString()))
                         onAction(CredentialsAction.OnSubmit)
                     },
                     isLoading = isLoading,
                     enabled = when (userExists) {
-                        true -> passwordState.text.isNotBlank()
-                        false -> usernameState.text.isNotBlank() && passwordState.text.isNotBlank()
+                        true -> password.isNotBlank()
+                        false -> username.isNotBlank() && password.isNotBlank()
                     },
                     modifier = Modifier
                         .imePadding()
@@ -361,8 +341,8 @@ private fun CredentialsFields(
     userExists: Boolean,
     provider: AuthProvider?,
     googleLoading: Boolean,
-    usernameState: TextFieldState,
-    passwordState: TextFieldState,
+    username: String,
+    password: String,
     passwordError: String?,
     usernameError: String?,
     onAction: (CredentialsAction) -> Unit
@@ -392,7 +372,8 @@ private fun CredentialsFields(
         if (!userExists) {
             AppTextField(
                 requestFocus = true,
-                textFieldState = usernameState,
+                value = username,
+                onValueChange = { onAction(CredentialsAction.OnUsernameChange(it)) },
                 labelText = stringResource(SharedRes.strings.username),
                 placeholderText = stringResource(SharedRes.strings.enter_your_username),
                 isError = usernameError != null,
@@ -405,22 +386,17 @@ private fun CredentialsFields(
         if (provider != AuthProvider.GOOGLE) {
             AppSecureTextField(
                 requestFocus = userExists,
-                textFieldState = passwordState,
+                value = password,
+                onValueChange = { onAction(CredentialsAction.OnPasswordChange(it)) },
                 labelText = stringResource(SharedRes.strings.password),
                 placeholderText = stringResource(SharedRes.strings.enter_your_password),
-                onSubmit = {
-                    if (!userExists) {
-                        onAction(CredentialsAction.OnUsernameChange(usernameState.text.toString()))
-                    }
-                    onAction(CredentialsAction.OnPasswordChange(passwordState.text.toString()))
-                    onAction(CredentialsAction.OnSubmit)
-                },
+                onSubmit = { onAction(CredentialsAction.OnSubmit) },
                 isError = passwordError != null,
                 errorText = passwordError,
                 modifier = Modifier.fillMaxWidth(),
                 imeAction = when (userExists) {
-                    true -> if (passwordState.text.isNotBlank()) ImeAction.Send else ImeAction.Done
-                    false -> if (usernameState.text.isNotBlank() && passwordState.text.isNotBlank()) ImeAction.Send else ImeAction.Done
+                    true -> if (password.isNotBlank()) ImeAction.Send else ImeAction.Done
+                    false -> if (username.isNotBlank() && password.isNotBlank()) ImeAction.Send else ImeAction.Done
                 }
             )
             if (userExists) {
