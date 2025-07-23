@@ -188,7 +188,51 @@ fun RustSearchBarTopAppBar(
         inputField = inputField
     )
 
-    val suggestions: @Composable () -> Unit = {
+    if (!isTabletMode) {
+        ExpandedFullScreenSearchBar(
+            state = searchBarState,
+            inputField = inputField
+        ) {
+            SearchHistorySuggestions(
+                searchQueryUi = searchQueryUi,
+                isLoadingSearchHistory = isLoadingSearchHistory,
+                textFieldState = textFieldState,
+                searchBarState = searchBarState,
+                onDelete = onDelete,
+                onSearchTriggered = onSearchTriggered
+            )
+        }
+    } else {
+        ExpandedDockedSearchBar(
+            state = searchBarState,
+            inputField = inputField
+        ) {
+            SearchHistorySuggestions(
+                searchQueryUi = searchQueryUi,
+                isLoadingSearchHistory = isLoadingSearchHistory,
+                textFieldState = textFieldState,
+                searchBarState = searchBarState,
+                onDelete = onDelete,
+                onSearchTriggered = onSearchTriggered
+            )
+        }
+
+    }
+}
+
+@Composable
+private fun SearchHistorySuggestions(
+    searchQueryUi: List<SearchQueryUi>,
+    isLoadingSearchHistory: Boolean,
+    textFieldState: TextFieldState,
+    searchBarState: SearchBarState,
+    onDelete: (String) -> Unit,
+    onSearchTriggered: () -> Unit,
+) {
+    val coroutineScope = rememberCoroutineScope()
+    if (isLoadingSearchHistory) {
+        SearchHistoryShimmer(modifier = Modifier.fillMaxWidth())
+    } else {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(spacing.xxmedium)
@@ -272,30 +316,6 @@ fun RustSearchBarTopAppBar(
                         }
                     }
                 }
-            }
-        }
-    }
-
-    if (!isTabletMode) {
-        ExpandedFullScreenSearchBar(
-            state = searchBarState,
-            inputField = inputField
-        ) {
-            if (isLoadingSearchHistory) {
-                SearchHistoryShimmer(modifier = Modifier.fillMaxWidth())
-            } else {
-                suggestions()
-            }
-        }
-    } else {
-        ExpandedDockedSearchBar(
-            state = searchBarState,
-            inputField = inputField
-        ) {
-            if (isLoadingSearchHistory) {
-                SearchHistoryShimmer(modifier = Modifier.fillMaxWidth())
-            } else {
-                suggestions()
             }
         }
     }
