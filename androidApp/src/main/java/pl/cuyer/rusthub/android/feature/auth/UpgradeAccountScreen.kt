@@ -37,6 +37,8 @@ import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -304,10 +306,11 @@ private fun UpgradeFields(
     onAction: (UpgradeAction) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(spacing.small)) {
+        val usernameState = rememberTextFieldState(username)
+        LaunchedEffect(username) { usernameState.setTextAndPlaceCursorAtEnd(username) }
         AppTextField(
             requestFocus = true,
-            value = username,
-            onValueChange = { onAction(UpgradeAction.OnUsernameChange(it)) },
+            textFieldState = usernameState,
             labelText = stringResource(SharedRes.strings.username),
             placeholderText = stringResource(SharedRes.strings.enter_username),
             isError = usernameError != null,
@@ -316,9 +319,10 @@ private fun UpgradeFields(
             imeAction = ImeAction.Next,
             keyboardType = KeyboardType.Text
         )
+        val emailState = rememberTextFieldState(email)
+        LaunchedEffect(email) { emailState.setTextAndPlaceCursorAtEnd(email) }
         AppTextField(
-            value = email,
-            onValueChange = { onAction(UpgradeAction.OnEmailChange(it)) },
+            textFieldState = emailState,
             labelText = stringResource(SharedRes.strings.e_mail),
             placeholderText = stringResource(SharedRes.strings.enter_your_e_mail),
             isError = emailError != null,
@@ -327,19 +331,25 @@ private fun UpgradeFields(
             imeAction = ImeAction.Next,
             keyboardType = KeyboardType.Email
         )
+        val passwordState = rememberTextFieldState(password)
+        LaunchedEffect(password) { passwordState.setTextAndPlaceCursorAtEnd(password) }
         AppSecureTextField(
-            value = password,
-            onValueChange = { onAction(UpgradeAction.OnPasswordChange(it)) },
+            textFieldState = passwordState,
             labelText = stringResource(SharedRes.strings.password),
             placeholderText = stringResource(SharedRes.strings.enter_password),
-            onSubmit = { onAction(UpgradeAction.OnSubmit) },
+            onSubmit = {
+                onAction(UpgradeAction.OnUsernameChange(usernameState.text))
+                onAction(UpgradeAction.OnEmailChange(emailState.text))
+                onAction(UpgradeAction.OnPasswordChange(passwordState.text))
+                onAction(UpgradeAction.OnSubmit)
+            },
             isError = passwordError != null,
             errorText = passwordError,
             modifier = Modifier.fillMaxWidth(),
             imeAction = if (
-                username.isNotBlank() &&
-                    email.isNotBlank() &&
-                    password.isNotBlank()
+                usernameState.text.isNotBlank() &&
+                    emailState.text.isNotBlank() &&
+                    passwordState.text.isNotBlank()
             ) ImeAction.Send else ImeAction.Done
         )
     }

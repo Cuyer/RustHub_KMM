@@ -35,6 +35,8 @@ import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -224,15 +226,19 @@ private fun ResetPasswordField(
     emailError: String?,
     onAction: (ResetPasswordAction) -> Unit
 ) {
+    val state = rememberTextFieldState(email)
+    LaunchedEffect(email) { state.setTextAndPlaceCursorAtEnd(email) }
     AppTextField(
         requestFocus = true,
-        value = email,
-        onValueChange = { onAction(ResetPasswordAction.OnEmailChange(it)) },
+        textFieldState = state,
         labelText = stringResource(SharedRes.strings.e_mail),
         placeholderText = stringResource(SharedRes.strings.enter_your_e_mail),
         keyboardType = KeyboardType.Email,
-        imeAction = if (email.isNotBlank()) ImeAction.Send else ImeAction.Done,
-        onSubmit = { onAction(ResetPasswordAction.OnSend) },
+        imeAction = if (state.text.isNotBlank()) ImeAction.Send else ImeAction.Done,
+        onSubmit = {
+            onAction(ResetPasswordAction.OnEmailChange(state.text))
+            onAction(ResetPasswordAction.OnSend)
+        },
         isError = emailError != null,
         errorText = emailError,
         modifier = Modifier.fillMaxWidth()

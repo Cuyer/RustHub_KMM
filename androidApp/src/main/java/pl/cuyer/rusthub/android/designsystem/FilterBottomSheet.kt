@@ -16,6 +16,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.maxLength
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ButtonDefaults
@@ -355,20 +357,24 @@ private fun RangeFilters(
     onOptionsChange: (List<FilterRangeOption>) -> Unit
 ) {
     options.forEachIndexed { index, option ->
+        val state = rememberTextFieldState(option.value?.toString() ?: "")
+        LaunchedEffect(option.value) {
+            state.setTextAndPlaceCursorAtEnd(option.value?.toString() ?: "")
+        }
+        LaunchedEffect(state.text) {
+            val updated = options.toMutableList()
+            val newValue = state.text.toIntOrNull()
+            updated[index] = option.copy(value = newValue)
+            onOptionsChange(updated)
+        }
         AppTextField(
             modifier = Modifier,
-            value = option.value?.toString() ?: "",
+            textFieldState = state,
             labelText = option.label,
             maxLength = option.max.toString().length,
             placeholderText = stringResource(SharedRes.strings.enter_a_number),
             keyboardType = KeyboardType.NumberPassword,
-            imeAction = ImeAction.Done,
-            onValueChange = { text ->
-                val updated = options.toMutableList()
-                val newValue = text.toIntOrNull()
-                updated[index] = option.copy(value = newValue)
-                onOptionsChange(updated)
-            }
+            imeAction = ImeAction.Done
         )
     }
 }

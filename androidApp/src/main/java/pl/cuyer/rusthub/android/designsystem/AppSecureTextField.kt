@@ -4,6 +4,8 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -23,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -39,12 +40,11 @@ import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 @Composable
 fun AppSecureTextField(
     modifier: Modifier = Modifier,
-    value: String,
+    textFieldState: TextFieldState,
     labelText: String,
     placeholderText: String,
     onSubmit: () -> Unit,
     imeAction: ImeAction,
-    onValueChange: (String) -> Unit = {},
     isError: Boolean = false,
     errorText: String? = null,
     requestFocus: Boolean = false
@@ -71,8 +71,7 @@ fun AppSecureTextField(
     OutlinedTextField(
         modifier = if (requestFocus) modifier
             .focusRequester(focusRequester) else modifier,
-        value = value,
-        onValueChange = onValueChange,
+        state = textFieldState,
         readOnly = false,
         singleLine = true,
         keyboardOptions = KeyboardOptions(
@@ -90,7 +89,7 @@ fun AppSecureTextField(
             }
         ),
         trailingIcon = {
-            Crossfade(targetState = value.isNotEmpty()) { hasText ->
+            Crossfade(targetState = textFieldState.text.isNotEmpty()) { hasText ->
                 if (hasText) {
                     IconButton(
                         onClick = { passwordVisible = !passwordVisible },
