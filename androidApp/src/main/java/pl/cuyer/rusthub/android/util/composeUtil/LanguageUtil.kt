@@ -11,18 +11,6 @@ import androidx.core.os.LocaleListCompat
 import pl.cuyer.rusthub.domain.model.Language
 import java.util.Locale
 
-fun setLanguage(language: Language) {
-    val localeTag = when (language) {
-        Language.ENGLISH -> "en"
-        Language.POLISH -> "pl"
-        Language.GERMAN -> "de"
-        Language.FRENCH -> "fr"
-        Language.RUSSIAN -> "ru"
-    }
-    val locales = LocaleListCompat.forLanguageTags(localeTag)
-    AppCompatDelegate.setApplicationLocales(locales)
-}
-
 @Composable
 fun rememberCurrentLanguage(): State<Language> {
     val configuration = LocalConfiguration.current // recomposes on locale/config changes

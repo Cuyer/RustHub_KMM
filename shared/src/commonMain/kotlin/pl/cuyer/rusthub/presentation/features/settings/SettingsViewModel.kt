@@ -49,6 +49,7 @@ import pl.cuyer.rusthub.util.formatExpiration
 import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.domain.model.ItemSyncState
+import pl.cuyer.rusthub.util.updateAppLanguage
 
 class SettingsViewModel(
     private val logoutUserUseCase: LogoutUserUseCase,
@@ -207,6 +208,7 @@ class SettingsViewModel(
 
     private fun changeLanguage(language: Language) {
         coroutineScope.launch {
+            updateAppLanguage(language)
             itemSyncDataSource.setState(ItemSyncState.PENDING)
             itemsScheduler.startNow()
         }
