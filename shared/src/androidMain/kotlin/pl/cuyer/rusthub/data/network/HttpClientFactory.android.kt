@@ -31,6 +31,7 @@ import pl.cuyer.rusthub.data.network.auth.model.RefreshRequest
 import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
 import pl.cuyer.rusthub.data.network.AppCheckPlugin
+import pl.cuyer.rusthub.data.network.ForbiddenResponsePlugin
 import pl.cuyer.rusthub.util.AppCheckTokenProvider
 import pl.cuyer.rusthub.util.TokenRefresher
 import org.koin.core.component.KoinComponent
@@ -118,6 +119,10 @@ actual class HttpClientFactory actual constructor(
 
             install(AppCheckPlugin) {
                 provider = appCheckTokenProvider
+            }
+
+            install(ForbiddenResponsePlugin) {
+                authDataSource = this@HttpClientFactory.authDataSource
             }
 
             install(HttpRequestRetry) {
