@@ -223,15 +223,12 @@ fun ServerScreen(
                 .padding(innerPadding)
         ) {
             HandlePagingItems(
-                items = { pagedList }
-            ) {
-                onRefresh {
+                items = { pagedList },
+                onRefresh = {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(spacing.medium)
                     ) {
-                        items(
-                            count = 6
-                        ) {
+                        items(6) {
                             ServerListItemShimmer(
                                 modifier = Modifier
                                     .animateItem()
@@ -239,8 +236,8 @@ fun ServerScreen(
                             )
                         }
                     }
-                }
-                onEmpty {
+                },
+                onEmpty = {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -249,8 +246,7 @@ fun ServerScreen(
                         item {
                             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                 Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
+                                    modifier = Modifier.fillMaxWidth(),
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.Center
                                 ) {
@@ -274,8 +270,8 @@ fun ServerScreen(
                             }
                         }
                     }
-                }
-                onError { error ->
+                },
+                onError = { error ->
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -284,8 +280,7 @@ fun ServerScreen(
                         item {
                             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                 Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
+                                    modifier = Modifier.fillMaxWidth(),
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.Center
                                 ) {
@@ -304,13 +299,9 @@ fun ServerScreen(
                             }
                         }
                     }
-                    onAction(
-                        ServerAction.OnError(
-                            error
-                        )
-                    )
+                    onAction(ServerAction.OnError(error))
                 }
-                onSuccess {
+            ) {
                     LazyColumn(
                         state = lazyListState,
                         verticalArrangement = Arrangement.spacedBy(spacing.medium),
