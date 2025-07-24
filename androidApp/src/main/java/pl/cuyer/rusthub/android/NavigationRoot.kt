@@ -254,7 +254,8 @@ private fun AppScaffold(
                             uiEvent = viewModel.uiEvent,
                             onAction = viewModel::onAction,
                             onNavigate = { dest ->
-                                if (dest is ServerList || dest is ConfirmEmail) backStack.clear()
+                                if (dest is ServerList) backStack.clear()
+                                if (dest is ConfirmEmail) backStack.removeLastOrNull()
                                 backStack.add(dest)
                             },
                             onNavigateUp = {
