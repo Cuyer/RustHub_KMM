@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -139,33 +140,19 @@ fun CredentialsScreen(
                         indication = null
                     ) { focusManager.clearFocus() }
             ) {
-                if (isTabletMode) {
-                    CredentialsScreenExpanded(
-                        email = { state.value.email },
-                        userExists = { state.value.userExists },
-                        provider = { state.value.provider },
-                        googleLoading = { state.value.googleLoading },
-                        username = { state.value.username },
-                        password = { state.value.password },
-                        passwordError = { state.value.passwordError },
-                        usernameError = { state.value.usernameError },
-                        isLoading = { state.value.isLoading },
-                        onAction = onAction
-                    )
-                } else {
-                    CredentialsScreenCompact(
-                        email = { state.value.email },
-                        userExists = { state.value.userExists },
-                        provider = { state.value.provider },
-                        googleLoading = { state.value.googleLoading },
-                        username = { state.value.username },
-                        password = { state.value.password },
-                        passwordError = { state.value.passwordError },
-                        usernameError = { state.value.usernameError },
-                        isLoading = { state.value.isLoading },
-                        onAction = onAction
-                    )
-                }
+                CredentialsContent(
+                    isExpanded = isTabletMode,
+                    email = { state.value.email },
+                    userExists = { state.value.userExists },
+                    provider = { state.value.provider },
+                    googleLoading = { state.value.googleLoading },
+                    username = { state.value.username },
+                    password = { state.value.password },
+                    passwordError = { state.value.passwordError },
+                    usernameError = { state.value.usernameError },
+                    isLoading = { state.value.isLoading },
+                    onAction = onAction
+                )
             }
         }
     }
@@ -223,7 +210,22 @@ private fun CredentialsStaticContent(
 }
 
 @Composable
-private fun CredentialsScreenCompact(
+private fun rememberTextFieldWithListener(
+    value: String,
+    onValueChange: (String) -> Unit,
+): TextFieldState {
+    val state = rememberTextFieldState(value)
+    LaunchedEffect(value) { state.setTextAndPlaceCursorAtEnd(value) }
+    LaunchedEffect(state) {
+        snapshotFlow { state.text }
+            .collect { typed -> onValueChange(typed.toString()) }
+    }
+    return state
+}
+
+@Composable
+private fun CredentialsContent(
+    isExpanded: Boolean,
     email: () -> String,
     userExists: () -> Boolean,
     provider: () -> AuthProvider?,
@@ -233,40 +235,24 @@ private fun CredentialsScreenCompact(
     passwordError: () -> String? = { null },
     usernameError: () -> String? = { null },
     isLoading: () -> Boolean,
-    onAction: (CredentialsAction) -> Unit
+    onAction: (CredentialsAction) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
-    val usernameState = rememberTextFieldState(username())
-    LaunchedEffect(username()) { usernameState.setTextAndPlaceCursorAtEnd(username()) }
-    val passwordState = rememberTextFieldState(password())
-    LaunchedEffect(password()) { passwordState.setTextAndPlaceCursorAtEnd(password()) }
-
-    LaunchedEffect(usernameState) {
-        snapshotFlow { usernameState.text }
-            .collect { typed ->
-                onAction(CredentialsAction.OnUsernameChange(typed.toString()))
-            }
+    val usernameState = rememberTextFieldWithListener(username()) {
+        onAction(CredentialsAction.OnUsernameChange(it))
+    }
+    val passwordState = rememberTextFieldWithListener(password()) {
+        onAction(CredentialsAction.OnPasswordChange(it))
     }
 
-    LaunchedEffect(passwordState) {
-        snapshotFlow { passwordState.text }
-            .collect { typed ->
-                onAction(CredentialsAction.OnPasswordChange(typed.toString()))
-            }
+    val buttonEnabled: () -> Boolean = {
+        when (userExists()) {
+            true -> passwordState.text.isNotBlank()
+            false -> usernameState.text.isNotBlank() && passwordState.text.isNotBlank()
+        }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(spacing.medium),
-        verticalArrangement = Arrangement.spacedBy(spacing.small)
-    ) {
-        CredentialsStaticContent(
-            email = email(),
-            userExists = userExists(),
-            provider = provider()
-        )
+    val fields: @Composable ColumnScope.() -> Unit = {
         CredentialsFields(
             userExists = userExists,
             provider = provider,
@@ -276,7 +262,7 @@ private fun CredentialsScreenCompact(
             passwordError = passwordError,
             usernameError = usernameError,
             onAction = onAction,
-            focusManager = focusManager
+            focusManager = focusManager,
         )
         if (provider() != AuthProvider.GOOGLE) {
             AppButton(
@@ -285,101 +271,49 @@ private fun CredentialsScreenCompact(
                     onAction(CredentialsAction.OnSubmit)
                 },
                 isLoading = isLoading,
-                enabled = {
-                    when (userExists()) {
-                        true -> passwordState.text.isNotBlank()
-                        false -> usernameState.text.isNotBlank() && passwordState.text.isNotBlank()
-                    }
-                },
+                enabled = buttonEnabled,
                 modifier = Modifier
                     .imePadding()
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
             ) { Text(stringResource(SharedRes.strings.continue_further)) }
         }
     }
-}
 
-@Composable
-private fun CredentialsScreenExpanded(
-    email: () -> String,
-    userExists: () -> Boolean,
-    provider: () -> AuthProvider?,
-    googleLoading: () -> Boolean,
-    username: () -> String,
-    password: () -> String,
-    passwordError: () -> String? = { null },
-    usernameError: () -> String? = { null },
-    isLoading: () -> Boolean,
-    onAction: (CredentialsAction) -> Unit
-) {
-    val focusManager = LocalFocusManager.current
-    val usernameState = rememberTextFieldState(username())
-    LaunchedEffect(username()) { usernameState.setTextAndPlaceCursorAtEnd(username()) }
-    val passwordState = rememberTextFieldState(password())
-    LaunchedEffect(password()) { passwordState.setTextAndPlaceCursorAtEnd(password()) }
-
-    LaunchedEffect(usernameState) {
-        snapshotFlow { usernameState.text }
-            .collect { typed ->
-                onAction(CredentialsAction.OnUsernameChange(typed.toString()))
-            }
-    }
-
-    LaunchedEffect(passwordState) {
-        snapshotFlow { passwordState.text }
-            .collect { typed ->
-                onAction(CredentialsAction.OnPasswordChange(typed.toString()))
-            }
-    }
-
-    Row(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(spacing.medium),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        CredentialsStaticContent(
-            modifier = Modifier.weight(1f),
-            email = email(),
-            userExists = userExists(),
-            provider = provider()
-        )
-
+    if (isExpanded) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(spacing.medium),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            CredentialsStaticContent(
+                modifier = Modifier.weight(1f),
+                email = email(),
+                userExists = userExists(),
+                provider = provider(),
+            )
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(spacing.small),
+                content = fields,
+            )
+        }
+    } else {
         Column(
             modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(spacing.small)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(spacing.small),
         ) {
-            CredentialsFields(
-                userExists = userExists,
-                provider = provider,
-                googleLoading = googleLoading,
-                usernameState = usernameState,
-                passwordState = passwordState,
-                passwordError = passwordError,
-                usernameError = usernameError,
-                onAction = onAction,
-                focusManager = focusManager
+            CredentialsStaticContent(
+                email = email(),
+                userExists = userExists(),
+                provider = provider(),
             )
-            if (provider() != AuthProvider.GOOGLE) {
-                AppButton(
-                    onClick = {
-                        focusManager.clearFocus()
-                        onAction(CredentialsAction.OnSubmit)
-                    },
-                    isLoading = isLoading,
-                    enabled = {
-                        when (userExists()) {
-                            true -> passwordState.text.isNotBlank()
-                            false -> usernameState.text.isNotBlank() && passwordState.text.isNotBlank()
-                        }
-                    },
-                    modifier = Modifier
-                        .imePadding()
-                        .fillMaxWidth()
-                ) { Text(stringResource(SharedRes.strings.continue_further)) }
-            }
+            fields()
         }
     }
 }
