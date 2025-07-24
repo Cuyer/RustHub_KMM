@@ -25,8 +25,8 @@ import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
-import pl.cuyer.rusthub.presentation.user.UserEvent
-import pl.cuyer.rusthub.presentation.user.UserEventController
+import pl.cuyer.rusthub.common.user.UserEvent
+import pl.cuyer.rusthub.common.user.UserEventController
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.util.validator.PasswordValidator

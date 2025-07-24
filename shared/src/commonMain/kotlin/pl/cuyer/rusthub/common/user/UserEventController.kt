@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.presentation.user
+package pl.cuyer.rusthub.common.user
 
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED

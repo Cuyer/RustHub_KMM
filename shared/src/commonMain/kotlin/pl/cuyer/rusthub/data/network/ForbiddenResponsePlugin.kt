@@ -4,8 +4,8 @@ import io.github.aakira.napier.Napier
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.http.HttpStatusCode
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
-import pl.cuyer.rusthub.presentation.user.UserEvent
-import pl.cuyer.rusthub.presentation.user.UserEventController
+import pl.cuyer.rusthub.common.user.UserEvent
+import pl.cuyer.rusthub.common.user.UserEventController
 
 class ForbiddenResponsePluginConfig {
     lateinit var authDataSource: AuthDataSource
