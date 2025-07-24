@@ -169,8 +169,8 @@ private fun ChangePasswordScreenCompact(
         ChangePasswordFields(
             oldPasswordState = oldState,
             newPasswordState = newState,
-            oldPasswordError = oldPasswordError(),
-            newPasswordError = newPasswordError(),
+            oldPasswordError = oldPasswordError,
+            newPasswordError = newPasswordError,
             onAction = onAction,
             focusManager = focusManager
         )
@@ -219,8 +219,8 @@ private fun ChangePasswordScreenExpanded(
             ChangePasswordFields(
                 oldPasswordState = oldState,
                 newPasswordState = newState,
-                oldPasswordError = oldPasswordError(),
-                newPasswordError = newPasswordError(),
+                oldPasswordError = oldPasswordError,
+                newPasswordError = newPasswordError,
                 onAction = onAction,
                 focusManager = focusManager
             )
@@ -260,8 +260,8 @@ private fun ChangePasswordStaticContent(modifier: Modifier = Modifier) {
 private fun ChangePasswordFields(
     oldPasswordState: TextFieldState,
     newPasswordState: TextFieldState,
-    oldPasswordError: String?,
-    newPasswordError: String?,
+    oldPasswordError: () -> String?,
+    newPasswordError: () -> String?,
     onAction: (ChangePasswordAction) -> Unit,
     focusManager: FocusManager
 ) {
@@ -275,8 +275,8 @@ private fun ChangePasswordFields(
             textFieldState = oldPasswordState,
             labelText = stringResource(SharedRes.strings.old_password),
             placeholderText = stringResource(SharedRes.strings.enter_old_password),
-            isError = oldPasswordError != null,
-            errorText = oldPasswordError,
+            isError = oldPasswordError() != null,
+            errorText = oldPasswordError(),
             modifier = Modifier.fillMaxWidth(),
             imeAction = ImeAction.Next,
             onSubmit = { },
@@ -293,8 +293,8 @@ private fun ChangePasswordFields(
                 onAction(ChangePasswordAction.OnNewPasswordChange(newPasswordState.text.toString()))
                 onAction(ChangePasswordAction.OnChange)
             },
-            isError = newPasswordError != null,
-            errorText = newPasswordError,
+            isError = newPasswordError() != null,
+            errorText = newPasswordError(),
             modifier = Modifier.fillMaxWidth(),
             imeAction = if (oldPasswordState.text.isNotBlank() && newPasswordState.text.isNotBlank()) ImeAction.Send else ImeAction.Done,
             focusManager = focusManager,

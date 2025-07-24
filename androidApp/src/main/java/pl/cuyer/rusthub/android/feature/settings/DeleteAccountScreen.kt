@@ -169,9 +169,9 @@ private fun DeleteAccountScreenCompact(
         LaunchedEffect(password()) { passState.setTextAndPlaceCursorAtEnd(password()) }
         DeleteAccountStaticContent()
         DeleteAccountFields(
-            provider = provider(),
+            provider = provider,
             passwordState = passState,
-            passwordError = passwordError(),
+            passwordError = passwordError,
             onAction = onAction,
             focusManager = focusManager
         )
@@ -216,9 +216,9 @@ private fun DeleteAccountScreenExpanded(
             val passState = rememberTextFieldState(password())
             LaunchedEffect(password()) { passState.setTextAndPlaceCursorAtEnd(password()) }
             DeleteAccountFields(
-                provider = provider(),
+                provider = provider,
                 passwordState = passState,
-                passwordError = passwordError(),
+                passwordError = passwordError,
                 onAction = onAction,
                 focusManager = focusManager
             )
@@ -258,9 +258,9 @@ private fun DeleteAccountStaticContent(modifier: Modifier = Modifier) {
 
 @Composable
 private fun DeleteAccountFields(
-    provider: AuthProvider?,
+    provider: () -> AuthProvider?,
     passwordState: TextFieldState,
-    passwordError: String?,
+    passwordError: () -> String?,
     onAction: (DeleteAccountAction) -> Unit,
     focusManager: FocusManager
 ) {
@@ -269,7 +269,7 @@ private fun DeleteAccountFields(
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
         val keyboardState = keyboardAsState()
-        if (provider != AuthProvider.GOOGLE) {
+        if (provider() != AuthProvider.GOOGLE) {
             AppSecureTextField(
                 textFieldState = passwordState,
                 labelText = stringResource(SharedRes.strings.password),
@@ -279,8 +279,8 @@ private fun DeleteAccountFields(
                     onAction(DeleteAccountAction.OnPasswordChange(passwordState.text.toString()))
                     onAction(DeleteAccountAction.OnDelete)
                 },
-                isError = passwordError != null,
-                errorText = passwordError,
+                isError = passwordError() != null,
+                errorText = passwordError(),
                 modifier = Modifier.fillMaxWidth(),
                 imeAction = if (passwordState.text.isNotBlank()) ImeAction.Send else ImeAction.Done,
                 focusManager = focusManager,

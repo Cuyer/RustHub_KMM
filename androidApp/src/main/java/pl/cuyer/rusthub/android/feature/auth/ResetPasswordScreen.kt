@@ -255,8 +255,8 @@ private fun ResetPasswordField(
             onAction(ResetPasswordAction.OnEmailChange(state.text.toString()))
             onAction(ResetPasswordAction.OnSend)
         },
-        isError = emailError != null,
-        errorText = emailError,
+        isError = emailError() != null,
+        errorText = emailError(),
         modifier = Modifier.fillMaxWidth(),
         focusManager = focusManager,
         keyboardState = keyboardState

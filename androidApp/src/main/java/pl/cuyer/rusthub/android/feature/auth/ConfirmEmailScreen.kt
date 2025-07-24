@@ -171,7 +171,7 @@ private fun ConfirmEmailScreenCompact(
         verticalArrangement = Arrangement.spacedBy(spacing.small),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ConfirmEmailStaticContent(email())
+        ConfirmEmailStaticContent(email)
         AppButton(
             onClick = { onAction(ConfirmEmailAction.OnConfirm) },
             isLoading = isLoading,
@@ -200,7 +200,7 @@ private fun ConfirmEmailScreenExpanded(
             .padding(spacing.medium),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        ConfirmEmailStaticContent(email(), Modifier.weight(1f))
+        ConfirmEmailStaticContent(email, Modifier.weight(1f))
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -226,7 +226,7 @@ private fun ConfirmEmailScreenExpanded(
 }
 
 @Composable
-private fun ConfirmEmailStaticContent(email: String, modifier: Modifier = Modifier) {
+private fun ConfirmEmailStaticContent(email: () -> String, modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start) {
         Image(
             modifier = Modifier.size(64.dp),
@@ -240,7 +240,7 @@ private fun ConfirmEmailStaticContent(email: String, modifier: Modifier = Modifi
 
         val annotated = buildAnnotatedString {
             append(parts.first())
-            withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) { append(email) }
+            withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) { append(email()) }
             if (parts.size > 1) append(parts[1])
         }
 
