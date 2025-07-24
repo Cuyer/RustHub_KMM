@@ -20,6 +20,7 @@ import pl.cuyer.rusthub.domain.model.Recycling
 import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import pl.cuyer.rusthub.data.local.mapper.toRustItem
@@ -32,31 +33,37 @@ class ItemDataSourceImpl(
 
     override suspend fun upsertItems(items: List<RustItem>) {
         withContext(Dispatchers.IO) {
-            queries.transaction {
-                items.forEach { item ->
-                    queries.upsertItem(
-                        id = item.id,
-                        slug = item.slug,
-                        url = item.url,
-                        name = item.name,
-                        description = item.description,
-                        image = item.image,
-                        stackSize = item.stackSize?.toLong(),
-                        health = item.health?.toLong(),
-                        categories = item.categories?.joinToString(",") { it.name },
-                        shortName = item.shortName,
-                        iconUrl = item.iconUrl,
-                        language = item.language?.name,
-                        looting = item.looting?.let {
-                            json.encodeToString(ListSerializer(Looting.serializer()), it)
-                        },
-                        crafting = item.crafting?.let { json.encodeToString(it) },
-                        recycling = item.recycling?.let { json.encodeToString(it) },
-                        raiding = item.raiding?.let {
-                            json.encodeToString(ListSerializer(Raiding.serializer()), it)
-                        }
-                    )
+            try {
+                queries.transaction {
+                    items.forEach { item ->
+                        item.id?.let {
+                            queries.upsertItem(
+                                id = item.id,
+                                slug = item.slug,
+                                url = item.url,
+                                name = item.name,
+                                description = item.description,
+                                image = item.image,
+                                stackSize = item.stackSize?.toLong(),
+                                health = item.health?.toLong(),
+                                categories = item.categories?.joinToString(",") { it.name },
+                                shortName = item.shortName,
+                                iconUrl = item.iconUrl,
+                                language = item.language?.name ?: Language.ENGLISH.name,
+                                looting = item.looting?.let {
+                                    json.encodeToString(ListSerializer(Looting.serializer()), it)
+                                },
+                                crafting = item.crafting?.let { json.encodeToString(it) },
+                                recycling = item.recycling?.let { json.encodeToString(it) },
+                                raiding = item.raiding?.let {
+                                    json.encodeToString(ListSerializer(Raiding.serializer()), it)
+                                }
+                            )
+                        } ?: throw IllegalArgumentException("Item ID cannot be null")
+                    }
                 }
+            } catch (e: Exception) {
+                Napier.e("Error upserting items: ${e.message}", e)
             }
         }
     }
