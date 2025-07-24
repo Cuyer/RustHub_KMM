@@ -13,6 +13,7 @@ This repository hosts a Kotlin Multiplatform Mobile (KMM) project. The Android a
 ## Build & Test
 
 - Don't run tests as they don't pass.
+- Don't build as it would always fail
 
 ## Project Structure
 
