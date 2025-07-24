@@ -93,6 +93,7 @@ fun CredentialsScreen(
     val interactionSource = remember { MutableInteractionSource() }
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
+    val currentState = state.value
 
     ObserveAsEvents(uiEvent) { event ->
         when (event) {
@@ -141,17 +142,10 @@ fun CredentialsScreen(
                     ) { focusManager.clearFocus() }
             ) {
                 CredentialsContent(
+                    state = currentState,
                     isExpanded = isTabletMode,
-                    email = { state.value.email },
-                    userExists = { state.value.userExists },
-                    provider = { state.value.provider },
-                    googleLoading = { state.value.googleLoading },
-                    username = { state.value.username },
-                    password = { state.value.password },
-                    passwordError = { state.value.passwordError },
-                    usernameError = { state.value.usernameError },
-                    isLoading = { state.value.isLoading },
-                    onAction = onAction
+                    onAction = onAction,
+                    focusManager = focusManager
                 )
             }
         }
@@ -225,53 +219,39 @@ private fun rememberTextFieldWithListener(
 
 @Composable
 private fun CredentialsContent(
+    state: CredentialsState,
     isExpanded: Boolean,
-    email: () -> String,
-    userExists: () -> Boolean,
-    provider: () -> AuthProvider?,
-    googleLoading: () -> Boolean,
-    username: () -> String,
-    password: () -> String,
-    passwordError: () -> String? = { null },
-    usernameError: () -> String? = { null },
-    isLoading: () -> Boolean,
     onAction: (CredentialsAction) -> Unit,
+    focusManager: FocusManager,
 ) {
-    val focusManager = LocalFocusManager.current
-    val usernameState = rememberTextFieldWithListener(username()) {
+    val usernameState = rememberTextFieldWithListener(state.username) {
         onAction(CredentialsAction.OnUsernameChange(it))
     }
-    val passwordState = rememberTextFieldWithListener(password()) {
+    val passwordState = rememberTextFieldWithListener(state.password) {
         onAction(CredentialsAction.OnPasswordChange(it))
     }
 
-    val buttonEnabled: () -> Boolean = {
-        when (userExists()) {
-            true -> passwordState.text.isNotBlank()
-            false -> usernameState.text.isNotBlank() && passwordState.text.isNotBlank()
-        }
+    val buttonEnabled = remember(state.userExists, usernameState.text, passwordState.text) {
+        state.userExists && passwordState.text.isNotBlank() ||
+            (!state.userExists && usernameState.text.isNotBlank() && passwordState.text.isNotBlank())
     }
 
     val fields: @Composable ColumnScope.() -> Unit = {
         CredentialsFields(
-            userExists = userExists,
-            provider = provider,
-            googleLoading = googleLoading,
+            state = state,
             usernameState = usernameState,
             passwordState = passwordState,
-            passwordError = passwordError,
-            usernameError = usernameError,
             onAction = onAction,
             focusManager = focusManager,
         )
-        if (provider() != AuthProvider.GOOGLE) {
+        if (state.provider != AuthProvider.GOOGLE) {
             AppButton(
                 onClick = {
                     focusManager.clearFocus()
                     onAction(CredentialsAction.OnSubmit)
                 },
-                isLoading = isLoading,
-                enabled = buttonEnabled,
+                isLoading = { state.isLoading },
+                enabled = { buttonEnabled },
                 modifier = Modifier
                     .imePadding()
                     .fillMaxWidth(),
@@ -288,9 +268,9 @@ private fun CredentialsContent(
         ) {
             CredentialsStaticContent(
                 modifier = Modifier.weight(1f),
-                email = email(),
-                userExists = userExists(),
-                provider = provider(),
+                email = state.email,
+                userExists = state.userExists,
+                provider = state.provider,
             )
             Column(
                 modifier = Modifier
@@ -309,9 +289,9 @@ private fun CredentialsContent(
             verticalArrangement = Arrangement.spacedBy(spacing.small),
         ) {
             CredentialsStaticContent(
-                email = email(),
-                userExists = userExists(),
-                provider = provider(),
+                email = state.email,
+                userExists = state.userExists,
+                provider = state.provider,
             )
             fields()
         }
@@ -320,13 +300,9 @@ private fun CredentialsContent(
 
 @Composable
 private fun CredentialsFields(
-    userExists: () -> Boolean,
-    provider: () -> AuthProvider?,
-    googleLoading: () -> Boolean,
+    state: CredentialsState,
     usernameState: TextFieldState,
     passwordState: TextFieldState,
-    passwordError: () -> String?,
-    usernameError: () -> String?,
     onAction: (CredentialsAction) -> Unit,
     focusManager: FocusManager
 ) {
@@ -335,13 +311,13 @@ private fun CredentialsFields(
             .fillMaxWidth()
     ) {
         val keyboardState = keyboardAsState()
-        if (userExists() && provider() == AuthProvider.GOOGLE) {
+        if (state.userExists && state.provider == AuthProvider.GOOGLE) {
             SignProviderButton(
                 image = getImageByFileName("ic_google").drawableResId,
                 contentDescription = stringResource(SharedRes.strings.google_logo),
                 text = stringResource(SharedRes.strings.continue_with_google),
                 modifier = Modifier.fillMaxWidth(),
-                isLoading = googleLoading,
+                isLoading = { state.googleLoading },
                 backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
                 contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White
             ) {
@@ -351,14 +327,14 @@ private fun CredentialsFields(
             return
         }
 
-        if (!userExists()) {
+        if (!state.userExists) {
             AppTextField(
                 requestFocus = true,
                 textFieldState = usernameState,
                 labelText = stringResource(SharedRes.strings.username),
                 placeholderText = stringResource(SharedRes.strings.enter_your_username),
-                isError = usernameError() != null,
-                errorText = usernameError(),
+                isError = state.usernameError != null,
+                errorText = state.usernameError,
                 modifier = Modifier.fillMaxWidth(),
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next,
@@ -366,9 +342,9 @@ private fun CredentialsFields(
                 keyboardState = keyboardState
             )
         }
-        if (provider() != AuthProvider.GOOGLE) {
+        if (state.provider != AuthProvider.GOOGLE) {
             AppSecureTextField(
-                requestFocus = userExists(),
+                requestFocus = state.userExists,
                 textFieldState = passwordState,
                 labelText = stringResource(SharedRes.strings.password),
                 placeholderText = stringResource(SharedRes.strings.enter_your_password),
@@ -376,17 +352,17 @@ private fun CredentialsFields(
                     focusManager.clearFocus()
                     onAction(CredentialsAction.OnSubmit)
                 },
-                isError = passwordError() != null,
-                errorText = passwordError(),
+                isError = state.passwordError != null,
+                errorText = state.passwordError,
                 modifier = Modifier.fillMaxWidth(),
-                imeAction = when (userExists()) {
+                imeAction = when (state.userExists) {
                     true -> if (passwordState.text.isNotBlank()) ImeAction.Send else ImeAction.Done
                     false -> if (usernameState.text.isNotBlank() && passwordState.text.isNotBlank()) ImeAction.Send else ImeAction.Done
                 },
                 focusManager = focusManager,
                 keyboardState = keyboardState
             )
-            if (userExists()) {
+            if (state.userExists) {
                 AppTextButton(
                     modifier = Modifier.align(Alignment.End),
                     onClick = {
