@@ -234,6 +234,7 @@ private fun CredentialsScreenCompact(
     onAction: (CredentialsAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
+    val keyboardState = keyboardAsState()
     val usernameState = rememberTextFieldState(username)
     LaunchedEffect(username) { usernameState.setTextAndPlaceCursorAtEnd(username) }
     val passwordState = rememberTextFieldState(password)
@@ -259,7 +260,9 @@ private fun CredentialsScreenCompact(
             passwordState = passwordState,
             passwordError = passwordError,
             usernameError = usernameError,
-            onAction = onAction
+            onAction = onAction,
+            focusManager = focusManager,
+            keyboardState = keyboardState
         )
         if (provider != AuthProvider.GOOGLE) {
             AppButton(
@@ -298,6 +301,7 @@ private fun CredentialsScreenExpanded(
     onAction: (CredentialsAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
+    val keyboardState = keyboardAsState()
     val usernameState = rememberTextFieldState(username)
     LaunchedEffect(username) { usernameState.setTextAndPlaceCursorAtEnd(username) }
     val passwordState = rememberTextFieldState(password)
@@ -330,7 +334,9 @@ private fun CredentialsScreenExpanded(
                 passwordState = passwordState,
                 passwordError = passwordError,
                 usernameError = usernameError,
-                onAction = onAction
+                onAction = onAction,
+                focusManager = focusManager,
+                keyboardState = keyboardState
             )
             if (provider != AuthProvider.GOOGLE) {
                 AppButton(
@@ -365,9 +371,10 @@ private fun CredentialsFields(
     passwordState: TextFieldState,
     passwordError: String?,
     usernameError: String?,
-    onAction: (CredentialsAction) -> Unit
+    onAction: (CredentialsAction) -> Unit,
+    focusManager: FocusManager,
+    keyboardState: State<Boolean>
 ) {
-    val focusManager = LocalFocusManager.current
 
     Column(
         modifier = Modifier
@@ -399,7 +406,9 @@ private fun CredentialsFields(
                 errorText = usernameError,
                 modifier = Modifier.fillMaxWidth(),
                 keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next
+                imeAction = ImeAction.Next,
+                focusManager = focusManager,
+                keyboardState = keyboardState
             )
         }
         if (provider != AuthProvider.GOOGLE) {
@@ -421,7 +430,9 @@ private fun CredentialsFields(
                 imeAction = when (userExists) {
                     true -> if (passwordState.text.isNotBlank()) ImeAction.Send else ImeAction.Done
                     false -> if (usernameState.text.isNotBlank() && passwordState.text.isNotBlank()) ImeAction.Send else ImeAction.Done
-                }
+                },
+                focusManager = focusManager,
+                keyboardState = keyboardState
             )
             if (userExists) {
                 AppTextButton(

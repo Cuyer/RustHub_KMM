@@ -164,6 +164,8 @@ private fun UpgradeScreenCompact(
     googleLoading: Boolean,
     onAction: (UpgradeAction) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+    val keyboardState = keyboardAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -179,7 +181,9 @@ private fun UpgradeScreenCompact(
             emailError = emailError,
             password = password,
             passwordError = passwordError,
-            onAction = onAction
+            onAction = onAction,
+            focusManager = focusManager,
+            keyboardState = keyboardState
         )
         AppButton(
             onClick = { onAction(UpgradeAction.OnSubmit) },
@@ -225,6 +229,8 @@ private fun UpgradeScreenExpanded(
     googleLoading: Boolean,
     onAction: (UpgradeAction) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+    val keyboardState = keyboardAsState()
     Row(
         modifier = Modifier
             .fillMaxSize()
@@ -238,15 +244,17 @@ private fun UpgradeScreenExpanded(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(spacing.small)
         ) {
-            UpgradeFields(
-                username = username,
-                usernameError = usernameError,
-                email = email,
-                emailError = emailError,
-                password = password,
-                passwordError = passwordError,
-                onAction = onAction
-            )
+        UpgradeFields(
+            username = username,
+            usernameError = usernameError,
+            email = email,
+            emailError = emailError,
+            password = password,
+            passwordError = passwordError,
+            onAction = onAction,
+            focusManager = focusManager,
+            keyboardState = keyboardState
+        )
             AppButton(
                 onClick = { onAction(UpgradeAction.OnSubmit) },
                 isLoading = isLoading,
@@ -304,7 +312,9 @@ private fun UpgradeFields(
     emailError: String?,
     password: String,
     passwordError: String?,
-    onAction: (UpgradeAction) -> Unit
+    onAction: (UpgradeAction) -> Unit,
+    focusManager: FocusManager,
+    keyboardState: State<Boolean>
 ) {
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(spacing.small)) {
         val usernameState = rememberTextFieldState(username)
@@ -318,7 +328,9 @@ private fun UpgradeFields(
             errorText = usernameError,
             modifier = Modifier.fillMaxWidth(),
             imeAction = ImeAction.Next,
-            keyboardType = KeyboardType.Text
+            keyboardType = KeyboardType.Text,
+            focusManager = focusManager,
+            keyboardState = keyboardState
         )
         val emailState = rememberTextFieldState(email)
         LaunchedEffect(email) { emailState.setTextAndPlaceCursorAtEnd(email) }
@@ -330,7 +342,9 @@ private fun UpgradeFields(
             errorText = emailError,
             modifier = Modifier.fillMaxWidth(),
             imeAction = ImeAction.Next,
-            keyboardType = KeyboardType.Email
+            keyboardType = KeyboardType.Email,
+            focusManager = focusManager,
+            keyboardState = keyboardState
         )
         val passwordState = rememberTextFieldState(password)
         LaunchedEffect(password) { passwordState.setTextAndPlaceCursorAtEnd(password) }
@@ -351,7 +365,9 @@ private fun UpgradeFields(
                 usernameState.text.isNotBlank() &&
                     emailState.text.isNotBlank() &&
                     passwordState.text.isNotBlank()
-            ) ImeAction.Send else ImeAction.Done
+            ) ImeAction.Send else ImeAction.Done,
+            focusManager = focusManager,
+            keyboardState = keyboardState
         )
     }
 }

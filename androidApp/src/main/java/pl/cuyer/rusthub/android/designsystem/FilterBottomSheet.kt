@@ -269,6 +269,8 @@ private fun RangeFilters(
     options: () -> List<FilterRangeOption>,
     onOptionsChange: (List<FilterRangeOption>) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+    val keyboardState = keyboardAsState()
     Column(verticalArrangement = Arrangement.spacedBy(spacing.small)) {
         options().forEachIndexed { index, option ->
             key(option.label) {
@@ -302,7 +304,9 @@ private fun RangeFilters(
                     maxLength = option.max.toString().length,
                     placeholderText = stringResource(SharedRes.strings.enter_a_number),
                     keyboardType = KeyboardType.NumberPassword,
-                    imeAction = ImeAction.Done
+                    imeAction = ImeAction.Done,
+                    focusManager = focusManager,
+                    keyboardState = keyboardState
                 )
             }
         }

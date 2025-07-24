@@ -22,10 +22,12 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
@@ -58,19 +60,22 @@ fun AppTextField(
     onSubmit: () -> Unit = { },
     isError: Boolean = false,
     errorText: String? = null,
-    maxLength: Int? = null
+    maxLength: Int? = null,
+    keyboardState: State<Boolean>? = null,
+    focusManager: FocusManager? = null
 ) {
 
     val interactionSource = remember {
         MutableInteractionSource()
     }
-    val isKeyboardOpen by keyboardAsState()
-    val focusManager = LocalFocusManager.current
+    val resolvedKeyboardState = keyboardState ?: keyboardAsState()
+    val isKeyboardOpen by resolvedKeyboardState
+    val resolvedFocusManager = focusManager ?: LocalFocusManager.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(isKeyboardOpen) {
         if (!isKeyboardOpen) {
-            focusManager.clearFocus()
+            resolvedFocusManager.clearFocus()
         }
     }
 
@@ -87,15 +92,15 @@ fun AppTextField(
             when (imeAction) {
 
                 ImeAction.Next -> {
-                    focusManager.moveFocus(FocusDirection.Down)
+                    resolvedFocusManager.moveFocus(FocusDirection.Down)
                 }
 
                 ImeAction.Done -> {
-                    focusManager.clearFocus()
+                    resolvedFocusManager.clearFocus()
                 }
 
                 ImeAction.Send -> {
-                    focusManager.clearFocus()
+                    resolvedFocusManager.clearFocus()
                     onSubmit()
                 }
 

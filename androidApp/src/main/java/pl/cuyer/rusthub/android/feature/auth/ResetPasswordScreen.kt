@@ -142,17 +142,20 @@ private fun ResetPasswordScreenCompact(
     state: ResetPasswordState,
     onAction: (ResetPasswordAction) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+    val keyboardState = keyboardAsState()
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
-        val focusManager = LocalFocusManager.current
         ResetPasswordStaticContent()
         ResetPasswordField(
             email = state.email,
             emailError = state.emailError,
-            onAction = onAction
+            onAction = onAction,
+            focusManager = focusManager,
+            keyboardState = keyboardState
         )
         AppButton(
             modifier = Modifier
@@ -174,6 +177,8 @@ private fun ResetPasswordScreenExpanded(
     state: ResetPasswordState,
     onAction: (ResetPasswordAction) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+    val keyboardState = keyboardAsState()
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -185,11 +190,12 @@ private fun ResetPasswordScreenExpanded(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(spacing.small)
         ) {
-            val focusManager = LocalFocusManager.current
             ResetPasswordField(
                 email = state.email,
                 emailError = state.emailError,
-                onAction = onAction
+                onAction = onAction,
+                focusManager = focusManager,
+                keyboardState = keyboardState
             )
             AppButton(
                 modifier = Modifier
@@ -225,7 +231,9 @@ private fun ResetPasswordStaticContent(modifier: Modifier = Modifier) {
 private fun ResetPasswordField(
     email: String,
     emailError: String?,
-    onAction: (ResetPasswordAction) -> Unit
+    onAction: (ResetPasswordAction) -> Unit,
+    focusManager: FocusManager,
+    keyboardState: State<Boolean>
 ) {
     val state = rememberTextFieldState(email)
     LaunchedEffect(email) { state.setTextAndPlaceCursorAtEnd(email) }
@@ -242,6 +250,8 @@ private fun ResetPasswordField(
         },
         isError = emailError != null,
         errorText = emailError,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        focusManager = focusManager,
+        keyboardState = keyboardState
     )
 }
