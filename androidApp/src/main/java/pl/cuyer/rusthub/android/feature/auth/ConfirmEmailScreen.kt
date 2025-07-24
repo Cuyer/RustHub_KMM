@@ -139,9 +139,17 @@ fun ConfirmEmailScreen(
                     LoadingIndicator()
                 }
                 if (isTabletMode) {
-                    ConfirmEmailScreenExpanded(state.value, onAction)
+                    ConfirmEmailScreenExpanded(
+                        email = { state.value.email },
+                        isLoading = { state.value.isLoading },
+                        onAction = onAction
+                    )
                 } else {
-                    ConfirmEmailScreenCompact(state.value, onAction)
+                    ConfirmEmailScreenCompact(
+                        email = { state.value.email },
+                        isLoading = { state.value.isLoading },
+                        onAction = onAction
+                    )
                 }
             }
         }
@@ -151,7 +159,8 @@ fun ConfirmEmailScreen(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ConfirmEmailScreenCompact(
-    state: ConfirmEmailState,
+    email: () -> String,
+    isLoading: () -> Boolean,
     onAction: (ConfirmEmailAction) -> Unit
 ) {
     Column(
@@ -162,10 +171,10 @@ private fun ConfirmEmailScreenCompact(
         verticalArrangement = Arrangement.spacedBy(spacing.small),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ConfirmEmailStaticContent(state.email)
+        ConfirmEmailStaticContent(email())
         AppButton(
             onClick = { onAction(ConfirmEmailAction.OnConfirm) },
-            isLoading = { state.isLoading },
+            isLoading = isLoading,
             modifier = Modifier
                 .imePadding()
                 .fillMaxWidth()
@@ -181,7 +190,8 @@ private fun ConfirmEmailScreenCompact(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ConfirmEmailScreenExpanded(
-    state: ConfirmEmailState,
+    email: () -> String,
+    isLoading: () -> Boolean,
     onAction: (ConfirmEmailAction) -> Unit
 ) {
     Row(
@@ -190,7 +200,7 @@ private fun ConfirmEmailScreenExpanded(
             .padding(spacing.medium),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        ConfirmEmailStaticContent(state.email, Modifier.weight(1f))
+        ConfirmEmailStaticContent(email(), Modifier.weight(1f))
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -201,7 +211,7 @@ private fun ConfirmEmailScreenExpanded(
             Spacer(Modifier.size(spacing.medium))
             AppButton(
                 onClick = { onAction(ConfirmEmailAction.OnConfirm) },
-                isLoading = { state.isLoading },
+                isLoading = isLoading,
                 modifier = Modifier
                     .imePadding()
                     .fillMaxWidth()

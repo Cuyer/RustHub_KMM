@@ -134,9 +134,25 @@ fun OnboardingScreen(
                 .fillMaxSize(), contentAlignment = Alignment.Center
         ) {
             if (isTabletMode) {
-                OnboardingContentExpanded(onAction = onAction, state = state.value)
+                OnboardingContentExpanded(
+                    onAction = onAction,
+                    email = { state.value.email },
+                    emailError = { state.value.emailError },
+                    isLoading = { state.value.isLoading },
+                    googleLoading = { state.value.googleLoading },
+                    continueAsGuestLoading = { state.value.continueAsGuestLoading },
+                    showOtherOptions = { state.value.showOtherOptions }
+                )
             } else {
-                OnboardingContent(onAction = onAction, state = state.value)
+                OnboardingContent(
+                    onAction = onAction,
+                    email = { state.value.email },
+                    emailError = { state.value.emailError },
+                    isLoading = { state.value.isLoading },
+                    googleLoading = { state.value.googleLoading },
+                    continueAsGuestLoading = { state.value.continueAsGuestLoading },
+                    showOtherOptions = { state.value.showOtherOptions }
+                )
             }
         }
     }
@@ -184,7 +200,15 @@ private val features = listOf(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: OnboardingState) {
+private fun OnboardingContent(
+    onAction: (OnboardingAction) -> Unit,
+    email: () -> String,
+    emailError: () -> String?,
+    isLoading: () -> Boolean,
+    googleLoading: () -> Boolean,
+    continueAsGuestLoading: () -> Boolean,
+    showOtherOptions: () -> Boolean
+) {
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
     val pagerState = rememberPagerState(pageCount = { features.size })
@@ -207,15 +231,22 @@ private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: Onboa
         Spacer(modifier = Modifier.height(spacing.medium))
         FeatureCarousel(pagerState = pagerState)
         Spacer(modifier = Modifier.height(spacing.medium))
-        AuthSection(state, onAction)
+        AuthSection(
+            email = email,
+            emailError = emailError,
+            isLoading = isLoading,
+            googleLoading = googleLoading,
+            showOtherOptions = showOtherOptions,
+            onAction = onAction
+        )
         AnimatedVisibility(
-            visible = state.showOtherOptions,
+            visible = showOtherOptions(),
             enter = slideInVertically() + scaleIn(),
             exit = slideOutVertically() + scaleOut()
         ) {
             ActionButtons(
                 onAction,
-                state.continueAsGuestLoading
+                continueAsGuestLoading()
             )
         }
     }
@@ -225,7 +256,12 @@ private fun OnboardingContent(onAction: (OnboardingAction) -> Unit, state: Onboa
 @Composable
 private fun OnboardingContentExpanded(
     onAction: (OnboardingAction) -> Unit,
-    state: OnboardingState
+    email: () -> String,
+    emailError: () -> String?,
+    isLoading: () -> Boolean,
+    googleLoading: () -> Boolean,
+    continueAsGuestLoading: () -> Boolean,
+    showOtherOptions: () -> Boolean
 ) {
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -268,15 +304,22 @@ private fun OnboardingContentExpanded(
                 Alignment.CenterVertically
             )
         ) {
-            AuthSection(state, onAction)
+            AuthSection(
+                email = email,
+                emailError = emailError,
+                isLoading = isLoading,
+                googleLoading = googleLoading,
+                showOtherOptions = showOtherOptions,
+                onAction = onAction
+            )
             AnimatedVisibility(
-                visible = state.showOtherOptions,
+                visible = showOtherOptions(),
                 enter = slideInVertically() + scaleIn(),
                 exit = slideOutVertically() + scaleOut()
             ) {
                 ActionButtons(
                     onAction = onAction,
-                    continueAsGuestLoading = state.continueAsGuestLoading
+                    continueAsGuestLoading = continueAsGuestLoading()
                 )
             }
         }
@@ -322,10 +365,17 @@ private fun FeatureCarousel(pagerState: PagerState) {
 }
 
 @Composable
-private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> Unit) {
+private fun AuthSection(
+    email: () -> String,
+    emailError: () -> String?,
+    isLoading: () -> Boolean,
+    googleLoading: () -> Boolean,
+    showOtherOptions: () -> Boolean,
+    onAction: (OnboardingAction) -> Unit
+) {
     val focusManager = LocalFocusManager.current
-    val emailState = rememberTextFieldState(state.email)
-    LaunchedEffect(state.email) { emailState.setTextAndPlaceCursorAtEnd(state.email) }
+    val emailState = rememberTextFieldState(email())
+    LaunchedEffect(email()) { emailState.setTextAndPlaceCursorAtEnd(email()) }
     Column(
         modifier = Modifier
             .imePadding()
@@ -345,8 +395,8 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
             placeholderText = stringResource(SharedRes.strings.enter_your_e_mail),
             keyboardType = KeyboardType.Email,
             imeAction = if (emailState.text.isNotBlank()) ImeAction.Send else ImeAction.Done,
-            isError = state.emailError != null,
-            errorText = state.emailError,
+            isError = emailError() != null,
+            errorText = emailError(),
             onSubmit = {
                 onAction(OnboardingAction.OnEmailChange(emailState.text.toString()))
                 onAction(OnboardingAction.OnContinueWithEmail)
@@ -361,7 +411,7 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
                 onAction(OnboardingAction.OnEmailChange(emailState.text.toString()))
                 onAction(OnboardingAction.OnContinueWithEmail)
             },
-            isLoading = { state.isLoading },
+            isLoading = isLoading,
             modifier = Modifier.fillMaxWidth(),
             enabled = { emailState.text.isNotBlank() }
         ) { Text(stringResource(SharedRes.strings.continue_with_e_mail)) }
@@ -380,7 +430,7 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
             contentDescription = stringResource(SharedRes.strings.google_logo),
             text = stringResource(SharedRes.strings.continue_with_google),
             modifier = Modifier.fillMaxWidth(),
-            isLoading = { state.googleLoading },
+            isLoading = googleLoading,
             backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
             contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White
         ) {
@@ -398,7 +448,7 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(spacing.small)
             ) {
-                val rotation by animateFloatAsState(if (state.showOtherOptions) 180f else 0f)
+                val rotation by animateFloatAsState(if (showOtherOptions()) 180f else 0f)
 
                 Text(stringResource(SharedRes.strings.other_options))
                 Icon(
