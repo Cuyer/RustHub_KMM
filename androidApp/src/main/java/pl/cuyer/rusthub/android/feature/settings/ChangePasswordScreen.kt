@@ -62,6 +62,7 @@ import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordAction
 import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
+import androidx.compose.runtime.snapshotFlow
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class,
@@ -161,10 +162,25 @@ private fun ChangePasswordScreenCompact(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
-        val oldState = rememberTextFieldState(oldPassword())
-        LaunchedEffect(oldPassword()) { oldState.setTextAndPlaceCursorAtEnd(oldPassword()) }
-        val newState = rememberTextFieldState(newPassword())
-        LaunchedEffect(newPassword()) { newState.setTextAndPlaceCursorAtEnd(newPassword()) }
+    val oldState = rememberTextFieldState(oldPassword())
+    LaunchedEffect(oldPassword()) { oldState.setTextAndPlaceCursorAtEnd(oldPassword()) }
+    val newState = rememberTextFieldState(newPassword())
+    LaunchedEffect(newPassword()) { newState.setTextAndPlaceCursorAtEnd(newPassword()) }
+
+
+    LaunchedEffect(oldState) {
+        snapshotFlow { oldState.text }
+            .collect { typed ->
+                onAction(ChangePasswordAction.OnOldPasswordChange(typed.toString()))
+            }
+    }
+
+    LaunchedEffect(newState) {
+        snapshotFlow { newState.text }
+            .collect { typed ->
+                onAction(ChangePasswordAction.OnNewPasswordChange(typed.toString()))
+            }
+    }
         ChangePasswordStaticContent()
         ChangePasswordFields(
             oldPasswordState = oldState,
@@ -182,8 +198,6 @@ private fun ChangePasswordScreenCompact(
             isLoading = isLoading,
             onClick = {
                 focusManager.clearFocus()
-                onAction(ChangePasswordAction.OnOldPasswordChange(oldState.text.toString()))
-                onAction(ChangePasswordAction.OnNewPasswordChange(newState.text.toString()))
                 onAction(ChangePasswordAction.OnChange)
             }
         ) { Text(stringResource(SharedRes.strings.change_password)) }
@@ -216,6 +230,20 @@ private fun ChangePasswordScreenExpanded(
             LaunchedEffect(oldPassword()) { oldState.setTextAndPlaceCursorAtEnd(oldPassword()) }
             val newState = rememberTextFieldState(newPassword())
             LaunchedEffect(newPassword()) { newState.setTextAndPlaceCursorAtEnd(newPassword()) }
+
+            LaunchedEffect(oldState) {
+                snapshotFlow { oldState.text }
+                    .collect { typed ->
+                        onAction(ChangePasswordAction.OnOldPasswordChange(typed.toString()))
+                    }
+            }
+
+            LaunchedEffect(newState) {
+                snapshotFlow { newState.text }
+                    .collect { typed ->
+                        onAction(ChangePasswordAction.OnNewPasswordChange(typed.toString()))
+                    }
+            }
             ChangePasswordFields(
                 oldPasswordState = oldState,
                 newPasswordState = newState,
@@ -231,8 +259,6 @@ private fun ChangePasswordScreenExpanded(
                 isLoading = isLoading,
                 onClick = {
                     focusManager.clearFocus()
-                    onAction(ChangePasswordAction.OnOldPasswordChange(oldState.text.toString()))
-                    onAction(ChangePasswordAction.OnNewPasswordChange(newState.text.toString()))
                     onAction(ChangePasswordAction.OnChange)
                 }
             ) { Text(stringResource(SharedRes.strings.change_password)) }
@@ -289,8 +315,6 @@ private fun ChangePasswordFields(
             placeholderText = stringResource(SharedRes.strings.enter_new_password),
             onSubmit = {
                 focusManager.clearFocus()
-                onAction(ChangePasswordAction.OnOldPasswordChange(oldPasswordState.text.toString()))
-                onAction(ChangePasswordAction.OnNewPasswordChange(newPasswordState.text.toString()))
                 onAction(ChangePasswordAction.OnChange)
             },
             isError = newPasswordError() != null,

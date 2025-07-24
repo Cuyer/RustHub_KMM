@@ -66,6 +66,7 @@ import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountAction
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import androidx.compose.runtime.snapshotFlow
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class,
@@ -167,6 +168,13 @@ private fun DeleteAccountScreenCompact(
     ) {
         val passState = rememberTextFieldState(password())
         LaunchedEffect(password()) { passState.setTextAndPlaceCursorAtEnd(password()) }
+
+        LaunchedEffect(passState) {
+            snapshotFlow { passState.text }
+                .collect { typed ->
+                    onAction(DeleteAccountAction.OnPasswordChange(typed.toString()))
+                }
+        }
         DeleteAccountStaticContent()
         DeleteAccountFields(
             provider = provider,
@@ -183,9 +191,6 @@ private fun DeleteAccountScreenCompact(
             isLoading = isLoading,
             onClick = {
                 focusManager.clearFocus()
-                if (provider() != AuthProvider.GOOGLE) {
-                    onAction(DeleteAccountAction.OnPasswordChange(passState.text.toString()))
-                }
                 onAction(DeleteAccountAction.OnDelete)
             }
         ) { Text(stringResource(SharedRes.strings.delete_account)) }
@@ -215,6 +220,13 @@ private fun DeleteAccountScreenExpanded(
         ) {
             val passState = rememberTextFieldState(password())
             LaunchedEffect(password()) { passState.setTextAndPlaceCursorAtEnd(password()) }
+
+            LaunchedEffect(passState) {
+                snapshotFlow { passState.text }
+                    .collect { typed ->
+                        onAction(DeleteAccountAction.OnPasswordChange(typed.toString()))
+                    }
+            }
             DeleteAccountFields(
                 provider = provider,
                 passwordState = passState,
@@ -230,9 +242,6 @@ private fun DeleteAccountScreenExpanded(
                 isLoading = isLoading,
                 onClick = {
                     focusManager.clearFocus()
-                    if (provider() != AuthProvider.GOOGLE) {
-                        onAction(DeleteAccountAction.OnPasswordChange(passState.text.toString()))
-                    }
                     onAction(DeleteAccountAction.OnDelete)
                 }
             ) { Text(stringResource(SharedRes.strings.delete_account)) }
@@ -276,7 +285,6 @@ private fun DeleteAccountFields(
                 placeholderText = stringResource(SharedRes.strings.enter_your_password),
                 onSubmit = {
                     focusManager.clearFocus()
-                    onAction(DeleteAccountAction.OnPasswordChange(passwordState.text.toString()))
                     onAction(DeleteAccountAction.OnDelete)
                 },
                 isError = passwordError() != null,

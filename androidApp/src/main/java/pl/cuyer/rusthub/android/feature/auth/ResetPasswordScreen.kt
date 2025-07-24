@@ -62,6 +62,7 @@ import pl.cuyer.rusthub.presentation.features.auth.password.ResetPasswordAction
 import pl.cuyer.rusthub.presentation.features.auth.password.ResetPasswordState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
+import androidx.compose.runtime.snapshotFlow
 
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -244,6 +245,13 @@ private fun ResetPasswordField(
     val keyboardState = keyboardAsState()
     val state = rememberTextFieldState(email())
     LaunchedEffect(email()) { state.setTextAndPlaceCursorAtEnd(email()) }
+
+    LaunchedEffect(state) {
+        snapshotFlow { state.text }
+            .collect { typed ->
+                onAction(ResetPasswordAction.OnEmailChange(typed.toString()))
+            }
+    }
     AppTextField(
         requestFocus = true,
         textFieldState = state,
@@ -252,7 +260,6 @@ private fun ResetPasswordField(
         keyboardType = KeyboardType.Email,
         imeAction = if (state.text.isNotBlank()) ImeAction.Send else ImeAction.Done,
         onSubmit = {
-            onAction(ResetPasswordAction.OnEmailChange(state.text.toString()))
             onAction(ResetPasswordAction.OnSend)
         },
         isError = emailError() != null,
