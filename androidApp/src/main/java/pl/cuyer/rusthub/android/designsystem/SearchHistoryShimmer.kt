@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,7 +29,7 @@ fun SearchHistoryShimmer(modifier: Modifier = Modifier) {
         items(5) {
             ElevatedCard(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RectangleShape,
+                shape = MaterialTheme.shapes.extraSmall,
                 colors = CardDefaults.elevatedCardColors()
             ) {
                 Box(

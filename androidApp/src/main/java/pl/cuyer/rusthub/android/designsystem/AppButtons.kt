@@ -12,6 +12,7 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -46,7 +47,7 @@ fun AppButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled && !isLoading,
-        shape = RectangleShape,
+        shape = MaterialTheme.shapes.extraSmall,
         colors = colors
     ) {
         AnimatedContent(
@@ -76,7 +77,7 @@ fun AppOutlinedButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled && !isLoading,
-        shape = RectangleShape,
+        shape = MaterialTheme.shapes.extraSmall,
         colors = colors
     ) {
         AnimatedContent(
@@ -109,7 +110,7 @@ fun AppTextButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled && !isLoading,
-        shape = RectangleShape,
+        shape = MaterialTheme.shapes.extraSmall,
         colors = colors
     ) {
         AnimatedContent(

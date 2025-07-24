@@ -33,7 +33,7 @@ fun AppLabel(
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
             contentColor = contentColorFor(MaterialTheme.colorScheme.surfaceContainer)
         ),
-        shape = RectangleShape
+        shape = MaterialTheme.shapes.extraSmall
     ) {
         Row(
             modifier = Modifier

@@ -37,7 +37,7 @@ fun LootingListItem(
     looting: Looting
 ) {
     ElevatedCard(
-        shape = RectangleShape,
+        shape = MaterialTheme.shapes.extraSmall,
         modifier = modifier.fillMaxWidth()
     ) {
         Row(

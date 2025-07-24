@@ -65,7 +65,7 @@ fun ServerListItem(
         append(statusText)
     }
     ElevatedCard(
-        shape = RectangleShape,
+        shape = MaterialTheme.shapes.extraSmall,
         modifier = modifier
             .wrapContentHeight()
             .semantics {
@@ -130,7 +130,7 @@ fun ServerListItem(
 @Composable
 fun ServerListItemShimmer(modifier: Modifier = Modifier) {
     ElevatedCard(
-        shape = RectangleShape,
+        shape = MaterialTheme.shapes.extraSmall,
         modifier = modifier.wrapContentHeight()
     ) {
         Column(

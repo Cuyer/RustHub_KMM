@@ -37,6 +37,6 @@ fun Modifier.shimmer(): Modifier = composed {
         end = Offset(x = translateAnim.value, y = translateAnim.value)
     )
 
-    background(brush, shape = RectangleShape)
+    background(brush, shape = MaterialTheme.shapes.extraSmall)
         .clearAndSetSemantics {}
 }

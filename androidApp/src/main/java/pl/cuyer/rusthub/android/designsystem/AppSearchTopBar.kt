@@ -285,7 +285,7 @@ private fun SearchHistorySuggestions(
                         modifier = Modifier
                             .animateItem()
                             .fillMaxWidth(),
-                        shape = RectangleShape,
+                        shape = MaterialTheme.shapes.extraSmall,
                         colors = CardDefaults.elevatedCardColors()
                     ) {
                         Text(

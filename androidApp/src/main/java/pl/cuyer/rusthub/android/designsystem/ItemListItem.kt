@@ -38,7 +38,7 @@ fun ItemListItem(
         onClick = {
             onClick(item.id ?: 0L)
         },
-        shape = RectangleShape,
+        shape = MaterialTheme.shapes.extraSmall,
         modifier = modifier.fillMaxWidth()
     ) {
         Row(

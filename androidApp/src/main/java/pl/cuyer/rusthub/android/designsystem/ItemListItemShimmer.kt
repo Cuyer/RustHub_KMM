@@ -24,7 +24,7 @@ import pl.cuyer.rusthub.android.theme.spacing
 @Composable
 fun ItemListItemShimmer(modifier: Modifier = Modifier) {
     ElevatedCard(
-        shape = RectangleShape,
+        shape = MaterialTheme.shapes.extraSmall,
         modifier = modifier.fillMaxWidth()
     ) {
         Row(

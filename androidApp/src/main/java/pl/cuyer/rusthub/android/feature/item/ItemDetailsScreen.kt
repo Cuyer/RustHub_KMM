@@ -267,7 +267,7 @@ fun CraftingRecipeItemList(
     recipe: CraftingRecipe
 ) {
     ElevatedCard(
-        shape = RectangleShape,
+        shape = MaterialTheme.shapes.extraSmall,
         modifier = modifier
     ) {
         Column(
@@ -283,7 +283,7 @@ fun CraftingRecipeItemList(
                         .fillMaxWidth()
                         .background(
                             color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                            shape = RectangleShape
+                            shape = MaterialTheme.shapes.extraSmall
                         )
                         .padding(vertical = spacing.medium),
                     textAlign = TextAlign.Center,
@@ -356,7 +356,7 @@ private fun ResearchTableCostItem(
     modifier: Modifier = Modifier,
     cost: ResearchTableCost
 ) {
-    ElevatedCard(shape = RectangleShape, modifier = modifier) {
+    ElevatedCard(shape = MaterialTheme.shapes.extraSmall, modifier = modifier) {
         Column(
             verticalArrangement = Arrangement.spacedBy(spacing.xxsmall)
         ) {
@@ -370,7 +370,7 @@ private fun ResearchTableCostItem(
                         .fillMaxWidth()
                         .background(
                             color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                            shape = RectangleShape
+                            shape = MaterialTheme.shapes.extraSmall
                         )
                         .padding(vertical = spacing.medium),
                     textAlign = TextAlign.Center,
@@ -445,7 +445,7 @@ private fun TechTreeCostItem(
     modifier: Modifier = Modifier,
     cost: TechTreeCost
 ) {
-    ElevatedCard(shape = RectangleShape, modifier = modifier) {
+    ElevatedCard(shape = MaterialTheme.shapes.extraSmall, modifier = modifier) {
         Column(
             verticalArrangement = Arrangement.spacedBy(spacing.xxsmall)
         ) {
@@ -459,7 +459,7 @@ private fun TechTreeCostItem(
                         .fillMaxWidth()
                         .background(
                             color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                            shape = RectangleShape
+                            shape = MaterialTheme.shapes.extraSmall
                         )
                         .padding(vertical = spacing.medium),
                     textAlign = TextAlign.Center,
@@ -555,7 +555,7 @@ private fun RecyclerItem(
     recycler: Recycler,
     title: String
 ) {
-    ElevatedCard(shape = RectangleShape, modifier = modifier) {
+    ElevatedCard(shape = MaterialTheme.shapes.extraSmall, modifier = modifier) {
         Column(
             verticalArrangement = Arrangement.spacedBy(spacing.xxsmall),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -565,7 +565,7 @@ private fun RecyclerItem(
                     .fillMaxWidth()
                     .background(
                         color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                        shape = RectangleShape
+                        shape = MaterialTheme.shapes.extraSmall
                     )
                     .padding(vertical = spacing.xmedium),
                 horizontalArrangement = Arrangement.spacedBy(
@@ -717,7 +717,7 @@ private fun RaidingItem(
     raiding: Raiding,
     fraction: () -> Float
 ) {
-    ElevatedCard(shape = RectangleShape, modifier = modifier) {
+    ElevatedCard(shape = MaterialTheme.shapes.extraSmall, modifier = modifier) {
         Column(
             verticalArrangement = Arrangement.spacedBy(spacing.xxsmall),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -728,7 +728,7 @@ private fun RaidingItem(
                         .fillMaxWidth()
                         .background(
                             color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                            shape = RectangleShape
+                            shape = MaterialTheme.shapes.extraSmall
                         )
                         .padding(vertical = spacing.xmedium),
                     horizontalArrangement = Arrangement.spacedBy(
