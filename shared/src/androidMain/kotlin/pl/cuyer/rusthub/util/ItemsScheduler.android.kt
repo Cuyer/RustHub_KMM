@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit
 actual class ItemsScheduler(private val context: Context) {
     actual fun schedule() {
         val request = PeriodicWorkRequestBuilder<ItemsWorker>(7, TimeUnit.DAYS)
+            .setInitialDelay(7, TimeUnit.DAYS)
             .setConstraints(
                 Constraints.Builder()
                     .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -21,7 +22,7 @@ actual class ItemsScheduler(private val context: Context) {
             )
             .build()
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            WORK_NAME,
+            WORK_NAME_PERIODIC,
             ExistingPeriodicWorkPolicy.KEEP,
             request
         )
@@ -44,5 +45,6 @@ actual class ItemsScheduler(private val context: Context) {
 
     companion object {
         private const val WORK_NAME = "items_sync"
+        private const val WORK_NAME_PERIODIC = "items_sync_periodic"
     }
 }
