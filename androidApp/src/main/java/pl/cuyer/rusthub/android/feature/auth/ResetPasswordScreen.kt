@@ -209,9 +209,6 @@ private fun ResetPasswordScreenExpanded(
                 modifier = Modifier
                     .imePadding()
                     .fillMaxWidth(),
-                enabled = {
-                    email().isNotBlank()
-                },
                 isLoading = isLoading,
                 onClick = {
                     focusManager.clearFocus()
