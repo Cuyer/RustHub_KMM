@@ -7,6 +7,8 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -237,7 +239,11 @@ private fun SearchHistorySuggestions(
             verticalArrangement = Arrangement.spacedBy(spacing.xxmedium)
         ) {
             item {
-                AnimatedVisibility(visible = searchQueryUi().isNotEmpty()) {
+                AnimatedVisibility(
+                    visible = searchQueryUi().isNotEmpty(),
+                    enter = fadeIn(animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy,)),
+                    exit = fadeOut(animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy,))
+                ) {
                     Row {
                         Text(
                             modifier = Modifier

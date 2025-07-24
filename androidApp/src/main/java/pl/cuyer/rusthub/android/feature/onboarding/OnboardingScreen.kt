@@ -5,7 +5,9 @@ import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateBounds
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
@@ -506,8 +508,16 @@ private fun OtherOptionsToggle(
 
         AnimatedVisibility(
             visible = showOtherOptions,
-            enter = slideInVertically() + scaleIn(),
-            exit = slideOutVertically() + scaleOut()
+            enter = slideInVertically(
+                animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
+            ) + scaleIn(
+                animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
+            ),
+            exit = slideOutVertically(
+                animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
+            ) + scaleOut(
+                animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
+            )
         ) {
             ActionButtons(
                 onAction,

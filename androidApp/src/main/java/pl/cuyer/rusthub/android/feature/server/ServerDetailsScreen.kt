@@ -3,7 +3,9 @@ package pl.cuyer.rusthub.android.feature.server
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateBounds
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
@@ -246,8 +248,12 @@ fun ServerDetailsScreen(
             ) {
                 AnimatedVisibility(
                     visible = !state.value.isConnected,
-                    enter = slideInVertically(),
-                    exit = slideOutVertically()
+                    enter = slideInVertically(
+                        animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
+                    ),
+                    exit = slideOutVertically(
+                        animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
+                    )
                 ) {
                     Text(
                         textAlign = TextAlign.Center,

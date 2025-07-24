@@ -192,8 +192,12 @@ fun ServerScreen(
                     )
                     AnimatedVisibility(
                         visible = !state.value.isConnected,
-                        enter = slideInVertically(),
-                        exit = slideOutVertically()
+                        enter = slideInVertically(
+                            animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
+                        ),
+                        exit = slideOutVertically(
+                            animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
+                        )
                     ) {
                         Text(
                             textAlign = TextAlign.Center,
