@@ -66,6 +66,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavKey
 import app.cash.paging.PagingData
 import app.cash.paging.compose.LazyPagingItems
@@ -240,23 +241,53 @@ fun ServerScreen(
                     }
                 }
                 onEmpty {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        val message = if (!state.value.isConnected) {
-                            stringResource(SharedRes.strings.no_servers_available_offline)
-                        } else {
-                            stringResource(SharedRes.strings.no_servers_available)
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            val message = if (!state.value.isConnected) {
+                                stringResource(SharedRes.strings.no_servers_available_offline)
+                            } else {
+                                stringResource(SharedRes.strings.no_servers_available)
+                            }
+                            Text(
+                                text = "( •_•)?",
+                                style = MaterialTheme.typography.headlineLarge,
+                                textAlign = TextAlign.Center,
+                                fontSize = 96.sp
+                            )
+                            Text(
+                                text = message,
+                                style = MaterialTheme.typography.bodyLarge,
+                                textAlign = TextAlign.Center
+                            )
                         }
-                        Text(
-                            text = message,
-                            style = MaterialTheme.typography.bodyLarge,
-                            textAlign = TextAlign.Center
-                        )
                     }
                 }
                 onError { error ->
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "(×_×)",
+                                style = MaterialTheme.typography.headlineLarge,
+                                textAlign = TextAlign.Center,
+                                fontSize = 96.sp
+                            )
+                            Text(
+                                text = stringResource(SharedRes.strings.error_oops),
+                                style = MaterialTheme.typography.bodyLarge,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
                     onAction(
                         ServerAction.OnError(
                             error

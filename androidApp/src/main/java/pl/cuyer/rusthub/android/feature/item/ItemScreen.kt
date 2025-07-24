@@ -10,6 +10,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,9 +56,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavKey
 import app.cash.paging.PagingData
 import app.cash.paging.compose.LazyPagingItems
@@ -76,6 +80,7 @@ import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.HandlePagingItems
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
+import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.ItemCategory
 import pl.cuyer.rusthub.domain.model.RustItem
 import pl.cuyer.rusthub.domain.model.ItemSyncState
@@ -192,6 +197,26 @@ fun ItemScreen(
             } else {
                 HandlePagingItems(items = { pagedList }) {
                     onError { error ->
+                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "(×_×)",
+                                    style = MaterialTheme.typography.headlineLarge,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 96.sp
+                                )
+                                Text(
+                                    text = stringResource(SharedRes.strings.error_oops),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
                         onAction(
                             ItemAction.OnError(
                                 error
@@ -200,11 +225,24 @@ fun ItemScreen(
                     }
                     onEmpty {
                         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text(
-                                text = stringResource(SharedRes.strings.no_items_available),
-                                style = MaterialTheme.typography.bodyLarge,
-                                textAlign = TextAlign.Center
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "( •_•)?",
+                                    style = MaterialTheme.typography.headlineLarge,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 96.sp
+                                )
+                                Text(
+                                    text = stringResource(SharedRes.strings.no_items_available),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
                     }
                     onSuccess {
@@ -303,9 +341,10 @@ private fun ItemCategoryChips(
 @Preview
 @Composable
 private fun ItemScreenPreview() {
+    val state = remember { mutableStateOf(ItemState(isRefreshing = false)) }
     RustHubTheme {
         ItemScreen(
-            state = mutableStateOf(ItemState(isRefreshing = false)),
+            state = state,
             onAction = {},
             onNavigate = {},
             uiEvent = flowOf(UiEvent.Navigate(ItemList)),
