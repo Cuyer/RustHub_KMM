@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.android.feature.onboarding
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateBounds
@@ -63,6 +64,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -414,6 +416,13 @@ private fun EmailTextField(
     val emailState = rememberTextFieldState(email())
     LaunchedEffect(email) { emailState.setTextAndPlaceCursorAtEnd(email()) }
 
+    LaunchedEffect(emailState) {
+        snapshotFlow { emailState.text }
+            .collect { typed ->
+                onAction(OnboardingAction.OnEmailChange(typed.toString()))
+            }
+    }
+
     AppTextField(
         textFieldState = emailState,
         labelText = stringResource(SharedRes.strings.e_mail),
@@ -423,7 +432,6 @@ private fun EmailTextField(
         isError = emailError() != null,
         errorText = emailError(),
         onSubmit = {
-            onAction(OnboardingAction.OnEmailChange(emailState.text.toString()))
             onAction(OnboardingAction.OnContinueWithEmail)
         },
         modifier = Modifier.fillMaxWidth(),
@@ -442,7 +450,6 @@ private fun ContinueWithEmailButton(
     AppButton(
         onClick = {
             focusManager.clearFocus()
-            onAction(OnboardingAction.OnEmailChange(email()))
             onAction(OnboardingAction.OnContinueWithEmail)
         },
         isLoading = isLoading,
