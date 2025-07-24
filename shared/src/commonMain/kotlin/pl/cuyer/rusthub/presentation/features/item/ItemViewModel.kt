@@ -39,6 +39,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.getCurrentAppLanguage
 import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.domain.usecase.SaveItemSearchQueryUseCase
 import pl.cuyer.rusthub.domain.usecase.GetItemSearchQueriesUseCase
@@ -83,7 +84,7 @@ class ItemViewModel(
         combine(queryFlow, categoryFlow) { query, category ->
             Pair(query, category)
         }.flatMapLatest { (query, category) ->
-            getPagedItemsUseCase(query, category)
+            getPagedItemsUseCase(query, category, getCurrentAppLanguage())
         }
             .flowOn(Dispatchers.Default)
             .cachedIn(coroutineScope)

@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.domain.usecase.GetItemDetailsUseCase
+import pl.cuyer.rusthub.util.getCurrentAppLanguage
 
 class ItemDetailsViewModel(
     private val getItemDetailsUseCase: GetItemDetailsUseCase,
@@ -26,7 +27,7 @@ class ItemDetailsViewModel(
         )
 
     private fun observeItem(id: Long) {
-        getItemDetailsUseCase(id)
+        getItemDetailsUseCase(id, getCurrentAppLanguage())
             .onStart { updateLoading(true) }
             .catch { updateLoading(false) }
             .onEach { item ->
