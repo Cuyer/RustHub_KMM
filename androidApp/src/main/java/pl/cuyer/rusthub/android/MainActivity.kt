@@ -81,15 +81,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContent {
-            val state = startupViewModel.state.collectAsStateWithLifecycle()
             RustHubTheme(
                 darkTheme = themeSettings.darkTheme,
                 dynamicColor = themeSettings.dynamicColor
             ) {
+                val state = startupViewModel.state.collectAsStateWithLifecycle()
                 RustHubBackground {
                     if (state.value.isLoading) {
                         StartupScreen(
-                            showSkip = state.value.showSkip,
+                            showSkip = { state.value.showSkip },
                             onSkip = { startupViewModel.skipFetching() }
                         )
                     } else {

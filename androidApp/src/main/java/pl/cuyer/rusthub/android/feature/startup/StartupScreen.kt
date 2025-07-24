@@ -20,7 +20,7 @@ import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun StartupScreen(
-    showSkip: Boolean,
+    showSkip: () -> Boolean,
     onSkip: () -> Unit,
 ) {
     Box(
@@ -37,7 +37,7 @@ fun StartupScreen(
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold
             )
-            if (showSkip) {
+            if (showSkip()) {
                 AppTextButton(onClick = onSkip) {
                     Text(stringResource(SharedRes.strings.skip))
                 }

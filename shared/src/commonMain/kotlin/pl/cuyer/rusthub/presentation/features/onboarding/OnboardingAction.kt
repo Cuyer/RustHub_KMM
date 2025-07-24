@@ -12,6 +12,4 @@ sealed interface OnboardingAction {
     data object OnContinueWithEmail : OnboardingAction
     @Immutable
     data object OnGoogleLogin : OnboardingAction
-    @Immutable
-    data object OnShowOtherOptions : OnboardingAction
 }
