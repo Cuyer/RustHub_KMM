@@ -36,8 +36,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
-import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
@@ -57,6 +55,7 @@ import pl.cuyer.rusthub.android.designsystem.AppTextField
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
+import pl.cuyer.rusthub.android.util.composeUtil.rememberSyncedTextFieldState
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.presentation.features.auth.password.ResetPasswordAction
 import pl.cuyer.rusthub.presentation.features.auth.password.ResetPasswordState
@@ -85,6 +84,8 @@ fun ResetPasswordScreen(
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
     val interactionSource = remember { MutableInteractionSource() }
     val focusManager = LocalFocusManager.current
+
+    val currentState = state.value
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -119,9 +120,9 @@ fun ResetPasswordScreen(
                         .padding(spacing.medium)
                         .animateBounds(this)
                         .clickable(interactionSource, null) { focusManager.clearFocus() },
-                    email = { state.value.email },
-                    emailError = { state.value.emailError },
-                    isLoading = { state.value.isLoading },
+                    email = currentState.email,
+                    emailError = currentState.emailError,
+                    isLoading = currentState.isLoading,
                     onAction = onAction
                 )
             } else {
@@ -133,9 +134,9 @@ fun ResetPasswordScreen(
                         .padding(spacing.medium)
                         .animateBounds(this)
                         .clickable(interactionSource, null) { focusManager.clearFocus() },
-                    email = { state.value.email },
-                    emailError = { state.value.emailError },
-                    isLoading = { state.value.isLoading },
+                    email = currentState.email,
+                    emailError = currentState.emailError,
+                    isLoading = currentState.isLoading,
                     onAction = onAction
                 )
             }
@@ -146,9 +147,9 @@ fun ResetPasswordScreen(
 @Composable
 private fun ResetPasswordScreenCompact(
     modifier: Modifier = Modifier,
-    email: () -> String,
-    emailError: () -> String?,
-    isLoading: () -> Boolean,
+    email: String,
+    emailError: String?,
+    isLoading: Boolean,
     onAction: (ResetPasswordAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -169,8 +170,8 @@ private fun ResetPasswordScreenCompact(
             modifier = Modifier
                 .imePadding()
                 .fillMaxWidth(),
-            enabled = email().isNotBlank(),
-            isLoading = isLoading(),
+            enabled = email.isNotBlank(),
+            isLoading = isLoading,
             onClick = {
                 focusManager.clearFocus()
                 onAction(ResetPasswordAction.OnSend)
@@ -182,9 +183,9 @@ private fun ResetPasswordScreenCompact(
 @Composable
 private fun ResetPasswordScreenExpanded(
     modifier: Modifier = Modifier,
-    email: () -> String,
-    emailError: () -> String?,
-    isLoading: () -> Boolean,
+    email: String,
+    emailError: String?,
+    isLoading: Boolean,
     onAction: (ResetPasswordAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -209,8 +210,8 @@ private fun ResetPasswordScreenExpanded(
                 modifier = Modifier
                     .imePadding()
                     .fillMaxWidth(),
-                enabled = email().isNotBlank(),
-                isLoading = isLoading(),
+                enabled = email.isNotBlank(),
+                isLoading = isLoading,
                 onClick = {
                     focusManager.clearFocus()
                     onAction(ResetPasswordAction.OnSend)
@@ -238,14 +239,13 @@ private fun ResetPasswordStaticContent(modifier: Modifier = Modifier) {
 
 @Composable
 private fun ResetPasswordField(
-    email: () -> String,
-    emailError: () -> String?,
+    email: String,
+    emailError: String?,
     onAction: (ResetPasswordAction) -> Unit,
     focusManager: FocusManager
 ) {
     val keyboardState = keyboardAsState()
-    val state = rememberTextFieldState(email())
-    LaunchedEffect(email()) { state.setTextAndPlaceCursorAtEnd(email()) }
+    val state = rememberSyncedTextFieldState(email)
 
     LaunchedEffect(state) {
         snapshotFlow { state.text }

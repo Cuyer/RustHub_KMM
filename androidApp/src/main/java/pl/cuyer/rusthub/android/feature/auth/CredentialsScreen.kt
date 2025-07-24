@@ -73,6 +73,7 @@ import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
+import pl.cuyer.rusthub.android.util.composeUtil.rememberSyncedTextFieldState
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsAction
@@ -214,18 +215,6 @@ private fun CredentialsStaticContent(
     }
 }
 
-@Composable
-private fun rememberSyncedTextFieldState(
-    value: String,
-): TextFieldState {
-    val state = rememberTextFieldState(value)
-    LaunchedEffect(value) {
-        if (state.text.toString() != value) {
-            state.setTextAndPlaceCursorAtEnd(value)
-        }
-    }
-    return state
-}
 
 @Composable
 private fun CredentialsContent(

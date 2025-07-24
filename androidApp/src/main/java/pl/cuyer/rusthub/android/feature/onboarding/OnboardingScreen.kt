@@ -62,8 +62,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import pl.cuyer.rusthub.android.util.composeUtil.rememberSyncedTextFieldState
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
@@ -134,6 +133,7 @@ fun OnboardingScreen(
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
 
     LookaheadScope {
+        val currentState = state.value
         Box(
             modifier = Modifier
                 .animateBounds(this)
@@ -142,20 +142,20 @@ fun OnboardingScreen(
             if (isTabletMode) {
                 OnboardingContentExpanded(
                     onAction = onAction,
-                    email = { state.value.email },
-                    emailError = { state.value.emailError },
-                    isLoading = { state.value.isLoading },
-                    googleLoading = { state.value.googleLoading },
-                    continueAsGuestLoading = { state.value.continueAsGuestLoading }
+                    email = currentState.email,
+                    emailError = currentState.emailError,
+                    isLoading = currentState.isLoading,
+                    googleLoading = currentState.googleLoading,
+                    continueAsGuestLoading = currentState.continueAsGuestLoading
                 )
             } else {
                 OnboardingContent(
                     onAction = onAction,
-                    email = { state.value.email },
-                    emailError = { state.value.emailError },
-                    isLoading = { state.value.isLoading },
-                    googleLoading = { state.value.googleLoading },
-                    continueAsGuestLoading = { state.value.continueAsGuestLoading }
+                    email = currentState.email,
+                    emailError = currentState.emailError,
+                    isLoading = currentState.isLoading,
+                    googleLoading = currentState.googleLoading,
+                    continueAsGuestLoading = currentState.continueAsGuestLoading
                 )
             }
         }
@@ -206,11 +206,11 @@ private val features = listOf(
 @Composable
 private fun OnboardingContent(
     onAction: (OnboardingAction) -> Unit,
-    email: () -> String,
-    emailError: () -> String?,
-    isLoading: () -> Boolean,
-    googleLoading: () -> Boolean,
-    continueAsGuestLoading: () -> Boolean
+    email: String,
+    emailError: String?,
+    isLoading: Boolean,
+    googleLoading: Boolean,
+    continueAsGuestLoading: Boolean
 ) {
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -249,11 +249,11 @@ private fun OnboardingContent(
 @Composable
 private fun OnboardingContentExpanded(
     onAction: (OnboardingAction) -> Unit,
-    email: () -> String,
-    emailError: () -> String?,
-    isLoading: () -> Boolean,
-    googleLoading: () -> Boolean,
-    continueAsGuestLoading: () -> Boolean
+    email: String,
+    emailError: String?,
+    isLoading: Boolean,
+    googleLoading: Boolean,
+    continueAsGuestLoading: Boolean
 ) {
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -348,11 +348,11 @@ private fun FeatureCarousel(pagerState: PagerState) {
 
 @Composable
 private fun AuthSection(
-    email: () -> String,
-    emailError: () -> String?,
-    isLoading: () -> Boolean,
-    googleLoading: () -> Boolean,
-    continueAsGuestLoading: () -> Boolean,
+    email: String,
+    emailError: String?,
+    isLoading: Boolean,
+    googleLoading: Boolean,
+    continueAsGuestLoading: Boolean,
     onAction: (OnboardingAction) -> Unit
 ) {
     Column(
@@ -410,13 +410,12 @@ private fun EmailIntroText() {
 
 @Composable
 private fun EmailTextField(
-    email: () -> String,
-    emailError: () -> String?,
+    email: String,
+    emailError: String?,
     onAction: (OnboardingAction) -> Unit,
     focusManager: FocusManager
 ) {
-    val emailState = rememberTextFieldState(email())
-    LaunchedEffect(email) { emailState.setTextAndPlaceCursorAtEnd(email()) }
+    val emailState = rememberSyncedTextFieldState(email)
 
     LaunchedEffect(emailState) {
         snapshotFlow { emailState.text }
@@ -431,8 +430,8 @@ private fun EmailTextField(
         placeholderText = stringResource(SharedRes.strings.enter_your_e_mail),
         keyboardType = KeyboardType.Email,
         imeAction = if (emailState.text.isNotBlank()) ImeAction.Send else ImeAction.Done,
-        isError = emailError() != null,
-        errorText = emailError(),
+        isError = emailError != null,
+        errorText = emailError,
         onSubmit = {
             onAction(OnboardingAction.OnContinueWithEmail)
         },
@@ -444,8 +443,8 @@ private fun EmailTextField(
 
 @Composable
 private fun ContinueWithEmailButton(
-    email: () -> String,
-    isLoading: () -> Boolean,
+    email: String,
+    isLoading: Boolean,
     onAction: (OnboardingAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -454,9 +453,9 @@ private fun ContinueWithEmailButton(
             focusManager.clearFocus()
             onAction(OnboardingAction.OnContinueWithEmail)
         },
-        isLoading = isLoading(),
+        isLoading = isLoading,
         modifier = Modifier.fillMaxWidth(),
-        enabled = email().isNotBlank()
+        enabled = email.isNotBlank()
     ) {
         Text(stringResource(SharedRes.strings.continue_with_e_mail))
     }
@@ -478,7 +477,7 @@ private fun OrDivider() {
 private fun OtherOptionsToggle(
     onClick: () -> Unit,
     onAction: (OnboardingAction) -> Unit,
-    continueAsGuestLoading: () -> Boolean
+    continueAsGuestLoading: Boolean
 ) {
     var showOtherOptions by rememberSaveable { mutableStateOf(false) }
     val rotation by animateFloatAsState(if (showOtherOptions) 180f else 0f)
@@ -530,7 +529,7 @@ private fun OtherOptionsToggle(
 
 @Composable
 private fun GoogleButton(
-    isLoading: () -> Boolean,
+    isLoading: Boolean,
     onClick: () -> Unit
 ) {
     SignProviderButton(
@@ -538,7 +537,7 @@ private fun GoogleButton(
         contentDescription = stringResource(SharedRes.strings.google_logo),
         text = stringResource(SharedRes.strings.continue_with_google),
         modifier = Modifier.fillMaxWidth(),
-        isLoading = isLoading(),
+        isLoading = isLoading,
         backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
         contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
         onClick = onClick
@@ -570,12 +569,12 @@ private fun HeaderSection() {
 @Composable
 private fun ActionButtons(
     onAction: (OnboardingAction) -> Unit,
-    continueAsGuestLoading: () -> Boolean
+    continueAsGuestLoading: Boolean
 ) {
     AppOutlinedButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = { onAction(OnboardingAction.OnContinueAsGuest) },
-        isLoading = continueAsGuestLoading()
+        isLoading = continueAsGuestLoading
     ) {
         Text(stringResource(SharedRes.strings.continue_as_guest))
     }
