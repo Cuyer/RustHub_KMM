@@ -62,7 +62,6 @@ class OnboardingViewModel(
             is OnboardingAction.OnEmailChange -> updateEmail(action.email)
             OnboardingAction.OnContinueWithEmail -> continueWithEmail()
             OnboardingAction.OnGoogleLogin -> startGoogleLogin()
-            OnboardingAction.OnShowOtherOptions -> toggleOtherOptions()
         }
     }
 
@@ -181,10 +180,6 @@ class OnboardingViewModel(
                     }
                 }
         }
-    }
-
-    private fun toggleOtherOptions() {
-        _state.update { it.copy(showOtherOptions = !it.showOtherOptions) }
     }
 
     private suspend fun showErrorSnackbar(message: String?) {

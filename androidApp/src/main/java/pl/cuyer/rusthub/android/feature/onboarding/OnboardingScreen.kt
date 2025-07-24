@@ -62,9 +62,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.LookaheadScope
@@ -140,8 +142,7 @@ fun OnboardingScreen(
                     emailError = { state.value.emailError },
                     isLoading = { state.value.isLoading },
                     googleLoading = { state.value.googleLoading },
-                    continueAsGuestLoading = { state.value.continueAsGuestLoading },
-                    showOtherOptions = { state.value.showOtherOptions }
+                    continueAsGuestLoading = { state.value.continueAsGuestLoading }
                 )
             } else {
                 OnboardingContent(
@@ -150,8 +151,7 @@ fun OnboardingScreen(
                     emailError = { state.value.emailError },
                     isLoading = { state.value.isLoading },
                     googleLoading = { state.value.googleLoading },
-                    continueAsGuestLoading = { state.value.continueAsGuestLoading },
-                    showOtherOptions = { state.value.showOtherOptions }
+                    continueAsGuestLoading = { state.value.continueAsGuestLoading }
                 )
             }
         }
@@ -206,8 +206,7 @@ private fun OnboardingContent(
     emailError: () -> String?,
     isLoading: () -> Boolean,
     googleLoading: () -> Boolean,
-    continueAsGuestLoading: () -> Boolean,
-    showOtherOptions: () -> Boolean
+    continueAsGuestLoading: () -> Boolean
 ) {
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -236,19 +235,9 @@ private fun OnboardingContent(
             emailError = emailError,
             isLoading = isLoading,
             googleLoading = googleLoading,
-            showOtherOptions = showOtherOptions,
+            continueAsGuestLoading = continueAsGuestLoading,
             onAction = onAction
         )
-        AnimatedVisibility(
-            visible = showOtherOptions(),
-            enter = slideInVertically() + scaleIn(),
-            exit = slideOutVertically() + scaleOut()
-        ) {
-            ActionButtons(
-                onAction,
-                continueAsGuestLoading
-            )
-        }
     }
 }
 
@@ -260,8 +249,7 @@ private fun OnboardingContentExpanded(
     emailError: () -> String?,
     isLoading: () -> Boolean,
     googleLoading: () -> Boolean,
-    continueAsGuestLoading: () -> Boolean,
-    showOtherOptions: () -> Boolean
+    continueAsGuestLoading: () -> Boolean
 ) {
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -309,19 +297,9 @@ private fun OnboardingContentExpanded(
                 emailError = emailError,
                 isLoading = isLoading,
                 googleLoading = googleLoading,
-                showOtherOptions = showOtherOptions,
-                onAction = onAction
+                onAction = onAction,
+                continueAsGuestLoading = continueAsGuestLoading
             )
-            AnimatedVisibility(
-                visible = showOtherOptions(),
-                enter = slideInVertically() + scaleIn(),
-                exit = slideOutVertically() + scaleOut()
-            ) {
-                ActionButtons(
-                    onAction = onAction,
-                    continueAsGuestLoading = continueAsGuestLoading
-                )
-            }
         }
     }
 }
@@ -370,12 +348,9 @@ private fun AuthSection(
     emailError: () -> String?,
     isLoading: () -> Boolean,
     googleLoading: () -> Boolean,
-    showOtherOptions: () -> Boolean,
+    continueAsGuestLoading: () -> Boolean,
     onAction: (OnboardingAction) -> Unit
 ) {
-    val focusManager = LocalFocusManager.current
-    val emailState = rememberTextFieldState(email())
-    LaunchedEffect(email()) { emailState.setTextAndPlaceCursorAtEnd(email()) }
     Column(
         modifier = Modifier
             .imePadding()
@@ -383,84 +358,176 @@ private fun AuthSection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
-        val keyboardState = keyboardAsState()
-        Text(
-            text = stringResource(SharedRes.strings.let_s_start_with_your_email),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        AppTextField(
-            textFieldState = emailState,
-            labelText = stringResource(SharedRes.strings.e_mail),
-            placeholderText = stringResource(SharedRes.strings.enter_your_e_mail),
-            keyboardType = KeyboardType.Email,
-            imeAction = if (emailState.text.isNotBlank()) ImeAction.Send else ImeAction.Done,
-            isError = emailError() != null,
-            errorText = emailError(),
-            onSubmit = {
-                onAction(OnboardingAction.OnEmailChange(emailState.text.toString()))
-                onAction(OnboardingAction.OnContinueWithEmail)
-            },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardState = keyboardState,
+        val focusManager = LocalFocusManager.current
+        EmailIntroText()
+
+        EmailTextField(
+            email = email,
+            emailError = emailError,
+            onAction = onAction,
             focusManager = focusManager
         )
-        AppButton(
+
+        ContinueWithEmailButton(
+            email = email,
+            isLoading = isLoading,
+            onAction = onAction
+        )
+
+        OrDivider()
+
+        GoogleButton(
+            isLoading = googleLoading,
             onClick = {
                 focusManager.clearFocus()
-                onAction(OnboardingAction.OnEmailChange(emailState.text.toString()))
-                onAction(OnboardingAction.OnContinueWithEmail)
-            },
-            isLoading = isLoading,
-            modifier = Modifier.fillMaxWidth(),
-            enabled = { emailState.text.isNotBlank() }
-        ) { Text(stringResource(SharedRes.strings.continue_with_e_mail)) }
+                onAction(OnboardingAction.OnGoogleLogin)
+            }
+        )
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(spacing.small)
-        ) {
-            HorizontalDivider(modifier = Modifier.weight(1f))
-            Text(stringResource(SharedRes.strings.or_str))
-            HorizontalDivider(modifier = Modifier.weight(1f))
-        }
+        OtherOptionsToggle(
+            continueAsGuestLoading = continueAsGuestLoading,
+            onAction = onAction,
+            onClick = {
+                focusManager.clearFocus()
+            }
+        )
+    }
+}
 
-        SignProviderButton(
-            image = getImageByFileName("ic_google").drawableResId,
-            contentDescription = stringResource(SharedRes.strings.google_logo),
-            text = stringResource(SharedRes.strings.continue_with_google),
-            modifier = Modifier.fillMaxWidth(),
-            isLoading = googleLoading,
-            backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
-            contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White
-        ) {
+@Composable
+private fun EmailIntroText() {
+    Text(
+        text = stringResource(SharedRes.strings.let_s_start_with_your_email),
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+}
+
+
+@Composable
+private fun EmailTextField(
+    email: () -> String,
+    emailError: () -> String?,
+    onAction: (OnboardingAction) -> Unit,
+    focusManager: FocusManager
+) {
+    val emailState = rememberTextFieldState(email())
+    LaunchedEffect(email) { emailState.setTextAndPlaceCursorAtEnd(email()) }
+
+    AppTextField(
+        textFieldState = emailState,
+        labelText = stringResource(SharedRes.strings.e_mail),
+        placeholderText = stringResource(SharedRes.strings.enter_your_e_mail),
+        keyboardType = KeyboardType.Email,
+        imeAction = if (emailState.text.isNotBlank()) ImeAction.Send else ImeAction.Done,
+        isError = emailError() != null,
+        errorText = emailError(),
+        onSubmit = {
+            onAction(OnboardingAction.OnEmailChange(emailState.text.toString()))
+            onAction(OnboardingAction.OnContinueWithEmail)
+        },
+        modifier = Modifier.fillMaxWidth(),
+        keyboardState = keyboardAsState(),
+        focusManager = focusManager
+    )
+}
+
+@Composable
+private fun ContinueWithEmailButton(
+    email: () -> String,
+    isLoading: () -> Boolean,
+    onAction: (OnboardingAction) -> Unit
+) {
+    val focusManager = LocalFocusManager.current
+    AppButton(
+        onClick = {
             focusManager.clearFocus()
-            onAction(OnboardingAction.OnGoogleLogin)
-        }
+            onAction(OnboardingAction.OnEmailChange(email()))
+            onAction(OnboardingAction.OnContinueWithEmail)
+        },
+        isLoading = isLoading,
+        modifier = Modifier.fillMaxWidth(),
+        enabled = { email().isNotBlank() }
+    ) {
+        Text(stringResource(SharedRes.strings.continue_with_e_mail))
+    }
+}
 
+@Composable
+private fun OrDivider() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(spacing.small)
+    ) {
+        HorizontalDivider(modifier = Modifier.weight(1f))
+        Text(stringResource(SharedRes.strings.or_str))
+        HorizontalDivider(modifier = Modifier.weight(1f))
+    }
+}
+
+@Composable
+private fun OtherOptionsToggle(
+    onClick: () -> Unit,
+    onAction: (OnboardingAction) -> Unit,
+    continueAsGuestLoading: () -> Boolean
+) {
+    var showOtherOptions by rememberSaveable { mutableStateOf(false) }
+    val rotation by animateFloatAsState(if (showOtherOptions) 180f else 0f)
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         AppTextButton(
             onClick = {
-                focusManager.clearFocus()
-                onAction(OnboardingAction.OnShowOtherOptions)
+                onClick
+                showOtherOptions = !showOtherOptions
             }
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(spacing.small)
             ) {
-                val rotation by animateFloatAsState(if (showOtherOptions()) 180f else 0f)
-
                 Text(stringResource(SharedRes.strings.other_options))
                 Icon(
-                    modifier = Modifier
-                        .rotate(rotation),
+                    modifier = Modifier.rotate(rotation),
                     imageVector = Icons.Default.KeyboardArrowDown,
                     contentDescription = stringResource(SharedRes.strings.arrow_down)
                 )
             }
         }
+
+        AnimatedVisibility(
+            visible = showOtherOptions,
+            enter = slideInVertically() + scaleIn(),
+            exit = slideOutVertically() + scaleOut()
+        ) {
+            ActionButtons(
+                onAction,
+                continueAsGuestLoading
+            )
+        }
     }
 }
+
+
+@Composable
+private fun GoogleButton(
+    isLoading: () -> Boolean,
+    onClick: () -> Unit
+) {
+    SignProviderButton(
+        image = getImageByFileName("ic_google").drawableResId,
+        contentDescription = stringResource(SharedRes.strings.google_logo),
+        text = stringResource(SharedRes.strings.continue_with_google),
+        modifier = Modifier.fillMaxWidth(),
+        isLoading = isLoading,
+        backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
+        contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
+        onClick = onClick
+    )
+}
+
 
 @Composable
 private fun HeaderSection() {
@@ -570,10 +637,11 @@ fun CarouselAutoPlayHandler(
 @Preview
 @Composable
 private fun OnboardingPrev() {
-    RustHubTheme() {
+    val state = remember { mutableStateOf(OnboardingState()) }
+    RustHubTheme {
         OnboardingScreen(
             onNavigate = {},
-            state = mutableStateOf(OnboardingState()),
+            state = state,
             onAction = {},
             uiEvent = MutableStateFlow(UiEvent.Navigate(object : NavKey {}))
         )

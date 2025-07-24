@@ -8,6 +8,5 @@ data class OnboardingState(
     val googleLoading: Boolean = false,
     val continueAsGuestLoading: Boolean = false,
     val email: String = "",
-    val emailError: String? = null,
-    val showOtherOptions: Boolean = false
+    val emailError: String? = null
 )
