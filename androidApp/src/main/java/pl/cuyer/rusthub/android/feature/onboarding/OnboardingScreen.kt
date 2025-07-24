@@ -21,6 +21,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -74,7 +75,9 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.LookaheadScope
+import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.hideFromAccessibility
@@ -310,38 +313,59 @@ private fun OnboardingContentExpanded(
 
 @Composable
 private fun FeatureCarousel(pagerState: PagerState) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        HorizontalPager(state = pagerState) { page ->
-            val feature = features[page]
-            FeatureItem(feature.icon, feature.title, feature.description)
+    SubcomposeLayout { constraints ->
+        val itemHeights = features.map { feature ->
+            val placeable = subcompose("featureItem_${feature.hashCode()}") {
+                FeatureItem(feature.icon, feature.title, feature.description)
+            }.map { it.measure(constraints) }
+            placeable.maxOf { it.height }
         }
+        val maxHeight = itemHeights.maxOrNull() ?: 0
 
-        CarouselAutoPlayHandler(pagerState, features.size)
-
-        Spacer(modifier = Modifier.height(spacing.xmedium))
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(spacing.xsmall),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            repeat(features.size) { index ->
-                val cd = stringResource(
-                    SharedRes.strings.page_indicator,
-                    index + 1,
-                    features.size
-                )
-                val selected = pagerState.currentPage == index
-                Box(
+        val content = subcompose("carousel") {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                HorizontalPager(
+                    state = pagerState,
                     modifier = Modifier
-                        .size(if (selected) 8.dp else 6.dp)
-                        .background(
-                            color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                            shape = CircleShape
+                        .fillMaxWidth()
+                        .height(with(LocalDensity.current) { maxHeight.toDp() })
+                ) { page ->
+                    val feature = features[page]
+                    FeatureItem(feature.icon, feature.title, feature.description)
+                }
+
+                CarouselAutoPlayHandler(pagerState, features.size)
+
+                Spacer(modifier = Modifier.height(spacing.xmedium))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(spacing.xsmall),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    repeat(features.size) { index ->
+                        val cd = stringResource(
+                            SharedRes.strings.page_indicator,
+                            index + 1,
+                            features.size
                         )
-                        .semantics { contentDescription = cd }
-                )
+                        val selected = pagerState.currentPage == index
+                        Box(
+                            modifier = Modifier
+                                .size(if (selected) 8.dp else 6.dp)
+                                .background(
+                                    color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    shape = CircleShape
+                                )
+                                .semantics { contentDescription = cd }
+                        )
+                    }
+                }
             }
+        }.map { it.measure(constraints) }
+
+        layout(content.maxOf { it.width }, content.maxOf { it.height }) {
+            content.forEach { it.place(0, 0) }
         }
     }
 }
@@ -586,7 +610,8 @@ private fun FeatureItem(icon: ImageVector, title: StringResource, description: S
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
     ) {
         Box(
             modifier = Modifier.size(40.dp),
