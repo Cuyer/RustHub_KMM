@@ -197,8 +197,9 @@ fun ItemScreen(
                     }
                 }
             } else {
-                HandlePagingItems(items = { pagedList }) {
-                    onError { error ->
+                HandlePagingItems(
+                    items = { pagedList },
+                    onError = { error ->
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -207,8 +208,7 @@ fun ItemScreen(
                             item {
                                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                     Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
+                                        modifier = Modifier.fillMaxWidth(),
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                         verticalArrangement = Arrangement.Center
                                     ) {
@@ -227,13 +227,9 @@ fun ItemScreen(
                                 }
                             }
                         }
-                        onAction(
-                            ItemAction.OnError(
-                                error
-                            )
-                        )
-                    }
-                    onEmpty {
+                        onAction(ItemAction.OnError(error))
+                    },
+                    onEmpty = {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -242,8 +238,7 @@ fun ItemScreen(
                             item {
                                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                     Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
+                                        modifier = Modifier.fillMaxWidth(),
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                         verticalArrangement = Arrangement.Center
                                     ) {
@@ -263,7 +258,7 @@ fun ItemScreen(
                             }
                         }
                     }
-                    onSuccess {
+                ) {
                         LazyColumn(
                             state = lazyListState,
                             verticalArrangement = Arrangement.spacedBy(spacing.medium),
