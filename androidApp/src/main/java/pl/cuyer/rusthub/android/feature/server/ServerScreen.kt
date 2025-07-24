@@ -241,51 +241,67 @@ fun ServerScreen(
                     }
                 }
                 onEmpty {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            val message = if (!state.value.isConnected) {
-                                stringResource(SharedRes.strings.no_servers_available_offline)
-                            } else {
-                                stringResource(SharedRes.strings.no_servers_available)
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        item {
+                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    val message = if (!state.value.isConnected) {
+                                        stringResource(SharedRes.strings.no_servers_available_offline)
+                                    } else {
+                                        stringResource(SharedRes.strings.no_servers_available)
+                                    }
+                                    Text(
+                                        text = "( •_•)?",
+                                        style = MaterialTheme.typography.headlineLarge,
+                                        textAlign = TextAlign.Center,
+                                        fontSize = 96.sp
+                                    )
+                                    Text(
+                                        text = message,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
                             }
-                            Text(
-                                text = "( •_•)?",
-                                style = MaterialTheme.typography.headlineLarge,
-                                textAlign = TextAlign.Center,
-                                fontSize = 96.sp
-                            )
-                            Text(
-                                text = message,
-                                style = MaterialTheme.typography.bodyLarge,
-                                textAlign = TextAlign.Center
-                            )
                         }
                     }
                 }
                 onError { error ->
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = "(×_×)",
-                                style = MaterialTheme.typography.headlineLarge,
-                                textAlign = TextAlign.Center,
-                                fontSize = 96.sp
-                            )
-                            Text(
-                                text = stringResource(SharedRes.strings.error_oops),
-                                style = MaterialTheme.typography.bodyLarge,
-                                textAlign = TextAlign.Center
-                            )
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        item {
+                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = "(×_×)",
+                                        style = MaterialTheme.typography.headlineLarge,
+                                        textAlign = TextAlign.Center,
+                                        fontSize = 96.sp
+                                    )
+                                    Text(
+                                        text = stringResource(SharedRes.strings.error_oops),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
                         }
                     }
                     onAction(

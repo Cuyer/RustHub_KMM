@@ -12,6 +12,7 @@
     <string name="map_wipe_notification_title">Вайп карты</string>
     <string name="wipe_notification_title">Полный вайп</string>
     <string name="error_unknown">Неизвестная ошибка</string>
+    <string name="error_oops">Упс! Что-то пошло не так.</string>
     <string name="logout_error">Не удалось выйти из аккаунта.</string>
     <string name="logout_button">Выйти</string>
     <string name="fetch_user_error">Не удалось получить данные пользователя.</string>

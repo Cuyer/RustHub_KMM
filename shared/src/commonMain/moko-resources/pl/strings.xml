@@ -12,6 +12,7 @@
     <string name="map_wipe_notification_title">Wipe mapy</string>
     <string name="wipe_notification_title">Pełny wipe</string>
     <string name="error_unknown">Nieznany błąd</string>
+    <string name="error_oops">Ups! Coś poszło nie tak.</string>
     <string name="logout_error">Nie udało się wylogować.</string>
     <string name="logout_button">Wyloguj</string>
     <string name="fetch_user_error">Nie udało się pobrać danych użytkownika.</string>

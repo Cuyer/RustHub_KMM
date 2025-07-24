@@ -12,6 +12,7 @@
     <string name="map_wipe_notification_title">Wipe de carte</string>
     <string name="wipe_notification_title">Wipe complet</string>
     <string name="error_unknown">Erreur inconnue</string>
+    <string name="error_oops">Oups ! Une erreur s’est produite..</string>
     <string name="logout_error">Échec de la déconnexion.</string>
     <string name="logout_button">Se déconnecter</string>
     <string name="fetch_user_error">Impossible de récupérer les données de l'utilisateur.</string>

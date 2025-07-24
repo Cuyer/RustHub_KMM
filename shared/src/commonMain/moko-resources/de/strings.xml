@@ -12,6 +12,7 @@
     <string name="map_wipe_notification_title">Karten-Wipe</string>
     <string name="wipe_notification_title">Kompletter Wipe</string>
     <string name="error_unknown">Unbekannter Fehler</string>
+    <string name="error_oops">Ups! Etwas ist schiefgelaufen.</string>
     <string name="logout_error">Abmeldung fehlgeschlagen.</string>
     <string name="logout_button">Abmelden</string>
     <string name="fetch_user_error">Benutzerdaten konnten nicht geladen werden.</string>
