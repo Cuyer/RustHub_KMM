@@ -42,9 +42,8 @@ import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
@@ -143,15 +142,7 @@ fun CredentialsScreen(
                     ) { focusManager.clearFocus() }
             ) {
                 CredentialsContent(
-                    email = { currentState.email },
-                    userExists = { currentState.userExists },
-                    provider = { currentState.provider },
-                    username = { currentState.username },
-                    password = { currentState.password },
-                    usernameError = { currentState.usernameError },
-                    passwordError = { currentState.passwordError },
-                    isLoading = { currentState.isLoading },
-                    googleLoading = { currentState.googleLoading },
+                    state = currentState,
                     isExpanded = isTabletMode,
                     onAction = onAction,
                     focusManager = focusManager
@@ -213,67 +204,53 @@ private fun CredentialsStaticContent(
 }
 
 @Composable
-private fun rememberSyncedTextFieldState(
+private fun rememberTextFieldWithListener(
     value: String,
+    onValueChange: (String) -> Unit,
 ): TextFieldState {
     val state = rememberTextFieldState(value)
-    LaunchedEffect(value) {
-        if (state.text.toString() != value) {
-            state.setTextAndPlaceCursorAtEnd(value)
-        }
+    LaunchedEffect(value) { state.setTextAndPlaceCursorAtEnd(value) }
+    LaunchedEffect(state) {
+        snapshotFlow { state.text }
+            .collect { typed -> onValueChange(typed.toString()) }
     }
     return state
 }
 
 @Composable
 private fun CredentialsContent(
-    email: () -> String,
-    userExists: () -> Boolean,
-    provider: () -> AuthProvider?,
-    username: () -> String,
-    password: () -> String,
-    usernameError: () -> String?,
-    passwordError: () -> String?,
-    isLoading: () -> Boolean,
-    googleLoading: () -> Boolean,
+    state: CredentialsState,
     isExpanded: Boolean,
     onAction: (CredentialsAction) -> Unit,
     focusManager: FocusManager,
 ) {
-    val usernameState = rememberSyncedTextFieldState(username())
-    val passwordState = rememberSyncedTextFieldState(password())
+    val usernameState = rememberTextFieldWithListener(state.username) {
+        onAction(CredentialsAction.OnUsernameChange(it))
+    }
+    val passwordState = rememberTextFieldWithListener(state.password) {
+        onAction(CredentialsAction.OnPasswordChange(it))
+    }
 
-    val buttonEnabled by remember(userExists(), usernameState.text, passwordState.text) {
-        derivedStateOf {
-            userExists() && passwordState.text.isNotBlank() ||
-                (!userExists() && usernameState.text.isNotBlank() && passwordState.text.isNotBlank())
-        }
+    val buttonEnabled = remember(state.userExists, usernameState.text, passwordState.text) {
+        state.userExists && passwordState.text.isNotBlank() ||
+            (!state.userExists && usernameState.text.isNotBlank() && passwordState.text.isNotBlank())
     }
 
     val fields: @Composable ColumnScope.() -> Unit = {
         CredentialsFields(
-            userExists = userExists,
-            provider = provider,
-            usernameError = usernameError,
-            passwordError = passwordError,
-            googleLoading = googleLoading,
+            state = state,
             usernameState = usernameState,
             passwordState = passwordState,
             onAction = onAction,
             focusManager = focusManager,
         )
-        if (provider() != AuthProvider.GOOGLE) {
-            val submitAction = remember(onAction, focusManager, usernameState, passwordState) {
-                {
-                    focusManager.clearFocus()
-                    onAction(CredentialsAction.OnUsernameChange(usernameState.text.toString()))
-                    onAction(CredentialsAction.OnPasswordChange(passwordState.text.toString()))
-                    onAction(CredentialsAction.OnSubmit)
-                }
-            }
+        if (state.provider != AuthProvider.GOOGLE) {
             AppButton(
-                onClick = submitAction,
-                isLoading = isLoading(),
+                onClick = {
+                    focusManager.clearFocus()
+                    onAction(CredentialsAction.OnSubmit)
+                },
+                isLoading = state.isLoading,
                 enabled = buttonEnabled,
                 modifier = Modifier
                     .imePadding()
@@ -291,9 +268,9 @@ private fun CredentialsContent(
         ) {
             CredentialsStaticContent(
                 modifier = Modifier.weight(1f),
-                email = email(),
-                userExists = userExists(),
-                provider = provider(),
+                email = state.email,
+                userExists = state.userExists,
+                provider = state.provider,
             )
             Column(
                 modifier = Modifier
@@ -312,9 +289,9 @@ private fun CredentialsContent(
             verticalArrangement = Arrangement.spacedBy(spacing.small),
         ) {
             CredentialsStaticContent(
-                email = email(),
-                userExists = userExists(),
-                provider = provider(),
+                email = state.email,
+                userExists = state.userExists,
+                provider = state.provider,
             )
             fields()
         }
@@ -323,11 +300,7 @@ private fun CredentialsContent(
 
 @Composable
 private fun CredentialsFields(
-    userExists: () -> Boolean,
-    provider: () -> AuthProvider?,
-    usernameError: () -> String?,
-    passwordError: () -> String?,
-    googleLoading: () -> Boolean,
+    state: CredentialsState,
     usernameState: TextFieldState,
     passwordState: TextFieldState,
     onAction: (CredentialsAction) -> Unit,
@@ -338,13 +311,13 @@ private fun CredentialsFields(
             .fillMaxWidth()
     ) {
         val keyboardState = keyboardAsState()
-        if (userExists() && provider() == AuthProvider.GOOGLE) {
+        if (state.userExists && state.provider == AuthProvider.GOOGLE) {
             SignProviderButton(
                 image = getImageByFileName("ic_google").drawableResId,
                 contentDescription = stringResource(SharedRes.strings.google_logo),
                 text = stringResource(SharedRes.strings.continue_with_google),
                 modifier = Modifier.fillMaxWidth(),
-                isLoading = googleLoading(),
+                isLoading = state.googleLoading,
                 backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
                 contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White
             ) {
@@ -354,14 +327,14 @@ private fun CredentialsFields(
             return
         }
 
-        if (!userExists()) {
+        if (!state.userExists) {
             AppTextField(
                 requestFocus = true,
                 textFieldState = usernameState,
                 labelText = stringResource(SharedRes.strings.username),
                 placeholderText = stringResource(SharedRes.strings.enter_your_username),
-                isError = usernameError() != null,
-                errorText = usernameError(),
+                isError = state.usernameError != null,
+                errorText = state.usernameError,
                 modifier = Modifier.fillMaxWidth(),
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next,
@@ -369,29 +342,27 @@ private fun CredentialsFields(
                 keyboardState = keyboardState
             )
         }
-        if (provider() != AuthProvider.GOOGLE) {
+        if (state.provider != AuthProvider.GOOGLE) {
             AppSecureTextField(
-                requestFocus = userExists(),
+                requestFocus = state.userExists,
                 textFieldState = passwordState,
                 labelText = stringResource(SharedRes.strings.password),
                 placeholderText = stringResource(SharedRes.strings.enter_your_password),
                 onSubmit = {
                     focusManager.clearFocus()
-                    onAction(CredentialsAction.OnUsernameChange(usernameState.text.toString()))
-                    onAction(CredentialsAction.OnPasswordChange(passwordState.text.toString()))
                     onAction(CredentialsAction.OnSubmit)
                 },
-                isError = passwordError() != null,
-                errorText = passwordError(),
+                isError = state.passwordError != null,
+                errorText = state.passwordError,
                 modifier = Modifier.fillMaxWidth(),
-                imeAction = when (userExists()) {
+                imeAction = when (state.userExists) {
                     true -> if (passwordState.text.isNotBlank()) ImeAction.Send else ImeAction.Done
                     false -> if (usernameState.text.isNotBlank() && passwordState.text.isNotBlank()) ImeAction.Send else ImeAction.Done
                 },
                 focusManager = focusManager,
                 keyboardState = keyboardState
             )
-            if (userExists()) {
+            if (state.userExists) {
                 AppTextButton(
                     modifier = Modifier.align(Alignment.End),
                     onClick = {
