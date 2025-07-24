@@ -31,6 +31,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.getCurrentAppLanguage
 import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
@@ -77,7 +78,7 @@ class StartupViewModel(
         observePreferences()
         observeUser()
         startupJob = coroutineScope.launch {
-            if (itemDataSource.isEmpty()) {
+            if (itemDataSource.isEmpty(getCurrentAppLanguage())) {
                 updateLoadingState(true)
                 itemSyncDataSource.setState(ItemSyncState.PENDING)
                 itemsScheduler.startNow()

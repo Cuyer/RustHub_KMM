@@ -588,7 +588,7 @@ updateEmailConfirmed:
 UPDATE userEntity SET email_confirmed = CASE WHEN :confirmed THEN 1 ELSE 0 END WHERE id = :id;
 
 CREATE TABLE itemEntity (
-    id INTEGER NOT NULL PRIMARY KEY,
+    id INTEGER NOT NULL,
     slug TEXT,
     url TEXT,
     name TEXT,
@@ -599,11 +599,12 @@ CREATE TABLE itemEntity (
     categories TEXT,
     short_name TEXT,
     icon_url TEXT,
-    language TEXT,
+    language TEXT NOT NULL,
     looting TEXT,
     crafting TEXT,
     recycling TEXT,
-    raiding TEXT
+    raiding TEXT,
+    PRIMARY KEY(id, language)
 );
 
 upsertItem:
@@ -641,7 +642,7 @@ INSERT INTO itemEntity (
     :crafting,
     :recycling,
     :raiding
-) ON CONFLICT(id) DO UPDATE SET
+) ON CONFLICT(id, language) DO UPDATE SET
     slug = excluded.slug,
     url = excluded.url,
     name = excluded.name,
@@ -659,16 +660,16 @@ INSERT INTO itemEntity (
     raiding = excluded.raiding;
 
 getItems:
-SELECT * FROM itemEntity;
+SELECT * FROM itemEntity WHERE language = :language;
 
 deleteItems:
 DELETE FROM itemEntity;
 
 countItems:
-SELECT COUNT(*) FROM itemEntity;
+SELECT COUNT(*) FROM itemEntity WHERE language = :language;
 
 getItemById:
-SELECT * FROM itemEntity WHERE id = :id;
+SELECT * FROM itemEntity WHERE id = :id AND language = :language;
 
 -- Returns a page of items filtered by query and category
 findItemsPagedFiltered:
@@ -676,6 +677,7 @@ SELECT *
 FROM itemEntity
 WHERE (:category IS NULL OR categories LIKE '%' || :category || '%')
   AND (name LIKE '%' || :name || '%' COLLATE NOCASE)
+  AND language = :language
 ORDER BY name
 LIMIT :limit OFFSET :offset;
 
@@ -683,7 +685,8 @@ countPagedItemsFiltered:
 SELECT COUNT(*)
 FROM itemEntity
 WHERE (:category IS NULL OR categories LIKE '%' || :category || '%')
-  AND (name LIKE '%' || :name || '%' COLLATE NOCASE);
+  AND (name LIKE '%' || :name || '%' COLLATE NOCASE)
+  AND language = :language;
 
 CREATE TABLE itemSyncEntity (
     id TEXT NOT NULL PRIMARY KEY,

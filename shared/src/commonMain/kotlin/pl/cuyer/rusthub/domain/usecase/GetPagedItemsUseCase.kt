@@ -11,6 +11,7 @@ import pl.cuyer.rusthub.domain.model.ItemCategory
 import pl.cuyer.rusthub.domain.model.RustItem
 import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 import kotlinx.serialization.json.Json
+import pl.cuyer.rusthub.domain.model.Language
 
 class GetPagedItemsUseCase(
     private val dataSource: ItemDataSource,
@@ -18,15 +19,15 @@ class GetPagedItemsUseCase(
 ) {
     operator fun invoke(
         query: String?,
-        category: ItemCategory?
+        category: ItemCategory?,
+        language: Language,
     ): Flow<PagingData<RustItem>> {
-        return Pager(
             config = PagingConfig(
                 pageSize = 40,
                 enablePlaceholders = true
             ),
             pagingSourceFactory = {
-                dataSource.getItemsPagingSource(query, category)
+                dataSource.getItemsPagingSource(query, category, language)
             }
         ).flow.map { pagingData ->
             pagingData.map { it.toRustItem(json) }

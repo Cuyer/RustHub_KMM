@@ -23,6 +23,7 @@ import app.cash.sqldelight.coroutines.mapToOneOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import pl.cuyer.rusthub.data.local.mapper.toRustItem
+import pl.cuyer.rusthub.domain.model.Language
 
 class ItemDataSourceImpl(
     db: RustHubDatabase,
@@ -60,20 +61,22 @@ class ItemDataSourceImpl(
         }
     }
 
-    override suspend fun isEmpty(): Boolean {
+    override suspend fun isEmpty(language: Language): Boolean {
         return withContext(Dispatchers.IO) {
-            queries.countItems().executeAsOne() == 0L
+            queries.countItems(language = language.name).executeAsOne() == 0L
         }
     }
 
     override fun getItemsPagingSource(
         name: String?,
-        category: ItemCategory?
+        category: ItemCategory?,
+        language: Language,
     ): PagingSource<Int, ItemEntity> {
         return QueryPagingSource(
             countQuery = queries.countPagedItemsFiltered(
                 name = name ?: "",
-                category = category?.name
+                category = category?.name,
+                language = language.name
             ),
             transacter = queries,
             context = Dispatchers.IO,
@@ -81,6 +84,7 @@ class ItemDataSourceImpl(
                 queries.findItemsPagedFiltered(
                     name = name ?: "",
                     category = category?.name,
+                    language = language.name,
                     limit = limit,
                     offset = offset
                 )
@@ -88,11 +92,10 @@ class ItemDataSourceImpl(
         )
     }
 
-    override fun getItemById(id: Long): Flow<RustItem?> {
-        return queries.getItemById(id)
+    override fun getItemById(id: Long, language: Language): Flow<RustItem?> {
+        return queries.getItemById(id = id, language = language.name)
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
             .map { it?.toRustItem(json) }
     }
-
 }
