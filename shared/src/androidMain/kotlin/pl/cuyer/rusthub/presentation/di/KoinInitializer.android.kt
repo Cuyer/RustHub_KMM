@@ -28,6 +28,7 @@ import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
+import pl.cuyer.rusthub.presentation.user.UserEventController
 import pl.cuyer.rusthub.util.AppCheckTokenProvider
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.ConnectivityObserver
@@ -160,7 +161,8 @@ actual val platformModule: Module = module {
             stringProvider = get(),
             systemDarkThemeObserver = get(),
             itemsScheduler = get(),
-            itemSyncDataSource = get()
+            itemSyncDataSource = get(),
+            userEventController = get()
         )
     }
     viewModel {
@@ -169,7 +171,8 @@ actual val platformModule: Module = module {
             snackbarController = get(),
             passwordValidator = get(),
             getUserUseCase = get(),
-            stringProvider = get()
+            stringProvider = get(),
+            userEventController = get()
         )
     }
     viewModel {
