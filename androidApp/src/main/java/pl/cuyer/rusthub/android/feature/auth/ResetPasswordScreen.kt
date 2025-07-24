@@ -62,7 +62,7 @@ import pl.cuyer.rusthub.presentation.features.auth.password.ResetPasswordAction
 import pl.cuyer.rusthub.presentation.features.auth.password.ResetPasswordState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.foundation.text.input.TextFieldState
 
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -152,6 +152,8 @@ private fun ResetPasswordScreenCompact(
     onAction: (ResetPasswordAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
+    val emailState = rememberTextFieldState(email())
+    LaunchedEffect(email()) { emailState.setTextAndPlaceCursorAtEnd(email()) }
 
     Column(
         modifier = modifier,
@@ -160,7 +162,7 @@ private fun ResetPasswordScreenCompact(
     ) {
         ResetPasswordStaticContent()
         ResetPasswordField(
-            email = email,
+            state = emailState,
             emailError = emailError,
             onAction = onAction,
             focusManager = focusManager
@@ -169,10 +171,11 @@ private fun ResetPasswordScreenCompact(
             modifier = Modifier
                 .imePadding()
                 .fillMaxWidth(),
-            enabled = { email().isNotBlank() },
+            enabled = { emailState.text.isNotBlank() },
             isLoading = isLoading,
             onClick = {
                 focusManager.clearFocus()
+                onAction(ResetPasswordAction.OnEmailChange(emailState.text.toString()))
                 onAction(ResetPasswordAction.OnSend)
             }
         ) { Text(stringResource(SharedRes.strings.send_email)) }
@@ -188,6 +191,8 @@ private fun ResetPasswordScreenExpanded(
     onAction: (ResetPasswordAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
+    val emailState = rememberTextFieldState(email())
+    LaunchedEffect(email()) { emailState.setTextAndPlaceCursorAtEnd(email()) }
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -200,7 +205,7 @@ private fun ResetPasswordScreenExpanded(
             verticalArrangement = Arrangement.spacedBy(spacing.small)
         ) {
             ResetPasswordField(
-                email = email,
+                state = emailState,
                 emailError = emailError,
                 onAction = onAction,
                 focusManager = focusManager
@@ -210,11 +215,12 @@ private fun ResetPasswordScreenExpanded(
                     .imePadding()
                     .fillMaxWidth(),
                 enabled = {
-                    email().isNotBlank()
+                    emailState.text.isNotBlank()
                 },
                 isLoading = isLoading,
                 onClick = {
                     focusManager.clearFocus()
+                    onAction(ResetPasswordAction.OnEmailChange(emailState.text.toString()))
                     onAction(ResetPasswordAction.OnSend)
                 }
             ) { Text(stringResource(SharedRes.strings.send_email)) }
@@ -240,21 +246,12 @@ private fun ResetPasswordStaticContent(modifier: Modifier = Modifier) {
 
 @Composable
 private fun ResetPasswordField(
-    email: () -> String,
+    state: TextFieldState,
     emailError: () -> String?,
     onAction: (ResetPasswordAction) -> Unit,
     focusManager: FocusManager
 ) {
     val keyboardState = keyboardAsState()
-    val state = rememberTextFieldState(email())
-    LaunchedEffect(email()) { state.setTextAndPlaceCursorAtEnd(email()) }
-
-    LaunchedEffect(state) {
-        snapshotFlow { state.text }
-            .collect { typed ->
-                onAction(ResetPasswordAction.OnEmailChange(typed.toString()))
-            }
-    }
     AppTextField(
         requestFocus = true,
         textFieldState = state,
@@ -263,6 +260,7 @@ private fun ResetPasswordField(
         keyboardType = KeyboardType.Email,
         imeAction = if (state.text.isNotBlank()) ImeAction.Send else ImeAction.Done,
         onSubmit = {
+            onAction(ResetPasswordAction.OnEmailChange(state.text.toString()))
             onAction(ResetPasswordAction.OnSend)
         },
         isError = emailError() != null,
@@ -272,3 +270,4 @@ private fun ResetPasswordField(
         keyboardState = keyboardState
     )
 }
+
