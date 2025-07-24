@@ -361,9 +361,9 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
                 onAction(OnboardingAction.OnEmailChange(emailState.text.toString()))
                 onAction(OnboardingAction.OnContinueWithEmail)
             },
-            isLoading = state.isLoading,
+            isLoading = { state.isLoading },
             modifier = Modifier.fillMaxWidth(),
-            enabled = emailState.text.isNotBlank()
+            enabled = { emailState.text.isNotBlank() }
         ) { Text(stringResource(SharedRes.strings.continue_with_e_mail)) }
 
         Row(
@@ -380,7 +380,7 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
             contentDescription = stringResource(SharedRes.strings.google_logo),
             text = stringResource(SharedRes.strings.continue_with_google),
             modifier = Modifier.fillMaxWidth(),
-            isLoading = state.googleLoading,
+            isLoading = { state.googleLoading },
             backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
             contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White
         ) {
@@ -441,7 +441,7 @@ private fun ActionButtons(
     AppOutlinedButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = { onAction(OnboardingAction.OnContinueAsGuest) },
-        isLoading = continueAsGuestLoading
+        isLoading = { continueAsGuestLoading }
     ) {
         Text(stringResource(SharedRes.strings.continue_as_guest))
     }

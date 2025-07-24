@@ -187,10 +187,12 @@ private fun UpgradeScreenCompact(
         )
         AppButton(
             onClick = { onAction(UpgradeAction.OnSubmit) },
-            isLoading = isLoading,
-            enabled = username.isNotBlank() &&
-                password.isNotBlank() &&
-                email.isNotBlank(),
+            isLoading = { isLoading },
+            enabled = {
+                username.isNotBlank() &&
+                    password.isNotBlank() &&
+                    email.isNotBlank()
+            },
             modifier = Modifier
                 .imePadding()
                 .fillMaxWidth()
@@ -210,7 +212,7 @@ private fun UpgradeScreenCompact(
             contentDescription = stringResource(SharedRes.strings.google_logo),
             text = stringResource(SharedRes.strings.upgrade_with_google),
             modifier = Modifier.fillMaxWidth(),
-            isLoading = googleLoading,
+            isLoading = { googleLoading },
             backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
             contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
         ) { onAction(UpgradeAction.OnGoogleLogin) }
@@ -255,10 +257,12 @@ private fun UpgradeScreenExpanded(
         )
             AppButton(
                 onClick = { onAction(UpgradeAction.OnSubmit) },
-                isLoading = isLoading,
-                enabled = username.isNotBlank() &&
-                    password.isNotBlank() &&
-                    email.isNotBlank(),
+                isLoading = { isLoading },
+                enabled = {
+                    username.isNotBlank() &&
+                        password.isNotBlank() &&
+                        email.isNotBlank()
+                },
                 modifier = Modifier
                     .imePadding()
                     .fillMaxWidth()
@@ -278,7 +282,7 @@ private fun UpgradeScreenExpanded(
                 contentDescription = stringResource(SharedRes.strings.google_logo),
                 text = stringResource(SharedRes.strings.upgrade_with_google),
                 modifier = Modifier.fillMaxWidth(),
-                isLoading = googleLoading,
+                isLoading = { googleLoading },
                 backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
                 contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
             ) { onAction(UpgradeAction.OnGoogleLogin) }
