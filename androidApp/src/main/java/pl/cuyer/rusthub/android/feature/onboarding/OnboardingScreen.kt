@@ -565,7 +565,7 @@ private fun ActionButtons(
     AppOutlinedButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = { onAction(OnboardingAction.OnContinueAsGuest) },
-        isLoading = continueAsGuestLoading
+        isLoading = continueAsGuestLoading()
     ) {
         Text(stringResource(SharedRes.strings.continue_as_guest))
     }
