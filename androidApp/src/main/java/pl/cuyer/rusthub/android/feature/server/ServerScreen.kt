@@ -302,63 +302,47 @@ fun ServerScreen(
                     onAction(ServerAction.OnError(error))
                 }
             ) {
-                    LazyColumn(
-                        state = lazyListState,
-                        verticalArrangement = Arrangement.spacedBy(spacing.medium),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        onPagingItems(key = { it.id ?: UUID.randomUUID() }) { item ->
-                            val interactionSource = remember { MutableInteractionSource() }
-                            ServerListItem(
-                                modifier = Modifier
-                                    .animateItem()
-                                    .padding(horizontal = spacing.xmedium)
-                                    .combinedClickable(
-                                        interactionSource = interactionSource,
-                                        onLongClick = {
-                                            onAction(ServerAction.OnLongServerClick(item.serverIp))
-                                        },
-                                        onClick = {
-                                            onAction(
-                                                ServerAction.OnServerClick(
-                                                    item.id ?: Long.MAX_VALUE,
-                                                    item.name ?: ""
-                                                )
+                LazyColumn(
+                    state = lazyListState,
+                    verticalArrangement = Arrangement.spacedBy(spacing.medium),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    onPagingItems(key = { it.id ?: UUID.randomUUID() }) { item ->
+                        val interactionSource = remember { MutableInteractionSource() }
+                        ServerListItem(
+                            modifier = Modifier
+                                .animateItem()
+                                .padding(horizontal = spacing.xmedium)
+                                .combinedClickable(
+                                    interactionSource = interactionSource,
+                                    onLongClick = {
+                                        onAction(ServerAction.OnLongServerClick(item.serverIp))
+                                    },
+                                    onClick = {
+                                        onAction(
+                                            ServerAction.OnServerClick(
+                                                item.id ?: Long.MAX_VALUE,
+                                                item.name ?: ""
                                             )
-                                        },
-                                        onClickLabel = stringResource(SharedRes.strings.view_details)
-                                    ),
-                                serverName = item.name.orEmpty(),
-                                flag = item.serverFlag,
-                                labels = { item.createLabels(stringProvider) },
-                                details = { item.createDetails(stringProvider) },
-                                isOnline = item.serverStatus == ServerStatus.ONLINE
-                            )
-                        }
-                        onAppendItem {
-                            CircularProgressIndicator(
-                                Modifier
-                                    .animateItem()
-                                    .padding(6.dp)
-                            )
-                        }
+                                        )
+                                    },
+                                    onClickLabel = stringResource(SharedRes.strings.view_details)
+                                ),
+                            serverName = item.name.orEmpty(),
+                            flag = item.serverFlag,
+                            labels = { item.createLabels(stringProvider) },
+                            details = { item.createDetails(stringProvider) },
+                            isOnline = item.serverStatus == ServerStatus.ONLINE
+                        )
+                    }
+                    onAppendItem {
+                        CircularProgressIndicator(
+                            Modifier
+                                .animateItem()
+                                .padding(6.dp)
+                        )
                     }
                 }
-            }
-            if (showSheet) {
-                FilterBottomSheet(
-                    filters = state.value.filters,
-                    isLoadingFilters = state.value.isLoadingFilters,
-                    sheetState = sheetState,
-                    onDismiss = {
-                        showSheet = false
-                    },
-                    onDismissAndRefresh = {
-                        showSheet = false
-                        pagedList.refresh()
-                    },
-                    onAction = onAction
-                )
             }
             AnimatedVisibility(
                 visible = !isAtTop,
@@ -396,6 +380,21 @@ fun ServerScreen(
                         tint = contentColorFor(FloatingActionButtonDefaults.containerColor)
                     )
                 }
+            }
+            if (showSheet) {
+                FilterBottomSheet(
+                    filters = state.value.filters,
+                    isLoadingFilters = state.value.isLoadingFilters,
+                    sheetState = sheetState,
+                    onDismiss = {
+                        showSheet = false
+                    },
+                    onDismissAndRefresh = {
+                        showSheet = false
+                        pagedList.refresh()
+                    },
+                    onAction = onAction
+                )
             }
         }
     }

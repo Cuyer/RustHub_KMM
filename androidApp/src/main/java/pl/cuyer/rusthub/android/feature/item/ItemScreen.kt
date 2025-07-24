@@ -259,68 +259,68 @@ fun ItemScreen(
                         }
                     }
                 ) {
-                        LazyColumn(
-                            state = lazyListState,
-                            verticalArrangement = Arrangement.spacedBy(spacing.medium),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        )
-                        {
-                            onPagingItems(key = { it.id ?: it.slug ?: it.hashCode() }) { item ->
-                                ItemListItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                        .padding(horizontal = spacing.xmedium),
-                                    item = item,
-                                    onClick = { id ->
-                                        onAction(ItemAction.OnItemClick(id))
-                                    }
-                                )
-                            }
+                    LazyColumn(
+                        state = lazyListState,
+                        verticalArrangement = Arrangement.spacedBy(spacing.medium),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    )
+                    {
+                        onPagingItems(key = { it.id ?: it.slug ?: it.hashCode() }) { item ->
+                            ItemListItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
+                                    .padding(horizontal = spacing.xmedium),
+                                item = item,
+                                onClick = { id ->
+                                    onAction(ItemAction.OnItemClick(id))
+                                }
+                            )
                         }
                     }
                 }
-                AnimatedVisibility(
-                    visible = !isAtTop,
-                    enter = slideInVertically(
-                        initialOffsetY = { it },
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioLowBouncy,
-                            stiffness = Spring.StiffnessVeryLow
-                        )
-                    ) + scaleIn(
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioLowBouncy,
-                            stiffness = Spring.StiffnessLow
-                        )
-                    ),
-                    exit = slideOutVertically(
-                        targetOffsetY = { it },
-                        animationSpec = tween(durationMillis = 150)
-                    ),
-                    modifier = Modifier
-                        .padding(spacing.medium)
-                        .align(Alignment.BottomEnd)
-                ) {
-                    FloatingActionButton(
-                        onClick = {
-                            coroutineScope.launch {
-                                lazyListState.animateScrollToItem(0)
-                                scrollBehavior.scrollOffset = 1f
-                            }
+            }
+            AnimatedVisibility(
+                visible = !isAtTop,
+                enter = slideInVertically(
+                    initialOffsetY = { it },
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioLowBouncy,
+                        stiffness = Spring.StiffnessVeryLow
+                    )
+                ) + scaleIn(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioLowBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
+                ),
+                exit = slideOutVertically(
+                    targetOffsetY = { it },
+                    animationSpec = tween(durationMillis = 150)
+                ),
+                modifier = Modifier
+                    .padding(spacing.medium)
+                    .align(Alignment.BottomEnd)
+            ) {
+                FloatingActionButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            lazyListState.animateScrollToItem(0)
+                            scrollBehavior.scrollOffset = 1f
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowUpward,
-                            contentDescription = stringResource(SharedRes.strings.scroll_to_top),
-                            tint = contentColorFor(FloatingActionButtonDefaults.containerColor)
-                        )
                     }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowUpward,
+                        contentDescription = stringResource(SharedRes.strings.scroll_to_top),
+                        tint = contentColorFor(FloatingActionButtonDefaults.containerColor)
+                    )
                 }
             }
         }
     }
 }
+
 
 @Composable
 private fun ItemCategoryChips(
