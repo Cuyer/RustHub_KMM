@@ -138,26 +138,6 @@ fun NavigationRoot(startDestination: NavKey) {
     }
     val listDetailStrategy = rememberListDetailSceneStrategy<Any>()
 
-    val configuration = LocalConfiguration.current
-    var lastOrientation by rememberSaveable { mutableIntStateOf(-1) }
-
-    LaunchedEffect(startDestination, configuration.orientation) {
-        val orientationChanged = if (lastOrientation == -1) {
-            lastOrientation = configuration.orientation
-            false
-        } else if (lastOrientation != configuration.orientation) {
-            lastOrientation = configuration.orientation
-            true
-        } else {
-            false
-        }
-
-        if (!orientationChanged && backStack.firstOrNull() != startDestination) {
-            backStack.clear()
-            backStack.add(startDestination)
-        }
-    }
-
     val current = backStack.lastOrNull()
     LaunchedEffect(current) { snackbarHostState.currentSnackbarData?.dismiss() }
     val showNav = bottomNavItems.any { it.isInHierarchy(current) }
@@ -307,9 +287,6 @@ private fun AppScaffold(
                             uiEvent = viewModel.uiEvent,
                             onAction = viewModel::onAction,
                             onNavigate = { dest ->
-                                if (dest is Onboarding) {
-                                    backStack.clear()
-                                }
                                 backStack.add(dest)
                             }
                         )
@@ -319,11 +296,6 @@ private fun AppScaffold(
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         DeleteAccountScreen(
                             onNavigateUp = { backStack.removeLastOrNull() },
-                            onNavigate = { dest ->
-                                if (dest is Onboarding) backStack.clear()
-                                backStack.add(dest)
-                            },
-                            uiEvent = viewModel.uiEvent,
                             state = state,
                             onAction = viewModel::onAction
                         )

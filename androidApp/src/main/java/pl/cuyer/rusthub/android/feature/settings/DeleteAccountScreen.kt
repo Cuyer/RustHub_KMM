@@ -72,15 +72,9 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 @Composable
 fun DeleteAccountScreen(
     onNavigateUp: () -> Unit,
-    onNavigate: (NavKey) -> Unit,
-    uiEvent: Flow<UiEvent>,
     state: State<DeleteAccountState>,
     onAction: (DeleteAccountAction) -> Unit
 ) {
-    ObserveAsEvents(uiEvent) { event ->
-        if (event is UiEvent.Navigate) onNavigate(event.destination)
-    }
-
     val context = LocalContext.current
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium

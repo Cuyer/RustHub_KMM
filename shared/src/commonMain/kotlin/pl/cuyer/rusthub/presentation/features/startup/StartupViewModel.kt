@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.AuthProvider
@@ -50,8 +52,6 @@ class StartupViewModel(
     private val initializationJob = coroutineScope.launch(start = CoroutineStart.LAZY) {
         initialize()
     }
-
-
     private val preferencesFlow = getUserPreferencesUseCase()
         .stateIn(
             scope = coroutineScope,

@@ -167,7 +167,6 @@ class SettingsViewModel(
                                 googleAuthClient.signOut()
                             }
                             userEventController.sendEvent(UserEvent.LoggedOut)
-                            _uiEvent.send(UiEvent.Navigate(Onboarding))
                         }
 
                         is Result.Error -> showErrorSnackbar(stringProvider.get(SharedRes.strings.logout_error))

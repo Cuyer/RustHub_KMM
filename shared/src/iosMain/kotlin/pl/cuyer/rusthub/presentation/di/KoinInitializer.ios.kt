@@ -43,7 +43,7 @@ import pl.cuyer.rusthub.presentation.user.UserEventController
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
     single { AppCheckTokenProvider() }
-    single { HttpClientFactory(get(), get(), get(), get()).create() }
+    single { HttpClientFactory(get(), get(), get(), get(), get()).create() }
     single { TokenRefresher() }
     single { ClipboardHandler() }
     single { ShareHandler() }

@@ -34,6 +34,7 @@ import pl.cuyer.rusthub.util.AppCheckTokenProvider
 import pl.cuyer.rusthub.util.BuildType
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.model.AuthProvider
+import pl.cuyer.rusthub.presentation.user.UserEventController
 import pl.cuyer.rusthub.util.TokenRefresher
 import platform.Foundation.NSLocale
 import platform.Foundation.currentLocale
@@ -50,7 +51,8 @@ actual class HttpClientFactory actual constructor(
     private val json: Json,
     private val authDataSource: AuthDataSource,
     private val appCheckTokenProvider: AppCheckTokenProvider,
-    private val tokenRefresher: TokenRefresher
+    private val tokenRefresher: TokenRefresher,
+    private val userEventController: UserEventController
 ) {
     actual fun create(): HttpClient {
         return HttpClient(Darwin) {
@@ -88,7 +90,6 @@ actual class HttpClientFactory actual constructor(
                             BearerTokens(newTokens.accessToken, newTokens.refreshToken)
                         } else {
                             authDataSource.deleteUser()
-                            tokenRefresher.clear()
                             null
                         }
                     }
@@ -111,6 +112,7 @@ actual class HttpClientFactory actual constructor(
 
             install(ForbiddenResponsePlugin) {
                 authDataSource = this@HttpClientFactory.authDataSource
+                userEventController = this@HttpClientFactory.userEventController
             }
 
             install(HttpRequestRetry) {

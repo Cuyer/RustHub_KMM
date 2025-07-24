@@ -16,18 +16,17 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.usecase.DeleteAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
-import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.presentation.user.UserEvent
 import pl.cuyer.rusthub.presentation.user.UserEventController
-import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.util.validator.PasswordValidator
@@ -40,9 +39,6 @@ class DeleteAccountViewModel(
     private val stringProvider: StringProvider,
     private val userEventController: UserEventController,
 ) : BaseViewModel() {
-    private val _uiEvent = Channel<UiEvent>(UNLIMITED)
-    val uiEvent = _uiEvent.receiveAsFlow()
-
     private val _state = MutableStateFlow(DeleteAccountState())
     val state = _state
         .onStart { observeUser() }
@@ -90,7 +86,7 @@ class DeleteAccountViewModel(
                                         message = stringProvider.get(SharedRes.strings.account_deleted_successfully)
                                     )
                                 )
-                                _uiEvent.send(UiEvent.Navigate(Onboarding))
+                                userEventController.sendEvent(UserEvent.LoggedOut)
                             }
                             is Result.Error -> showErrorSnackbar(
                                 result.exception.toUserMessage(stringProvider)
@@ -130,7 +126,6 @@ class DeleteAccountViewModel(
                                 )
                             )
                             userEventController.sendEvent(UserEvent.LoggedOut)
-                            _uiEvent.send(UiEvent.Navigate(Onboarding))
                         }
                         is Result.Error -> showErrorSnackbar(
                             result.exception.toUserMessage(stringProvider)

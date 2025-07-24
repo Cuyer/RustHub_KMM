@@ -16,8 +16,12 @@ class LogoutUserUseCase(
         repository.logout().collectLatest { result ->
             when (result) {
                 is Result.Success -> {
-                    dataSource.deleteUser()
-                    send(Result.Success(Unit))
+                    try {
+                        dataSource.deleteUser()
+                        send(Result.Success(Unit))
+                    } catch (e: Exception) {
+                        send(Result.Error(e))
+                    }
                 }
 
                 is Result.Error -> send(Result.Error(result.exception))
