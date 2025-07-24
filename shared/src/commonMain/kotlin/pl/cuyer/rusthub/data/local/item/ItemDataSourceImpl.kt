@@ -68,9 +68,25 @@ class ItemDataSourceImpl(
         }
     }
 
+    /**
+     * Checks if the database is empty for a given language.
+     *
+     * The `updatedLanguage` variable is used to handle a specific limitation where the Polish language
+     * is not supported in the API. If the provided language is Polish, it is replaced with English
+     * to ensure the query executes correctly. This workaround ensures compatibility with the API
+     * while maintaining functionality for other languages.
+     *
+     * @param language The `Language` to check for.
+     * @return `true` if the database is empty for the given language, `false` otherwise.
+     */
     override suspend fun isEmpty(language: Language): Boolean {
         return withContext(Dispatchers.IO) {
-            queries.countItems(language = language.name).executeAsOne() == 0L
+            val updatedLanguage = if (language == Language.POLISH) {
+                Language.ENGLISH
+            } else {
+                language
+            }
+            queries.countItems(language = updatedLanguage.name).executeAsOne() == 0L
         }
     }
 
