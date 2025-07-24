@@ -237,9 +237,9 @@ private fun CredentialsScreenCompact(
 ) {
     val focusManager = LocalFocusManager.current
     val usernameState = rememberTextFieldState(username())
-    LaunchedEffect(username) { usernameState.setTextAndPlaceCursorAtEnd(username()) }
+    LaunchedEffect(username()) { usernameState.setTextAndPlaceCursorAtEnd(username()) }
     val passwordState = rememberTextFieldState(password())
-    LaunchedEffect(password) { passwordState.setTextAndPlaceCursorAtEnd(password()) }
+    LaunchedEffect(password()) { passwordState.setTextAndPlaceCursorAtEnd(password()) }
 
     LaunchedEffect(usernameState) {
         snapshotFlow { usernameState.text }
@@ -314,9 +314,9 @@ private fun CredentialsScreenExpanded(
 ) {
     val focusManager = LocalFocusManager.current
     val usernameState = rememberTextFieldState(username())
-    LaunchedEffect(username) { usernameState.setTextAndPlaceCursorAtEnd(username()) }
+    LaunchedEffect(username()) { usernameState.setTextAndPlaceCursorAtEnd(username()) }
     val passwordState = rememberTextFieldState(password())
-    LaunchedEffect(password) { passwordState.setTextAndPlaceCursorAtEnd(password()) }
+    LaunchedEffect(password()) { passwordState.setTextAndPlaceCursorAtEnd(password()) }
 
     LaunchedEffect(usernameState) {
         snapshotFlow { usernameState.text }
