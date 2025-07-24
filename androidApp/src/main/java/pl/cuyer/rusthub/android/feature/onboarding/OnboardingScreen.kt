@@ -452,9 +452,9 @@ private fun ContinueWithEmailButton(
             focusManager.clearFocus()
             onAction(OnboardingAction.OnContinueWithEmail)
         },
-        isLoading = isLoading,
+        isLoading = isLoading(),
         modifier = Modifier.fillMaxWidth(),
-        enabled = { email().isNotBlank() }
+        enabled = email().isNotBlank()
     ) {
         Text(stringResource(SharedRes.strings.continue_with_e_mail))
     }
@@ -528,7 +528,7 @@ private fun GoogleButton(
         contentDescription = stringResource(SharedRes.strings.google_logo),
         text = stringResource(SharedRes.strings.continue_with_google),
         modifier = Modifier.fillMaxWidth(),
-        isLoading = isLoading,
+        isLoading = isLoading(),
         backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
         contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
         onClick = onClick

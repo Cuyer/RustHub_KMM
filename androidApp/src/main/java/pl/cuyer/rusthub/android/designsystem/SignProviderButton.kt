@@ -33,7 +33,7 @@ fun SignProviderButton(
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
     tint: Color? = null,
-    isLoading: () -> Boolean = { false },
+    isLoading: Boolean = false,
     onClick: () -> Unit
 ) {
     AppButton(
@@ -93,7 +93,7 @@ private fun GoogleSignInButtonPreview() {
         SignProviderButton(
             modifier = Modifier.fillMaxWidth(),
             onClick = {},
-            isLoading = { true },
+            isLoading = true,
             image = getImageByFileName("ic_google").drawableResId,
             backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
             contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White,

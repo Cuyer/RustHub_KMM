@@ -194,8 +194,8 @@ private fun ChangePasswordScreenCompact(
             modifier = Modifier
                 .imePadding()
                 .fillMaxWidth(),
-            enabled = { oldState.text.isNotBlank() && newState.text.isNotBlank() },
-            isLoading = isLoading,
+            enabled = oldState.text.isNotBlank() && newState.text.isNotBlank(),
+            isLoading = isLoading(),
             onClick = {
                 focusManager.clearFocus()
                 onAction(ChangePasswordAction.OnChange)
@@ -256,7 +256,7 @@ private fun ChangePasswordScreenExpanded(
                 modifier = Modifier
                     .imePadding()
                     .fillMaxWidth(),
-                isLoading = isLoading,
+                isLoading = isLoading(),
                 onClick = {
                     focusManager.clearFocus()
                     onAction(ChangePasswordAction.OnChange)

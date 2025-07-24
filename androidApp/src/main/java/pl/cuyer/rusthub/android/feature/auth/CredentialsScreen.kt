@@ -250,8 +250,8 @@ private fun CredentialsContent(
                     focusManager.clearFocus()
                     onAction(CredentialsAction.OnSubmit)
                 },
-                isLoading = { state.isLoading },
-                enabled = { buttonEnabled },
+                isLoading = state.isLoading,
+                enabled = buttonEnabled,
                 modifier = Modifier
                     .imePadding()
                     .fillMaxWidth(),
@@ -317,7 +317,7 @@ private fun CredentialsFields(
                 contentDescription = stringResource(SharedRes.strings.google_logo),
                 text = stringResource(SharedRes.strings.continue_with_google),
                 modifier = Modifier.fillMaxWidth(),
-                isLoading = { state.googleLoading },
+                isLoading = state.googleLoading,
                 backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
                 contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White
             ) {
