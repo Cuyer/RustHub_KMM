@@ -22,12 +22,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
@@ -53,18 +55,21 @@ fun AppSecureTextField(
     imeAction: ImeAction,
     isError: Boolean = false,
     errorText: String? = null,
-    requestFocus: Boolean = false
+    requestFocus: Boolean = false,
+    keyboardState: State<Boolean>? = null,
+    focusManager: FocusManager? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     var passwordVisible by remember { mutableStateOf(false) }
-    val isKeyboardOpen by keyboardAsState()
-    val focusManager = LocalFocusManager.current
+    val resolvedKeyboardState = keyboardState ?: keyboardAsState()
+    val isKeyboardOpen by resolvedKeyboardState
+    val resolvedFocusManager = focusManager ?: LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     val lifecycleOwner = LocalLifecycleOwner.current
 
     LaunchedEffect(isKeyboardOpen) {
         if (!isKeyboardOpen) {
-            focusManager.clearFocus()
+            resolvedFocusManager.clearFocus()
         }
     }
 
@@ -83,15 +88,15 @@ fun AppSecureTextField(
             when (imeAction) {
 
                 ImeAction.Next -> {
-                    focusManager.moveFocus(FocusDirection.Down)
+                    resolvedFocusManager.moveFocus(FocusDirection.Down)
                 }
 
                 ImeAction.Done -> {
-                    focusManager.clearFocus()
+                    resolvedFocusManager.clearFocus()
                 }
 
                 ImeAction.Send -> {
-                    focusManager.clearFocus()
+                    resolvedFocusManager.clearFocus()
                     onSubmit()
                 }
 

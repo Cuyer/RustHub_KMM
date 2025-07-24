@@ -148,12 +148,13 @@ private fun DeleteAccountScreenCompact(
     state: DeleteAccountState,
     onAction: (DeleteAccountAction) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+    val keyboardState = keyboardAsState()
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
-        val focusManager = LocalFocusManager.current
         val passState = rememberTextFieldState(state.password)
         LaunchedEffect(state.password) { passState.setTextAndPlaceCursorAtEnd(state.password) }
         DeleteAccountStaticContent()
@@ -161,7 +162,9 @@ private fun DeleteAccountScreenCompact(
             provider = state.provider,
             passwordState = passState,
             passwordError = state.passwordError,
-            onAction = onAction
+            onAction = onAction,
+            focusManager = focusManager,
+            keyboardState = keyboardState
         )
         AppButton(
             modifier = Modifier
@@ -186,6 +189,8 @@ private fun DeleteAccountScreenExpanded(
     state: DeleteAccountState,
     onAction: (DeleteAccountAction) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+    val keyboardState = keyboardAsState()
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -197,14 +202,15 @@ private fun DeleteAccountScreenExpanded(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(spacing.small)
         ) {
-            val focusManager = LocalFocusManager.current
             val passState = rememberTextFieldState(state.password)
             LaunchedEffect(state.password) { passState.setTextAndPlaceCursorAtEnd(state.password) }
             DeleteAccountFields(
                 provider = state.provider,
                 passwordState = passState,
                 passwordError = state.passwordError,
-                onAction = onAction
+                onAction = onAction,
+                focusManager = focusManager,
+                keyboardState = keyboardState
             )
             AppButton(
                 modifier = Modifier
@@ -245,13 +251,14 @@ private fun DeleteAccountFields(
     provider: AuthProvider?,
     passwordState: TextFieldState,
     passwordError: String?,
-    onAction: (DeleteAccountAction) -> Unit
+    onAction: (DeleteAccountAction) -> Unit,
+    focusManager: FocusManager,
+    keyboardState: State<Boolean>
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
-        val focusManager = LocalFocusManager.current
         if (provider != AuthProvider.GOOGLE) {
             AppSecureTextField(
                 textFieldState = passwordState,
@@ -265,7 +272,9 @@ private fun DeleteAccountFields(
                 isError = passwordError != null,
                 errorText = passwordError,
                 modifier = Modifier.fillMaxWidth(),
-                imeAction = if (passwordState.text.isNotBlank()) ImeAction.Send else ImeAction.Done
+                imeAction = if (passwordState.text.isNotBlank()) ImeAction.Send else ImeAction.Done,
+                focusManager = focusManager,
+                keyboardState = keyboardState
             )
         }
     }
