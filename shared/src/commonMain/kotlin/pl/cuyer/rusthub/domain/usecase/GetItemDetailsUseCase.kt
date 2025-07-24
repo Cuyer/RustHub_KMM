@@ -9,6 +9,14 @@ class GetItemDetailsUseCase(
     private val dataSource: ItemDataSource,
 ) {
     operator fun invoke(id: Long, language: Language): Flow<RustItem?> {
-        return dataSource.getItemById(id, language)
+        // If the language is Polish, we switch to English for the query
+        // This is a workaround for the issue with Polish language not being supported in the API
+        val updatedLanguage = if (language == Language.POLISH) {
+            Language.ENGLISH
+        } else {
+            language
+        }
+
+        return dataSource.getItemById(id, updatedLanguage)
     }
 }
