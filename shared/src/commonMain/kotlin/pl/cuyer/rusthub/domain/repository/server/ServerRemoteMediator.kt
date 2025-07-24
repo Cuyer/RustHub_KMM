@@ -27,13 +27,20 @@ class ServerRemoteMediator(
     private val searchQuery: String?
 ) : RemoteMediator<Int, ServerEntity>() {
     private val keyId = DEFAULT_KEY
+    private val cacheTimeoutMillis = 60_000L
 
     override suspend fun initialize(): InitializeAction {
         val current = filters.getFilters().firstOrNull()
         if (current == null) {
             filters.upsertFilters(ServerQuery())
         }
-        return InitializeAction.LAUNCH_INITIAL_REFRESH
+        val key = remoteKeys.getKey(keyId)
+        val now = Clock.System.now().toEpochMilliseconds()
+        return if (key == null || now - key.lastUpdated > cacheTimeoutMillis) {
+            InitializeAction.LAUNCH_INITIAL_REFRESH
+        } else {
+            InitializeAction.SKIP_INITIAL_REFRESH
+        }
     }
 
     override suspend fun load(
