@@ -18,6 +18,9 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -25,13 +28,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -39,9 +42,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
@@ -51,7 +52,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.hideFromAccessibility
-import androidx.compose.ui.semantics.invisibleToUser
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -68,13 +68,12 @@ import pl.cuyer.rusthub.android.designsystem.SignProviderButton
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsAction
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
-import pl.cuyer.rusthub.android.util.composeUtil.stringResource
-import androidx.compose.runtime.snapshotFlow
 
 @OptIn(
     ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3ExpressiveApi::class,
@@ -285,7 +284,7 @@ private fun CredentialsScreenCompact(
                     focusManager.clearFocus()
                     onAction(CredentialsAction.OnSubmit)
                 },
-                isLoading = { isLoading },
+                isLoading = isLoading,
                 enabled = {
                     when (userExists()) {
                         true -> passwordState.text.isNotBlank()
@@ -369,7 +368,7 @@ private fun CredentialsScreenExpanded(
                         focusManager.clearFocus()
                         onAction(CredentialsAction.OnSubmit)
                     },
-                    isLoading = { isLoading },
+                    isLoading = isLoading,
                     enabled = {
                         when (userExists()) {
                             true -> passwordState.text.isNotBlank()
