@@ -86,7 +86,7 @@ import pl.cuyer.rusthub.domain.usecase.UpgradeWithGoogleUseCase
 import pl.cuyer.rusthub.domain.usecase.SetThemeConfigUseCase
 import pl.cuyer.rusthub.domain.usecase.SetDynamicColorPreferenceUseCase
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
-import pl.cuyer.rusthub.presentation.user.UserEventController
+import pl.cuyer.rusthub.common.user.UserEventController
 import pl.cuyer.rusthub.util.MessagingTokenManager
 import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.StringProvider

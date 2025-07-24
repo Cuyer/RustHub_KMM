@@ -1,4 +1,4 @@
-package pl.cuyer.rusthub.presentation.user
+package pl.cuyer.rusthub.common.user
 
 import androidx.compose.runtime.Immutable
 

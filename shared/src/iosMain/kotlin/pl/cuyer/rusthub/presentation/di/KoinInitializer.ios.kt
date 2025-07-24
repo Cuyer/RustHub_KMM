@@ -38,7 +38,7 @@ import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.presentation.features.item.ItemViewModel
 import pl.cuyer.rusthub.presentation.features.item.ItemDetailsViewModel
-import pl.cuyer.rusthub.presentation.user.UserEventController
+import pl.cuyer.rusthub.common.user.UserEventController
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }

@@ -30,7 +30,7 @@ import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
-import pl.cuyer.rusthub.presentation.user.UserEventController
+import pl.cuyer.rusthub.common.user.UserEventController
 import pl.cuyer.rusthub.util.AppCheckTokenProvider
 import pl.cuyer.rusthub.util.BuildType
 import pl.cuyer.rusthub.util.TokenRefresher
