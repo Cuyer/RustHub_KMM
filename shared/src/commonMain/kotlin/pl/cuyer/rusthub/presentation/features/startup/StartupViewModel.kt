@@ -6,11 +6,7 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -55,9 +51,6 @@ class StartupViewModel(
         initialize()
     }
 
-    private val userFlow = getUserUseCase()
-        .distinctUntilChanged()
-        .shareIn(coroutineScope, SharingStarted.WhileSubscribed(5_000L), 1)
 
     private val preferencesFlow = getUserPreferencesUseCase()
         .stateIn(
@@ -75,7 +68,6 @@ class StartupViewModel(
 
     init {
         observePreferences()
-        observeUser()
         startupJob = coroutineScope.launch {
             if (itemDataSource.isEmpty()) {
                 updateLoadingState(true)
@@ -88,17 +80,6 @@ class StartupViewModel(
             }
             initializationJob.start()
         }
-    }
-
-    private fun observeUser() {
-        userFlow
-            .onEach { user ->
-                updateStartDestination(user)
-            }
-            .catch {
-                showErrorSnackbar(stringProvider.get(SharedRes.strings.fetch_user_error))
-            }
-            .launchIn(coroutineScope)
     }
 
     private fun observePreferences() {
@@ -115,7 +96,7 @@ class StartupViewModel(
     private suspend fun initialize() {
         updateLoadingState(true)
         try {
-            val user = userFlow.first()
+            val user = getUserUseCase().first()
             if (user != null && user.provider == AuthProvider.LOCAL) {
                 when (val result = checkEmailConfirmedUseCase().first()) {
                     is Result.Success -> setEmailConfirmedUseCase(result.data)

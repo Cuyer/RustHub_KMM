@@ -25,6 +25,8 @@ import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.presentation.user.UserEvent
+import pl.cuyer.rusthub.presentation.user.UserEventController
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.toUserMessage
@@ -36,6 +38,7 @@ class DeleteAccountViewModel(
     private val passwordValidator: PasswordValidator,
     private val getUserUseCase: GetUserUseCase,
     private val stringProvider: StringProvider,
+    private val userEventController: UserEventController,
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -126,6 +129,7 @@ class DeleteAccountViewModel(
                                     message = stringProvider.get(SharedRes.strings.account_deleted_successfully)
                                 )
                             )
+                            userEventController.sendEvent(UserEvent.LoggedOut)
                             _uiEvent.send(UiEvent.Navigate(Onboarding))
                         }
                         is Result.Error -> showErrorSnackbar(

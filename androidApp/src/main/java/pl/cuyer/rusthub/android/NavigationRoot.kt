@@ -99,6 +99,8 @@ import pl.cuyer.rusthub.presentation.navigation.Terms
 import pl.cuyer.rusthub.presentation.navigation.UpgradeAccount
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
+import pl.cuyer.rusthub.presentation.user.UserEvent
+import pl.cuyer.rusthub.presentation.user.UserEventController
 
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -128,6 +130,12 @@ fun NavigationRoot(startDestination: NavKey) {
     }
 
     val backStack = rememberNavBackStack(startDestination)
+    ObserveAsEvents(flow = UserEventController.events, key1 = backStack) { event ->
+        if (event is UserEvent.LoggedOut) {
+            backStack.clear()
+            backStack.add(Onboarding)
+        }
+    }
     val listDetailStrategy = rememberListDetailSceneStrategy<Any>()
 
     val configuration = LocalConfiguration.current
