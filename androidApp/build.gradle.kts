@@ -12,6 +12,7 @@ composeCompiler {
     reportsDestination = layout.buildDirectory.dir("composeReports")
     metricsDestination = layout.buildDirectory.dir("composeMetrics")
     includeSourceInformation.set(true)
+    stabilityConfigurationFiles.add(rootProject.layout.projectDirectory.file("stability_config.conf"))
 }
 
 android {
