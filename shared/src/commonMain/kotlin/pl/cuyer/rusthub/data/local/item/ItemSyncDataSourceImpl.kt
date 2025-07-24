@@ -26,4 +26,8 @@ class ItemSyncDataSourceImpl(db: RustHubDatabase) : ItemSyncDataSource, Queries(
             .mapToOneOrNull(Dispatchers.IO)
             .map { it?.sync_state?.let { value -> ItemSyncState.valueOf(value) } }
     }
+
+    override suspend fun clearState() {
+        withContext(Dispatchers.IO) { queries.clearItemSync() }
+    }
 }
