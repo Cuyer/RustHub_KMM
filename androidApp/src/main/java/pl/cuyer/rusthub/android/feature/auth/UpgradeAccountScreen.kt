@@ -42,6 +42,7 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
@@ -59,6 +60,7 @@ import pl.cuyer.rusthub.android.designsystem.AppTextField
 import pl.cuyer.rusthub.android.designsystem.SignProviderButton
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeAction
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeState
@@ -165,7 +167,6 @@ private fun UpgradeScreenCompact(
     onAction: (UpgradeAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-    val keyboardState = keyboardAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -182,8 +183,7 @@ private fun UpgradeScreenCompact(
             password = password,
             passwordError = passwordError,
             onAction = onAction,
-            focusManager = focusManager,
-            keyboardState = keyboardState
+            focusManager = focusManager
         )
         AppButton(
             onClick = { onAction(UpgradeAction.OnSubmit) },
@@ -230,7 +230,6 @@ private fun UpgradeScreenExpanded(
     onAction: (UpgradeAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-    val keyboardState = keyboardAsState()
     Row(
         modifier = Modifier
             .fillMaxSize()
@@ -252,8 +251,7 @@ private fun UpgradeScreenExpanded(
             password = password,
             passwordError = passwordError,
             onAction = onAction,
-            focusManager = focusManager,
-            keyboardState = keyboardState
+            focusManager = focusManager
         )
             AppButton(
                 onClick = { onAction(UpgradeAction.OnSubmit) },
@@ -314,11 +312,11 @@ private fun UpgradeFields(
     passwordError: String?,
     onAction: (UpgradeAction) -> Unit,
     focusManager: FocusManager,
-    keyboardState: State<Boolean>
 ) {
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(spacing.small)) {
         val usernameState = rememberTextFieldState(username)
         LaunchedEffect(username) { usernameState.setTextAndPlaceCursorAtEnd(username) }
+        val keyboardState = keyboardAsState()
         AppTextField(
             requestFocus = true,
             textFieldState = usernameState,

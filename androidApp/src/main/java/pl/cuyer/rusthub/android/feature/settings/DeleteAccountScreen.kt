@@ -59,6 +59,8 @@ import pl.cuyer.rusthub.android.theme.spacing
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.ui.focus.FocusManager
+import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountAction
@@ -149,7 +151,6 @@ private fun DeleteAccountScreenCompact(
     onAction: (DeleteAccountAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-    val keyboardState = keyboardAsState()
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -163,8 +164,7 @@ private fun DeleteAccountScreenCompact(
             passwordState = passState,
             passwordError = state.passwordError,
             onAction = onAction,
-            focusManager = focusManager,
-            keyboardState = keyboardState
+            focusManager = focusManager
         )
         AppButton(
             modifier = Modifier
@@ -190,7 +190,6 @@ private fun DeleteAccountScreenExpanded(
     onAction: (DeleteAccountAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-    val keyboardState = keyboardAsState()
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -209,8 +208,7 @@ private fun DeleteAccountScreenExpanded(
                 passwordState = passState,
                 passwordError = state.passwordError,
                 onAction = onAction,
-                focusManager = focusManager,
-                keyboardState = keyboardState
+                focusManager = focusManager
             )
             AppButton(
                 modifier = Modifier
@@ -252,13 +250,13 @@ private fun DeleteAccountFields(
     passwordState: TextFieldState,
     passwordError: String?,
     onAction: (DeleteAccountAction) -> Unit,
-    focusManager: FocusManager,
-    keyboardState: State<Boolean>
+    focusManager: FocusManager
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
+        val keyboardState = keyboardAsState()
         if (provider != AuthProvider.GOOGLE) {
             AppSecureTextField(
                 textFieldState = passwordState,

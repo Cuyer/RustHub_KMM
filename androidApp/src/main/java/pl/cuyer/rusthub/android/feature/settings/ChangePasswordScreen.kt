@@ -41,6 +41,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
@@ -55,6 +56,7 @@ import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppSecureTextField
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordAction
 import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordState
@@ -142,7 +144,6 @@ private fun ChangePasswordScreenCompact(
     onAction: (ChangePasswordAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-    val keyboardState = keyboardAsState()
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -159,8 +160,7 @@ private fun ChangePasswordScreenCompact(
             oldPasswordError = state.oldPasswordError,
             newPasswordError = state.newPasswordError,
             onAction = onAction,
-            focusManager = focusManager,
-            keyboardState = keyboardState
+            focusManager = focusManager
         )
         AppButton(
             modifier = Modifier
@@ -185,7 +185,6 @@ private fun ChangePasswordScreenExpanded(
     onAction: (ChangePasswordAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-    val keyboardState = keyboardAsState()
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -207,8 +206,7 @@ private fun ChangePasswordScreenExpanded(
                 oldPasswordError = state.oldPasswordError,
                 newPasswordError = state.newPasswordError,
                 onAction = onAction,
-                focusManager = focusManager,
-                keyboardState = keyboardState
+                focusManager = focusManager
             )
             AppButton(
                 modifier = Modifier
@@ -249,13 +247,13 @@ private fun ChangePasswordFields(
     oldPasswordError: String?,
     newPasswordError: String?,
     onAction: (ChangePasswordAction) -> Unit,
-    focusManager: FocusManager,
-    keyboardState: State<Boolean>
+    focusManager: FocusManager
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
+        val keyboardState = keyboardAsState()
         AppSecureTextField(
             requestFocus = true,
             textFieldState = oldPasswordState,

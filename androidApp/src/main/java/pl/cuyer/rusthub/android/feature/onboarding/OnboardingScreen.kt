@@ -101,6 +101,7 @@ import pl.cuyer.rusthub.android.designsystem.SignProviderButton
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingAction
@@ -332,6 +333,7 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
+        val keyboardState = keyboardAsState()
         Text(
             text = stringResource(SharedRes.strings.let_s_start_with_your_email),
             style = MaterialTheme.typography.bodyLarge,
@@ -349,7 +351,9 @@ private fun AuthSection(state: OnboardingState, onAction: (OnboardingAction) -> 
                 onAction(OnboardingAction.OnEmailChange(emailState.text.toString()))
                 onAction(OnboardingAction.OnContinueWithEmail)
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            keyboardState = keyboardState,
+            focusManager = focusManager
         )
         AppButton(
             onClick = {

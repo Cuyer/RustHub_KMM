@@ -44,6 +44,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
@@ -66,6 +67,7 @@ import pl.cuyer.rusthub.android.designsystem.AppTextField
 import pl.cuyer.rusthub.android.designsystem.SignProviderButton
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsAction
@@ -234,7 +236,6 @@ private fun CredentialsScreenCompact(
     onAction: (CredentialsAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-    val keyboardState = keyboardAsState()
     val usernameState = rememberTextFieldState(username)
     LaunchedEffect(username) { usernameState.setTextAndPlaceCursorAtEnd(username) }
     val passwordState = rememberTextFieldState(password)
@@ -261,8 +262,7 @@ private fun CredentialsScreenCompact(
             passwordError = passwordError,
             usernameError = usernameError,
             onAction = onAction,
-            focusManager = focusManager,
-            keyboardState = keyboardState
+            focusManager = focusManager
         )
         if (provider != AuthProvider.GOOGLE) {
             AppButton(
@@ -301,7 +301,6 @@ private fun CredentialsScreenExpanded(
     onAction: (CredentialsAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-    val keyboardState = keyboardAsState()
     val usernameState = rememberTextFieldState(username)
     LaunchedEffect(username) { usernameState.setTextAndPlaceCursorAtEnd(username) }
     val passwordState = rememberTextFieldState(password)
@@ -335,8 +334,7 @@ private fun CredentialsScreenExpanded(
                 passwordError = passwordError,
                 usernameError = usernameError,
                 onAction = onAction,
-                focusManager = focusManager,
-                keyboardState = keyboardState
+                focusManager = focusManager
             )
             if (provider != AuthProvider.GOOGLE) {
                 AppButton(
@@ -372,14 +370,13 @@ private fun CredentialsFields(
     passwordError: String?,
     usernameError: String?,
     onAction: (CredentialsAction) -> Unit,
-    focusManager: FocusManager,
-    keyboardState: State<Boolean>
+    focusManager: FocusManager
 ) {
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
     ) {
+        val keyboardState = keyboardAsState()
         if (userExists && provider == AuthProvider.GOOGLE) {
             SignProviderButton(
                 image = getImageByFileName("ic_google").drawableResId,
