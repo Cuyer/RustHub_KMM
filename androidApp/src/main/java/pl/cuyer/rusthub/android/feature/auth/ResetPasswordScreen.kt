@@ -118,7 +118,9 @@ fun ResetPasswordScreen(
                         .padding(spacing.medium)
                         .animateBounds(this)
                         .clickable(interactionSource, null) { focusManager.clearFocus() },
-                    state = state.value,
+                    email = { state.value.email },
+                    emailError = { state.value.emailError },
+                    isLoading = { state.value.isLoading },
                     onAction = onAction
                 )
             } else {
@@ -130,7 +132,9 @@ fun ResetPasswordScreen(
                         .padding(spacing.medium)
                         .animateBounds(this)
                         .clickable(interactionSource, null) { focusManager.clearFocus() },
-                    state = state.value,
+                    email = { state.value.email },
+                    emailError = { state.value.emailError },
+                    isLoading = { state.value.isLoading },
                     onAction = onAction
                 )
             }
@@ -141,7 +145,9 @@ fun ResetPasswordScreen(
 @Composable
 private fun ResetPasswordScreenCompact(
     modifier: Modifier = Modifier,
-    state: ResetPasswordState,
+    email: () -> String,
+    emailError: () -> String?,
+    isLoading: () -> Boolean,
     onAction: (ResetPasswordAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -153,8 +159,8 @@ private fun ResetPasswordScreenCompact(
     ) {
         ResetPasswordStaticContent()
         ResetPasswordField(
-            email = state.email,
-            emailError = state.emailError,
+            email = email,
+            emailError = emailError,
             onAction = onAction,
             focusManager = focusManager
         )
@@ -162,8 +168,8 @@ private fun ResetPasswordScreenCompact(
             modifier = Modifier
                 .imePadding()
                 .fillMaxWidth(),
-            enabled = { state.email.isNotBlank() },
-            isLoading = { state.isLoading },
+            enabled = { email().isNotBlank() },
+            isLoading = isLoading,
             onClick = {
                 focusManager.clearFocus()
                 onAction(ResetPasswordAction.OnSend)
@@ -175,7 +181,9 @@ private fun ResetPasswordScreenCompact(
 @Composable
 private fun ResetPasswordScreenExpanded(
     modifier: Modifier = Modifier,
-    state: ResetPasswordState,
+    email: () -> String,
+    emailError: () -> String?,
+    isLoading: () -> Boolean,
     onAction: (ResetPasswordAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -191,8 +199,8 @@ private fun ResetPasswordScreenExpanded(
             verticalArrangement = Arrangement.spacedBy(spacing.small)
         ) {
             ResetPasswordField(
-                email = state.email,
-                emailError = state.emailError,
+                email = email,
+                emailError = emailError,
                 onAction = onAction,
                 focusManager = focusManager
             )
@@ -200,7 +208,7 @@ private fun ResetPasswordScreenExpanded(
                 modifier = Modifier
                     .imePadding()
                     .fillMaxWidth(),
-                isLoading = { state.isLoading },
+                isLoading = isLoading,
                 onClick = {
                     focusManager.clearFocus()
                     onAction(ResetPasswordAction.OnSend)
@@ -228,14 +236,14 @@ private fun ResetPasswordStaticContent(modifier: Modifier = Modifier) {
 
 @Composable
 private fun ResetPasswordField(
-    email: String,
-    emailError: String?,
+    email: () -> String,
+    emailError: () -> String?,
     onAction: (ResetPasswordAction) -> Unit,
     focusManager: FocusManager
 ) {
     val keyboardState = keyboardAsState()
-    val state = rememberTextFieldState(email)
-    LaunchedEffect(email) { state.setTextAndPlaceCursorAtEnd(email) }
+    val state = rememberTextFieldState(email())
+    LaunchedEffect(email()) { state.setTextAndPlaceCursorAtEnd(email()) }
     AppTextField(
         requestFocus = true,
         textFieldState = state,

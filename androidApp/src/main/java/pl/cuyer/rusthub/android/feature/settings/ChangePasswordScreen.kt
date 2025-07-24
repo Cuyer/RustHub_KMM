@@ -117,7 +117,11 @@ fun ChangePasswordScreen(
                         .padding(spacing.medium)
                         .animateBounds(this)
                         .clickable(interactionSource, null) { focusManager.clearFocus() },
-                    state = state.value,
+                    oldPassword = { state.value.oldPassword },
+                    newPassword = { state.value.newPassword },
+                    oldPasswordError = { state.value.oldPasswordError },
+                    newPasswordError = { state.value.newPasswordError },
+                    isLoading = { state.value.isLoading },
                     onAction = onAction
                 )
             } else {
@@ -129,7 +133,11 @@ fun ChangePasswordScreen(
                         .padding(spacing.medium)
                         .animateBounds(this)
                         .clickable(interactionSource, null) { focusManager.clearFocus() },
-                    state = state.value,
+                    oldPassword = { state.value.oldPassword },
+                    newPassword = { state.value.newPassword },
+                    oldPasswordError = { state.value.oldPasswordError },
+                    newPasswordError = { state.value.newPasswordError },
+                    isLoading = { state.value.isLoading },
                     onAction = onAction
                 )
             }
@@ -140,7 +148,11 @@ fun ChangePasswordScreen(
 @Composable
 private fun ChangePasswordScreenCompact(
     modifier: Modifier = Modifier,
-    state: ChangePasswordState,
+    oldPassword: () -> String,
+    newPassword: () -> String,
+    oldPasswordError: () -> String?,
+    newPasswordError: () -> String?,
+    isLoading: () -> Boolean,
     onAction: (ChangePasswordAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -149,16 +161,16 @@ private fun ChangePasswordScreenCompact(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
-        val oldState = rememberTextFieldState(state.oldPassword)
-        LaunchedEffect(state.oldPassword) { oldState.setTextAndPlaceCursorAtEnd(state.oldPassword) }
-        val newState = rememberTextFieldState(state.newPassword)
-        LaunchedEffect(state.newPassword) { newState.setTextAndPlaceCursorAtEnd(state.newPassword) }
+        val oldState = rememberTextFieldState(oldPassword())
+        LaunchedEffect(oldPassword()) { oldState.setTextAndPlaceCursorAtEnd(oldPassword()) }
+        val newState = rememberTextFieldState(newPassword())
+        LaunchedEffect(newPassword()) { newState.setTextAndPlaceCursorAtEnd(newPassword()) }
         ChangePasswordStaticContent()
         ChangePasswordFields(
             oldPasswordState = oldState,
             newPasswordState = newState,
-            oldPasswordError = state.oldPasswordError,
-            newPasswordError = state.newPasswordError,
+            oldPasswordError = oldPasswordError(),
+            newPasswordError = newPasswordError(),
             onAction = onAction,
             focusManager = focusManager
         )
@@ -167,7 +179,7 @@ private fun ChangePasswordScreenCompact(
                 .imePadding()
                 .fillMaxWidth(),
             enabled = { oldState.text.isNotBlank() && newState.text.isNotBlank() },
-            isLoading = { state.isLoading },
+            isLoading = isLoading,
             onClick = {
                 focusManager.clearFocus()
                 onAction(ChangePasswordAction.OnOldPasswordChange(oldState.text.toString()))
@@ -181,7 +193,11 @@ private fun ChangePasswordScreenCompact(
 @Composable
 private fun ChangePasswordScreenExpanded(
     modifier: Modifier = Modifier,
-    state: ChangePasswordState,
+    oldPassword: () -> String,
+    newPassword: () -> String,
+    oldPasswordError: () -> String?,
+    newPasswordError: () -> String?,
+    isLoading: () -> Boolean,
     onAction: (ChangePasswordAction) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -196,15 +212,15 @@ private fun ChangePasswordScreenExpanded(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(spacing.small)
         ) {
-            val oldState = rememberTextFieldState(state.oldPassword)
-            LaunchedEffect(state.oldPassword) { oldState.setTextAndPlaceCursorAtEnd(state.oldPassword) }
-            val newState = rememberTextFieldState(state.newPassword)
-            LaunchedEffect(state.newPassword) { newState.setTextAndPlaceCursorAtEnd(state.newPassword) }
+            val oldState = rememberTextFieldState(oldPassword())
+            LaunchedEffect(oldPassword()) { oldState.setTextAndPlaceCursorAtEnd(oldPassword()) }
+            val newState = rememberTextFieldState(newPassword())
+            LaunchedEffect(newPassword()) { newState.setTextAndPlaceCursorAtEnd(newPassword()) }
             ChangePasswordFields(
                 oldPasswordState = oldState,
                 newPasswordState = newState,
-                oldPasswordError = state.oldPasswordError,
-                newPasswordError = state.newPasswordError,
+                oldPasswordError = oldPasswordError(),
+                newPasswordError = newPasswordError(),
                 onAction = onAction,
                 focusManager = focusManager
             )
@@ -212,7 +228,7 @@ private fun ChangePasswordScreenExpanded(
                 modifier = Modifier
                     .imePadding()
                     .fillMaxWidth(),
-                isLoading = { state.isLoading },
+                isLoading = isLoading,
                 onClick = {
                     focusManager.clearFocus()
                     onAction(ChangePasswordAction.OnOldPasswordChange(oldState.text.toString()))
