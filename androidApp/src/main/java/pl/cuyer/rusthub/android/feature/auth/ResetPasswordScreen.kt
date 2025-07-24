@@ -169,8 +169,8 @@ private fun ResetPasswordScreenCompact(
             modifier = Modifier
                 .imePadding()
                 .fillMaxWidth(),
-            enabled = { email().isNotBlank() },
-            isLoading = isLoading,
+            enabled = email().isNotBlank(),
+            isLoading = isLoading(),
             onClick = {
                 focusManager.clearFocus()
                 onAction(ResetPasswordAction.OnSend)
@@ -209,10 +209,8 @@ private fun ResetPasswordScreenExpanded(
                 modifier = Modifier
                     .imePadding()
                     .fillMaxWidth(),
-                enabled = {
-                    email().isNotBlank()
-                },
-                isLoading = isLoading,
+                enabled = email().isNotBlank(),
+                isLoading = isLoading(),
                 onClick = {
                     focusManager.clearFocus()
                     onAction(ResetPasswordAction.OnSend)
