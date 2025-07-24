@@ -274,10 +274,12 @@ private fun CredentialsScreenCompact(
                     onAction(CredentialsAction.OnPasswordChange(passwordState.text.toString()))
                     onAction(CredentialsAction.OnSubmit)
                 },
-                isLoading = isLoading,
-                enabled = when (userExists) {
-                    true -> passwordState.text.isNotBlank()
-                    false -> usernameState.text.isNotBlank() && passwordState.text.isNotBlank()
+                isLoading = { isLoading },
+                enabled = {
+                    when (userExists) {
+                        true -> passwordState.text.isNotBlank()
+                        false -> usernameState.text.isNotBlank() && passwordState.text.isNotBlank()
+                    }
                 },
                 modifier = Modifier
                     .imePadding()
@@ -346,10 +348,12 @@ private fun CredentialsScreenExpanded(
                         onAction(CredentialsAction.OnPasswordChange(passwordState.text.toString()))
                         onAction(CredentialsAction.OnSubmit)
                     },
-                    isLoading = isLoading,
-                    enabled = when (userExists) {
-                        true -> passwordState.text.isNotBlank()
-                        false -> usernameState.text.isNotBlank() && passwordState.text.isNotBlank()
+                    isLoading = { isLoading },
+                    enabled = {
+                        when (userExists) {
+                            true -> passwordState.text.isNotBlank()
+                            false -> usernameState.text.isNotBlank() && passwordState.text.isNotBlank()
+                        }
                     },
                     modifier = Modifier
                         .imePadding()
@@ -383,7 +387,7 @@ private fun CredentialsFields(
                 contentDescription = stringResource(SharedRes.strings.google_logo),
                 text = stringResource(SharedRes.strings.continue_with_google),
                 modifier = Modifier.fillMaxWidth(),
-                isLoading = googleLoading,
+                isLoading = { googleLoading },
                 backgroundColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
                 contentColor = if (isSystemInDarkTheme()) Color.Black else Color.White
             ) {

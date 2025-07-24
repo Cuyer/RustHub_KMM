@@ -170,8 +170,8 @@ private fun DeleteAccountScreenCompact(
             modifier = Modifier
                 .imePadding()
                 .fillMaxWidth(),
-            enabled = if (state.provider == AuthProvider.GOOGLE) true else passState.text.isNotBlank(),
-            isLoading = state.isLoading,
+            enabled = { if (state.provider == AuthProvider.GOOGLE) true else passState.text.isNotBlank() },
+            isLoading = { state.isLoading },
             onClick = {
                 focusManager.clearFocus()
                 if (state.provider != AuthProvider.GOOGLE) {
@@ -214,8 +214,8 @@ private fun DeleteAccountScreenExpanded(
                 modifier = Modifier
                     .imePadding()
                     .fillMaxWidth(),
-                enabled = if (state.provider == AuthProvider.GOOGLE) true else passState.text.isNotBlank(),
-                isLoading = state.isLoading,
+                enabled = { if (state.provider == AuthProvider.GOOGLE) true else passState.text.isNotBlank() },
+                isLoading = { state.isLoading },
                 onClick = {
                     focusManager.clearFocus()
                     if (state.provider != AuthProvider.GOOGLE) {

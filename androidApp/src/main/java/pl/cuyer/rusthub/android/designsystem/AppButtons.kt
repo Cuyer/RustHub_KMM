@@ -31,9 +31,9 @@ import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 fun AppButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    enabled: Boolean = true,
+    enabled: () -> Boolean = { true },
     colors: ButtonColors = ButtonDefaults.elevatedButtonColors(),
-    isLoading: Boolean = false,
+    isLoading: () -> Boolean = { false },
     loadingIndicator: @Composable () -> Unit = {
         CircularProgressIndicator(
             modifier = Modifier.size(16.dp),
@@ -45,12 +45,12 @@ fun AppButton(
     ElevatedButton(
         onClick = onClick,
         modifier = modifier,
-        enabled = enabled && !isLoading,
+        enabled = enabled() && !isLoading(),
         shape = RectangleShape,
         colors = colors
     ) {
         AnimatedContent(
-            targetState = isLoading,
+            targetState = isLoading(),
             transitionSpec = { defaultFadeTransition() }
         ) { loading ->
             if (loading) {
@@ -67,20 +67,20 @@ fun AppButton(
 fun AppOutlinedButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    enabled: Boolean = true,
+    enabled: () -> Boolean = { true },
     colors: ButtonColors = ButtonDefaults.outlinedButtonColors(),
-    isLoading: Boolean = false,
+    isLoading: () -> Boolean = { false },
     content: @Composable RowScope.() -> Unit
 ) {
     OutlinedButton(
         onClick = onClick,
         modifier = modifier,
-        enabled = enabled && !isLoading,
+        enabled = enabled() && !isLoading(),
         shape = RectangleShape,
         colors = colors
     ) {
         AnimatedContent(
-            targetState = isLoading,
+            targetState = isLoading(),
             transitionSpec = { defaultFadeTransition() }
         ) { loading ->
             if (loading) {
@@ -100,16 +100,31 @@ fun AppOutlinedButton(
 fun AppTextButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
+    enabled: () -> Boolean = { true },
     colors: ButtonColors = ButtonDefaults.textButtonColors(),
+    isLoading: () -> Boolean = { false },
     content: @Composable RowScope.() -> Unit
 ) {
     TextButton(
         onClick = onClick,
         modifier = modifier,
+        enabled = enabled() && !isLoading(),
         shape = RectangleShape,
         colors = colors
     ) {
-        content()
+        AnimatedContent(
+            targetState = isLoading(),
+            transitionSpec = { defaultFadeTransition() }
+        ) { loading ->
+            if (loading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(16.dp),
+                    strokeWidth = 2.dp
+                )
+            } else {
+                content()
+            }
+        }
     }
 }
 
@@ -127,13 +142,13 @@ fun PreviewAppButton() {
         ) {
             AppButton(
                 onClick = { /* noop */ },
-                isLoading = false
+                isLoading = { false }
             ) {
                 Text(stringResource(SharedRes.strings.submit))
             }
             AppButton(
                 onClick = { /* noop */ },
-                isLoading = true
+                isLoading = { true }
             ) {
                 Text(stringResource(SharedRes.strings.submit))
             }
@@ -154,13 +169,13 @@ fun PreviewAppOutlinedButton() {
         ) {
             AppOutlinedButton(
                 onClick = { /* noop */ },
-                isLoading = false
+                isLoading = { false }
             ) {
                 Text(stringResource(SharedRes.strings.delete))
             }
             AppOutlinedButton(
                 onClick = { /* noop */ },
-                isLoading = true
+                isLoading = { true }
             ) {
                 Text(stringResource(SharedRes.strings.delete))
             }

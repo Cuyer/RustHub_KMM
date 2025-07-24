@@ -165,7 +165,7 @@ private fun ConfirmEmailScreenCompact(
         ConfirmEmailStaticContent(state.email)
         AppButton(
             onClick = { onAction(ConfirmEmailAction.OnConfirm) },
-            isLoading = state.isLoading,
+            isLoading = { state.isLoading },
             modifier = Modifier
                 .imePadding()
                 .fillMaxWidth()
@@ -201,7 +201,7 @@ private fun ConfirmEmailScreenExpanded(
             Spacer(Modifier.size(spacing.medium))
             AppButton(
                 onClick = { onAction(ConfirmEmailAction.OnConfirm) },
-                isLoading = state.isLoading,
+                isLoading = { state.isLoading },
                 modifier = Modifier
                     .imePadding()
                     .fillMaxWidth()
