@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.data.network
 
+import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.darwin.Darwin
@@ -22,9 +23,13 @@ import io.ktor.http.contentType
 import io.ktor.http.encodedPath
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.withContext
 import kotlinx.io.IOException
 import kotlinx.serialization.json.Json
+import pl.cuyer.rusthub.common.user.UserEvent
 import pl.cuyer.rusthub.data.network.auth.model.RefreshRequest
 import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
@@ -89,7 +94,14 @@ actual class HttpClientFactory actual constructor(
                             )
                             BearerTokens(newTokens.accessToken, newTokens.refreshToken)
                         } else {
-                            authDataSource.deleteUser()
+                            try {
+                                authDataSource.deleteUser()
+                                withContext(Dispatchers.Main.immediate) {
+                                    userEventController.sendEvent(UserEvent.LoggedOut)
+                                }
+                            } catch (e: Exception) {
+                                Napier.e(message = "Failed to delete user on token refresh failure", throwable = e)
+                            }
                             null
                         }
                     }
