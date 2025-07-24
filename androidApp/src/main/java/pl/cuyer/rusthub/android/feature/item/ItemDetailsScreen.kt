@@ -36,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -78,6 +79,7 @@ import pl.cuyer.rusthub.domain.model.RustItem
 import pl.cuyer.rusthub.domain.model.hasContent
 import kotlin.math.roundToInt
 
+@Immutable
 private enum class DetailsPage(val title: StringResource) {
     LOOTING(SharedRes.strings.looting),
     CRAFTING(SharedRes.strings.crafting),

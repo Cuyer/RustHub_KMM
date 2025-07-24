@@ -4,6 +4,7 @@ import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyScopeMarker
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
@@ -14,6 +15,7 @@ import androidx.paging.compose.itemKey
 annotation class PagingDSL
 
 @PagingDSL
+@Immutable
 class PagingHandlerScope<T : Any>(
     val items: LazyPagingItems<T>,
     private val loadState: CombinedLoadStates

@@ -1,8 +1,13 @@
 package pl.cuyer.rusthub.presentation.features.auth.confirm
 
-sealed interface ConfirmEmailAction {
-    data object OnConfirm : ConfirmEmailAction
-    data object OnResend : ConfirmEmailAction
+import androidx.compose.runtime.Immutable
 
+@Immutable
+sealed interface ConfirmEmailAction {
+    @Immutable
+    data object OnConfirm : ConfirmEmailAction
+    @Immutable
+    data object OnResend : ConfirmEmailAction
+    @Immutable
     data object OnBack : ConfirmEmailAction
 }

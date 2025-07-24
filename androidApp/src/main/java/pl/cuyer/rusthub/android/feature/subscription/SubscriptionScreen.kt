@@ -68,6 +68,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.invisibleToUser
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
@@ -92,6 +93,7 @@ import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
+@Immutable
 private data class SubscriptionBenefit(
     @DrawableRes
     val image: Int,
@@ -127,6 +129,7 @@ private val benefits = listOf(
     )
 )
 
+@Immutable
 private enum class Plan(val label: StringResource, val billed: StringResource) {
     MONTHLY(
         SharedRes.strings.monthly,

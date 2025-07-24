@@ -6,6 +6,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -108,6 +109,7 @@ class MainActivity : AppCompatActivity() {
 private val lightScrim = (Colors.SCRIM_LIGHT).toColorInt()
 private val darkScrim = (Colors.SCRIM_DARK).toColorInt()
 
+@Immutable
 private data class ThemeSettings(
     val darkTheme: Boolean,
     val dynamicColor: Boolean,
