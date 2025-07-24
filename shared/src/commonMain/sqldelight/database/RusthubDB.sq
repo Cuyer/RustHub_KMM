@@ -552,6 +552,12 @@ SELECT * FROM subscriptionSyncEntity WHERE sync_state = 'PENDING';
 deleteSubscriptionSync:
 DELETE FROM subscriptionSyncEntity WHERE server_id = :server_id;
 
+clearFavouriteSync:
+DELETE FROM favouriteSyncEntity;
+
+clearSubscriptionSync:
+DELETE FROM subscriptionSyncEntity;
+
 CREATE TABLE userEntity (
   id TEXT NOT NULL PRIMARY KEY,
   email         TEXT,
@@ -701,3 +707,6 @@ ON CONFLICT(id) DO UPDATE SET
 
 getItemSync:
 SELECT * FROM itemSyncEntity WHERE id = :id;
+
+clearItemSync:
+DELETE FROM itemSyncEntity;

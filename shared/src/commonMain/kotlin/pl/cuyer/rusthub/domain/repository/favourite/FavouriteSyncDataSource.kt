@@ -6,4 +6,5 @@ interface FavouriteSyncDataSource {
     suspend fun upsertOperation(operation: FavouriteSyncOperation)
     suspend fun deleteOperation(serverId: Long)
     suspend fun getPendingOperations(): List<FavouriteSyncOperation>
+    suspend fun clearOperations()
 }

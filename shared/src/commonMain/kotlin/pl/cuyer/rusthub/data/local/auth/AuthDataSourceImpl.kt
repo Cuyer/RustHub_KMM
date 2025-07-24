@@ -16,6 +16,13 @@ import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
+import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
+import pl.cuyer.rusthub.domain.repository.filtersOptions.FiltersOptionsDataSource
+import pl.cuyer.rusthub.domain.repository.search.SearchQueryDataSource
+import pl.cuyer.rusthub.domain.repository.search.ItemSearchQueryDataSource
+import pl.cuyer.rusthub.domain.repository.favourite.FavouriteSyncDataSource
+import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
+import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.util.TokenRefresher
 
 class AuthDataSourceImpl(
@@ -23,6 +30,13 @@ class AuthDataSourceImpl(
     val tokenRefresher: TokenRefresher,
     private val serverDataSource: ServerDataSource,
     private val remoteKeyDataSource: RemoteKeyDataSource,
+    private val filtersDataSource: FiltersDataSource,
+    private val filtersOptionsDataSource: FiltersOptionsDataSource,
+    private val searchQueryDataSource: SearchQueryDataSource,
+    private val itemSearchQueryDataSource: ItemSearchQueryDataSource,
+    private val favouriteSyncDataSource: FavouriteSyncDataSource,
+    private val subscriptionSyncDataSource: SubscriptionSyncDataSource,
+    private val itemSyncDataSource: ItemSyncDataSource,
 ) : AuthDataSource, Queries(db) {
 
     override suspend fun insertUser(
@@ -53,6 +67,13 @@ class AuthDataSourceImpl(
             queries.deleteUser()
             serverDataSource.deleteServers()
             remoteKeyDataSource.clearKeys()
+            filtersDataSource.clearFilters()
+            filtersOptionsDataSource.clearFiltersOptions()
+            searchQueryDataSource.clearQueries()
+            itemSearchQueryDataSource.clearQueries()
+            favouriteSyncDataSource.clearOperations()
+            subscriptionSyncDataSource.clearOperations()
+            itemSyncDataSource.clearState()
             tokenRefresher.clear()
         }
     }
