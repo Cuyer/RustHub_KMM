@@ -36,6 +36,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -62,7 +64,6 @@ import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordAction
 import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
-import androidx.compose.runtime.snapshotFlow
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class,
@@ -162,44 +163,43 @@ private fun ChangePasswordScreenCompact(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
-    val oldState = rememberTextFieldState(oldPassword())
-    LaunchedEffect(oldPassword()) { oldState.setTextAndPlaceCursorAtEnd(oldPassword()) }
-    val newState = rememberTextFieldState(newPassword())
-    LaunchedEffect(newPassword()) { newState.setTextAndPlaceCursorAtEnd(newPassword()) }
+        val oldState = rememberSyncedTextFieldState(oldPassword())
+        val newState = rememberSyncedTextFieldState(newPassword())
 
-
-    LaunchedEffect(oldState) {
-        snapshotFlow { oldState.text }
-            .collect { typed ->
-                onAction(ChangePasswordAction.OnOldPasswordChange(typed.toString()))
+        val latestAction = rememberUpdatedState(onAction)
+        val submitAction = remember(focusManager) {
+            {
+                focusManager.clearFocus()
+                latestAction.value(
+                    ChangePasswordAction.OnOldPasswordChange(oldState.text.toString())
+                )
+                latestAction.value(
+                    ChangePasswordAction.OnNewPasswordChange(newState.text.toString())
+                )
+                latestAction.value(ChangePasswordAction.OnChange)
             }
-    }
+        }
 
-    LaunchedEffect(newState) {
-        snapshotFlow { newState.text }
-            .collect { typed ->
-                onAction(ChangePasswordAction.OnNewPasswordChange(typed.toString()))
-            }
-    }
         ChangePasswordStaticContent()
         ChangePasswordFields(
             oldPasswordState = oldState,
             newPasswordState = newState,
             oldPasswordError = oldPasswordError,
             newPasswordError = newPasswordError,
-            onAction = onAction,
+            onSubmit = submitAction,
             focusManager = focusManager
         )
+        val buttonEnabled by remember {
+            derivedStateOf { oldState.text.isNotBlank() && newState.text.isNotBlank() }
+        }
+
         AppButton(
             modifier = Modifier
                 .imePadding()
                 .fillMaxWidth(),
-            enabled = oldState.text.isNotBlank() && newState.text.isNotBlank(),
+            enabled = buttonEnabled,
             isLoading = isLoading(),
-            onClick = {
-                focusManager.clearFocus()
-                onAction(ChangePasswordAction.OnChange)
-            }
+            onClick = submitAction
         ) { Text(stringResource(SharedRes.strings.change_password)) }
     }
 }
@@ -226,41 +226,41 @@ private fun ChangePasswordScreenExpanded(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(spacing.small)
         ) {
-            val oldState = rememberTextFieldState(oldPassword())
-            LaunchedEffect(oldPassword()) { oldState.setTextAndPlaceCursorAtEnd(oldPassword()) }
-            val newState = rememberTextFieldState(newPassword())
-            LaunchedEffect(newPassword()) { newState.setTextAndPlaceCursorAtEnd(newPassword()) }
+            val oldState = rememberSyncedTextFieldState(oldPassword())
+            val newState = rememberSyncedTextFieldState(newPassword())
 
-            LaunchedEffect(oldState) {
-                snapshotFlow { oldState.text }
-                    .collect { typed ->
-                        onAction(ChangePasswordAction.OnOldPasswordChange(typed.toString()))
-                    }
-            }
-
-            LaunchedEffect(newState) {
-                snapshotFlow { newState.text }
-                    .collect { typed ->
-                        onAction(ChangePasswordAction.OnNewPasswordChange(typed.toString()))
-                    }
+            val latestAction = rememberUpdatedState(onAction)
+            val submitAction = remember(focusManager) {
+                {
+                    focusManager.clearFocus()
+                    latestAction.value(
+                        ChangePasswordAction.OnOldPasswordChange(oldState.text.toString())
+                    )
+                    latestAction.value(
+                        ChangePasswordAction.OnNewPasswordChange(newState.text.toString())
+                    )
+                    latestAction.value(ChangePasswordAction.OnChange)
+                }
             }
             ChangePasswordFields(
                 oldPasswordState = oldState,
                 newPasswordState = newState,
                 oldPasswordError = oldPasswordError,
                 newPasswordError = newPasswordError,
-                onAction = onAction,
+                onSubmit = submitAction,
                 focusManager = focusManager
             )
+            val buttonEnabled by remember {
+                derivedStateOf { oldState.text.isNotBlank() && newState.text.isNotBlank() }
+            }
+
             AppButton(
                 modifier = Modifier
                     .imePadding()
                     .fillMaxWidth(),
+                enabled = buttonEnabled,
                 isLoading = isLoading(),
-                onClick = {
-                    focusManager.clearFocus()
-                    onAction(ChangePasswordAction.OnChange)
-                }
+                onClick = submitAction
             ) { Text(stringResource(SharedRes.strings.change_password)) }
         }
     }
@@ -283,12 +283,23 @@ private fun ChangePasswordStaticContent(modifier: Modifier = Modifier) {
 }
 
 @Composable
+private fun rememberSyncedTextFieldState(value: String): TextFieldState {
+    val state = rememberTextFieldState(value)
+    LaunchedEffect(value) {
+        if (state.text.toString() != value) {
+            state.setTextAndPlaceCursorAtEnd(value)
+        }
+    }
+    return state
+}
+
+@Composable
 private fun ChangePasswordFields(
     oldPasswordState: TextFieldState,
     newPasswordState: TextFieldState,
     oldPasswordError: () -> String?,
     newPasswordError: () -> String?,
-    onAction: (ChangePasswordAction) -> Unit,
+    onSubmit: () -> Unit,
     focusManager: FocusManager
 ) {
     Column(
@@ -315,7 +326,7 @@ private fun ChangePasswordFields(
             placeholderText = stringResource(SharedRes.strings.enter_new_password),
             onSubmit = {
                 focusManager.clearFocus()
-                onAction(ChangePasswordAction.OnChange)
+                onSubmit()
             },
             isError = newPasswordError() != null,
             errorText = newPasswordError(),
