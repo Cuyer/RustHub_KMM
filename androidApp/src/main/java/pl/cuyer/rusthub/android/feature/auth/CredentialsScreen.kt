@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -135,8 +136,9 @@ fun CredentialsScreen(
         LookaheadScope {
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
                     .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding)
+                    .fillMaxSize()
                     .semantics { hideFromAccessibility() }
                     .animateBounds(this)
                     .clickable(

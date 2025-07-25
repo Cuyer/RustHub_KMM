@@ -17,6 +17,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -183,7 +184,6 @@ fun ServerScreen(
                             pagedList.refresh()
                         },
                         modifier = Modifier
-                            .navigationBarsPadding()
                             .padding(horizontal = spacing.xmedium)
                             .then(
                                 if (isTabletMode) Modifier.displayCutoutPadding() else Modifier
@@ -223,8 +223,9 @@ fun ServerScreen(
             },
             state = pullToRefreshState,
             modifier = Modifier
-                .fillMaxSize()
                 .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .fillMaxSize()
         ) {
             HandlePagingItems(
                 items = { pagedList },

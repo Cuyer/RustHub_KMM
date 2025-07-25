@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -187,8 +188,9 @@ fun SubscriptionScreen(
         if (isTabletMode) {
             SubscriptionScreenExpanded(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
+                    .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding)
+                    .fillMaxSize(),
                 pagerState = pagerState,
                 selectedPlan = { selectedPlan },
                 onPlanSelect = { selectedPlan = it },
@@ -199,8 +201,9 @@ fun SubscriptionScreen(
         } else {
             SubscriptionScreenCompact(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
+                    .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding)
+                    .fillMaxSize(),
                 pagerState = pagerState,
                 selectedPlan = { selectedPlan },
                 onPlanSelect = { selectedPlan = it },

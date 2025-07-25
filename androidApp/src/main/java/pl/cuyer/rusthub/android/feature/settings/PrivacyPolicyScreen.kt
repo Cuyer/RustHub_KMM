@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.android.feature.settings
 
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -54,8 +55,9 @@ fun PrivacyPolicyScreen(url: String, onNavigateUp: () -> Unit, title: String = s
     ) { innerPadding ->
         AndroidView(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .fillMaxSize(),
             factory = { context ->
                 WebView(context).apply {
                     webViewClient = WebViewClient()

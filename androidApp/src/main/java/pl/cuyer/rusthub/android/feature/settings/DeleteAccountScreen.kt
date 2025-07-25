@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -111,8 +112,9 @@ fun DeleteAccountScreen(
             if (isTabletMode) {
                 DeleteAccountScreenExpanded(
                     modifier = Modifier
-                        .fillMaxSize()
                         .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding)
+                        .fillMaxSize()
                         .padding(spacing.medium)
                         .semantics { hideFromAccessibility() }
                         .animateBounds(this)
@@ -129,9 +131,10 @@ fun DeleteAccountScreen(
             } else {
                 DeleteAccountScreenCompact(
                     modifier = Modifier
+                        .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding)
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
-                        .padding(innerPadding)
                         .padding(spacing.medium)
                         .semantics { hideFromAccessibility() }
                         .animateBounds(this)

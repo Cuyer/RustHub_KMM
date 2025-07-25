@@ -14,6 +14,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -160,11 +161,7 @@ fun ItemScreen(
                             onAction(ItemAction.OnCategoryChange(it))
                         },
                         modifier = Modifier
-                            .navigationBarsPadding()
                             .padding(horizontal = spacing.xmedium)
-                            .then(
-                                if (isTabletMode) Modifier.displayCutoutPadding() else Modifier
-                            )
                     )
                 }
             }
@@ -179,8 +176,9 @@ fun ItemScreen(
             },
             state = pullToRefreshState,
             modifier = Modifier
-                .fillMaxSize()
                 .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .fillMaxSize()
         ) {
             if (syncState == ItemSyncState.PENDING) {
                 LazyColumn(

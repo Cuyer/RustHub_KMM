@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -124,8 +125,9 @@ fun UpgradeAccountScreen(
         LookaheadScope {
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
                     .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding)
+                    .fillMaxSize()
                     .animateBounds(this)
                     .clickable(interactionSource, null) { focusManager.clearFocus() }
             ) {

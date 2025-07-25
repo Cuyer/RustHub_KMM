@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -118,8 +119,9 @@ fun ResetPasswordScreen(
             if (isTabletMode) {
                 ResetPasswordScreenExpanded(
                     modifier = Modifier
-                        .fillMaxSize()
                         .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding)
+                        .fillMaxSize()
                         .padding(spacing.medium)
                         .animateBounds(this)
                         .clickable(interactionSource, null) { focusManager.clearFocus() },
@@ -132,9 +134,10 @@ fun ResetPasswordScreen(
             } else {
                 ResetPasswordScreenCompact(
                     modifier = Modifier
+                        .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding)
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
-                        .padding(innerPadding)
                         .padding(spacing.medium)
                         .animateBounds(this)
                         .clickable(interactionSource, null) { focusManager.clearFocus() },
