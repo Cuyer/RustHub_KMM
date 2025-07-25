@@ -22,9 +22,11 @@ val ForbiddenResponsePlugin = createClientPlugin("ForbiddenResponsePlugin", ::Fo
     onResponse { response ->
         if (response.status == HttpStatusCode.Forbidden) {
             try {
-                dataSource.deleteUser()
-                withContext(Dispatchers.Main.immediate) {
-                    userEventController.sendEvent(UserEvent.LoggedOut)
+                if (dataSource.getUserOnce() != null) {
+                    dataSource.deleteUser()
+                    withContext(Dispatchers.Main.immediate) {
+                        userEventController.sendEvent(UserEvent.LoggedOut)
+                    }
                 }
             } catch (e: Exception) {
                 Napier.e(message = "Failed to delete user on token refresh failure", throwable = e)
