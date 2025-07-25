@@ -240,369 +240,366 @@ fun ServerDetailsScreen(
             )
         }
     ) { innerPadding ->
-        LookaheadScope {
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding)
-                    .fillMaxSize()
-                    .animateBounds(this)
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .fillMaxSize()
+        ) {
+            AnimatedVisibility(
+                visible = !state.value.isConnected,
+                enter = slideInVertically(
+                    animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
+                ),
+                exit = slideOutVertically(
+                    animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
+                )
             ) {
-                AnimatedVisibility(
-                    visible = !state.value.isConnected,
-                    enter = slideInVertically(
-                        animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
-                    ),
-                    exit = slideOutVertically(
-                        animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
-                    )
+                Text(
+                    textAlign = TextAlign.Center,
+                    text = stringResource(SharedRes.strings.offline),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = spacing.xsmall)
+                        .background(MaterialTheme.colorScheme.secondary)
+                )
+            }
+            if (state.value.details != null) {
+                LazyColumn(
+                    state = lazyListState,
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    Text(
-                        textAlign = TextAlign.Center,
-                        text = stringResource(SharedRes.strings.offline),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = spacing.xsmall)
-                            .background(MaterialTheme.colorScheme.secondary)
-                    )
-                }
-                if (state.value.details != null) {
-                    LazyColumn(
-                        state = lazyListState,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        state.value.details?.let {
-                            item {
-                                Text(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    style = MaterialTheme.typography.titleLarge,
-                                    text = stringResource(SharedRes.strings.general_info)
-                                )
+                    state.value.details?.let {
+                        item {
+                            Text(
+                                modifier = Modifier.padding(spacing.medium),
+                                style = MaterialTheme.typography.titleLarge,
+                                text = stringResource(SharedRes.strings.general_info)
+                            )
 
-                                it.headerImage?.let {
-                                    SubcomposeAsyncImage(
-                                        modifier =
-                                            Modifier
+                            it.headerImage?.let {
+                                SubcomposeAsyncImage(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = spacing.medium),
+                                    model = it,
+                                    contentDescription = stringResource(
+                                        SharedRes.strings.server_header_image
+                                    ),
+                                    loading = {
+                                        Box(
+                                            modifier = Modifier
                                                 .fillMaxWidth()
-                                                .padding(horizontal = spacing.medium),
-                                        model = it,
-                                        contentDescription = stringResource(
-                                            SharedRes.strings.server_header_image
-                                        ),
-                                        loading = {
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(200.dp)
-                                                    .shimmer()
-                                            )
-                                        },
-                                        error = {
-                                            Image(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(200.dp),
-                                                painter = painterResource(id = getImageByFileName("il_not_found").drawableResId),
-                                                contentDescription = stringResource(SharedRes.strings.error_not_found)
-                                            )
-                                        }
-                                    )
-                                }
+                                                .height(200.dp)
+                                                .shimmer()
+                                        )
+                                    },
+                                    error = {
+                                        Image(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(200.dp),
+                                            painter = painterResource(id = getImageByFileName("il_not_found").drawableResId),
+                                            contentDescription = stringResource(SharedRes.strings.error_not_found)
+                                        )
+                                    }
+                                )
+                            }
 
-                                it.ranking?.let {
-                                    ServerDetail(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        label = stringResource(SharedRes.strings.ranking),
-                                        value = it.toInt()
+                            it.ranking?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = stringResource(SharedRes.strings.ranking),
+                                    value = it.toInt()
+                                )
+                            }
+                            it.serverStatus?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = stringResource(SharedRes.strings.status),
+                                    value = it.name,
+                                    valueColor = if (it == ServerStatus.ONLINE) Color(0xFF008939) else Color(
+                                        0xFFEA1B0C
                                     )
-                                }
-                                it.serverStatus?.let {
-                                    ServerDetail(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        label = stringResource(SharedRes.strings.status),
-                                        value = it.name,
-                                        valueColor = if (it == ServerStatus.ONLINE) Color(0xFF008939) else Color(
-                                            0xFFEA1B0C
-                                        )
+                                )
+                            }
+                            it.serverIp?.let {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = spacing.medium),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Text(
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        text = stringResource(SharedRes.strings.ip) + ": "
                                     )
-                                }
-                                it.serverIp?.let {
-                                    Row(
-                                        modifier = Modifier.padding(horizontal = spacing.medium),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                    ) {
-                                        Text(
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            text = stringResource(SharedRes.strings.ip) + ": "
-                                        )
-                                        Text(
-                                            style = MaterialTheme.typography.bodyLarge.copy(
-                                                color = MaterialTheme.colorScheme.primary
-                                            ),
-                                            text = it
-                                        )
-                                        Spacer(modifier = Modifier.width(spacing.small))
-                                        IconButton(
-                                            onClick = {
-                                                onAction(
-                                                    ServerDetailsAction.OnSaveToClipboard(
-                                                        it
-                                                    )
+                                    Text(
+                                        style = MaterialTheme.typography.bodyLarge.copy(
+                                            color = MaterialTheme.colorScheme.primary
+                                        ),
+                                        text = it
+                                    )
+                                    Spacer(modifier = Modifier.width(spacing.small))
+                                    IconButton(
+                                        onClick = {
+                                            onAction(
+                                                ServerDetailsAction.OnSaveToClipboard(
+                                                    it
                                                 )
-                                            },
-                                            modifier = Modifier.minimumInteractiveComponentSize()
-                                        ) {
-                                            Icon(
-                                                tint = contentColorFor(TopAppBarDefaults.topAppBarColors().containerColor),
-                                                imageVector = Icons.Default.ContentCopy,
-                                                contentDescription = stringResource(SharedRes.strings.icon_to_copy_ip_address)
-                                            )
-                                        }
-                                    }
-                                }
-                                it.serverFlag?.let {
-                                    Row(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(spacing.small)
-                                    ) {
-                                        Text(
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            text = stringResource(SharedRes.strings.country) + ":"
-                                        )
-                                        Flag.fromDisplayName(it.displayName)?.let { flag ->
-                                            Image(
-                                                painter = painterResource(flag.toDrawable()),
-                                                contentDescription = flag.displayName,
-                                                modifier = Modifier
-                                                    .size(26.dp)
-                                            )
-                                        }
-                                    }
-                                }
-
-                                it.averageFps?.let {
-                                    ServerDetail(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        label = stringResource(SharedRes.strings.average_fps),
-                                        value = it.toString()
-                                    )
-                                }
-
-                                it.lastWipe?.let {
-                                    ServerDetail(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        label = stringResource(SharedRes.strings.last_wipe),
-                                        value = it
-                                    )
-                                }
-
-                                it.nextWipe?.let {
-                                    ServerDetail(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        label = stringResource(SharedRes.strings.next_wipe),
-                                        value = it
-                                    )
-                                }
-
-                                it.nextMapWipe?.let {
-                                    ServerDetail(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        label = stringResource(SharedRes.strings.next_map_wipe),
-                                        value = it
-                                    )
-                                }
-
-                                it.pve?.let {
-                                    ServerDetail(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        label = stringResource(SharedRes.strings.pve),
-                                        value = if (it) stringResource(SharedRes.strings.true_str) else stringResource(
-                                            SharedRes.strings.no
-                                        )
-                                    )
-                                }
-
-                                it.website?.let { url ->
-                                    ServerWebsite(
-                                        website = url,
-                                        spacing = spacing,
-                                        urlColor = Color(0xFF1779CE)
-                                    )
-                                }
-
-                                it.isOfficial?.let {
-                                    ServerDetail(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        label = stringResource(SharedRes.strings.official),
-                                        value = if (it) stringResource(SharedRes.strings.true_str) else stringResource(
-                                            SharedRes.strings.false_str
-                                        )
-                                    )
-                                }
-
-                                it.isPremium?.let {
-                                    ServerDetail(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        label = stringResource(SharedRes.strings.premium),
-                                        value = if (it) stringResource(SharedRes.strings.true_str) else stringResource(
-                                            SharedRes.strings.false_str
-                                        )
-                                    )
-                                }
-                            }
-
-                            item {
-                                HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
-                                Text(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    style = MaterialTheme.typography.titleLarge,
-                                    text = stringResource(SharedRes.strings.settings)
-                                )
-
-                                it.maxGroup?.let {
-                                    ServerDetail(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        label = stringResource(SharedRes.strings.group_limit),
-                                        value = if (it == 999999L) stringResource(SharedRes.strings.none) else it.toString()
-                                    )
-                                }
-
-                                it.blueprints?.let {
-                                    ServerDetail(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        label = stringResource(SharedRes.strings.blueprints),
-                                        value = if (it) stringResource(SharedRes.strings.enabled) else stringResource(
-                                            SharedRes.strings.disabled
-                                        )
-                                    )
-                                }
-
-                                it.kits?.let {
-                                    ServerDetail(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        label = stringResource(SharedRes.strings.kits),
-                                        value = if (it) stringResource(SharedRes.strings.yes) else stringResource(
-                                            SharedRes.strings.no_kits
-                                        )
-                                    )
-                                }
-
-                                it.decay?.let {
-                                    ServerDetail(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        label = stringResource(SharedRes.strings.decay),
-                                        value = it * 100L
-                                    )
-                                }
-
-                                it.upkeep?.let {
-                                    ServerDetail(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        label = stringResource(SharedRes.strings.upkeep),
-                                        value = it * 100L
-                                    )
-                                }
-
-                                it.rates?.let {
-                                    ServerDetail(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        label = stringResource(SharedRes.strings.rates),
-                                        value = it
-                                    )
-                                }
-                            }
-                            item {
-                                HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
-                                Text(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    style = MaterialTheme.typography.titleLarge,
-                                    text = stringResource(SharedRes.strings.description)
-                                )
-                                HtmlStyledText(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    html = it.description ?: ""
-                                )
-                            }
-                            item {
-                                HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
-                                Text(
-                                    modifier = Modifier.padding(spacing.medium),
-                                    style = MaterialTheme.typography.titleLarge,
-                                    text = stringResource(SharedRes.strings.map_information)
-                                )
-                                it.seed?.let {
-                                    ServerDetail(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        label = stringResource(SharedRes.strings.seed),
-                                        value = it.toString()
-                                    )
-                                }
-                                it.mapSize?.let {
-                                    ServerDetail(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        label = stringResource(SharedRes.strings.map_size),
-                                        value = it
-                                    )
-                                }
-                                it.mapName?.let {
-                                    ServerDetail(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        label = stringResource(SharedRes.strings.map_name),
-                                        value = it.displayName
-                                    )
-                                }
-                                it.monuments?.let {
-                                    ServerDetail(
-                                        modifier = Modifier.padding(spacing.medium),
-                                        label = stringResource(SharedRes.strings.monuments),
-                                        value = it
-                                    )
-                                }
-                                it.mapUrl?.let {
-                                    ServerWebsite(
-                                        label = stringResource(SharedRes.strings.additional_information_available_at),
-                                        website = it,
-                                        alias = stringResource(SharedRes.strings.rustmaps),
-                                        spacing = spacing,
-                                        urlColor = Color(0xFF1779CE)
-                                    )
-                                }
-
-                                it.mapImage?.let {
-                                    SubcomposeAsyncImage(
-                                        modifier = Modifier
-                                            .padding(
-                                                start = spacing.medium,
-                                                end = spacing.medium,
-                                                bottom = spacing.medium
-                                            )
-                                            .clickable { onAction(ServerDetailsAction.OnShowMap) },
-                                        model = it,
-                                        contentDescription = stringResource(
-                                            SharedRes.strings.rust_map_image
-                                        ),
-                                        loading = {
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(200.dp)
-                                                    .shimmer()
                                             )
                                         },
-                                        error = {
-                                            Image(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(200.dp),
-                                                painter = painterResource(id = getImageByFileName("il_not_found").drawableResId),
-                                                contentDescription = stringResource(SharedRes.strings.error_not_found)
-                                            )
-                                        }
-                                    )
+                                        modifier = Modifier.minimumInteractiveComponentSize()
+                                    ) {
+                                        Icon(
+                                            tint = contentColorFor(TopAppBarDefaults.topAppBarColors().containerColor),
+                                            imageVector = Icons.Default.ContentCopy,
+                                            contentDescription = stringResource(SharedRes.strings.icon_to_copy_ip_address)
+                                        )
+                                    }
                                 }
+                            }
+                            it.serverFlag?.let {
+                                Row(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(spacing.small)
+                                ) {
+                                    Text(
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        text = stringResource(SharedRes.strings.country) + ":"
+                                    )
+                                    Flag.fromDisplayName(it.displayName)?.let { flag ->
+                                        Image(
+                                            painter = painterResource(flag.toDrawable()),
+                                            contentDescription = flag.displayName,
+                                            modifier = Modifier
+                                                .size(26.dp)
+                                        )
+                                    }
+                                }
+                            }
+
+                            it.averageFps?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = stringResource(SharedRes.strings.average_fps),
+                                    value = it.toString()
+                                )
+                            }
+
+                            it.lastWipe?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = stringResource(SharedRes.strings.last_wipe),
+                                    value = it
+                                )
+                            }
+
+                            it.nextWipe?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = stringResource(SharedRes.strings.next_wipe),
+                                    value = it
+                                )
+                            }
+
+                            it.nextMapWipe?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = stringResource(SharedRes.strings.next_map_wipe),
+                                    value = it
+                                )
+                            }
+
+                            it.pve?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = stringResource(SharedRes.strings.pve),
+                                    value = if (it) stringResource(SharedRes.strings.true_str) else stringResource(
+                                        SharedRes.strings.no
+                                    )
+                                )
+                            }
+
+                            it.website?.let { url ->
+                                ServerWebsite(
+                                    website = url,
+                                    spacing = spacing,
+                                    urlColor = Color(0xFF1779CE)
+                                )
+                            }
+
+                            it.isOfficial?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = stringResource(SharedRes.strings.official),
+                                    value = if (it) stringResource(SharedRes.strings.true_str) else stringResource(
+                                        SharedRes.strings.false_str
+                                    )
+                                )
+                            }
+
+                            it.isPremium?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = stringResource(SharedRes.strings.premium),
+                                    value = if (it) stringResource(SharedRes.strings.true_str) else stringResource(
+                                        SharedRes.strings.false_str
+                                    )
+                                )
+                            }
+                        }
+
+                        item {
+                            HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
+                            Text(
+                                modifier = Modifier.padding(spacing.medium),
+                                style = MaterialTheme.typography.titleLarge,
+                                text = stringResource(SharedRes.strings.settings)
+                            )
+
+                            it.maxGroup?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = stringResource(SharedRes.strings.group_limit),
+                                    value = if (it == 999999L) stringResource(SharedRes.strings.none) else it.toString()
+                                )
+                            }
+
+                            it.blueprints?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = stringResource(SharedRes.strings.blueprints),
+                                    value = if (it) stringResource(SharedRes.strings.enabled) else stringResource(
+                                        SharedRes.strings.disabled
+                                    )
+                                )
+                            }
+
+                            it.kits?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = stringResource(SharedRes.strings.kits),
+                                    value = if (it) stringResource(SharedRes.strings.yes) else stringResource(
+                                        SharedRes.strings.no_kits
+                                    )
+                                )
+                            }
+
+                            it.decay?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = stringResource(SharedRes.strings.decay),
+                                    value = it * 100L
+                                )
+                            }
+
+                            it.upkeep?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = stringResource(SharedRes.strings.upkeep),
+                                    value = it * 100L
+                                )
+                            }
+
+                            it.rates?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = stringResource(SharedRes.strings.rates),
+                                    value = it
+                                )
+                            }
+                        }
+                        item {
+                            HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
+                            Text(
+                                modifier = Modifier.padding(spacing.medium),
+                                style = MaterialTheme.typography.titleLarge,
+                                text = stringResource(SharedRes.strings.description)
+                            )
+                            HtmlStyledText(
+                                modifier = Modifier.padding(spacing.medium),
+                                html = it.description ?: ""
+                            )
+                        }
+                        item {
+                            HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
+                            Text(
+                                modifier = Modifier.padding(spacing.medium),
+                                style = MaterialTheme.typography.titleLarge,
+                                text = stringResource(SharedRes.strings.map_information)
+                            )
+                            it.seed?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = stringResource(SharedRes.strings.seed),
+                                    value = it.toString()
+                                )
+                            }
+                            it.mapSize?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = stringResource(SharedRes.strings.map_size),
+                                    value = it
+                                )
+                            }
+                            it.mapName?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = stringResource(SharedRes.strings.map_name),
+                                    value = it.displayName
+                                )
+                            }
+                            it.monuments?.let {
+                                ServerDetail(
+                                    modifier = Modifier.padding(spacing.medium),
+                                    label = stringResource(SharedRes.strings.monuments),
+                                    value = it
+                                )
+                            }
+                            it.mapUrl?.let {
+                                ServerWebsite(
+                                    label = stringResource(SharedRes.strings.additional_information_available_at),
+                                    website = it,
+                                    alias = stringResource(SharedRes.strings.rustmaps),
+                                    spacing = spacing,
+                                    urlColor = Color(0xFF1779CE)
+                                )
+                            }
+
+                            it.mapImage?.let {
+                                SubcomposeAsyncImage(
+                                    modifier = Modifier
+                                        .padding(
+                                            start = spacing.medium,
+                                            end = spacing.medium,
+                                            bottom = spacing.medium
+                                        )
+                                        .clickable { onAction(ServerDetailsAction.OnShowMap) },
+                                    model = it,
+                                    contentDescription = stringResource(
+                                        SharedRes.strings.rust_map_image
+                                    ),
+                                    loading = {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(200.dp)
+                                                .shimmer()
+                                        )
+                                    },
+                                    error = {
+                                        Image(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(200.dp),
+                                            painter = painterResource(id = getImageByFileName("il_not_found").drawableResId),
+                                            contentDescription = stringResource(SharedRes.strings.error_not_found)
+                                        )
+                                    }
+                                )
                             }
                         }
                     }

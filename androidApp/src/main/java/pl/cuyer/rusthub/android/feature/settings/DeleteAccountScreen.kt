@@ -108,47 +108,43 @@ fun DeleteAccountScreen(
             )
         }
     ) { innerPadding ->
-        LookaheadScope {
-            if (isTabletMode) {
-                DeleteAccountScreenExpanded(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding)
-                        .fillMaxSize()
-                        .padding(spacing.medium)
-                        .semantics { hideFromAccessibility() }
-                        .animateBounds(this)
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = null
-                        ) { focusManager.clearFocus() },
-                    provider = currentState.provider,
-                    password = currentState.password,
-                    passwordError = currentState.passwordError,
-                    isLoading = currentState.isLoading,
-                    onAction = onAction
-                )
-            } else {
-                DeleteAccountScreenCompact(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding)
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(spacing.medium)
-                        .semantics { hideFromAccessibility() }
-                        .animateBounds(this)
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = null
-                        ) { focusManager.clearFocus() },
-                    provider = currentState.provider,
-                    password = currentState.password,
-                    passwordError = currentState.passwordError,
-                    isLoading = currentState.isLoading,
-                    onAction = onAction
-                )
-            }
+        if (isTabletMode) {
+            DeleteAccountScreenExpanded(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding)
+                    .fillMaxSize()
+                    .padding(spacing.medium)
+                    .semantics { hideFromAccessibility() }
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) { focusManager.clearFocus() },
+                provider = currentState.provider,
+                password = currentState.password,
+                passwordError = currentState.passwordError,
+                isLoading = currentState.isLoading,
+                onAction = onAction
+            )
+        } else {
+            DeleteAccountScreenCompact(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(spacing.medium)
+                    .semantics { hideFromAccessibility() }
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) { focusManager.clearFocus() },
+                provider = currentState.provider,
+                password = currentState.password,
+                passwordError = currentState.passwordError,
+                isLoading = currentState.isLoading,
+                onAction = onAction
+            )
         }
     }
 }

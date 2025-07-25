@@ -123,32 +123,29 @@ fun ConfirmEmailScreen(
             )
         }
     ) { innerPadding ->
-        LookaheadScope {
-            Box(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding)
-                    .fillMaxSize()
-                    .animateBounds(this)
-                    .clickable(interactionSource, null) { focusManager.clearFocus() },
-                contentAlignment = Alignment.Center
-            ) {
-                if (state.value.resendLoading) {
-                    LoadingIndicator()
-                }
-                if (isTabletMode) {
-                    ConfirmEmailScreenExpanded(
-                        email = { state.value.email },
-                        isLoading = { state.value.isLoading },
-                        onAction = onAction
-                    )
-                } else {
-                    ConfirmEmailScreenCompact(
-                        email = { state.value.email },
-                        isLoading = { state.value.isLoading },
-                        onAction = onAction
-                    )
-                }
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .fillMaxSize()
+                .clickable(interactionSource, null) { focusManager.clearFocus() },
+            contentAlignment = Alignment.Center
+        ) {
+            if (state.value.resendLoading) {
+                LoadingIndicator()
+            }
+            if (isTabletMode) {
+                ConfirmEmailScreenExpanded(
+                    email = { state.value.email },
+                    isLoading = { state.value.isLoading },
+                    onAction = onAction
+                )
+            } else {
+                ConfirmEmailScreenCompact(
+                    email = { state.value.email },
+                    isLoading = { state.value.isLoading },
+                    onAction = onAction
+                )
             }
         }
     }

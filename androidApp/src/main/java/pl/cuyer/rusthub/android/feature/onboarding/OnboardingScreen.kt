@@ -136,31 +136,29 @@ fun OnboardingScreen(
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
 
-    LookaheadScope {
-        Box(
-            modifier = Modifier
-                .animateBounds(this)
-                .fillMaxSize(), contentAlignment = Alignment.Center
-        ) {
-            if (isTabletMode) {
-                OnboardingContentExpanded(
-                    onAction = onAction,
-                    email = { state.value.email },
-                    emailError = { state.value.emailError },
-                    isLoading = { state.value.isLoading },
-                    googleLoading = { state.value.googleLoading },
-                    continueAsGuestLoading = { state.value.continueAsGuestLoading }
-                )
-            } else {
-                OnboardingContent(
-                    onAction = onAction,
-                    email = { state.value.email },
-                    emailError = { state.value.emailError },
-                    isLoading = { state.value.isLoading },
-                    googleLoading = { state.value.googleLoading },
-                    continueAsGuestLoading = { state.value.continueAsGuestLoading }
-                )
-            }
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        if (isTabletMode) {
+            OnboardingContentExpanded(
+                onAction = onAction,
+                email = { state.value.email },
+                emailError = { state.value.emailError },
+                isLoading = { state.value.isLoading },
+                googleLoading = { state.value.googleLoading },
+                continueAsGuestLoading = { state.value.continueAsGuestLoading }
+            )
+        } else {
+            OnboardingContent(
+                onAction = onAction,
+                email = { state.value.email },
+                emailError = { state.value.emailError },
+                isLoading = { state.value.isLoading },
+                googleLoading = { state.value.googleLoading },
+                continueAsGuestLoading = { state.value.continueAsGuestLoading }
+            )
         }
     }
 }

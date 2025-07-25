@@ -114,40 +114,36 @@ fun ResetPasswordScreen(
             )
         }
     ) { innerPadding ->
-        LookaheadScope {
-            val currentState = state.value
-            if (isTabletMode) {
-                ResetPasswordScreenExpanded(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding)
-                        .fillMaxSize()
-                        .padding(spacing.medium)
-                        .animateBounds(this)
-                        .clickable(interactionSource, null) { focusManager.clearFocus() },
-                    email = currentState.email,
-                    emailError = currentState.emailError,
-                    isLoading = currentState.isLoading,
-                    onAction = onAction,
-                    focusManager = focusManager
-                )
-            } else {
-                ResetPasswordScreenCompact(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding)
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(spacing.medium)
-                        .animateBounds(this)
-                        .clickable(interactionSource, null) { focusManager.clearFocus() },
-                    email = currentState.email,
-                    emailError = currentState.emailError,
-                    isLoading = currentState.isLoading,
-                    onAction = onAction,
-                    focusManager = focusManager
-                )
-            }
+        val currentState = state.value
+        if (isTabletMode) {
+            ResetPasswordScreenExpanded(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding)
+                    .fillMaxSize()
+                    .padding(spacing.medium)
+                    .clickable(interactionSource, null) { focusManager.clearFocus() },
+                email = currentState.email,
+                emailError = currentState.emailError,
+                isLoading = currentState.isLoading,
+                onAction = onAction,
+                focusManager = focusManager
+            )
+        } else {
+            ResetPasswordScreenCompact(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(spacing.medium)
+                    .clickable(interactionSource, null) { focusManager.clearFocus() },
+                email = currentState.email,
+                emailError = currentState.emailError,
+                isLoading = currentState.isLoading,
+                onAction = onAction,
+                focusManager = focusManager
+            )
         }
     }
 }

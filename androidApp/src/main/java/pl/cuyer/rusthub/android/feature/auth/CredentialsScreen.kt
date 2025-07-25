@@ -130,34 +130,31 @@ fun CredentialsScreen(
             )
         }
     ) { innerPadding ->
-        LookaheadScope {
-            Box(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding)
-                    .fillMaxSize()
-                    .semantics { hideFromAccessibility() }
-                    .animateBounds(this)
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = null
-                    ) { focusManager.clearFocus() }
-            ) {
-                CredentialsContent(
-                    email = currentState.email,
-                    userExists = currentState.userExists,
-                    provider = currentState.provider,
-                    username = currentState.username,
-                    password = currentState.password,
-                    usernameError = currentState.usernameError,
-                    passwordError = currentState.passwordError,
-                    isLoading = currentState.isLoading,
-                    googleLoading = currentState.googleLoading,
-                    isExpanded = isTabletMode,
-                    onAction = onAction,
-                    focusManager = focusManager
-                )
-            }
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .fillMaxSize()
+                .semantics { hideFromAccessibility() }
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null
+                ) { focusManager.clearFocus() }
+        ) {
+            CredentialsContent(
+                email = currentState.email,
+                userExists = currentState.userExists,
+                provider = currentState.provider,
+                username = currentState.username,
+                password = currentState.password,
+                usernameError = currentState.usernameError,
+                passwordError = currentState.passwordError,
+                isLoading = currentState.isLoading,
+                googleLoading = currentState.googleLoading,
+                isExpanded = isTabletMode,
+                onAction = onAction,
+                focusManager = focusManager
+            )
         }
     }
 }

@@ -111,39 +111,35 @@ fun ChangePasswordScreen(
             )
         }
     ) { innerPadding ->
-        LookaheadScope {
-            if (isTabletMode) {
-                ChangePasswordScreenExpanded(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                        .padding(spacing.medium)
-                        .animateBounds(this)
-                        .clickable(interactionSource, null) { focusManager.clearFocus() },
-                    oldPassword = { state.value.oldPassword },
-                    newPassword = { state.value.newPassword },
-                    oldPasswordError = { state.value.oldPasswordError },
-                    newPasswordError = { state.value.newPasswordError },
-                    isLoading = { state.value.isLoading },
-                    onAction = onAction
-                )
-            } else {
-                ChangePasswordScreenCompact(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(innerPadding)
-                        .padding(spacing.medium)
-                        .animateBounds(this)
-                        .clickable(interactionSource, null) { focusManager.clearFocus() },
-                    oldPassword = { state.value.oldPassword },
-                    newPassword = { state.value.newPassword },
-                    oldPasswordError = { state.value.oldPasswordError },
-                    newPasswordError = { state.value.newPasswordError },
-                    isLoading = { state.value.isLoading },
-                    onAction = onAction
-                )
-            }
+        if (isTabletMode) {
+            ChangePasswordScreenExpanded(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(spacing.medium)
+                    .clickable(interactionSource, null) { focusManager.clearFocus() },
+                oldPassword = { state.value.oldPassword },
+                newPassword = { state.value.newPassword },
+                oldPasswordError = { state.value.oldPasswordError },
+                newPasswordError = { state.value.newPasswordError },
+                isLoading = { state.value.isLoading },
+                onAction = onAction
+            )
+        } else {
+            ChangePasswordScreenCompact(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(innerPadding)
+                    .padding(spacing.medium)
+                    .clickable(interactionSource, null) { focusManager.clearFocus() },
+                oldPassword = { state.value.oldPassword },
+                newPassword = { state.value.newPassword },
+                oldPasswordError = { state.value.oldPasswordError },
+                newPasswordError = { state.value.newPasswordError },
+                isLoading = { state.value.isLoading },
+                onAction = onAction
+            )
         }
     }
 }

@@ -119,40 +119,37 @@ fun UpgradeAccountScreen(
             )
         }
     ) { innerPadding ->
-        LookaheadScope {
-            Box(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding)
-                    .fillMaxSize()
-                    .animateBounds(this)
-                    .clickable(interactionSource, null) { focusManager.clearFocus() }
-            ) {
-                if (isTabletMode) {
-                    UpgradeScreenExpanded(
-                        username = currentState.username,
-                        usernameError = currentState.usernameError,
-                        email = currentState.email,
-                        emailError = currentState.emailError,
-                        password = currentState.password,
-                        passwordError = currentState.passwordError,
-                        isLoading = currentState.isLoading,
-                        googleLoading = currentState.googleLoading,
-                        onAction = onAction
-                    )
-                } else {
-                    UpgradeScreenCompact(
-                        username = currentState.username,
-                        usernameError = currentState.usernameError,
-                        email = currentState.email,
-                        emailError = currentState.emailError,
-                        password = currentState.password,
-                        passwordError = currentState.passwordError,
-                        isLoading = currentState.isLoading,
-                        googleLoading = currentState.googleLoading,
-                        onAction = onAction
-                    )
-                }
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .fillMaxSize()
+                .clickable(interactionSource, null) { focusManager.clearFocus() }
+        ) {
+            if (isTabletMode) {
+                UpgradeScreenExpanded(
+                    username = currentState.username,
+                    usernameError = currentState.usernameError,
+                    email = currentState.email,
+                    emailError = currentState.emailError,
+                    password = currentState.password,
+                    passwordError = currentState.passwordError,
+                    isLoading = currentState.isLoading,
+                    googleLoading = currentState.googleLoading,
+                    onAction = onAction
+                )
+            } else {
+                UpgradeScreenCompact(
+                    username = currentState.username,
+                    usernameError = currentState.usernameError,
+                    email = currentState.email,
+                    emailError = currentState.emailError,
+                    password = currentState.password,
+                    passwordError = currentState.passwordError,
+                    isLoading = currentState.isLoading,
+                    googleLoading = currentState.googleLoading,
+                    onAction = onAction
+                )
             }
         }
     }
