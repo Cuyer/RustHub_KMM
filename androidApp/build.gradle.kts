@@ -50,6 +50,12 @@ android {
         jvmToolchain(17)
     }
 
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
     signingConfigs {
         create("development") {
             storeFile = rootProject.file("androidApp/keystore-dev.jks")
