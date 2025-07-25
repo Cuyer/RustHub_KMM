@@ -226,7 +226,6 @@ class ServerViewModel(
                     CrashReporter.recordException(it)
                     sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_search))
                 }.onSuccess {
-                    clearRemoteKeysUseCase()
                     queryFlow.update { query }
                 }
             }
