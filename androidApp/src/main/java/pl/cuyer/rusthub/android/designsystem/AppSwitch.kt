@@ -22,7 +22,8 @@ import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 @Composable
 fun AppSwitch(
     isChecked: () -> Boolean,
-    onCheckedChange: (Boolean) -> Unit
+    onCheckedChange: (Boolean) -> Unit,
+    enabled: Boolean = true
 ) {
     val sd = if (isChecked()) {
         stringResource(SharedRes.strings.enabled)
@@ -39,6 +40,7 @@ fun AppSwitch(
         onCheckedChange = {
             onCheckedChange(it)
         },
+        enabled = enabled,
         thumbContent = {
             if (isChecked()) {
                 // Decorative check mark shown inside the switch

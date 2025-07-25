@@ -26,7 +26,8 @@ fun SwitchWithTextHorizontal(
     modifier: Modifier = Modifier,
     text: String,
     isChecked: () -> Boolean,
-    onCheckedChange: (Boolean) -> Unit
+    onCheckedChange: (Boolean) -> Unit,
+    enabled: () -> Boolean = { true }
 ) {
     Row(
         modifier = modifier
@@ -36,7 +37,11 @@ fun SwitchWithTextHorizontal(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(text)
-        AppSwitch(isChecked = isChecked, onCheckedChange = onCheckedChange)
+        AppSwitch(
+            isChecked = isChecked,
+            onCheckedChange = onCheckedChange,
+            enabled = enabled()
+        )
     }
 }
 

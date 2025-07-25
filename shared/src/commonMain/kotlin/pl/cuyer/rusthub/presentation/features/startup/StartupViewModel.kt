@@ -86,7 +86,8 @@ class StartupViewModel(
     private fun observePreferences() {
         preferencesFlow
             .onEach { prefs ->
-                updateTheme(prefs.themeConfig, prefs.useDynamicColor)
+                val theme = if (prefs.useSystemColors) Theme.SYSTEM else prefs.themeConfig
+                updateTheme(theme, prefs.useDynamicColor)
             }
             .catch { e ->
                 Napier.e("Error reading preferences", e)

@@ -18,5 +18,7 @@ data class UserPreferencesProto(
     @SerialName("theme_config")
     val themeConfig: ThemeProto = ThemeProto.THEME_SYSTEM,
     @SerialName("use_dynamic_color")
-    val useDynamicColor: Boolean = false
+    val useDynamicColor: Boolean = false,
+    @SerialName("use_system_colors")
+    val useSystemColors: Boolean = true,
 )

@@ -5,5 +5,6 @@ import androidx.compose.runtime.Immutable
 @Immutable
 data class UserPreferences(
     val themeConfig: Theme = Theme.SYSTEM,
-    val useDynamicColor: Boolean = false
+    val useDynamicColor: Boolean = false,
+    val useSystemColors: Boolean = true,
 )

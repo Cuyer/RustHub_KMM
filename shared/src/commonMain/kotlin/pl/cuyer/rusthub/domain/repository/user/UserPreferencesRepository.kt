@@ -18,4 +18,9 @@ interface UserPreferencesRepository {
      * Sets the preferred dynamic color config.
      */
     suspend fun setDynamicColorPreference(useDynamicColor: Boolean)
+
+    /**
+     * Sets whether the app should follow system color scheme.
+     */
+    suspend fun setUseSystemColors(useSystemColors: Boolean)
 }
