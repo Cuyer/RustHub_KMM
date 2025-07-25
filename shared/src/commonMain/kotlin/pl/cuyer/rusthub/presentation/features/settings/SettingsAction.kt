@@ -29,5 +29,7 @@ sealed interface SettingsAction {
     @Immutable
     data class OnDynamicColorsChange(val enabled: Boolean) : SettingsAction
     @Immutable
+    data class OnUseSystemColorsChange(val enabled: Boolean) : SettingsAction
+    @Immutable
     data class OnLanguageChange(val language: Language) : SettingsAction
 }

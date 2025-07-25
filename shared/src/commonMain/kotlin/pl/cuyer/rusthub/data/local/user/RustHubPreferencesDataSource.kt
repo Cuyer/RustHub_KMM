@@ -19,6 +19,7 @@ class RustHubPreferencesDataSource(
                 else -> Theme.SYSTEM
             },
             useDynamicColor = it.useDynamicColor,
+            useSystemColors = it.useSystemColors,
         )
     }
 
@@ -37,6 +38,12 @@ class RustHubPreferencesDataSource(
                     Theme.DARK -> ThemeProto.THEME_DARK
                 }
             )
+        }
+    }
+
+    suspend fun setUseSystemColors(useSystemColors: Boolean) {
+        userPreferences.updateData {
+            it.copy(useSystemColors = useSystemColors)
         }
     }
 }

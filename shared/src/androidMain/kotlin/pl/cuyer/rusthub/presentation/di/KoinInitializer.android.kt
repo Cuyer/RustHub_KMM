@@ -155,6 +155,7 @@ actual val platformModule: Module = module {
             getUserPreferencesUseCase = get(),
             setThemeConfigUseCase = get(),
             setDynamicColorPreferenceUseCase = get(),
+            setUseSystemColorsPreferenceUseCase = get(),
             permissionsController = get(),
             googleAuthClient = get(),
             snackbarController = get(),

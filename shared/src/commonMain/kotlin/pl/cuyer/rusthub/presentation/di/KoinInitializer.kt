@@ -85,6 +85,7 @@ import pl.cuyer.rusthub.domain.usecase.UpgradeAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeWithGoogleUseCase
 import pl.cuyer.rusthub.domain.usecase.SetThemeConfigUseCase
 import pl.cuyer.rusthub.domain.usecase.SetDynamicColorPreferenceUseCase
+import pl.cuyer.rusthub.domain.usecase.SetUseSystemColorsPreferenceUseCase
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.common.user.UserEventController
 import pl.cuyer.rusthub.util.MessagingTokenManager
@@ -156,6 +157,7 @@ val appModule = module {
     single { GetUserPreferencesUseCase(get()) }
     single { SetThemeConfigUseCase(get()) }
     single { SetDynamicColorPreferenceUseCase(get()) }
+    single { SetUseSystemColorsPreferenceUseCase(get()) }
     single { LogoutUserUseCase(get(), get()) }
     single { DeleteAccountUseCase(get(), get()) }
     single { ChangePasswordUseCase(get()) }

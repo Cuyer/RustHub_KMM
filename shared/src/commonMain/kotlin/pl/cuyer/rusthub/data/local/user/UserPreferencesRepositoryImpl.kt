@@ -23,4 +23,8 @@ class UserPreferencesRepositoryImpl(
     override suspend fun setDynamicColorPreference(useDynamicColor: Boolean) {
         dataSource.setDynamicColorPreference(useDynamicColor)
     }
+
+    override suspend fun setUseSystemColors(useSystemColors: Boolean) {
+        dataSource.setUseSystemColors(useSystemColors)
+    }
 }

@@ -234,6 +234,7 @@
     <string name="system">System</string>
     <string name="dark_mode">Dark mode</string>
     <string name="dynamic_colors">Dynamic colors</string>
+    <string name="system_colors">System colors</string>
     <string name="this_rust_hub_account_is_already_connected_with_social_account">This Rust Hub account is already connected with a social account.</string>
     <string name="true_str">True</string>
     <string name="turn_off_notifications">Turn off notifications</string>

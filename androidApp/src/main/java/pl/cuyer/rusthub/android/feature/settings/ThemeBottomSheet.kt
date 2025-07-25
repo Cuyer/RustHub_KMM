@@ -37,8 +37,10 @@ fun ThemeBottomSheet(
     sheetState: SheetState,
     current: Theme,
     dynamicColors: Boolean,
+    useSystemColors: Boolean,
     onThemeChange: (Theme) -> Unit,
     onDynamicColorsChange: (Boolean) -> Unit,
+    onUseSystemColorsChange: (Boolean) -> Unit,
     onDismiss: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -64,9 +66,15 @@ fun ThemeBottomSheet(
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
             SwitchWithTextHorizontal(
+                text = stringResource(SharedRes.strings.system_colors),
+                isChecked = { useSystemColors },
+                onCheckedChange = onUseSystemColorsChange
+            )
+            SwitchWithTextHorizontal(
                 text = stringResource(SharedRes.strings.dark_mode),
                 isChecked = { current == Theme.DARK },
-                onCheckedChange = { onThemeChange(if (it) Theme.DARK else Theme.LIGHT) }
+                onCheckedChange = { onThemeChange(if (it) Theme.DARK else Theme.LIGHT) },
+                enabled = { !useSystemColors }
             )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 SwitchWithTextHorizontal(
@@ -89,8 +97,10 @@ private fun ThemeBottomSheetPreview() {
             sheetState = sheetState,
             current = Theme.LIGHT,
             dynamicColors = false,
+            useSystemColors = false,
             onThemeChange = {},
             onDynamicColorsChange = {},
+            onUseSystemColorsChange = {},
             onDismiss = {}
         )
     }

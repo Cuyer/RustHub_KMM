@@ -154,8 +154,10 @@ fun SettingsScreen(
                     sheetState = themeSheetState,
                     current = state.value.theme,
                     dynamicColors = state.value.dynamicColors,
+                    useSystemColors = state.value.useSystemColors,
                     onThemeChange = { onAction(SettingsAction.OnThemeChange(it)) },
                     onDynamicColorsChange = { onAction(SettingsAction.OnDynamicColorsChange(it)) },
+                    onUseSystemColorsChange = { onAction(SettingsAction.OnUseSystemColorsChange(it)) },
                     onDismiss = { showThemeSheet = false }
                 )
             }

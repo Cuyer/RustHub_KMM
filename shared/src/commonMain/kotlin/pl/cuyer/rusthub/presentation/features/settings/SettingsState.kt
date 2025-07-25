@@ -14,5 +14,6 @@ data class SettingsState(
     val anonymousExpiration: String? = null,
     val isLoading: Boolean = false,
     val theme: Theme = Theme.SYSTEM,
-    val dynamicColors: Boolean = false
+    val dynamicColors: Boolean = false,
+    val useSystemColors: Boolean = true,
 )

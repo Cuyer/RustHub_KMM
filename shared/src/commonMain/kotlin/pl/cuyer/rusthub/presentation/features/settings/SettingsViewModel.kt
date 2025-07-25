@@ -29,6 +29,7 @@ import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 import pl.cuyer.rusthub.domain.usecase.SetDynamicColorPreferenceUseCase
 import pl.cuyer.rusthub.domain.usecase.SetThemeConfigUseCase
+import pl.cuyer.rusthub.domain.usecase.SetUseSystemColorsPreferenceUseCase
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
@@ -57,6 +58,7 @@ class SettingsViewModel(
     private val getUserPreferencesUseCase: GetUserPreferencesUseCase,
     private val setThemeConfigUseCase: SetThemeConfigUseCase,
     private val setDynamicColorPreferenceUseCase: SetDynamicColorPreferenceUseCase,
+    private val setUseSystemColorsPreferenceUseCase: SetUseSystemColorsPreferenceUseCase,
     private val permissionsController: PermissionsController,
     private val googleAuthClient: GoogleAuthClient,
     private val snackbarController: SnackbarController,
@@ -96,6 +98,7 @@ class SettingsViewModel(
             SettingsAction.OnUpgradeAccount -> navigateUpgrade()
             is SettingsAction.OnThemeChange -> setTheme(action.theme)
             is SettingsAction.OnDynamicColorsChange -> setDynamicColors(action.enabled)
+            is SettingsAction.OnUseSystemColorsChange -> setUseSystemColors(action.enabled)
             is SettingsAction.OnLanguageChange -> changeLanguage(action.language)
         }
     }
@@ -115,14 +118,18 @@ class SettingsViewModel(
     private fun observePreferences() {
         getUserPreferencesUseCase()
             .combine(systemDarkThemeObserver.isSystemDarkTheme) { prefs, systemDark ->
-                val theme = when (prefs.themeConfig) {
-                    Theme.SYSTEM -> if (systemDark) Theme.DARK else Theme.LIGHT
-                    else -> prefs.themeConfig
+                val theme = if (prefs.useSystemColors) {
+                    if (systemDark) Theme.DARK else Theme.LIGHT
+                } else {
+                    when (prefs.themeConfig) {
+                        Theme.SYSTEM -> if (systemDark) Theme.DARK else Theme.LIGHT
+                        else -> prefs.themeConfig
+                    }
                 }
-                theme to prefs.useDynamicColor
+                Triple(theme, prefs.useDynamicColor, prefs.useSystemColors)
             }
-            .onEach { (theme, dynamic) ->
-                _state.update { it.copy(theme = theme, dynamicColors = dynamic) }
+            .onEach { (theme, dynamic, systemColors) ->
+                _state.update { it.copy(theme = theme, dynamicColors = dynamic, useSystemColors = systemColors) }
             }
             .launchIn(coroutineScope)
     }
@@ -187,6 +194,10 @@ class SettingsViewModel(
 
     private fun setDynamicColors(enabled: Boolean) {
         coroutineScope.launch { setDynamicColorPreferenceUseCase(enabled) }
+    }
+
+    private fun setUseSystemColors(enabled: Boolean) {
+        coroutineScope.launch { setUseSystemColorsPreferenceUseCase(enabled) }
     }
 
     private fun showErrorSnackbar(message: String?) {
