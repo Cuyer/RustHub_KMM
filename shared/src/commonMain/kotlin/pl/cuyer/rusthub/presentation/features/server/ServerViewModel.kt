@@ -36,6 +36,7 @@ import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
+import pl.cuyer.rusthub.domain.usecase.ClearRemoteKeysUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
 import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.presentation.model.SearchQueryUi
@@ -64,6 +65,7 @@ class ServerViewModel(
     private val getFiltersOptions: GetFiltersOptionsUseCase,
     private val saveFiltersUseCase: SaveFiltersUseCase,
     private val clearFiltersUseCase: ClearFiltersUseCase,
+    private val clearRemoteKeysUseCase: ClearRemoteKeysUseCase,
     private val saveSearchQueryUseCase: SaveSearchQueryUseCase,
     private val getSearchQueriesUseCase: GetSearchQueriesUseCase,
     private val deleteSearchQueriesUseCase: DeleteSearchQueriesUseCase,
@@ -222,6 +224,7 @@ class ServerViewModel(
                 }.onFailure {
                     sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_search))
                 }.onSuccess {
+                    clearRemoteKeysUseCase()
                     queryFlow.update { query }
                 }
             }
@@ -231,6 +234,7 @@ class ServerViewModel(
     }
 
     private fun clearSearchQuery() {
+        clearRemoteKeysUseCase()
         queryFlow.update { "" }
     }
 

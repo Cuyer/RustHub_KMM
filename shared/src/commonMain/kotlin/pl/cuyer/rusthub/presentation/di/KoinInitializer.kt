@@ -78,6 +78,7 @@ import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
 import pl.cuyer.rusthub.domain.usecase.SetEmailConfirmedUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
+import pl.cuyer.rusthub.domain.usecase.ClearRemoteKeysUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveItemSearchQueryUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleSubscriptionUseCase
@@ -137,6 +138,7 @@ val appModule = module {
     single { SaveSearchQueryUseCase(get()) }
     single { SaveItemSearchQueryUseCase(get()) }
     single { ClearFiltersUseCase(get()) }
+    single { ClearRemoteKeysUseCase(get()) }
     single { GetFiltersOptionsUseCase(get(), get()) }
     single { GetSearchQueriesUseCase(get()) }
     single { GetItemSearchQueriesUseCase(get()) }
