@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.android
 
 import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -68,8 +69,8 @@ class MainActivity : AppCompatActivity() {
                     .collect { darkTheme ->
                         enableEdgeToEdge(
                             statusBarStyle = SystemBarStyle.auto(
-                                lightScrim = android.graphics.Color.TRANSPARENT,
-                                darkScrim = android.graphics.Color.TRANSPARENT,
+                                lightScrim = Color.TRANSPARENT,
+                                darkScrim = Color.TRANSPARENT,
                             ) { darkTheme },
                             navigationBarStyle = SystemBarStyle.auto(
                                 lightScrim = lightScrim,
@@ -106,8 +107,8 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-private val lightScrim = (Colors.SCRIM_LIGHT).toColorInt()
-private val darkScrim = (Colors.SCRIM_DARK).toColorInt()
+private val lightScrim = Color.argb(0xe6, 0xFF, 0xFF, 0x00)
+private val darkScrim = Color.argb(0xe6, 0xFF, 0xFF, 0x00)
 
 @Immutable
 private data class ThemeSettings(

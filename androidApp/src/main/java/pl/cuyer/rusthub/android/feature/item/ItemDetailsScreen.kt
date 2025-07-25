@@ -8,10 +8,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -180,7 +183,7 @@ private fun DetailsContent(page: DetailsPage, content: Any?) {
             val looting = content as? List<Looting> ?: emptyList()
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(vertical = spacing.medium),
+                contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
                 verticalArrangement = Arrangement.spacedBy(spacing.medium),
             ) {
                 items(looting, key = { it.from ?: it.hashCode().toString() }) { item ->
@@ -222,7 +225,7 @@ private fun DetailsContent(page: DetailsPage, content: Any?) {
 private fun CraftingContent(crafting: Crafting) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = spacing.medium),
+        contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
         crafting.craftingRecipe?.let { recipe ->
@@ -519,7 +522,7 @@ private fun TechTreeCostRow(
 private fun RecyclingContent(recycling: Recycling) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = spacing.medium),
+        contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
         recycling.safezoneRecycler?.let { recycler ->
@@ -673,7 +676,7 @@ private fun RaidingContent(
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = spacing.medium),
+        contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
         item {
