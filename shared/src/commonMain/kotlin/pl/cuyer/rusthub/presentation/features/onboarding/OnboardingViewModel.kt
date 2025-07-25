@@ -7,7 +7,7 @@ import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
+import pl.cuyer.rusthub.util.catchAndLog
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
@@ -71,7 +71,7 @@ class OnboardingViewModel(
             authAnonymouslyUseCase()
                 .onStart { updateContinueAsGuestLoading(true) }
                 .onCompletion { updateContinueAsGuestLoading(false) }
-                .catch { e ->
+                .catchAndLog { e ->
                     showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
@@ -114,7 +114,7 @@ class OnboardingViewModel(
             checkUserExistsUseCase(email)
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
-                .catch { e ->
+                .catchAndLog { e ->
                     showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
@@ -137,7 +137,7 @@ class OnboardingViewModel(
             getGoogleClientIdUseCase()
                 .onStart { updateGoogleLoading(true) }
                 .onCompletion { updateGoogleLoading(false) }
-                .catch { e ->
+                .catchAndLog { e ->
                     showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
@@ -166,7 +166,7 @@ class OnboardingViewModel(
             loginWithGoogleUseCase(token)
                 .onStart { updateGoogleLoading(true) }
                 .onCompletion { updateGoogleLoading(false) }
-                .catch { e ->
+                .catchAndLog { e ->
                     showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->

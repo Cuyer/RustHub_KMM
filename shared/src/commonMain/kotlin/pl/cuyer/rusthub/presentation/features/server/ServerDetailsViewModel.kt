@@ -12,7 +12,7 @@ import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
+import pl.cuyer.rusthub.util.catchAndLog
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
@@ -163,11 +163,11 @@ class ServerDetailsViewModel(
 
         toggleJob = coroutineScope.launch {
             toggleFavouriteUseCase(id, add)
-                .catch {
+                .catchAndLog {
                     showErrorSnackbar(
                         stringProvider.get(
                             if (add) SharedRes.strings.error_add_favourite
-                            else SharedRes.strings.error_remove_favourite
+                                else SharedRes.strings.error_remove_favourite
                         )
                     )
                 }
@@ -227,7 +227,7 @@ class ServerDetailsViewModel(
 
         subscriptionJob = coroutineScope.launch {
             toggleSubscriptionUseCase(id, subscribed)
-                .catch {
+                .catchAndLog {
                     showErrorSnackbar(
                         stringProvider.get(
                             if (subscribed) SharedRes.strings.error_subscribe_notifications
@@ -344,7 +344,7 @@ class ServerDetailsViewModel(
     private fun resendConfirmation() {
         coroutineScope.launch {
             resendConfirmationUseCase()
-                .catch { e ->
+                .catchAndLog { e ->
                     showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
@@ -373,9 +373,11 @@ class ServerDetailsViewModel(
                 changeIsLoading(false)
             }
             .onStart { changeIsLoading(true) }
-            .catch { e ->
-                showErrorSnackbar(e.toUserMessage(stringProvider)
-                    ?: stringProvider.get(SharedRes.strings.error_fetching_server_data))
+            .catchAndLog { e ->
+                showErrorSnackbar(
+                    e.toUserMessage(stringProvider)
+                        ?: stringProvider.get(SharedRes.strings.error_fetching_server_data)
+                )
             }
             .launchIn(coroutineScope)
     }

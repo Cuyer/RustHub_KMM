@@ -24,6 +24,7 @@ import pl.cuyer.rusthub.domain.repository.favourite.FavouriteSyncDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.util.TokenRefresher
+import pl.cuyer.rusthub.util.CrashReporter
 
 class AuthDataSourceImpl(
     private val db: RustHubDatabase,
@@ -59,6 +60,7 @@ class AuthDataSourceImpl(
                 subscribed = if (subscribed) 1L else 0L,
                 emailConfirmed = if (emailConfirmed) 1L else 0L
             )
+            CrashReporter.setUserId(username)
         }
     }
 
@@ -75,6 +77,7 @@ class AuthDataSourceImpl(
             subscriptionSyncDataSource.clearOperations()
             itemSyncDataSource.clearState()
             tokenRefresher.clear()
+            CrashReporter.setUserId(null)
         }
     }
 

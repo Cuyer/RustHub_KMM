@@ -16,6 +16,7 @@ import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.data.network.model.ErrorResponse
 import pl.cuyer.rusthub.data.network.util.ApiExceptionMapper
 import pl.cuyer.rusthub.domain.exception.ServiceUnavailableException
+import pl.cuyer.rusthub.util.CrashReporter
 import kotlin.coroutines.coroutineContext
 
 abstract class BaseApiResponse(
@@ -46,7 +47,10 @@ abstract class BaseApiResponse(
             }
         }.catch { e ->
             if (e is CancellationException) throw e
-            else emit(error(ApiExceptionMapper.fromThrowable(e)))
+            else {
+                CrashReporter.recordException(e)
+                emit(error(ApiExceptionMapper.fromThrowable(e)))
+            }
         }
 
     fun <T> success(success: T): Result.Success<T> = Result.Success(success)

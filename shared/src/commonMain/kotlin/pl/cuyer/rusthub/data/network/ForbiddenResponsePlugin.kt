@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.data.network
 
 import io.github.aakira.napier.Napier
+import pl.cuyer.rusthub.util.CrashReporter
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.Dispatchers
@@ -29,6 +30,7 @@ val ForbiddenResponsePlugin = createClientPlugin("ForbiddenResponsePlugin", ::Fo
                     }
                 }
             } catch (e: Exception) {
+                CrashReporter.recordException(e)
                 Napier.e(message = "Failed to delete user on token refresh failure", throwable = e)
             }
         }
