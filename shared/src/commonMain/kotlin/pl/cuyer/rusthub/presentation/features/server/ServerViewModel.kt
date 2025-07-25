@@ -32,6 +32,7 @@ import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.domain.usecase.ClearFiltersUseCase
+import pl.cuyer.rusthub.domain.usecase.ClearServerCacheUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetFiltersOptionsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
@@ -71,6 +72,7 @@ class ServerViewModel(
     private val deleteSearchQueriesUseCase: DeleteSearchQueriesUseCase,
     private val stringProvider: StringProvider,
     private val connectivityObserver: ConnectivityObserver,
+    private val clearServerCacheUseCase: ClearServerCacheUseCase,
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -214,6 +216,8 @@ class ServerViewModel(
     private fun handleSearch(query: String) {
         if (query.isNotEmpty()) {
             coroutineScope.launch {
+                queryFlow.update { query }
+                clearServerCacheUseCase()
                 runCatching {
                     saveSearchQueryUseCase(
                         SearchQuery(
@@ -225,8 +229,6 @@ class ServerViewModel(
                 }.onFailure {
                     CrashReporter.recordException(it)
                     sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_search))
-                }.onSuccess {
-                    queryFlow.update { query }
                 }
             }
         } else {
@@ -237,6 +239,7 @@ class ServerViewModel(
     private fun clearSearchQuery() {
         coroutineScope.launch {
             queryFlow.update { "" }
+            clearServerCacheUseCase()
         }
     }
 
@@ -274,6 +277,7 @@ class ServerViewModel(
         coroutineScope.launch {
             runCatching {
                 saveFiltersUseCase(filters)
+                clearServerCacheUseCase()
             }.onFailure {
                 CrashReporter.recordException(it)
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_filters))
@@ -285,6 +289,7 @@ class ServerViewModel(
         coroutineScope.launch {
             runCatching {
                 clearFiltersUseCase()
+                clearServerCacheUseCase()
             }.onFailure {
                 CrashReporter.recordException(it)
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_clearing_filters))
@@ -348,6 +353,7 @@ class ServerViewModel(
                     ?: getFiltersUseCase().first()?.copy(filter = filter)
                     ?: ServerQuery(filter = filter)
                 saveFiltersUseCase(current)
+                clearServerCacheUseCase()
             }.onFailure {
                 CrashReporter.recordException(it)
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_filters))

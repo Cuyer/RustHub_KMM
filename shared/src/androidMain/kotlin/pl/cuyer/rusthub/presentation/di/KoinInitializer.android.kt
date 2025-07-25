@@ -127,7 +127,8 @@ actual val platformModule: Module = module {
             getSearchQueriesUseCase = get(),
             deleteSearchQueriesUseCase = get(),
             stringProvider = get(),
-            connectivityObserver = get()
+            connectivityObserver = get(),
+            clearServerCacheUseCase = get()
         )
     }
     viewModel {

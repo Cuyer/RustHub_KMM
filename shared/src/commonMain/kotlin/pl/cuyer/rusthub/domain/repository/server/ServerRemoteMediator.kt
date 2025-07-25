@@ -77,25 +77,33 @@ class ServerRemoteMediator(
                     }
                 }
                 is Result.Success -> {
-                    if (loadType == LoadType.REFRESH) {
-                        dataSource.deleteServers()
-                        remoteKeys.clearKeys()
-                    }
                     Napier.d(
                         "Fetched servers size: ${result.data.servers.size}",
                         tag = "ServerRemoteMediator"
                     )
-                    dataSource.upsertServers(result.data.servers)
                     val end = page >= result.data.totalPages - 1
                     val nextPage = if (end) null else page + 1
                     val now = Clock.System.now().toEpochMilliseconds()
-                    remoteKeys.upsertKey(
-                        RemoteKey(
-                            id = keyId,
-                            nextPage = nextPage?.toLong(),
-                            lastUpdated = now
+                    if (loadType == LoadType.REFRESH) {
+                        // Clear cache and keys before inserting new data
+                        dataSource.replaceServersAndKeys(
+                            result.data.servers,
+                            RemoteKey(
+                                id = keyId,
+                                nextPage = nextPage?.toLong(),
+                                lastUpdated = now
+                            )
                         )
-                    )
+                    } else {
+                        dataSource.upsertServers(result.data.servers)
+                        remoteKeys.upsertKey(
+                            RemoteKey(
+                                id = keyId,
+                                nextPage = nextPage?.toLong(),
+                                lastUpdated = now
+                            )
+                        )
+                    }
                     MediatorResult.Success(endOfPaginationReached = end)
                 }
 

@@ -18,59 +18,64 @@ import pl.cuyer.rusthub.data.local.mapper.toEntity
 import pl.cuyer.rusthub.data.local.mapper.toServerInfo
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.ServerInfo
+import pl.cuyer.rusthub.domain.model.RemoteKey
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 
 class ServerDataSourceImpl(
     db: RustHubDatabase
 ) : ServerDataSource, Queries(db) {
 
+    private fun insertServers(servers: List<ServerInfo>) {
+        servers.forEach { info ->
+            queries.upsertServers(
+                id = info.id,
+                name = info.name ?: "Undefined",
+                wipe = info.wipe?.toString(),
+                ranking = info.ranking,
+                modded = info.modded == true,
+                playerCount = info.playerCount,
+                capacity = info.serverCapacity,
+                mapName = info.mapName.toEntity(),
+                cycle = info.cycle,
+                serverFlag = info.serverFlag.toEntity(),
+                region = info.region.toEntity(),
+                maxGroup = info.maxGroup,
+                difficulty = info.difficulty.toEntity(),
+                wipeSchedule = info.wipeSchedule.toEntity(),
+                isOfficial = info.isOfficial == true,
+                ip = info.serverIp,
+                description = info.description,
+                server_status = info.serverStatus.toEntity(),
+                wipe_type = info.wipeType.toEntity(),
+                blueprints = info.blueprints == true,
+                kits = info.kits == true,
+                decay = info.decay?.toDouble(),
+                upkeep = info.upkeep?.toDouble(),
+                rates = info.rates?.toLong(),
+                seed = info.seed?.toLong(),
+                mapSize = info.mapSize?.toLong(),
+                mapImage = info.mapImage,
+                averageFps = info.averageFps?.toLong(),
+                pve = info.pve == true,
+                website = info.website,
+                isPremium = info.isPremium == true,
+                monuments = info.monuments?.toLong(),
+                mapUrl = info.mapUrl,
+                headerImage = info.headerImage,
+                favourite = info.isFavorite == true,
+                subscribed = info.isSubscribed == true,
+                nextWipe = info.nextWipe?.toString(),
+                nextMapWipe = info.nextMapWipe?.toString()
+            )
+        }
+    }
+
     override suspend fun upsertServers(
         servers: List<ServerInfo>
     ) {
         withContext(Dispatchers.IO) {
             queries.transaction {
-                servers.forEach { info ->
-                    queries.upsertServers(
-                        id = info.id,
-                        name = info.name ?: "Undefined",
-                        wipe = info.wipe?.toString(),
-                        ranking = info.ranking,
-                        modded = info.modded == true,
-                        playerCount = info.playerCount,
-                        capacity = info.serverCapacity,
-                        mapName = info.mapName.toEntity(),
-                        cycle = info.cycle,
-                        serverFlag = info.serverFlag.toEntity(),
-                        region = info.region.toEntity(),
-                        maxGroup = info.maxGroup,
-                        difficulty = info.difficulty.toEntity(),
-                        wipeSchedule = info.wipeSchedule.toEntity(),
-                        isOfficial = info.isOfficial == true,
-                        ip = info.serverIp,
-                        description = info.description,
-                        server_status = info.serverStatus.toEntity(),
-                        wipe_type = info.wipeType.toEntity(),
-                        blueprints = info.blueprints == true,
-                        kits = info.kits == true,
-                        decay = info.decay?.toDouble(),
-                        upkeep = info.upkeep?.toDouble(),
-                        rates = info.rates?.toLong(),
-                        seed = info.seed?.toLong(),
-                        mapSize = info.mapSize?.toLong(),
-                        mapImage = info.mapImage,
-                        averageFps = info.averageFps?.toLong(),
-                        pve = info.pve == true,
-                        website = info.website,
-                        isPremium = info.isPremium == true,
-                        monuments = info.monuments?.toLong(),
-                        mapUrl = info.mapUrl,
-                        headerImage = info.headerImage,
-                        favourite = info.isFavorite == true,
-                        subscribed = info.isSubscribed == true,
-                        nextWipe = info.nextWipe?.toString(),
-                        nextMapWipe = info.nextMapWipe?.toString()
-                    )
-                }
+                insertServers(servers)
             }
         }
     }
@@ -128,6 +133,33 @@ class ServerDataSourceImpl(
             }.onFailure { e ->
                 CrashReporter.recordException(e)
                 Napier.e("Failed to update subscription", e)
+            }
+        }
+    }
+
+    override suspend fun clearServersAndKeys() {
+        withContext(Dispatchers.IO) {
+            queries.transaction {
+                queries.clearRemoteKeys()
+                queries.clearServers()
+            }
+        }
+    }
+
+    override suspend fun replaceServersAndKeys(
+        servers: List<ServerInfo>,
+        key: RemoteKey
+    ) {
+        withContext(Dispatchers.IO) {
+            queries.transaction {
+                queries.clearRemoteKeys()
+                queries.clearServers()
+                insertServers(servers)
+                queries.upsertRemoteKey(
+                    id = key.id,
+                    next_page = key.nextPage,
+                    last_updated = key.lastUpdated
+                )
             }
         }
     }

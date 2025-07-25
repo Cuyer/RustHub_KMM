@@ -138,6 +138,7 @@ val appModule = module {
     single { SaveItemSearchQueryUseCase(get()) }
     single { ClearFiltersUseCase(get()) }
     single { ClearRemoteKeysUseCase(get()) }
+    single { ClearServerCacheUseCase(get()) }
     single { GetFiltersOptionsUseCase(get(), get()) }
     single { GetSearchQueriesUseCase(get()) }
     single { GetItemSearchQueriesUseCase(get()) }
