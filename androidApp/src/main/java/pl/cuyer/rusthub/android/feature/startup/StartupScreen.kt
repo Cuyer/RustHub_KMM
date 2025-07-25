@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.android.feature.startup
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,29 +24,30 @@ fun StartupScreen(
     showSkip: () -> Boolean,
     onSkip: () -> Unit,
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(spacing.medium, Alignment.CenterVertically)
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(spacing.medium)
-        ) {
-            CircularWavyProgressIndicator()
-            Text(
-                text = stringResource(SharedRes.strings.synchronizing_data),
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.SemiBold
-            )
-            if (showSkip()) {
-                AppTextButton(onClick = onSkip) {
-                    Text(stringResource(SharedRes.strings.skip))
-                }
-                Text(
-                    text = stringResource(SharedRes.strings.fetching_in_background),
-                    style = MaterialTheme.typography.bodySmall
-                )
+        CircularWavyProgressIndicator()
+        Text(
+            color = MaterialTheme.colorScheme.onSurface,
+            text = stringResource(SharedRes.strings.synchronizing_data),
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.SemiBold
+        )
+        if (showSkip()) {
+            AppTextButton(
+                onClick = onSkip
+            ) {
+                Text(stringResource(SharedRes.strings.skip))
             }
+            Text(
+                color = MaterialTheme.colorScheme.onSurface,
+                text = stringResource(SharedRes.strings.fetching_in_background),
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }

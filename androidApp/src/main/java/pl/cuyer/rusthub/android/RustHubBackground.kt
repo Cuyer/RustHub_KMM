@@ -18,17 +18,13 @@ fun RustHubBackground(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    val gradient = remember(
-        MaterialTheme.colorScheme.primaryContainer,
-        MaterialTheme.colorScheme.secondaryContainer
-    ) {
-        Brush.verticalGradient(
-            colors = listOf(
-                MaterialTheme.colorScheme.primaryContainer,
-                MaterialTheme.colorScheme.secondaryContainer
-            )
-        )
+    val primary = MaterialTheme.colorScheme.surface
+    val secondary = MaterialTheme.colorScheme.surfaceContainer
+
+    val gradient = remember(primary, secondary) {
+        Brush.verticalGradient(colors = listOf(primary, secondary))
     }
+
     Surface(
         color = Color.Transparent,
         modifier = modifier
