@@ -40,6 +40,7 @@ import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.common.user.UserEventController
 import pl.cuyer.rusthub.util.TokenRefresher
+import pl.cuyer.rusthub.data.network.CrashReportingPlugin
 import platform.Foundation.NSLocale
 import platform.Foundation.currentLocale
 import platform.Foundation.languageCode
@@ -139,6 +140,8 @@ actual class HttpClientFactory actual constructor(
             install(AppCheckPlugin) {
                 provider = appCheckTokenProvider
             }
+
+            install(CrashReportingPlugin)
 
             install(ForbiddenResponsePlugin) {
                 authDataSource = this@HttpClientFactory.authDataSource

@@ -5,7 +5,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
+import pl.cuyer.rusthub.util.catchAndLog
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
@@ -78,7 +78,7 @@ class ConfirmEmailViewModel(
             checkEmailConfirmedUseCase()
                 .onStart { updateConfirmLoading(true) }
                 .onCompletion { updateConfirmLoading(false) }
-                .catch { e ->
+                .catchAndLog { e ->
                     showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
@@ -107,7 +107,7 @@ class ConfirmEmailViewModel(
             resendConfirmationUseCase()
                 .onStart { updateResendLoading(true) }
                 .onCompletion { updateResendLoading(false) }
-                .catch { e -> showErrorSnackbar(e.toUserMessage(stringProvider)) }
+                .catchAndLog { e -> showErrorSnackbar(e.toUserMessage(stringProvider)) }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> snackbarController.sendEvent(

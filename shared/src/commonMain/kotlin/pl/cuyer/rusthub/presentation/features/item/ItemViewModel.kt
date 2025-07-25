@@ -10,7 +10,7 @@ import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
+import pl.cuyer.rusthub.util.catchAndLog
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
@@ -88,7 +88,7 @@ class ItemViewModel(
         }
             .flowOn(Dispatchers.Default)
             .cachedIn(coroutineScope)
-            .catch { }
+            .catchAndLog { }
 
     fun onAction(action: ItemAction) {
         when (action) {
@@ -152,7 +152,7 @@ class ItemViewModel(
                 updateIsLoadingSearchHistory(false)
             }
             .onStart { updateIsLoadingSearchHistory(true) }
-            .catch {
+            .catchAndLog {
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_fetching_search_history))
             }
             .launchIn(coroutineScope)

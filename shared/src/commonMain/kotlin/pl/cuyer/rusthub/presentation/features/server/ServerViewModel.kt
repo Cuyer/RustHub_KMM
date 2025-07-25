@@ -10,7 +10,8 @@ import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
+import pl.cuyer.rusthub.util.catchAndLog
+import pl.cuyer.rusthub.util.CrashReporter
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
@@ -99,7 +100,7 @@ class ServerViewModel(
                     pagingData.map { it.toUiModel(stringProvider) }
                 }.flowOn(Dispatchers.Default)
             }.cachedIn(coroutineScope)
-            .catch {
+            .catchAndLog {
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_fetching_servers))
             }
 
@@ -115,7 +116,7 @@ class ServerViewModel(
                 updateIsLoadingSearchHistory(false)
             }
             .onStart { updateIsLoadingSearchHistory(true) }
-            .catch {
+            .catchAndLog {
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_fetching_search_history))
             }
             .launchIn(coroutineScope)
@@ -155,7 +156,7 @@ class ServerViewModel(
                 updateFilters(mappedFilters)
                 updateIsLoadingFilters(false)
             }
-            .catch {
+            .catchAndLog {
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_fetching_filters))
             }
             .launchIn(coroutineScope)
@@ -198,6 +199,7 @@ class ServerViewModel(
                 if (query != null) deleteSearchQueriesUseCase(query)
                 else deleteSearchQueriesUseCase()
             }.onFailure {
+                CrashReporter.recordException(it)
                 val msg = if (query != null) {
                     stringProvider.get(SharedRes.strings.error_deleting_query)
                 } else {
@@ -220,6 +222,7 @@ class ServerViewModel(
                         )
                     )
                 }.onFailure {
+                    CrashReporter.recordException(it)
                     sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_search))
                 }.onSuccess {
                     queryFlow.update { query }
@@ -269,6 +272,7 @@ class ServerViewModel(
             runCatching {
                 saveFiltersUseCase(filters)
             }.onFailure {
+                CrashReporter.recordException(it)
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_filters))
             }
         }
@@ -279,6 +283,7 @@ class ServerViewModel(
             runCatching {
                 clearFiltersUseCase()
             }.onFailure {
+                CrashReporter.recordException(it)
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_clearing_filters))
             }
         }
@@ -341,6 +346,7 @@ class ServerViewModel(
                     ?: ServerQuery(filter = filter)
                 saveFiltersUseCase(current)
             }.onFailure {
+                CrashReporter.recordException(it)
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_filters))
             }
         }

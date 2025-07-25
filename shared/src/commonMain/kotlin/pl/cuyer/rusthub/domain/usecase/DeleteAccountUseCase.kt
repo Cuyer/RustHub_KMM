@@ -7,6 +7,7 @@ import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.repository.auth.AuthRepository
 import pl.cuyer.rusthub.util.TokenRefresher
+import pl.cuyer.rusthub.util.CrashReporter
 
 class DeleteAccountUseCase(
     private val repository: AuthRepository,
@@ -20,6 +21,7 @@ class DeleteAccountUseCase(
                         dataSource.deleteUser()
                         send(Result.Success(Unit))
                     } catch (e: Exception) {
+                        CrashReporter.recordException(e)
                         send(Result.Error(e))
                     }
                 }

@@ -13,6 +13,7 @@ import database.ItemEntity
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.ItemCategory
 import pl.cuyer.rusthub.domain.model.RustItem
+import pl.cuyer.rusthub.util.CrashReporter
 import pl.cuyer.rusthub.domain.model.Looting
 import pl.cuyer.rusthub.domain.model.Raiding
 import pl.cuyer.rusthub.domain.model.Crafting
@@ -63,6 +64,7 @@ class ItemDataSourceImpl(
                     }
                 }
             } catch (e: Exception) {
+                CrashReporter.recordException(e)
                 Napier.e("Error upserting items: ${e.message}", e)
             }
         }

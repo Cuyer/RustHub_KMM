@@ -5,7 +5,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
+import pl.cuyer.rusthub.util.catchAndLog
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
+import pl.cuyer.rusthub.util.CrashReporter
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.model.User
@@ -89,7 +90,7 @@ class StartupViewModel(
                 val theme = if (prefs.useSystemColors) Theme.SYSTEM else prefs.themeConfig
                 updateTheme(theme, prefs.useDynamicColor)
             }
-            .catch { e ->
+            .catchAndLog { e ->
                 Napier.e("Error reading preferences", e)
             }
             .launchIn(coroutineScope)
@@ -107,6 +108,7 @@ class StartupViewModel(
             }
             updateStartDestination(user)
         } catch (e: Exception) {
+            CrashReporter.recordException(e)
             showErrorSnackbar(stringProvider.get(SharedRes.strings.fetch_user_error))
             updateStartDestination(null)
         } finally {
