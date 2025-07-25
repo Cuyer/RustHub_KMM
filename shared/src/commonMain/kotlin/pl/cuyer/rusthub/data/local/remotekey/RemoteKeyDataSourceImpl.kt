@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.data.local.remotekey
 
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
@@ -13,8 +14,10 @@ class RemoteKeyDataSourceImpl(
     db: RustHubDatabase
 ) : RemoteKeyDataSource, Queries(db) {
 
-    override fun getKey(id: String): RemoteKey? =
-        queries.getRemoteKey(id).executeAsOneOrNull()?.toDomain()
+    override suspend fun getKey(id: String): RemoteKey? =
+        withContext(Dispatchers.IO) {
+            queries.getRemoteKey(id).executeAsOneOrNull()?.toDomain()
+        }
 
     override suspend fun upsertKey(key: RemoteKey) {
         withContext(Dispatchers.IO) {
@@ -23,12 +26,15 @@ class RemoteKeyDataSourceImpl(
                 next_page = key.nextPage,
                 last_updated = key.lastUpdated
             )
+            val debug = queries.getRemoteKey(key.id).executeAsOneOrNull()
+            Napier.d("After upsert: $debug", tag = "KEYSDB")
         }
     }
 
     override suspend fun clearKeys() {
         withContext(Dispatchers.IO) {
             queries.clearRemoteKeys()
+            Napier.d("Clearing keys", tag = "KEYSDB")
         }
     }
 }
