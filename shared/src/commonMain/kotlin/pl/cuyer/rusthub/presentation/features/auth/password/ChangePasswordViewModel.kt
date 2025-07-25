@@ -5,7 +5,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
+import pl.cuyer.rusthub.util.catchAndLog
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
@@ -19,12 +19,16 @@ import pl.cuyer.rusthub.domain.usecase.ChangePasswordUseCase
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 
 class ChangePasswordViewModel(
     private val changePasswordUseCase: ChangePasswordUseCase,
     private val snackbarController: SnackbarController,
     private val passwordValidator: PasswordValidator,
+    private val stringProvider: StringProvider,
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -69,24 +73,31 @@ class ChangePasswordViewModel(
             }
             if (!oldResult.isValid || !newResult.isValid) {
                 snackbarController.sendEvent(
-                    SnackbarEvent(message = "Please correct the errors above and try again.")
+                    SnackbarEvent(
+                        message = stringProvider.get(SharedRes.strings.correct_errors_try_again)
+                    )
                 )
                 return@launch
             }
             changePasswordUseCase(oldPassword, newPassword)
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catchAndLog { e ->
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
+                }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
                             snackbarController.sendEvent(
-                                SnackbarEvent(message = "Password changed successfully")
+                                SnackbarEvent(
+                                    message = stringProvider.get(SharedRes.strings.password_changed_successfully)
+                                )
                             )
                             _uiEvent.send(UiEvent.NavigateUp)
                         }
-                        is Result.Error -> showErrorSnackbar(result.exception.message ?: "Unable to change password")
-                        else -> Unit
+                        is Result.Error -> showErrorSnackbar(
+                            result.exception.toUserMessage(stringProvider)
+                        )
                     }
                 }
         }
@@ -96,7 +107,8 @@ class ChangePasswordViewModel(
         _state.update { it.copy(isLoading = isLoading) }
     }
 
-    private suspend fun showErrorSnackbar(message: String) {
+    private suspend fun showErrorSnackbar(message: String?) {
+        message ?: return
         snackbarController.sendEvent(SnackbarEvent(message = message))
     }
 }

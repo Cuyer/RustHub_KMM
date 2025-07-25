@@ -89,7 +89,7 @@ fun SignProviderButton(
 @Preview(showBackground = true)
 @Composable
 private fun GoogleSignInButtonPreview() {
-    RustHubTheme(theme = Theme.DARK) {
+    RustHubTheme {
         SignProviderButton(
             modifier = Modifier.fillMaxWidth(),
             onClick = {},

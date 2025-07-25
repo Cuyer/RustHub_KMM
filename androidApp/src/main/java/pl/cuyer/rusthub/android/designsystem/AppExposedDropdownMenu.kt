@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.android.designsystem
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -22,9 +23,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 
@@ -61,7 +68,16 @@ fun AppExposedDropdownMenu(
             readOnly = true,
             lineLimits = TextFieldLineLimits.SingleLine,
             label = { Text(label) },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            trailingIcon = {
+                val description = if (expanded) {
+                    stringResource(SharedRes.strings.expanded)
+                } else {
+                    stringResource(SharedRes.strings.collapsed)
+                }
+                Box(Modifier.semantics { contentDescription = description }) {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                }
+            },
             colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
         )
         ExposedDropdownMenu(
@@ -79,11 +95,14 @@ fun AppExposedDropdownMenu(
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                     trailingIcon = {
                         Flag.fromDisplayName(option)?.let { flag ->
-                            if (label != "Region") {
+                            if (label != stringResource(SharedRes.strings.region)) {
+                                // Flag icon is decorative when label is not region
                                 Image(
                                     painter = painterResource(flag.toDrawable()),
                                     contentDescription = null,
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clearAndSetSemantics {}
                                 )
                             }
                         }

@@ -5,7 +5,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
+import pl.cuyer.rusthub.util.catchAndLog
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
@@ -19,6 +19,9 @@ import pl.cuyer.rusthub.domain.usecase.RequestPasswordResetUseCase
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.util.validator.EmailValidator
 
 class ResetPasswordViewModel(
@@ -26,6 +29,7 @@ class ResetPasswordViewModel(
     private val requestPasswordResetUseCase: RequestPasswordResetUseCase,
     private val snackbarController: SnackbarController,
     private val emailValidator: EmailValidator,
+    private val stringProvider: StringProvider,
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -58,24 +62,31 @@ class ResetPasswordViewModel(
             _state.update { it.copy(emailError = emailResult.errorMessage) }
             if (!emailResult.isValid) {
                 snackbarController.sendEvent(
-                    SnackbarEvent("Please correct the errors above and try again.")
+                    SnackbarEvent(
+                        stringProvider.get(SharedRes.strings.correct_errors_try_again)
+                    )
                 )
                 return@launch
             }
             requestPasswordResetUseCase(email)
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catchAndLog { e ->
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
+                }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
                             snackbarController.sendEvent(
-                                SnackbarEvent("Reset email sent")
+                                SnackbarEvent(
+                                    stringProvider.get(SharedRes.strings.reset_email_sent)
+                                )
                             )
                             _uiEvent.send(UiEvent.NavigateUp)
                         }
-                        is Result.Error -> showErrorSnackbar(result.exception.message ?: "Unable to send reset email")
-                        else -> Unit
+                        is Result.Error -> showErrorSnackbar(
+                            result.exception.toUserMessage(stringProvider)
+                        )
                     }
                 }
         }
@@ -85,7 +96,8 @@ class ResetPasswordViewModel(
         _state.update { it.copy(isLoading = isLoading) }
     }
 
-    private suspend fun showErrorSnackbar(message: String) {
+    private suspend fun showErrorSnackbar(message: String?) {
+        message ?: return
         snackbarController.sendEvent(SnackbarEvent(message = message))
     }
 }

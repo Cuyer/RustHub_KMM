@@ -16,7 +16,9 @@ import pl.cuyer.rusthub.domain.model.RemoteKey
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
 import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
+import pl.cuyer.rusthub.domain.repository.server.ServerCacheDataSource
 import kotlinx.datetime.Clock
+import pl.cuyer.rusthub.util.CrashReporter
 
 @OptIn(ExperimentalPagingApi::class)
 class ServerRemoteMediator(
@@ -24,16 +26,31 @@ class ServerRemoteMediator(
     private val api: ServerRepository,
     private val filters: FiltersDataSource,
     private val remoteKeys: RemoteKeyDataSource,
+    private val cacheDataSource: ServerCacheDataSource,
     private val searchQuery: String?
 ) : RemoteMediator<Int, ServerEntity>() {
     private val keyId = DEFAULT_KEY
+    private val cacheTimeoutMillis = 60_000L
 
     override suspend fun initialize(): InitializeAction {
         val current = filters.getFilters().firstOrNull()
         if (current == null) {
             filters.upsertFilters(ServerQuery())
         }
-        return InitializeAction.LAUNCH_INITIAL_REFRESH
+        val key = remoteKeys.getKey(keyId)
+        val hasServers = dataSource.hasServers()
+        if ((key == null && hasServers) || (key != null && !hasServers)) {
+            // Detected cache corruption or upgrade. Clear all to recover.
+            cacheDataSource.clearServersAndKeys()
+            return InitializeAction.LAUNCH_INITIAL_REFRESH
+        }
+        val now = Clock.System.now().toEpochMilliseconds()
+        return if (key == null || now - key.lastUpdated > cacheTimeoutMillis) {
+            cacheDataSource.clearServersAndKeys()
+            InitializeAction.LAUNCH_INITIAL_REFRESH
+        } else {
+            InitializeAction.SKIP_INITIAL_REFRESH
+        }
     }
 
     override suspend fun load(
@@ -57,7 +74,7 @@ class ServerRemoteMediator(
                 query,
                 searchQuery
             )
-                .first { it !is Result.Loading }) {
+                .first()) {
                 is Result.Error -> {
                     return if (
                         result.exception is ConnectivityException ||
@@ -70,8 +87,8 @@ class ServerRemoteMediator(
                 }
                 is Result.Success -> {
                     if (loadType == LoadType.REFRESH) {
-                        dataSource.deleteServers()
-                        remoteKeys.clearKeys()
+                        // Filter or query changed, purge cache and keys before inserting new data
+                        cacheDataSource.clearServersAndKeys()
                     }
                     Napier.d(
                         "Fetched servers size: ${result.data.servers.size}",
@@ -91,9 +108,9 @@ class ServerRemoteMediator(
                     MediatorResult.Success(endOfPaginationReached = end)
                 }
 
-                Result.Loading -> MediatorResult.Success(endOfPaginationReached = false)
             }
         } catch (e: Exception) {
+            CrashReporter.recordException(e)
             if (e is ConnectivityException || e is ServiceUnavailableException) {
                 MediatorResult.Success(endOfPaginationReached = true)
             } else {

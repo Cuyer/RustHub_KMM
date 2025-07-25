@@ -1,42 +1,51 @@
 [versions]
-agp = "8.12.0-alpha08"
+agp = "8.13.0-alpha02"
 android-compileSdk = "36"
 android-minSdk = "30"
 android-targetSdk = "36"
 androidx-appcompat = "1.7.1"
-kotlin = "2.2.0"
+desugar_jdk_libs = "2.1.5"
+kotlin = "2.2.10-RC"
 koin = "4.1.0"
-ktor = "3.2.1"
+ktor = "3.2.2"
 sql-delight-version = "2.1.0"
 coroutines-core = "1.10.2"
 datetime = "0.6.2"
 napier = "2.7.1"
 splash-screen = "1.2.0-rc01"
 google-services = "4.4.3"
-firebase-bom = "33.16.0"
-crashlytics-gradle = "3.0.4"
+firebase-bom = "34.0.0"
+crashlytics-gradle = "3.0.5"
 lifecycle = "2.9.1"
 navigation = "1.0.0-alpha05"
 navigation-viewmodel = "1.0.0-alpha03"
-ui-text-google-fonts = "1.9.0-beta01"
-activity-compose = "1.12.0-SNAPSHOT"
-compose-material3 = "1.4.0-alpha17"
-compose-bom = "2025.06.01"
+activity-compose = "1.12.0-alpha04"
+compose-material3 = "1.4.0-alpha18"
+compose-bom = "2025.07.00"
 moko-resources = "0.25.0"
 moko-permissions = "0.19.1"
 paging = "3.3.0-alpha02-0.5.1"
-material3-adaptive = "1.2.0-SNAPSHOT"
-material3-adaptive-navigation-suite = "1.4.0-SNAPSHOT"
+material3-adaptive = "1.2.0-alpha09"
+material3-adaptive-navigation-suite = "1.4.0-alpha18"
 material3-adaptive-navigation3 = "1.0.0-SNAPSHOT"
-lifecycleRuntimeKtx = "2.9.1"
 work = "2.10.2"
 serialization = "1.8.1"
-coil = "3.2.0"
-performance-gradle = "1.4.2"
+coil = "3.3.0"
+performance-gradle = "2.0.0"
 buildkonfig = "0.17.1"
-google-auth = "21.3.0"
-credential = "1.6.0-alpha03"
+google-auth = "21.4.0"
+credential = "1.6.0-alpha04"
 identity = "1.1.1"
+certificate-transparency = "2.7.6"
+datastore = "1.2.0-alpha02"
+security-crypto = "1.1.0-beta01"
+sqlcipher = "4.9.0"
+playcore = "2.1.0"
+play-review = "2.0.2"
+play-billing = "8.0.0"
+protobufPlugin = "0.9.5"
+protobuf = "4.31.1"
+runtime = "1.9.0-beta03"
 
 [libraries]
 
@@ -47,6 +56,7 @@ compose-icons = { module = "androidx.compose.material:material-icons-extended" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
+compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "runtime" }
 
 #TEST
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -81,12 +91,15 @@ firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 firebase-performance = { module = "com.google.firebase:firebase-perf" }
+firebase-appcheck-playintegrity = { module = "com.google.firebase:firebase-appcheck-playintegrity" }
+firebase-appcheck-debug = { module = "com.google.firebase:firebase-appcheck-debug" }
 
 #KOTLIN
 kotlin-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
 kotlin-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines-core" }
 kotlin-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "coroutines-core" }
 kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+kotlin-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "serialization" }
 
 #ADAPTIVE LAYOUT
 androidx-compose-material3-adaptive = { module = "androidx.compose.material3.adaptive:adaptive", version.ref = "material3-adaptive" }
@@ -98,7 +111,6 @@ androidx-compose-material3-windowsizeclass = { group = "androidx.compose.materia
 
 #ANDROIDX(outside BOM)
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
-androidx-ui-text-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "ui-text-google-fonts" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-navigation = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation" }
@@ -110,6 +122,11 @@ androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-p
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splash-screen" }
 androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credential" }
+androidx-credentials-compat = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credential" }
+androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "security-crypto" }
+sqlcipher-android = { module = "net.zetetic:sqlcipher-android", version.ref = "sqlcipher" }
 
 #PAGING3
 paging = { group = "app.cash.paging", name = "paging-common", version.ref = "paging" }
@@ -128,6 +145,14 @@ moko-permissions-compose = { module = "dev.icerock.moko:permissions-compose", ve
 moko-permissions-notifications = { module = "dev.icerock.moko:permissions-notifications", version.ref = "moko-permissions" }
 google-identity = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "identity" }
 google-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "google-auth" }
+play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "play-review" }
+play-billing = { module = "com.android.billingclient:billing-ktx", version.ref = "play-billing" }
+certificate-transparency = { module = "com.appmattus.certificatetransparency:certificatetransparency-android", version.ref = "certificate-transparency" }
+google-play-app-update = { module = "com.google.android.play:app-update", version.ref = "playcore" }
+google-play-app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.ref = "playcore" }
+desugar_jdk_libs-v215 = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
+protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
+protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -143,3 +168,4 @@ performance = { id = "com.google.firebase.firebase-perf", version.ref = "perform
 sqlDelightGradlePlugin = { id = "app.cash.sqldelight", version.ref = "sql-delight-version" }
 mokoMultiplatformResources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko-resources" }
 buildKonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
+protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }

@@ -7,8 +7,15 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
-            Color.colorBackground
-                .ignoresSafeArea()
+            LinearGradient(
+                colors: [
+                    Color.colorBackground,
+                    Color.colorBackground.opacity(0.85)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
         }
     }
 }

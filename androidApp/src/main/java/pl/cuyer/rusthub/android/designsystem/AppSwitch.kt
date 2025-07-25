@@ -12,28 +12,43 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @Composable
 fun AppSwitch(
-    isChecked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
+    isChecked: () -> Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    enabled: Boolean = true
 ) {
-    var checked by remember(isChecked) { mutableStateOf(isChecked) }
+    val sd = if (isChecked()) {
+        stringResource(SharedRes.strings.enabled)
+    } else {
+        stringResource(SharedRes.strings.disabled)
+    }
+
     Switch(
-        modifier = Modifier.semantics { contentDescription = "Demo with icon" },
-        checked = checked,
+        modifier = Modifier.semantics {
+            role = Role.Switch
+            stateDescription = sd
+        },
+        checked = isChecked(),
         onCheckedChange = {
-            checked = it
             onCheckedChange(it)
         },
+        enabled = enabled,
         thumbContent = {
-            if (checked) {
+            if (isChecked()) {
+                // Decorative check mark shown inside the switch
                 Icon(
                     imageVector = Icons.Filled.Check,
                     contentDescription = null,
                     modifier = Modifier.size(SwitchDefaults.IconSize),
+                    tint = SwitchDefaults.colors().checkedTrackColor
                 )
             }
         }

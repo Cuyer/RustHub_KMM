@@ -1,7 +1,7 @@
 package pl.cuyer.rusthub.android.designsystem
 
 import android.content.res.Configuration
-import androidx.annotation.DrawableRes
+import pl.cuyer.rusthub.domain.model.Flag
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +22,9 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,8 +37,12 @@ import androidx.compose.ui.unit.dp
 import pl.cuyer.rusthub.android.model.Label
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
-import pl.cuyer.rusthub.common.getImageByFileName
-import pl.cuyer.rusthub.domain.model.Theme
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.role
+import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
+import pl.cuyer.rusthub.domain.model.displayName
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -43,14 +50,28 @@ fun ServerListItem(
     modifier: Modifier = Modifier,
     serverName: String,
     isOnline: Boolean,
-    @DrawableRes flag: Int,
-    labels: List<Label>,
-    details: Map<String, String>
+    flag: Flag?,
+    labels: () -> List<String>,
+    details: () -> Map<String, String>
 ) {
+    val statusText = if (isOnline) {
+        stringResource(SharedRes.strings.online)
+    } else {
+        stringResource(SharedRes.strings.offline)
+    }
+    val semanticsDescription = buildString {
+        append(serverName)
+        append(", ")
+        append(statusText)
+    }
     ElevatedCard(
-        shape = RectangleShape,
+        shape = MaterialTheme.shapes.extraSmall,
         modifier = modifier
             .wrapContentHeight()
+            .semantics {
+                role = Role.Button
+                contentDescription = semanticsDescription
+            }
     ) {
         Column(
             modifier = Modifier
@@ -90,9 +111,8 @@ fun ServerListItem(
                     Image(
                         modifier = modifier
                             .size(24.dp),
-                        painter = painterResource(flag),
-                        contentDescription = "Server flag",
-                        contentScale = ContentScale.Fit
+                        painter = painterResource(flag.toDrawable()),
+                        contentDescription = flag?.displayName ?: stringResource(SharedRes.strings.server_flag)
                     )
                 }
             }
@@ -110,7 +130,7 @@ fun ServerListItem(
 @Composable
 fun ServerListItemShimmer(modifier: Modifier = Modifier) {
     ElevatedCard(
-        shape = RectangleShape,
+        shape = MaterialTheme.shapes.extraSmall,
         modifier = modifier.wrapContentHeight()
     ) {
         Column(
@@ -126,19 +146,21 @@ fun ServerListItemShimmer(modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .height(24.dp)
-                        .shimmer()
-                )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .height(24.dp)
+                            .shimmer()
+                            .clearAndSetSemantics {}
+                    )
 
-                Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clip(RectangleShape)
-                        .shimmer()
-                )
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(RectangleShape)
+                            .shimmer()
+                            .clearAndSetSemantics {}
+                    )
             }
 
             Row(
@@ -155,6 +177,7 @@ fun ServerListItemShimmer(modifier: Modifier = Modifier) {
                             .width(60.dp)
                             .clip(RectangleShape)
                             .shimmer()
+                            .clearAndSetSemantics {}
                     )
                 }
             }
@@ -169,6 +192,7 @@ fun ServerListItemShimmer(modifier: Modifier = Modifier) {
                             .height(16.dp)
                             .clip(RoundedCornerShape(4.dp))
                             .shimmer()
+                            .clearAndSetSemantics {}
                     )
                 }
             }
@@ -182,7 +206,7 @@ fun ServerListItemShimmer(modifier: Modifier = Modifier) {
 )
 @Composable
 private fun ServerListItemPreview() {
-    RustHubTheme(theme = Theme.SYSTEM) {
+    RustHubTheme() {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -191,24 +215,23 @@ private fun ServerListItemPreview() {
                 modifier = Modifier
                     .padding(horizontal = spacing.small),
                 serverName = "Rustoria [EU/UK] WIPE WIPE WIPE WIPE",
-                labels = listOf(
-                    Label(
-                        text = "Monthly"
-                    ),
-                    Label(
-                        text = "Weekly"
+                labels = {
+                    listOf("Monthly",
+                        "Weekly"
                     )
-                ),
-                flag = getImageByFileName("gb").drawableResId,
+                },
+                flag = Flag.GB,
                 isOnline = true,
-                details = mapOf(
-                    "Wipe" to "4hrs ago",
-                    "Rating" to "72%",
-                    "Cycle" to "6.8 days",
-                    "Players" to "132/150",
-                    "Map" to "Custom",
-                    "Modded" to "Yes"
-                )
+                details = {
+                    mapOf(
+                        "Wipe" to "4hrs ago",
+                        "Rating" to "72%",
+                        "Cycle" to "6.8 days",
+                        "Players" to "132/150",
+                        "Map" to "Custom",
+                        "Modded" to "Yes"
+                    )
+                }
             )
         }
     }

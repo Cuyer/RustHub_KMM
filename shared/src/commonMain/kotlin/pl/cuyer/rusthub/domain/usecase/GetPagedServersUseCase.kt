@@ -14,12 +14,15 @@ import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerRemoteMediator
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
+import pl.cuyer.rusthub.domain.repository.server.ServerCacheDataSource
+import pl.cuyer.rusthub.util.StringProvider
 
 class GetPagedServersUseCase(
     private val dataSource: ServerDataSource,
     private val api: ServerRepository,
     private val filters: FiltersDataSource,
     private val remoteKeys: RemoteKeyDataSource,
+    private val cacheDataSource: ServerCacheDataSource,
 ) {
     @OptIn(ExperimentalPagingApi::class)
     operator fun invoke(
@@ -35,6 +38,7 @@ class GetPagedServersUseCase(
                 api,
                 filters,
                 remoteKeys,
+                cacheDataSource,
                 searchQuery
             ),
             pagingSourceFactory = {

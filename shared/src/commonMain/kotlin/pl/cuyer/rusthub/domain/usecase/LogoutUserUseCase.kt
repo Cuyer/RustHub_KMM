@@ -7,24 +7,26 @@ import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.repository.auth.AuthRepository
 import pl.cuyer.rusthub.util.TokenRefresher
+import pl.cuyer.rusthub.util.CrashReporter
 
 class LogoutUserUseCase(
     private val repository: AuthRepository,
-    private val dataSource: AuthDataSource,
-    private val tokenRefresher: TokenRefresher,
+    private val dataSource: AuthDataSource
 ) {
     operator fun invoke(): Flow<Result<Unit>> = channelFlow {
         repository.logout().collectLatest { result ->
             when (result) {
                 is Result.Success -> {
-                    dataSource.deleteUser()
-                    tokenRefresher.clear()
-                    send(Result.Success(Unit))
+                    try {
+                        dataSource.deleteUser()
+                        send(Result.Success(Unit))
+                    } catch (e: Exception) {
+                        CrashReporter.recordException(e)
+                        send(Result.Error(e))
+                    }
                 }
 
                 is Result.Error -> send(Result.Error(result.exception))
-
-                is Result.Loading -> send(Result.Loading)
             }
         }
     }

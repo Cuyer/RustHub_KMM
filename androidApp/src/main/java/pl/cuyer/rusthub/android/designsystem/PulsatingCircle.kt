@@ -11,9 +11,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @Composable
 fun PulsatingCircle(
@@ -30,11 +34,19 @@ fun PulsatingCircle(
     )
 
     val coreColor = remember(isOnline) {
-        if (isOnline) Color(0xFF00C853) else Color(0xFFF44336)
+        if (isOnline) Color(0xFF008939) else Color(0xFFEA1B0C)
+    }
+    val cd =  if (isOnline) {
+        stringResource(SharedRes.strings.online)
+    } else {
+        stringResource(SharedRes.strings.offline)
     }
     Canvas(
         modifier = modifier
             .size(12.dp)
+            .semantics {
+                contentDescription =cd
+            }
     ) {
         val center = this.center
         val radius = size.minDimension / 2f

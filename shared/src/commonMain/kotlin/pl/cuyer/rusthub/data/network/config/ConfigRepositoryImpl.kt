@@ -25,7 +25,6 @@ class ConfigRepositoryImpl(
             when (result) {
                 is Result.Success -> Result.Success(result.data.googleClientId)
                 is Result.Error -> result
-                is Result.Loading -> Result.Loading
             }
         }
     }

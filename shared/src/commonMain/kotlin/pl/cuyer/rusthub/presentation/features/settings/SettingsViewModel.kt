@@ -1,14 +1,14 @@
 package pl.cuyer.rusthub.presentation.features.settings
 
 import dev.icerock.moko.permissions.PermissionsController
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
+import pl.cuyer.rusthub.util.catchAndLog
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -17,17 +17,19 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.model.Language
-import pl.cuyer.rusthub.domain.model.Settings
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.model.User
-import pl.cuyer.rusthub.domain.usecase.GetSettingsUseCase
+import pl.cuyer.rusthub.domain.usecase.GetUserPreferencesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
-import pl.cuyer.rusthub.domain.usecase.SaveSettingsUseCase
+import pl.cuyer.rusthub.domain.usecase.SetDynamicColorPreferenceUseCase
+import pl.cuyer.rusthub.domain.usecase.SetThemeConfigUseCase
+import pl.cuyer.rusthub.domain.usecase.SetUseSystemColorsPreferenceUseCase
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
@@ -37,18 +39,34 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.navigation.UpgradeAccount
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.common.user.UserEvent
+import pl.cuyer.rusthub.common.user.UserEventController
 import pl.cuyer.rusthub.util.GoogleAuthClient
+import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.toUserMessage
+import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import pl.cuyer.rusthub.util.anonymousAccountExpiresIn
 import pl.cuyer.rusthub.util.formatExpiration
+import pl.cuyer.rusthub.util.ItemsScheduler
+import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
+import pl.cuyer.rusthub.domain.model.ItemSyncState
+import pl.cuyer.rusthub.util.updateAppLanguage
 
 class SettingsViewModel(
-    private val getSettingsUseCase: GetSettingsUseCase,
-    private val saveSettingsUseCase: SaveSettingsUseCase,
     private val logoutUserUseCase: LogoutUserUseCase,
     private val getUserUseCase: GetUserUseCase,
+    private val getUserPreferencesUseCase: GetUserPreferencesUseCase,
+    private val setThemeConfigUseCase: SetThemeConfigUseCase,
+    private val setDynamicColorPreferenceUseCase: SetDynamicColorPreferenceUseCase,
+    private val setUseSystemColorsPreferenceUseCase: SetUseSystemColorsPreferenceUseCase,
     private val permissionsController: PermissionsController,
     private val googleAuthClient: GoogleAuthClient,
-    private val snackbarController: SnackbarController
+    private val snackbarController: SnackbarController,
+    private val stringProvider: StringProvider,
+    private val systemDarkThemeObserver: SystemDarkThemeObserver,
+    private val itemsScheduler: ItemsScheduler,
+    private val itemSyncDataSource: ItemSyncDataSource,
+    private val userEventController: UserEventController
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -58,8 +76,8 @@ class SettingsViewModel(
     private val _state = MutableStateFlow(SettingsState())
     val state = _state
         .onStart {
-            observeSettings()
             observeUser()
+            observePreferences()
         }
         .stateIn(
             scope = coroutineScope,
@@ -69,8 +87,6 @@ class SettingsViewModel(
 
     fun onAction(action: SettingsAction) {
         when (action) {
-            is SettingsAction.OnThemeChange -> updateTheme(action.theme)
-            is SettingsAction.OnLanguageChange -> updateLanguage(action.language)
             SettingsAction.OnChangePasswordClick -> navigateChangePassword()
             SettingsAction.OnNotificationsClick -> permissionsController.openAppSettings()
             SettingsAction.OnLogout -> logout()
@@ -80,17 +96,11 @@ class SettingsViewModel(
             SettingsAction.OnPrivacyPolicy -> openPrivacyPolicy()
             SettingsAction.OnDeleteAccount -> navigateDeleteAccount()
             SettingsAction.OnUpgradeAccount -> navigateUpgrade()
+            is SettingsAction.OnThemeChange -> setTheme(action.theme)
+            is SettingsAction.OnDynamicColorsChange -> setDynamicColors(action.enabled)
+            is SettingsAction.OnUseSystemColorsChange -> setUseSystemColors(action.enabled)
+            is SettingsAction.OnLanguageChange -> changeLanguage(action.language)
         }
-    }
-
-    private fun updateTheme(theme: Theme) {
-        _state.update { it.copy(theme = theme) }
-        save()
-    }
-
-    private fun updateLanguage(language: Language) {
-        _state.update { it.copy(language = language) }
-        save()
     }
 
     private fun navigateChangePassword() {
@@ -105,11 +115,23 @@ class SettingsViewModel(
         }
     }
 
-    private fun observeSettings() {
-        getSettingsUseCase()
-            .onEach { settings ->
-                settings?.let { updateFromSettings(it) }
-            }.launchIn(coroutineScope)
+    private fun observePreferences() {
+        getUserPreferencesUseCase()
+            .combine(systemDarkThemeObserver.isSystemDarkTheme) { prefs, systemDark ->
+                val theme = if (prefs.useSystemColors) {
+                    if (systemDark) Theme.DARK else Theme.LIGHT
+                } else {
+                    when (prefs.themeConfig) {
+                        Theme.SYSTEM -> if (systemDark) Theme.DARK else Theme.LIGHT
+                        else -> prefs.themeConfig
+                    }
+                }
+                Triple(theme, prefs.useDynamicColor, prefs.useSystemColors)
+            }
+            .onEach { (theme, dynamic, systemColors) ->
+                _state.update { it.copy(theme = theme, dynamicColors = dynamic, useSystemColors = systemColors) }
+            }
+            .launchIn(coroutineScope)
     }
 
     private fun observeUser() {
@@ -137,35 +159,26 @@ class SettingsViewModel(
         }
     }
 
-    private fun save() {
-        val settings = Settings(state.value.theme, state.value.language)
-        coroutineScope.launch { saveSettingsUseCase(settings) }
-    }
-
-    private fun updateFromSettings(settings: Settings) {
-        Napier.d("Update from settings $settings")
-        _state.update { it.copy(theme = settings.theme, language = settings.language) }
-    }
-
     private fun logout() {
         logoutJob?.cancel()
         logoutJob = coroutineScope.launch {
             logoutUserUseCase()
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catchAndLog { e ->
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
+                }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
                             if (state.value.provider == AuthProvider.GOOGLE) {
                                 googleAuthClient.signOut()
                             }
-                            _uiEvent.send(UiEvent.Navigate(Onboarding))
+                            userEventController.sendEvent(UserEvent.LoggedOut)
                         }
 
-                        is Result.Error -> showErrorSnackbar("Error occurred when trying to logout")
+                        is Result.Error -> showErrorSnackbar(stringProvider.get(SharedRes.strings.logout_error))
 
-                        else -> Unit
                     }
                 }
         }
@@ -175,7 +188,20 @@ class SettingsViewModel(
         _state.update { it.copy(isLoading = isLoading) }
     }
 
-    private fun showErrorSnackbar(message: String) {
+    private fun setTheme(theme: Theme) {
+        coroutineScope.launch { setThemeConfigUseCase(theme) }
+    }
+
+    private fun setDynamicColors(enabled: Boolean) {
+        coroutineScope.launch { setDynamicColorPreferenceUseCase(enabled) }
+    }
+
+    private fun setUseSystemColors(enabled: Boolean) {
+        coroutineScope.launch { setUseSystemColorsPreferenceUseCase(enabled) }
+    }
+
+    private fun showErrorSnackbar(message: String?) {
+        message ?: return
         coroutineScope.launch { snackbarController.sendEvent(SnackbarEvent(message = message)) }
     }
 
@@ -191,11 +217,11 @@ class SettingsViewModel(
         }
     }
 
-    private fun showSubscriptionDialog(show: Boolean) {
-        _state.update {
-            it.copy(
-                showSubscriptionDialog = show
-            )
+    private fun changeLanguage(language: Language) {
+        coroutineScope.launch {
+            updateAppLanguage(language)
+            itemSyncDataSource.setState(ItemSyncState.PENDING)
+            itemsScheduler.schedule()
         }
     }
 

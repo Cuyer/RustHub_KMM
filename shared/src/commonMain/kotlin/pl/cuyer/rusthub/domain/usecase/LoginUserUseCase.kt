@@ -31,7 +31,8 @@ class LoginUserUseCase(
                             username = this.username,
                             email = email,
                             provider = provider,
-                            subscribed = subscribed
+                            subscribed = subscribed,
+                            emailConfirmed = false
                         )
                         tokenRefresher.clear()
                         tokenManager.currentToken()
@@ -43,7 +44,6 @@ class LoginUserUseCase(
                     send(Result.Error(result.exception))
                 }
 
-                is Result.Loading -> send(Result.Loading)
             }
         }
     }

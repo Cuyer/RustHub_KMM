@@ -6,4 +6,5 @@ interface SubscriptionSyncDataSource {
     suspend fun upsertOperation(operation: SubscriptionSyncOperation)
     suspend fun deleteOperation(serverId: Long)
     suspend fun getPendingOperations(): List<SubscriptionSyncOperation>
+    suspend fun clearOperations()
 }

@@ -45,7 +45,6 @@ class AuthRepositoryImpl(
             when (result) {
                 is Result.Success -> Result.Success(result.data.toDomain())
                 is Result.Error -> result
-                is Result.Loading -> Result.Loading
             }
         }
     }
@@ -62,7 +61,6 @@ class AuthRepositoryImpl(
             when (result) {
                 is Result.Success -> Result.Success(result.data.toDomain())
                 is Result.Error -> result
-                is Result.Loading -> Result.Loading
             }
         }
     }
@@ -76,7 +74,6 @@ class AuthRepositoryImpl(
             when (result) {
                 is Result.Success -> Result.Success(result.data.toDomain())
                 is Result.Error -> result
-                is Result.Loading -> Result.Loading
             }
         }
     }
@@ -100,7 +97,6 @@ class AuthRepositoryImpl(
             when (result) {
                 is Result.Success -> Result.Success(result.data.toDomain())
                 is Result.Error -> result
-                is Result.Loading -> Result.Loading
             }
         }
     }
@@ -112,7 +108,6 @@ class AuthRepositoryImpl(
             when (result) {
                 is Result.Success -> Result.Success(result.data.toDomain())
                 is Result.Error -> result
-                is Result.Loading -> Result.Loading
             }
         }
     }
@@ -126,7 +121,6 @@ class AuthRepositoryImpl(
             when (result) {
                 is Result.Success -> Result.Success(result.data.toDomain())
                 is Result.Error -> result
-                is Result.Loading -> Result.Loading
             }
         }
     }
@@ -140,7 +134,6 @@ class AuthRepositoryImpl(
             when (result) {
                 is Result.Success -> Result.Success(result.data.toDomain())
                 is Result.Error -> result
-                is Result.Loading -> Result.Loading
             }
         }
     }
@@ -152,7 +145,6 @@ class AuthRepositoryImpl(
             when (result) {
                 is Result.Success -> Result.Success(Unit)
                 is Result.Error -> result
-                Result.Loading -> Result.Loading
             }
         }
     }
@@ -166,7 +158,6 @@ class AuthRepositoryImpl(
             when (result) {
                 is Result.Success -> Result.Success(Unit)
                 is Result.Error -> result
-                Result.Loading -> Result.Loading
             }
         }
     }
@@ -180,7 +171,6 @@ class AuthRepositoryImpl(
             when (result) {
                 is Result.Success -> Result.Success(Unit)
                 is Result.Error -> result
-                Result.Loading -> Result.Loading
             }
         }
     }
@@ -194,7 +184,6 @@ class AuthRepositoryImpl(
             when (result) {
                 is Result.Success -> Result.Success(result.data.toDomain())
                 is Result.Error -> result
-                is Result.Loading -> Result.Loading
             }
         }
     }
@@ -208,7 +197,6 @@ class AuthRepositoryImpl(
             when (result) {
                 is Result.Success -> Result.Success(Unit)
                 is Result.Error -> result
-                Result.Loading -> Result.Loading
             }
         }
     }

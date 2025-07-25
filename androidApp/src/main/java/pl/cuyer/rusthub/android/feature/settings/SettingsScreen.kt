@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,14 +25,23 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,21 +49,20 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.compose.koinInject
-import pl.cuyer.rusthub.android.designsystem.AppExposedDropdownMenu
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.android.util.composeUtil.rememberCurrentLanguage
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.AuthProvider
-import pl.cuyer.rusthub.domain.model.Language
-import pl.cuyer.rusthub.domain.model.Theme
-import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.presentation.features.settings.SettingsAction
 import pl.cuyer.rusthub.presentation.features.settings.SettingsState
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
-import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.AppInfo
+import pl.cuyer.rusthub.util.StoreNavigator
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class,
@@ -63,37 +72,51 @@ import pl.cuyer.rusthub.util.AppInfo
 fun SettingsScreen(
     onNavigate: (NavKey) -> Unit,
     uiEvent: Flow<UiEvent>,
-    stateProvider: () -> State<SettingsState>,
+    state: State<SettingsState>,
     onAction: (SettingsAction) -> Unit
 ) {
-    val state = stateProvider()
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
     val context = LocalContext.current
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
 
+    val themeSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val languageSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showThemeSheet by rememberSaveable { mutableStateOf(false) }
+    var showLanguageSheet by rememberSaveable { mutableStateOf(false) }
+
     Scaffold(
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         topBar = {
             TopAppBar(
-                title = { },
+                title = { Text(
+                    text = stringResource(SharedRes.strings.settings),
+                    fontWeight = FontWeight.SemiBold
+                ) },
                 actions = {
-                    IconButton(onClick = { onAction(SettingsAction.OnLogout) }) {
+                    IconButton(
+                        onClick = { onAction(SettingsAction.OnLogout) },
+                        modifier = Modifier.minimumInteractiveComponentSize()
+                    ) {
                         val icon = Icons.AutoMirrored.Default.Logout
-                        Icon(icon, contentDescription = null)
+                        Icon(
+                            tint = contentColorFor(TopAppBarDefaults.topAppBarColors().containerColor),
+                            imageVector = icon,
+                            contentDescription = stringResource(SharedRes.strings.logout_button)
+                        )
                     }
-                },
-                scrollBehavior = scrollBehavior
+                }
             )
         }
     ) { innerPadding ->
         Box(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .fillMaxSize()
                 .padding(spacing.medium)
         ) {
             if (state.value.isLoading) {
@@ -104,25 +127,48 @@ fun SettingsScreen(
             }
             if (isTabletMode) {
                 SettingsScreenExpanded(
-                    theme = state.value.theme,
-                    language = state.value.language,
                     username = state.value.username,
                     provider = state.value.provider,
                     subscribed = state.value.subscribed,
                     expiration = state.value.anonymousExpiration,
-                    onAction = onAction
+                    onAction = onAction,
+                    onThemeClick = { showThemeSheet = true },
+                    onLanguageClick = { showLanguageSheet = true }
                 )
             } else {
                 SettingsScreenCompact(
                     modifier = Modifier
                         .verticalScroll(rememberScrollState()),
-                    theme = state.value.theme,
-                    language = state.value.language,
                     username = state.value.username,
                     provider = state.value.provider,
                     subscribed = state.value.subscribed,
                     expiration = state.value.anonymousExpiration,
-                    onAction = onAction
+                    onAction = onAction,
+                    onThemeClick = { showThemeSheet = true },
+                    onLanguageClick = { showLanguageSheet = true }
+                )
+            }
+            if (showThemeSheet) {
+                ThemeBottomSheet(
+                    sheetState = themeSheetState,
+                    current = state.value.theme,
+                    dynamicColors = state.value.dynamicColors,
+                    useSystemColors = state.value.useSystemColors,
+                    onThemeChange = { onAction(SettingsAction.OnThemeChange(it)) },
+                    onDynamicColorsChange = { onAction(SettingsAction.OnDynamicColorsChange(it)) },
+                    onUseSystemColorsChange = { onAction(SettingsAction.OnUseSystemColorsChange(it)) },
+                    onDismiss = { showThemeSheet = false }
+                )
+            }
+            if (showLanguageSheet) {
+                val currentLanguage by rememberCurrentLanguage()
+                LanguageBottomSheet(
+                    sheetState = languageSheetState,
+                    current = currentLanguage,
+                    onSelect = {
+                        onAction(SettingsAction.OnLanguageChange(it))
+                    },
+                    onDismiss = { showLanguageSheet = false }
                 )
             }
         }
@@ -133,19 +179,19 @@ fun SettingsScreen(
 private fun SettingsScreenCompact(
     modifier: Modifier = Modifier,
     username: String?,
-    theme: Theme,
-    language: Language,
     provider: AuthProvider?,
     subscribed: Boolean,
     expiration: String?,
-    onAction: (SettingsAction) -> Unit
+    onAction: (SettingsAction) -> Unit,
+    onThemeClick: () -> Unit,
+    onLanguageClick: () -> Unit
 ) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
         GreetingSection(username)
-        PreferencesSection(theme, language, onAction)
+        PreferencesSection(onAction, onThemeClick, onLanguageClick)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
         AccountSection(provider, subscribed, expiration, onAction)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
@@ -157,12 +203,12 @@ private fun SettingsScreenCompact(
 private fun SettingsScreenExpanded(
     modifier: Modifier = Modifier,
     username: String?,
-    theme: Theme,
-    language: Language,
     provider: AuthProvider?,
     subscribed: Boolean,
     expiration: String?,
-    onAction: (SettingsAction) -> Unit
+    onAction: (SettingsAction) -> Unit,
+    onThemeClick: () -> Unit,
+    onLanguageClick: () -> Unit
 ) {
     Row(
         modifier = modifier,
@@ -175,7 +221,7 @@ private fun SettingsScreenExpanded(
             verticalArrangement = Arrangement.spacedBy(spacing.medium)
         ) {
             GreetingSection(username)
-            PreferencesSection(theme, language, onAction)
+            PreferencesSection(onAction, onThemeClick, onLanguageClick)
             HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
             AccountSection(provider, subscribed, expiration, onAction)
         }
@@ -192,44 +238,61 @@ private fun SettingsScreenExpanded(
 
 @Composable
 private fun PreferencesSection(
-    theme: Theme,
-    language: Language,
-    onAction: (SettingsAction) -> Unit
+    onAction: (SettingsAction) -> Unit,
+    onThemeClick: () -> Unit,
+    onLanguageClick: () -> Unit
 ) {
     Text(
-        text = "Preferences",
+        text = stringResource(SharedRes.strings.preferences),
         style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(bottom = spacing.small)
     )
-    AppExposedDropdownMenu(
-        label = "Theme",
-        options = Theme.entries.map { it.displayName },
-        selectedValue = Theme.entries.indexOf(theme),
-        onSelectionChanged = { onAction(SettingsAction.OnThemeChange(Theme.entries[it])) }
-    )
-    AppExposedDropdownMenu(
-        label = "Language",
-        options = Language.entries.map { it.displayName },
-        selectedValue = Language.entries.indexOf(language),
-        onSelectionChanged = { onAction(SettingsAction.OnLanguageChange(Language.entries[it])) }
-    )
+
+    AppTextButton(onClick = onThemeClick) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(SharedRes.strings.theme))
+            Icon(
+                imageVector = Icons.AutoMirrored.Default.ArrowRight,
+                contentDescription = stringResource(SharedRes.strings.theme)
+            )
+        }
+    }
+
+    AppTextButton(onClick = onLanguageClick) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(SharedRes.strings.language))
+            Icon(
+                imageVector = Icons.AutoMirrored.Default.ArrowRight,
+                contentDescription = stringResource(SharedRes.strings.language)
+            )
+        }
+    }
+
     AppTextButton(
         onClick = { onAction(SettingsAction.OnNotificationsClick) }
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Notifications")
+            Text(stringResource(SharedRes.strings.notifications))
             Icon(
                 imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                contentDescription = "Notifications toggle"
+                contentDescription = stringResource(SharedRes.strings.notifications_toggle)
             )
         }
     }
 }
+
 
 @Composable
 private fun AccountSection(
@@ -239,7 +302,7 @@ private fun AccountSection(
     onAction: (SettingsAction) -> Unit
 ) {
     Text(
-        text = "Account",
+        text = stringResource(SharedRes.strings.account),
         style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(bottom = spacing.small)
     )
@@ -254,10 +317,10 @@ private fun AccountSection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Change password")
+                Text(stringResource(SharedRes.strings.change_password))
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                    contentDescription = "Change password button"
+                    contentDescription = stringResource(SharedRes.strings.change_password_button)
                 )
             }
         }
@@ -273,10 +336,10 @@ private fun AccountSection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Subscription")
+                Text(stringResource(SharedRes.strings.subscription))
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                    contentDescription = "Subscription button"
+                    contentDescription = stringResource(SharedRes.strings.subscription_button)
                 )
             }
         }
@@ -285,7 +348,7 @@ private fun AccountSection(
     if (provider == AuthProvider.ANONYMOUS) {
         expiration?.let {
             Text(
-                text = "Your temporary account expires in $it. Upgrade to keep favourites and wipe alerts.",
+                text = stringResource(SharedRes.strings.temporary_account_expiration, it),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(bottom = spacing.small)
@@ -299,10 +362,10 @@ private fun AccountSection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Upgrade account")
+                Text(stringResource(SharedRes.strings.upgrade_account))
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                    contentDescription = "Upgrade account button"
+                    contentDescription = stringResource(SharedRes.strings.upgrade_account_button)
                 )
             }
         }
@@ -315,10 +378,10 @@ private fun AccountSection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Delete account", color = MaterialTheme.colorScheme.error)
+                Text(stringResource(SharedRes.strings.delete_account), color = MaterialTheme.colorScheme.error)
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                    contentDescription = "Delete account button",
+                    contentDescription = stringResource(SharedRes.strings.delete_account_button),
                     tint = MaterialTheme.colorScheme.error
                 )
             }
@@ -331,7 +394,7 @@ private fun AccountSection(
 private fun OtherSection(onAction: (SettingsAction) -> Unit) {
     val storeNavigator = koinInject<StoreNavigator>()
     Text(
-        text = "Other",
+        text = stringResource(SharedRes.strings.other),
         style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(bottom = spacing.small)
     )
@@ -345,10 +408,10 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Privacy policy")
+            Text(stringResource(SharedRes.strings.privacy_policy))
             Icon(
                 imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                contentDescription = "Privacy policy button"
+                contentDescription = stringResource(SharedRes.strings.privacy_policy_button)
             )
         }
     }
@@ -362,10 +425,10 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Rate application")
+            Text(stringResource(SharedRes.strings.rate_application))
             Icon(
                 imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                contentDescription = "Rate application button"
+                contentDescription = stringResource(SharedRes.strings.rate_application_button)
             )
         }
     }
@@ -373,7 +436,7 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
     Text(
         modifier = Modifier.fillMaxWidth(),
         style = MaterialTheme.typography.bodySmall,
-        text = "App version: ${AppInfo.versionName}",
+        text = "${stringResource(SharedRes.strings.app_version)}: ${AppInfo.versionName}",
         textAlign = TextAlign.Center
     )
 }
@@ -382,7 +445,7 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
 private fun GreetingSection(username: String?) {
     if (username != null) {
         Text(
-            text = "Hello $username!",
+            text = stringResource(SharedRes.strings.hello_username, username),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.headlineSmall,
@@ -394,12 +457,13 @@ private fun GreetingSection(username: String?) {
 @Preview
 @Composable
 private fun SettingsPreview() {
-    RustHubTheme(theme = Theme.SYSTEM) {
+    RustHubTheme {
         SettingsScreen(
             onNavigate = {},
             uiEvent = MutableStateFlow(UiEvent.Navigate(Onboarding)),
-            stateProvider = { androidx.compose.runtime.mutableStateOf(SettingsState()) },
+            state = mutableStateOf(SettingsState()),
             onAction = {}
         )
     }
 }
+

@@ -6,8 +6,10 @@ import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.util.formatLocalDateTime
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.util.StringProvider
 
-fun ServerInfo.toUiModel(): ServerInfoUi {
+fun ServerInfo.toUiModel(stringProvider: StringProvider): ServerInfoUi {
     return ServerInfoUi(
         id = id,
         name = name,
@@ -38,9 +40,9 @@ fun ServerInfo.toUiModel(): ServerInfoUi {
         mapSize = mapSize,
         monuments = monuments,
         averageFps = averageFps,
-        lastWipe = wipe?.let { formatLastWipe(it) },
-        nextWipe = nextWipe?.let { formatNextWipe(it) },
-        nextMapWipe = nextMapWipe?.let { formatNextWipe(it) },
+        lastWipe = wipe?.let { formatLastWipe(it, stringProvider) },
+        nextWipe = nextWipe?.let { formatNextWipe(it, stringProvider) },
+        nextMapWipe = nextMapWipe?.let { formatNextWipe(it, stringProvider) },
         pve = pve,
         website = website,
         isPremium = isPremium,
@@ -51,32 +53,44 @@ fun ServerInfo.toUiModel(): ServerInfoUi {
     )
 }
 
-fun formatLastWipe(wipeInstant: Instant): String {
+fun formatLastWipe(
+    wipeInstant: Instant,
+    stringProvider: StringProvider,
+): String {
     val now = Clock.System.now()
     val duration = now - wipeInstant
     val localDateTime = wipeInstant.toLocalDateTime(TimeZone.currentSystemDefault())
     val formattedDate = formatLocalDateTime(localDateTime)
 
     val timeAgo = when {
-        duration.inWholeDays >= 1 -> "${duration.inWholeDays} days ago"
-        duration.inWholeHours >= 1 -> "${duration.inWholeHours} hours ago"
-        else -> "${duration.inWholeMinutes} minutes ago"
+        duration.inWholeDays >= 1 ->
+            stringProvider.get(SharedRes.strings.days_ago, duration.inWholeDays)
+        duration.inWholeHours >= 1 ->
+            stringProvider.get(SharedRes.strings.hours_ago, duration.inWholeHours)
+        else ->
+            stringProvider.get(SharedRes.strings.minutes_ago, duration.inWholeMinutes)
     }
 
     return "$formattedDate ($timeAgo)"
 }
 
-fun formatNextWipe(wipeInstant: Instant): String {
+fun formatNextWipe(
+    wipeInstant: Instant,
+    stringProvider: StringProvider,
+): String {
     val now = Clock.System.now()
     val duration = wipeInstant - now
     val localDateTime = wipeInstant.toLocalDateTime(TimeZone.currentSystemDefault())
     val formattedDate = formatLocalDateTime(localDateTime)
 
     val inTime = when {
-        duration.inWholeDays >= 1 -> "in ${duration.inWholeDays} days"
-        duration.inWholeHours >= 1 -> "in ${duration.inWholeHours} hours"
-        duration.inWholeMinutes >= 0 -> "in ${duration.inWholeMinutes} minutes"
-        else -> "soon"
+        duration.inWholeDays >= 1 ->
+            stringProvider.get(SharedRes.strings.in_days, duration.inWholeDays)
+        duration.inWholeHours >= 1 ->
+            stringProvider.get(SharedRes.strings.in_hours, duration.inWholeHours)
+        duration.inWholeMinutes >= 0 ->
+            stringProvider.get(SharedRes.strings.in_minutes, duration.inWholeMinutes)
+        else -> stringProvider.get(SharedRes.strings.soon)
     }
 
     return "$formattedDate ($inTime)"

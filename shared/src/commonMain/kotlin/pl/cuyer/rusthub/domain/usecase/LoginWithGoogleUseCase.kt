@@ -28,7 +28,8 @@ class LoginWithGoogleUseCase(
                             accessToken = accessToken,
                             refreshToken = refreshToken,
                             provider = provider,
-                            subscribed = subscribed
+                            subscribed = subscribed,
+                            emailConfirmed = true
                         )
                         tokenRefresher.clear()
                         tokenManager.currentToken()
@@ -36,7 +37,6 @@ class LoginWithGoogleUseCase(
                     }
                 }
                 is Result.Error -> send(Result.Error(result.exception))
-                is Result.Loading -> send(Result.Loading)
             }
         }
     }

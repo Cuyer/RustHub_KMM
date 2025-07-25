@@ -16,7 +16,7 @@ import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.domain.model.Theme
 
 @Composable
-fun DetailsRow(details: Map<String, String>) {
+fun DetailsRow(details: () -> Map<String, String>) {
     FlowColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -25,7 +25,7 @@ fun DetailsRow(details: Map<String, String>) {
         maxLines = 2,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        details.forEach {
+        details().forEach {
             Row {
                 Text(
                     style = MaterialTheme.typography.bodyLarge.copy(
@@ -47,20 +47,22 @@ fun DetailsRow(details: Map<String, String>) {
 @Preview
 @Composable
 private fun DetailsRowPreview() {
-    RustHubTheme(theme = Theme.SYSTEM) {
+    RustHubTheme() {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
             DetailsRow(
-                details = mapOf(
-                    "Wipe" to "4hrs ago",
-                    "Rating" to "72%",
-                    "Cycle" to "6.8 days",
-                    "Players" to "132/150",
-                    "Map" to "Custom",
-                    "Modded" to "Yes"
-                )
+                details = {
+                    mapOf(
+                        "Wipe" to "4hrs ago",
+                        "Rating" to "72%",
+                        "Cycle" to "6.8 days",
+                        "Players" to "132/150",
+                        "Map" to "Custom",
+                        "Modded" to "Yes"
+                    )
+                }
             )
         }
     }

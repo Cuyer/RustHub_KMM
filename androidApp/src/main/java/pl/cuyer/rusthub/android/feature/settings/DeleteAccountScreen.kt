@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,35 +23,49 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.navigation3.runtime.NavKey
-import kotlinx.coroutines.flow.Flow
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppSecureTextField
-import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.focus.FocusManager
+import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountAction
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountState
-import pl.cuyer.rusthub.presentation.navigation.UiEvent
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class,
@@ -59,65 +74,77 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 @Composable
 fun DeleteAccountScreen(
     onNavigateUp: () -> Unit,
-    onNavigate: (NavKey) -> Unit,
-    uiEvent: Flow<UiEvent>,
-    stateProvider: () -> State<DeleteAccountState>,
+    state: State<DeleteAccountState>,
     onAction: (DeleteAccountAction) -> Unit
 ) {
-    val state = stateProvider()
-    ObserveAsEvents(uiEvent) { event ->
-        if (event is UiEvent.Navigate) onNavigate(event.destination)
-    }
-
     val context = LocalContext.current
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
     val interactionSource = remember { MutableInteractionSource() }
     val focusManager = LocalFocusManager.current
+    val currentState = state.value
 
     Scaffold(
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         topBar = {
             TopAppBar(
-                title = { },
+                title = { Text(
+                    text = stringResource(SharedRes.strings.delete_account),
+                    fontWeight = FontWeight.SemiBold
+                ) },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateUp) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                    IconButton(
+                        onClick = onNavigateUp,
+                        modifier = Modifier.minimumInteractiveComponentSize()
+                    ) {
+                        Icon(
+                            tint = contentColorFor(TopAppBarDefaults.topAppBarColors().containerColor),
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(SharedRes.strings.navigate_up)
+                        )
                     }
                 }
             )
         }
     ) { innerPadding ->
-        LookaheadScope {
-            if (isTabletMode) {
-                DeleteAccountScreenExpanded(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                        .padding(spacing.medium)
-                        .animateBounds(this)
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = null
-                        ) { focusManager.clearFocus() },
-                    state = state.value,
-                    onAction = onAction
-                )
-            } else {
-                DeleteAccountScreenCompact(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(innerPadding)
-                        .padding(spacing.medium)
-                        .animateBounds(this)
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = null
-                        ) { focusManager.clearFocus() },
-                    state = state.value,
-                    onAction = onAction
-                )
-            }
+        if (isTabletMode) {
+            DeleteAccountScreenExpanded(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding)
+                    .fillMaxSize()
+                    .padding(spacing.medium)
+                    .semantics { hideFromAccessibility() }
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) { focusManager.clearFocus() },
+                provider = currentState.provider,
+                password = currentState.password,
+                passwordError = currentState.passwordError,
+                isLoading = currentState.isLoading,
+                onAction = onAction
+            )
+        } else {
+            DeleteAccountScreenCompact(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(spacing.medium)
+                    .semantics { hideFromAccessibility() }
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) { focusManager.clearFocus() },
+                provider = currentState.provider,
+                password = currentState.password,
+                passwordError = currentState.passwordError,
+                isLoading = currentState.isLoading,
+                onAction = onAction
+            )
         }
     }
 }
@@ -125,42 +152,74 @@ fun DeleteAccountScreen(
 @Composable
 private fun DeleteAccountScreenCompact(
     modifier: Modifier = Modifier,
-    state: DeleteAccountState,
+    provider: AuthProvider?,
+    password: String,
+    passwordError: String?,
+    isLoading: Boolean,
     onAction: (DeleteAccountAction) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+    val passState = rememberSyncedTextFieldState(password)
+    val latestAction = rememberUpdatedState(onAction)
+    val onDelete = remember(focusManager) {
+        {
+            focusManager.clearFocus()
+            latestAction.value(DeleteAccountAction.OnPasswordChange(passState.text.toString()))
+            latestAction.value(DeleteAccountAction.OnDelete)
+        }
+    }
+    val buttonEnabled by remember(provider, passState) {
+        derivedStateOf {
+            if (provider == AuthProvider.GOOGLE) true else passState.text.isNotBlank()
+        }
+    }
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
-        val focusManager = LocalFocusManager.current
         DeleteAccountStaticContent()
         DeleteAccountFields(
-            provider = state.provider,
-            password = state.password,
-            passwordError = state.passwordError,
-            onAction = onAction
+            provider = provider,
+            passwordState = passState,
+            passwordError = passwordError,
+            onDelete = onDelete,
+            focusManager = focusManager
         )
         AppButton(
             modifier = Modifier
-                .imePadding()
                 .fillMaxWidth(),
-            enabled = if (state.provider == AuthProvider.GOOGLE) true else state.password.isNotBlank(),
-            isLoading = state.isLoading,
-            onClick = {
-                focusManager.clearFocus()
-                onAction(DeleteAccountAction.OnDelete)
-            }
-        ) { Text("Delete account") }
+            enabled = buttonEnabled,
+            isLoading = isLoading,
+            onClick = onDelete
+        ) { Text(stringResource(SharedRes.strings.delete_account)) }
     }
 }
 
 @Composable
 private fun DeleteAccountScreenExpanded(
     modifier: Modifier = Modifier,
-    state: DeleteAccountState,
+    provider: AuthProvider?,
+    password: String,
+    passwordError: String?,
+    isLoading: Boolean,
     onAction: (DeleteAccountAction) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+    val passState = rememberSyncedTextFieldState(password)
+    val latestAction = rememberUpdatedState(onAction)
+    val onDelete = remember(focusManager) {
+        {
+            focusManager.clearFocus()
+            latestAction.value(DeleteAccountAction.OnPasswordChange(passState.text.toString()))
+            latestAction.value(DeleteAccountAction.OnDelete)
+        }
+    }
+    val buttonEnabled by remember(provider, passState) {
+        derivedStateOf {
+            if (provider == AuthProvider.GOOGLE) true else passState.text.isNotBlank()
+        }
+    }
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -172,24 +231,20 @@ private fun DeleteAccountScreenExpanded(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(spacing.small)
         ) {
-            val focusManager = LocalFocusManager.current
             DeleteAccountFields(
-                provider = state.provider,
-                password = state.password,
-                passwordError = state.passwordError,
-                onAction = onAction
+                provider = provider,
+                passwordState = passState,
+                passwordError = passwordError,
+                onDelete = onDelete,
+                focusManager = focusManager
             )
             AppButton(
                 modifier = Modifier
-                    .imePadding()
                     .fillMaxWidth(),
-                enabled = if (state.provider == AuthProvider.GOOGLE) true else state.password.isNotBlank(),
-                isLoading = state.isLoading,
-                onClick = {
-                    focusManager.clearFocus()
-                    onAction(DeleteAccountAction.OnDelete)
-                }
-            ) { Text("Delete account") }
+                enabled = buttonEnabled,
+                isLoading = isLoading,
+                onClick = onDelete
+            ) { Text(stringResource(SharedRes.strings.delete_account)) }
         }
     }
 }
@@ -200,16 +255,11 @@ private fun DeleteAccountStaticContent(modifier: Modifier = Modifier) {
         Icon(
             modifier = Modifier.size(64.dp),
             painter = painterResource(getImageByFileName("ic_bin").drawableResId),
-            contentDescription = "Delete Icon"
+            contentDescription = stringResource(SharedRes.strings.delete_account_button)
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
-            text = "Delete account",
-            style = MaterialTheme.typography.headlineLarge
-        )
-        Spacer(modifier = Modifier.height(spacing.small))
-        Text(
-            text = "Deleting your account is irreversible. All your data will be removed.",
+            text = stringResource(SharedRes.strings.deleting_your_account_is_irreversible_all_your_data_will_be_removed),
             style = MaterialTheme.typography.bodyMedium
         )
     }
@@ -218,30 +268,42 @@ private fun DeleteAccountStaticContent(modifier: Modifier = Modifier) {
 @Composable
 private fun DeleteAccountFields(
     provider: AuthProvider?,
-    password: String,
+    passwordState: TextFieldState,
     passwordError: String?,
-    onAction: (DeleteAccountAction) -> Unit
+    onDelete: () -> Unit,
+    focusManager: FocusManager
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
-        val focusManager = LocalFocusManager.current
+        val keyboardState = keyboardAsState()
         if (provider != AuthProvider.GOOGLE) {
             AppSecureTextField(
-                value = password,
-                onValueChange = { onAction(DeleteAccountAction.OnPasswordChange(it)) },
-                labelText = "Password",
-                placeholderText = "Enter your password",
-                onSubmit = {
-                    focusManager.clearFocus()
-                    onAction(DeleteAccountAction.OnDelete)
-                },
+                textFieldState = passwordState,
+                labelText = stringResource(SharedRes.strings.password),
+                placeholderText = stringResource(SharedRes.strings.enter_your_password),
+                onSubmit = onDelete,
                 isError = passwordError != null,
                 errorText = passwordError,
                 modifier = Modifier.fillMaxWidth(),
-                imeAction = if (password.isNotBlank()) ImeAction.Send else ImeAction.Done
+                imeAction = if (passwordState.text.isNotBlank()) ImeAction.Send else ImeAction.Done,
+                focusManager = focusManager,
+                keyboardState = keyboardState
             )
         }
     }
+}
+
+@Composable
+private fun rememberSyncedTextFieldState(
+    value: String,
+): TextFieldState {
+    val state = rememberTextFieldState(value)
+    LaunchedEffect(value) {
+        if (state.text.toString() != value) {
+            state.setTextAndPlaceCursorAtEnd(value)
+        }
+    }
+    return state
 }

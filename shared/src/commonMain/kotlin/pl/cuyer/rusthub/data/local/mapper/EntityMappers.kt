@@ -10,17 +10,16 @@ import database.FiltersWipeScheduleEntity
 import database.RemoteKeyEntity
 import database.SearchQueryEntity
 import database.ServerEntity
-import database.SettingsEntity
 import database.UserEntity
+import database.ItemEntity
+import database.ItemSearchQueryEntity
 import pl.cuyer.rusthub.data.local.model.DifficultyEntity
 import pl.cuyer.rusthub.data.local.model.FlagEntity
-import pl.cuyer.rusthub.data.local.model.LanguageEntity
 import pl.cuyer.rusthub.data.local.model.MapsEntity
 import pl.cuyer.rusthub.data.local.model.OrderEntity
 import pl.cuyer.rusthub.data.local.model.RegionEntity
 import pl.cuyer.rusthub.data.local.model.ServerFilterEntity
 import pl.cuyer.rusthub.data.local.model.ServerStatusEntity
-import pl.cuyer.rusthub.data.local.model.ThemeEntity
 import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity
 import pl.cuyer.rusthub.data.local.model.WipeTypeEntity
 import pl.cuyer.rusthub.domain.model.AuthProvider
@@ -42,7 +41,15 @@ import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.model.User
 import pl.cuyer.rusthub.domain.model.WipeSchedule
 import pl.cuyer.rusthub.domain.model.WipeType
+import pl.cuyer.rusthub.domain.model.ItemCategory
+import pl.cuyer.rusthub.domain.model.RustItem
+import pl.cuyer.rusthub.domain.model.Looting
+import pl.cuyer.rusthub.domain.model.Crafting
+import pl.cuyer.rusthub.domain.model.Recycling
+import pl.cuyer.rusthub.domain.model.Raiding
 import kotlinx.datetime.Instant
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
 
 fun DifficultyEntity?.toDomain(): Difficulty? = this?.let { Difficulty.valueOf(it.name) }
 fun Difficulty?.toEntity(): DifficultyEntity? = this?.let { DifficultyEntity.valueOf(it.name) }
@@ -71,6 +78,14 @@ fun ServerFilter?.toEntity(): ServerFilterEntity? = this?.let { ServerFilterEnti
 
 fun WipeTypeEntity?.toDomain(): WipeType? = this?.let { WipeType.valueOf(it.name) }
 fun WipeType?.toEntity(): WipeTypeEntity? = this?.let { WipeTypeEntity.valueOf(it.name) }
+
+fun ItemSearchQueryEntity.toDomain(): SearchQuery {
+    return SearchQuery(
+        id = id,
+        query = query,
+        timestamp = Instant.parse(timestamp)
+    )
+}
 
 fun FiltersEntity.toServerQuery(): ServerQuery {
     return ServerQuery(
@@ -187,19 +202,38 @@ fun UserEntity.toUser(): User = User(
     access_token,
     refresh_token,
     AuthProvider.valueOf(provider),
-    subscribed = subscribed == 1L
+    subscribed = subscribed == 1L,
+    emailConfirmed = email_confirmed == 1L
 )
 
+fun ItemEntity.toRustItem(json: Json): RustItem {
+    return RustItem(
+        slug = slug,
+        url = url,
+        name = name,
+        description = description,
+        image = image,
+        stackSize = stack_size?.toInt(),
+        health = health?.toInt(),
+        categories = categories?.split(",")?.mapNotNull {
+            runCatching { ItemCategory.valueOf(it) }.getOrNull()
+        },
+        shortName = short_name,
+        iconUrl = icon_url,
+        language = language?.let { Language.valueOf(it) },
+        looting = looting?.let {
+            json.decodeFromString(ListSerializer(Looting.serializer()), it)
+        },
+        crafting = crafting?.let { json.decodeFromString(Crafting.serializer(), it) },
+        recycling = recycling?.let { json.decodeFromString(Recycling.serializer(), it) },
+        raiding = raiding?.let {
+            json.decodeFromString(ListSerializer(Raiding.serializer()), it)
+        },
+        id = id
+    )
+}
 
 
 
-fun ThemeEntity?.toDomain(): Theme? = this?.let { Theme.valueOf(it.name) }
-fun Theme?.toEntity(): ThemeEntity? = this?.let { ThemeEntity.valueOf(it.name) }
 
-fun LanguageEntity?.toDomain(): Language? = this?.let { Language.valueOf(it.name) }
-fun Language?.toEntity(): LanguageEntity? = this?.let { LanguageEntity.valueOf(it.name) }
 
-fun SettingsEntity.toSettings(): Settings = Settings(
-    theme = theme.toDomain() ?: Theme.SYSTEM,
-    language = language.toDomain() ?: Language.ENGLISH
-)

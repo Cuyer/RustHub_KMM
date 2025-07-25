@@ -41,4 +41,8 @@ class SubscriptionSyncDataSourceImpl(
                 }
         }
     }
+
+    override suspend fun clearOperations() {
+        withContext(Dispatchers.IO) { queries.clearSubscriptionSync() }
+    }
 }

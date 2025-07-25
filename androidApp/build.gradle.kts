@@ -8,6 +8,13 @@ plugins {
     alias(libs.plugins.performance)
 }
 
+composeCompiler {
+    reportsDestination = layout.buildDirectory.dir("composeReports")
+    metricsDestination = layout.buildDirectory.dir("composeMetrics")
+    includeSourceInformation.set(true)
+    stabilityConfigurationFiles.add(rootProject.layout.projectDirectory.file("stability_config.conf"))
+}
+
 android {
     namespace = "pl.cuyer.rusthub.android"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -18,6 +25,12 @@ android {
         versionCode = 1
         versionName = project.property("VERSION_NAME") as String
     }
+
+    androidResources {
+        generateLocaleConfig = true
+        localeFilters.addAll(listOf("pl", "en", "de", "fr", "ru"))
+    }
+
     buildFeatures {
         compose = true
         buildConfig = true
@@ -30,9 +43,17 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
-    kotlinOptions {
-        jvmTarget = "17"
+
+    kotlin {
+        jvmToolchain(17)
+    }
+
+    bundle {
+        language {
+            enableSplit = false
+        }
     }
 
     signingConfigs {
@@ -84,13 +105,13 @@ android {
 dependencies {
     implementation(projects.shared)
     implementation(project.dependencies.platform(libs.compose.bom))
+    implementation(libs.androidx.datastore.preferences)
     implementation(libs.compose.ui)
     implementation(libs.compose.foundation)
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
     implementation(libs.kotlin.datetime)
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.ui.text.google.fonts)
     implementation(project.dependencies.platform(libs.koin.bom))
     implementation(libs.koin.compose)
     implementation(libs.koin.compose.viewmodel)
@@ -117,8 +138,31 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.messaging)
+    implementation(libs.firebase.appcheck.playintegrity)
+    debugImplementation(libs.firebase.appcheck.debug)
     implementation(libs.firebase.performance)
     implementation(libs.google.auth)
+    implementation(libs.play.review.ktx)
+    implementation(libs.play.billing)
     implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.compat)
+    implementation(libs.google.play.app.update)
+    implementation(libs.google.play.app.update.ktx)
+    implementation(libs.androidx.appcompat)
+    coreLibraryDesugaring(libs.desugar.jdk.libs.v215)
     debugImplementation(libs.compose.ui.tooling)
+}
+
+tasks.register("printComposeMetrics") {
+    group = "compose"
+    description = "Prints Compose compiler metrics and reports"
+    dependsOn("assemble")
+    doLast {
+        val metricsDir = layout.buildDirectory.dir("composeMetrics").get().asFile
+        val reportsDir = layout.buildDirectory.dir("composeReports").get().asFile
+        println("Compose metrics location: $metricsDir")
+        metricsDir.walk().filter { it.isFile }.forEach { println(it.readText()) }
+        println("Compose reports location: $reportsDir")
+        reportsDir.walk().filter { it.isFile }.forEach { println(it.readText()) }
+    }
 }

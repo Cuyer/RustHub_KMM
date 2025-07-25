@@ -1,12 +1,10 @@
 import pl.cuyer.rusthub.data.local.model.DifficultyEntity;
 import pl.cuyer.rusthub.data.local.model.FlagEntity;
-import pl.cuyer.rusthub.data.local.model.LanguageEntity;
 import pl.cuyer.rusthub.data.local.model.MapsEntity;
 import pl.cuyer.rusthub.data.local.model.OrderEntity;
 import pl.cuyer.rusthub.data.local.model.RegionEntity;
 import pl.cuyer.rusthub.data.local.model.ServerFilterEntity;
 import pl.cuyer.rusthub.data.local.model.ServerStatusEntity;
-import pl.cuyer.rusthub.data.local.model.ThemeEntity;
 import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity;
 import pl.cuyer.rusthub.data.local.model.WipeTypeEntity;
 
@@ -225,6 +223,9 @@ INSERT INTO serverEntity (
 
 clearServers:
 DELETE FROM serverEntity;
+
+countServers:
+SELECT COUNT(*) FROM serverEntity;
 
 
 getServerById:
@@ -494,6 +495,28 @@ DELETE FROM searchQueryEntity;
 deleteSearchQueryByQuery:
 DELETE FROM searchQueryEntity WHERE query = :query;
 
+CREATE TABLE itemSearchQueryEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    query TEXT NOT NULL UNIQUE,
+    timestamp TEXT NOT NULL
+);
+
+upsertItemSearchQuery:
+INSERT INTO itemSearchQueryEntity (query, timestamp)
+VALUES (:query, :timestamp)
+ON CONFLICT(query) DO UPDATE SET
+    timestamp = excluded.timestamp;
+
+getItemSearchQueries:
+SELECT * FROM itemSearchQueryEntity
+ORDER BY timestamp DESC;
+
+clearItemSearchQueries:
+DELETE FROM itemSearchQueryEntity;
+
+deleteItemSearchQueryByQuery:
+DELETE FROM itemSearchQueryEntity WHERE query = :query;
+
 CREATE TABLE favouriteSyncEntity (
     server_id INTEGER NOT NULL PRIMARY KEY,
     action INTEGER NOT NULL,
@@ -532,6 +555,12 @@ SELECT * FROM subscriptionSyncEntity WHERE sync_state = 'PENDING';
 deleteSubscriptionSync:
 DELETE FROM subscriptionSyncEntity WHERE server_id = :server_id;
 
+clearFavouriteSync:
+DELETE FROM favouriteSyncEntity;
+
+clearSubscriptionSync:
+DELETE FROM subscriptionSyncEntity;
+
 CREATE TABLE userEntity (
   id TEXT NOT NULL PRIMARY KEY,
   email         TEXT,
@@ -539,14 +568,15 @@ CREATE TABLE userEntity (
   access_token  TEXT   NOT NULL,
   refresh_token TEXT,
   provider TEXT NOT NULL DEFAULT 'LOCAL',
-  subscribed INTEGER NOT NULL DEFAULT 0
+  subscribed INTEGER NOT NULL DEFAULT 0,
+  email_confirmed INTEGER NOT NULL DEFAULT 0
 );
 
 insertUser:
 INSERT INTO userEntity (
-id, email, username, access_token, refresh_token, provider, subscribed
+id, email, username, access_token, refresh_token, provider, subscribed, email_confirmed
 ) VALUES (
-  :id, :email, :username, :accessToken, :refreshToken, :provider, :subscribed
+  :id, :email, :username, :accessToken, :refreshToken, :provider, :subscribed, :emailConfirmed
 )
 ON CONFLICT(id) DO UPDATE SET
   email = excluded.email,
@@ -554,7 +584,8 @@ ON CONFLICT(id) DO UPDATE SET
   access_token  = excluded.access_token,
   refresh_token = excluded.refresh_token,
   provider = excluded.provider,
-  subscribed = excluded.subscribed;
+  subscribed = excluded.subscribed,
+  email_confirmed = excluded.email_confirmed;
 
 deleteUser:
 DELETE FROM userEntity;
@@ -562,18 +593,123 @@ DELETE FROM userEntity;
 getUser:
 SELECT * FROM userEntity LIMIT 1;
 
-CREATE TABLE settingsEntity (
-    id TEXT NOT NULL PRIMARY KEY,
-    theme TEXT AS ThemeEntity,
-    language TEXT AS LanguageEntity
+updateEmailConfirmed:
+UPDATE userEntity SET email_confirmed = CASE WHEN :confirmed THEN 1 ELSE 0 END WHERE id = :id;
+
+CREATE TABLE itemEntity (
+    id INTEGER NOT NULL,
+    slug TEXT,
+    url TEXT,
+    name TEXT,
+    description TEXT,
+    image TEXT,
+    stack_size INTEGER,
+    health INTEGER,
+    categories TEXT,
+    short_name TEXT,
+    icon_url TEXT,
+    language TEXT NOT NULL,
+    looting TEXT,
+    crafting TEXT,
+    recycling TEXT,
+    raiding TEXT,
+    PRIMARY KEY(id, language)
 );
 
-upsertSettings:
-INSERT INTO settingsEntity (id, theme, language)
-VALUES (:id, :theme, :language)
-ON CONFLICT(id) DO UPDATE SET
-    theme = excluded.theme,
-    language = excluded.language;
+upsertItem:
+INSERT INTO itemEntity (
+    id,
+    slug,
+    url,
+    name,
+    description,
+    image,
+    stack_size,
+    health,
+    categories,
+    short_name,
+    icon_url,
+    language,
+    looting,
+    crafting,
+    recycling,
+    raiding
+) VALUES (
+    :id,
+    :slug,
+    :url,
+    :name,
+    :description,
+    :image,
+    :stackSize,
+    :health,
+    :categories,
+    :shortName,
+    :iconUrl,
+    :language,
+    :looting,
+    :crafting,
+    :recycling,
+    :raiding
+) ON CONFLICT(id, language) DO UPDATE SET
+    slug = excluded.slug,
+    url = excluded.url,
+    name = excluded.name,
+    description = excluded.description,
+    image = excluded.image,
+    stack_size = excluded.stack_size,
+    health = excluded.health,
+    categories = excluded.categories,
+    short_name = excluded.short_name,
+    icon_url = excluded.icon_url,
+    language = excluded.language,
+    looting = excluded.looting,
+    crafting = excluded.crafting,
+    recycling = excluded.recycling,
+    raiding = excluded.raiding;
 
-getSettings:
-SELECT * FROM settingsEntity WHERE id = ?;
+getItems:
+SELECT * FROM itemEntity WHERE language = :language;
+
+deleteItems:
+DELETE FROM itemEntity;
+
+countItems:
+SELECT COUNT(*) FROM itemEntity WHERE language = :language;
+
+getItemById:
+SELECT * FROM itemEntity WHERE id = :id AND language = :language;
+
+-- Returns a page of items filtered by query and category
+findItemsPagedFiltered:
+SELECT *
+FROM itemEntity
+WHERE (:category IS NULL OR categories LIKE '%' || :category || '%')
+  AND (name LIKE '%' || :name || '%' COLLATE NOCASE)
+  AND language = :language
+ORDER BY name
+LIMIT :limit OFFSET :offset;
+
+countPagedItemsFiltered:
+SELECT COUNT(*)
+FROM itemEntity
+WHERE (:category IS NULL OR categories LIKE '%' || :category || '%')
+  AND (name LIKE '%' || :name || '%' COLLATE NOCASE)
+  AND language = :language;
+
+CREATE TABLE itemSyncEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    sync_state TEXT NOT NULL
+);
+
+upsertItemSync:
+INSERT INTO itemSyncEntity (id, sync_state)
+VALUES (:id, :sync_state)
+ON CONFLICT(id) DO UPDATE SET
+    sync_state = excluded.sync_state;
+
+getItemSync:
+SELECT * FROM itemSyncEntity WHERE id = :id;
+
+clearItemSync:
+DELETE FROM itemSyncEntity;

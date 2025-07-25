@@ -12,16 +12,20 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.domain.model.Theme
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -43,7 +47,7 @@ fun AppButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled && !isLoading,
-        shape = RectangleShape,
+        shape = MaterialTheme.shapes.extraSmall,
         colors = colors
     ) {
         AnimatedContent(
@@ -73,7 +77,7 @@ fun AppOutlinedButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled && !isLoading,
-        shape = RectangleShape,
+        shape = MaterialTheme.shapes.extraSmall,
         colors = colors
     ) {
         AnimatedContent(
@@ -97,16 +101,31 @@ fun AppOutlinedButton(
 fun AppTextButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
+    enabled: Boolean = true,
     colors: ButtonColors = ButtonDefaults.textButtonColors(),
+    isLoading: Boolean = false,
     content: @Composable RowScope.() -> Unit
 ) {
     TextButton(
         onClick = onClick,
         modifier = modifier,
-        shape = RectangleShape,
+        enabled = enabled && !isLoading,
+        shape = MaterialTheme.shapes.extraSmall,
         colors = colors
     ) {
-        content()
+        AnimatedContent(
+            targetState = isLoading,
+            transitionSpec = { defaultFadeTransition() }
+        ) { loading ->
+            if (loading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(16.dp),
+                    strokeWidth = 2.dp
+                )
+            } else {
+                content()
+            }
+        }
     }
 }
 
@@ -115,7 +134,7 @@ fun AppTextButton(
 @Composable
 @OptIn(ExperimentalAnimationApi::class)
 fun PreviewAppButton() {
-    RustHubTheme(theme = Theme.SYSTEM) {
+    RustHubTheme() {
         Column(
             modifier = Modifier
                 .padding(16.dp)
@@ -126,13 +145,13 @@ fun PreviewAppButton() {
                 onClick = { /* noop */ },
                 isLoading = false
             ) {
-                Text("Submit")
+                Text(stringResource(SharedRes.strings.submit))
             }
             AppButton(
                 onClick = { /* noop */ },
                 isLoading = true
             ) {
-                Text("Submit")
+                Text(stringResource(SharedRes.strings.submit))
             }
         }
     }
@@ -142,7 +161,7 @@ fun PreviewAppButton() {
 @Composable
 @OptIn(ExperimentalAnimationApi::class)
 fun PreviewAppOutlinedButton() {
-    RustHubTheme(theme = Theme.SYSTEM) {
+    RustHubTheme() {
         Column(
             modifier = Modifier
                 .padding(16.dp)
@@ -153,13 +172,13 @@ fun PreviewAppOutlinedButton() {
                 onClick = { /* noop */ },
                 isLoading = false
             ) {
-                Text("Delete")
+                Text(stringResource(SharedRes.strings.delete))
             }
             AppOutlinedButton(
                 onClick = { /* noop */ },
                 isLoading = true
             ) {
-                Text("Delete")
+                Text(stringResource(SharedRes.strings.delete))
             }
         }
     }

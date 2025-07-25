@@ -1,5 +1,8 @@
 package pl.cuyer.rusthub.presentation.features.auth.password
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class ChangePasswordState(
     val oldPassword: String = "",
     val newPassword: String = "",

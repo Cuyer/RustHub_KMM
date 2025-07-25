@@ -1,21 +1,33 @@
 package pl.cuyer.rusthub.android.designsystem
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.KeyboardActionHandler
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.maxLength
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
@@ -30,84 +42,104 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.theme.RustHubTheme
-import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @Composable
 fun AppTextField(
     modifier: Modifier = Modifier,
-    value: String,
+    textFieldState: TextFieldState,
     labelText: String,
     placeholderText: String,
     keyboardType: KeyboardType,
-    trailingIcon: @Composable (() -> Unit)? = null,
     suffix: @Composable (() -> Unit)? = null,
     imeAction: ImeAction,
     requestFocus: Boolean = false,
     onSubmit: () -> Unit = { },
-    onValueChange: (String) -> Unit = {},
     isError: Boolean = false,
-    errorText: String? = null
+    errorText: String? = null,
+    maxLength: Int? = null,
+    keyboardState: State<Boolean>? = null,
+    focusManager: FocusManager? = null
 ) {
 
     val interactionSource = remember {
         MutableInteractionSource()
     }
-    val isKeyboardOpen by keyboardAsState()
-    val focusManager = LocalFocusManager.current
+    val resolvedKeyboardState = keyboardState ?: keyboardAsState()
+    val isKeyboardOpen by resolvedKeyboardState
+    val resolvedFocusManager = focusManager ?: LocalFocusManager.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val focusRequester = remember { FocusRequester() }
+    val focusRequester = remember { if (requestFocus) FocusRequester() else null }
     LaunchedEffect(isKeyboardOpen) {
         if (!isKeyboardOpen) {
-            focusManager.clearFocus()
+            resolvedFocusManager.clearFocus()
         }
     }
 
     LaunchedEffect(lifecycleOwner.lifecycle) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            focusRequester.requestFocus()
+            focusRequester?.requestFocus()
         }
     }
 
+    val keyboardActionHandler =
+        KeyboardActionHandler { performDefaultAction ->
+            performDefaultAction()
+
+            when (imeAction) {
+
+                ImeAction.Next -> {
+                    resolvedFocusManager.moveFocus(FocusDirection.Down)
+                }
+
+                ImeAction.Done -> {
+                    resolvedFocusManager.clearFocus()
+                }
+
+                ImeAction.Send -> {
+                    resolvedFocusManager.clearFocus()
+                    onSubmit()
+                }
+
+                else -> {
+                    performDefaultAction()
+                }
+            }
+        }
+
     OutlinedTextField(
-        modifier = if (requestFocus) modifier
-            .focusRequester(focusRequester) else modifier,
-        value = value,
-        onValueChange = onValueChange,
-        singleLine = true,
+        modifier = if (requestFocus) modifier.focusRequester(focusRequester!!) else modifier,
+        state = textFieldState,
+        lineLimits = TextFieldLineLimits.SingleLine,
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.None,
             keyboardType = keyboardType,
             imeAction = imeAction
         ),
-        keyboardActions = KeyboardActions(
-            onNext = {
-                if (imeAction == ImeAction.Next) {
-                    focusManager.moveFocus(FocusDirection.Down)
-                }
-            },
-            onSend = {
-                if (imeAction == ImeAction.Send) {
-                    focusManager.clearFocus()
-                    onSubmit()
-                }
-            }
-        ),
-        trailingIcon = trailingIcon,
+        onKeyboardAction = keyboardActionHandler,
         label = {
-            Text(
-                text = labelText
-            )
+            Text(text = labelText)
         },
         placeholder = {
-            Text(
-                text = placeholderText
-            )
+            Text(text = placeholderText)
+        },
+        trailingIcon = {
+            if (textFieldState.text.toString().isNotEmpty()) {
+                IconButton(
+                    onClick = { textFieldState.setTextAndPlaceCursorAtEnd("") }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = stringResource(SharedRes.strings.clear)
+                    )
+                }
+            }
         },
         interactionSource = interactionSource,
-        visualTransformation = VisualTransformation.None,
-        colors = OutlinedTextFieldDefaults.colors(),
+        inputTransformation = maxLength?.let { InputTransformation.maxLength(it) },
         suffix = suffix,
         isError = isError,
         supportingText = if (isError && errorText != null) {
@@ -119,19 +151,19 @@ fun AppTextField(
 @Composable
 @Preview
 private fun AppTextFieldPreview() {
-    RustHubTheme(theme = Theme.LIGHT) {
+    RustHubTheme {
         Column(modifier = Modifier.fillMaxSize()) {
+            val state = rememberTextFieldState()
             AppTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
+                textFieldState = state,
                 labelText = "E-mail",
                 placeholderText = "Wpisz swój email",
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next,
-                requestFocus = false,
-                value = "",
-                onValueChange = {}
+                requestFocus = false
             )
         }
     }

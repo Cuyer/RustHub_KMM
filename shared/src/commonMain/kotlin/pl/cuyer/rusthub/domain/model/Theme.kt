@@ -1,19 +1,24 @@
 package pl.cuyer.rusthub.domain.model
 
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.util.StringProvider
+import androidx.compose.runtime.Immutable
+
+@Immutable
 enum class Theme {
     LIGHT,
     DARK,
     SYSTEM;
 
     companion object {
-        fun fromDisplayName(name: String): Theme? =
-            entries.firstOrNull { it.displayName == name }
+        fun fromDisplayName(displayName: String, stringProvider: StringProvider): Theme? =
+            entries.firstOrNull { it.displayName(stringProvider) == displayName }
     }
 }
 
-val Theme.displayName: String
-    get() = when (this) {
-        Theme.LIGHT -> "Light"
-        Theme.DARK -> "Dark"
-        Theme.SYSTEM -> "System"
+fun Theme.displayName(stringProvider: StringProvider): String =
+    when (this) {
+        Theme.LIGHT -> stringProvider.get(SharedRes.strings.light)
+        Theme.DARK -> stringProvider.get(SharedRes.strings.dark)
+        Theme.SYSTEM -> stringProvider.get(SharedRes.strings.system)
     }

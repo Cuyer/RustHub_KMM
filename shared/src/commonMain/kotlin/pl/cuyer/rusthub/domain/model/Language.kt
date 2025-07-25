@@ -1,17 +1,29 @@
 package pl.cuyer.rusthub.domain.model
 
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.util.StringProvider
+import androidx.compose.runtime.Immutable
+
+@Immutable
 enum class Language {
     ENGLISH,
-    POLISH;
+    POLISH,
+    GERMAN,
+    FRENCH,
+    RUSSIAN;
 
     companion object {
-        fun fromDisplayName(name: String): Language? =
-            entries.firstOrNull { it.displayName == name }
+        fun fromDisplayName(displayName: String, stringProvider: StringProvider): Language? {
+            return entries.firstOrNull { it.displayName(stringProvider) == displayName }
+        }
     }
 }
 
-val Language.displayName: String
-    get() = when (this) {
-        Language.ENGLISH -> "English"
-        Language.POLISH -> "Polish"
+fun Language.displayName(stringProvider: StringProvider): String =
+    when (this) {
+        Language.ENGLISH -> stringProvider.get(SharedRes.strings.english)
+        Language.POLISH -> stringProvider.get(SharedRes.strings.polish)
+        Language.GERMAN -> stringProvider.get(SharedRes.strings.german)
+        Language.FRENCH -> stringProvider.get(SharedRes.strings.french)
+        Language.RUSSIAN -> stringProvider.get(SharedRes.strings.russian)
     }

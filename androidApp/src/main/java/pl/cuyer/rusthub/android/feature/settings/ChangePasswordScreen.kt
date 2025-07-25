@@ -22,33 +22,49 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppSecureTextField
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordAction
 import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class,
@@ -58,10 +74,9 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 fun ChangePasswordScreen(
     onNavigateUp: () -> Unit,
     uiEvent: Flow<UiEvent>,
-    stateProvider: () -> State<ChangePasswordState>,
+    state: State<ChangePasswordState>,
     onAction: (ChangePasswordAction) -> Unit
 ) {
-    val state = stateProvider()
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.NavigateUp) onNavigateUp()
     }
@@ -73,42 +88,58 @@ fun ChangePasswordScreen(
     val focusManager = LocalFocusManager.current
 
     Scaffold(
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         topBar = {
             TopAppBar(
-                title = { },
+                title = { Text(
+                    text = stringResource(SharedRes.strings.change_password),
+                    fontWeight = FontWeight.SemiBold
+                ) },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateUp) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                    IconButton(
+                        onClick = onNavigateUp,
+                        modifier = Modifier.minimumInteractiveComponentSize()
+                    ) {
+                        Icon(
+                            tint = contentColorFor(TopAppBarDefaults.topAppBarColors().containerColor),
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(SharedRes.strings.navigate_up)
+                        )
                     }
                 }
             )
         }
     ) { innerPadding ->
-        LookaheadScope {
-            if (isTabletMode) {
-                ChangePasswordScreenExpanded(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                        .padding(spacing.medium)
-                        .animateBounds(this)
-                        .clickable(interactionSource, null) { focusManager.clearFocus() },
-                    state = state.value,
-                    onAction = onAction
-                )
-            } else {
-                ChangePasswordScreenCompact(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(innerPadding)
-                        .padding(spacing.medium)
-                        .animateBounds(this)
-                        .clickable(interactionSource, null) { focusManager.clearFocus() },
-                    state = state.value,
-                    onAction = onAction
-                )
-            }
+        if (isTabletMode) {
+            ChangePasswordScreenExpanded(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(spacing.medium)
+                    .clickable(interactionSource, null) { focusManager.clearFocus() },
+                oldPassword = { state.value.oldPassword },
+                newPassword = { state.value.newPassword },
+                oldPasswordError = { state.value.oldPasswordError },
+                newPasswordError = { state.value.newPasswordError },
+                isLoading = { state.value.isLoading },
+                onAction = onAction
+            )
+        } else {
+            ChangePasswordScreenCompact(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(innerPadding)
+                    .padding(spacing.medium)
+                    .clickable(interactionSource, null) { focusManager.clearFocus() },
+                oldPassword = { state.value.oldPassword },
+                newPassword = { state.value.newPassword },
+                oldPasswordError = { state.value.oldPasswordError },
+                newPasswordError = { state.value.newPasswordError },
+                isLoading = { state.value.isLoading },
+                onAction = onAction
+            )
         }
     }
 }
@@ -116,43 +147,70 @@ fun ChangePasswordScreen(
 @Composable
 private fun ChangePasswordScreenCompact(
     modifier: Modifier = Modifier,
-    state: ChangePasswordState,
+    oldPassword: () -> String,
+    newPassword: () -> String,
+    oldPasswordError: () -> String?,
+    newPasswordError: () -> String?,
+    isLoading: () -> Boolean,
     onAction: (ChangePasswordAction) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
-        val focusManager = LocalFocusManager.current
+        val oldState = rememberSyncedTextFieldState(oldPassword())
+        val newState = rememberSyncedTextFieldState(newPassword())
+
+        val latestAction = rememberUpdatedState(onAction)
+        val submitAction = remember(focusManager) {
+            {
+                focusManager.clearFocus()
+                latestAction.value(
+                    ChangePasswordAction.OnOldPasswordChange(oldState.text.toString())
+                )
+                latestAction.value(
+                    ChangePasswordAction.OnNewPasswordChange(newState.text.toString())
+                )
+                latestAction.value(ChangePasswordAction.OnChange)
+            }
+        }
+
         ChangePasswordStaticContent()
         ChangePasswordFields(
-            oldPassword = state.oldPassword,
-            newPassword = state.newPassword,
-            oldPasswordError = state.oldPasswordError,
-            newPasswordError = state.newPasswordError,
-            onAction = onAction
+            oldPasswordState = oldState,
+            newPasswordState = newState,
+            oldPasswordError = oldPasswordError,
+            newPasswordError = newPasswordError,
+            onSubmit = submitAction,
+            focusManager = focusManager
         )
+        val buttonEnabled by remember {
+            derivedStateOf { oldState.text.isNotBlank() && newState.text.isNotBlank() }
+        }
+
         AppButton(
             modifier = Modifier
-                .imePadding()
                 .fillMaxWidth(),
-            enabled = state.oldPassword.isNotBlank() && state.newPassword.isNotBlank(),
-            isLoading = state.isLoading,
-            onClick = {
-                focusManager.clearFocus()
-                onAction(ChangePasswordAction.OnChange)
-            }
-        ) { Text("Change password") }
+            enabled = buttonEnabled,
+            isLoading = isLoading(),
+            onClick = submitAction
+        ) { Text(stringResource(SharedRes.strings.change_password)) }
     }
 }
 
 @Composable
 private fun ChangePasswordScreenExpanded(
     modifier: Modifier = Modifier,
-    state: ChangePasswordState,
+    oldPassword: () -> String,
+    newPassword: () -> String,
+    oldPasswordError: () -> String?,
+    newPasswordError: () -> String?,
+    isLoading: () -> Boolean,
     onAction: (ChangePasswordAction) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -164,24 +222,41 @@ private fun ChangePasswordScreenExpanded(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(spacing.small)
         ) {
-            val focusManager = LocalFocusManager.current
+            val oldState = rememberSyncedTextFieldState(oldPassword())
+            val newState = rememberSyncedTextFieldState(newPassword())
+
+            val latestAction = rememberUpdatedState(onAction)
+            val submitAction = remember(focusManager) {
+                {
+                    focusManager.clearFocus()
+                    latestAction.value(
+                        ChangePasswordAction.OnOldPasswordChange(oldState.text.toString())
+                    )
+                    latestAction.value(
+                        ChangePasswordAction.OnNewPasswordChange(newState.text.toString())
+                    )
+                    latestAction.value(ChangePasswordAction.OnChange)
+                }
+            }
             ChangePasswordFields(
-                oldPassword = state.oldPassword,
-                newPassword = state.newPassword,
-                oldPasswordError = state.oldPasswordError,
-                newPasswordError = state.newPasswordError,
-                onAction = onAction
+                oldPasswordState = oldState,
+                newPasswordState = newState,
+                oldPasswordError = oldPasswordError,
+                newPasswordError = newPasswordError,
+                onSubmit = submitAction,
+                focusManager = focusManager
             )
+            val buttonEnabled by remember {
+                derivedStateOf { oldState.text.isNotBlank() && newState.text.isNotBlank() }
+            }
+
             AppButton(
                 modifier = Modifier
-                    .imePadding()
                     .fillMaxWidth(),
-                isLoading = state.isLoading,
-                onClick = {
-                    focusManager.clearFocus()
-                    onAction(ChangePasswordAction.OnChange)
-                }
-            ) { Text("Change password") }
+                enabled = buttonEnabled,
+                isLoading = isLoading(),
+                onClick = submitAction
+            ) { Text(stringResource(SharedRes.strings.change_password)) }
         }
     }
 }
@@ -192,59 +267,68 @@ private fun ChangePasswordStaticContent(modifier: Modifier = Modifier) {
         Icon(
             modifier = Modifier.size(64.dp),
             painter = painterResource(getImageByFileName("ic_padlock").drawableResId),
-            contentDescription = "Padlock Icon"
+            contentDescription = stringResource(SharedRes.strings.padlock_icon)
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
-            text = "Change password",
-            style = MaterialTheme.typography.headlineLarge
-        )
-        Spacer(modifier = Modifier.height(spacing.small))
-        Text(
-            text = "Enter your current password and pick a new one.",
+            text = stringResource(SharedRes.strings.enter_your_current_password_and_pick_a_new_one),
             style = MaterialTheme.typography.bodyMedium
         )
     }
 }
 
 @Composable
+private fun rememberSyncedTextFieldState(value: String): TextFieldState {
+    val state = rememberTextFieldState(value)
+    LaunchedEffect(value) {
+        if (state.text.toString() != value) {
+            state.setTextAndPlaceCursorAtEnd(value)
+        }
+    }
+    return state
+}
+
+@Composable
 private fun ChangePasswordFields(
-    oldPassword: String,
-    newPassword: String,
-    oldPasswordError: String?,
-    newPasswordError: String?,
-    onAction: (ChangePasswordAction) -> Unit
+    oldPasswordState: TextFieldState,
+    newPasswordState: TextFieldState,
+    oldPasswordError: () -> String?,
+    newPasswordError: () -> String?,
+    onSubmit: () -> Unit,
+    focusManager: FocusManager
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
-        val focusManager = LocalFocusManager.current
+        val keyboardState = keyboardAsState()
         AppSecureTextField(
             requestFocus = true,
-            value = oldPassword,
-            onValueChange = { onAction(ChangePasswordAction.OnOldPasswordChange(it)) },
-            labelText = "Old password",
-            placeholderText = "Enter old password",
-            isError = oldPasswordError != null,
-            errorText = oldPasswordError,
+            textFieldState = oldPasswordState,
+            labelText = stringResource(SharedRes.strings.old_password),
+            placeholderText = stringResource(SharedRes.strings.enter_old_password),
+            isError = oldPasswordError() != null,
+            errorText = oldPasswordError(),
             modifier = Modifier.fillMaxWidth(),
             imeAction = ImeAction.Next,
-            onSubmit = { }
+            onSubmit = { },
+            focusManager = focusManager,
+            keyboardState = keyboardState
         )
         AppSecureTextField(
-            value = newPassword,
-            onValueChange = { onAction(ChangePasswordAction.OnNewPasswordChange(it)) },
-            labelText = "New password",
-            placeholderText = "Enter new password",
+            textFieldState = newPasswordState,
+            labelText = stringResource(SharedRes.strings.new_password),
+            placeholderText = stringResource(SharedRes.strings.enter_new_password),
             onSubmit = {
                 focusManager.clearFocus()
-                onAction(ChangePasswordAction.OnChange)
+                onSubmit()
             },
-            isError = newPasswordError != null,
-            errorText = newPasswordError,
+            isError = newPasswordError() != null,
+            errorText = newPasswordError(),
             modifier = Modifier.fillMaxWidth(),
-            imeAction = if (oldPassword.isNotBlank() && newPassword.isNotBlank()) ImeAction.Send else ImeAction.Done
+            imeAction = if (oldPasswordState.text.isNotBlank() && newPasswordState.text.isNotBlank()) ImeAction.Send else ImeAction.Done,
+            focusManager = focusManager,
+            keyboardState = keyboardState
         )
     }
 }

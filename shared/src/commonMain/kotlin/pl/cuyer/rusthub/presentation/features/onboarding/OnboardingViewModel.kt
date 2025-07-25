@@ -7,7 +7,7 @@ import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
+import pl.cuyer.rusthub.util.catchAndLog
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
@@ -27,6 +27,9 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.util.validator.EmailValidator
 
 class OnboardingViewModel(
@@ -36,7 +39,8 @@ class OnboardingViewModel(
     private val getGoogleClientIdUseCase: GetGoogleClientIdUseCase,
     private val googleAuthClient: GoogleAuthClient,
     private val snackbarController: SnackbarController,
-    private val emailValidator: EmailValidator
+    private val emailValidator: EmailValidator,
+    private val stringProvider: StringProvider
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -58,7 +62,6 @@ class OnboardingViewModel(
             is OnboardingAction.OnEmailChange -> updateEmail(action.email)
             OnboardingAction.OnContinueWithEmail -> continueWithEmail()
             OnboardingAction.OnGoogleLogin -> startGoogleLogin()
-            OnboardingAction.OnShowOtherOptions -> toggleOtherOptions()
         }
     }
 
@@ -68,13 +71,16 @@ class OnboardingViewModel(
             authAnonymouslyUseCase()
                 .onStart { updateContinueAsGuestLoading(true) }
                 .onCompletion { updateContinueAsGuestLoading(false) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catchAndLog { e ->
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
+                }
                 .collectLatest { result ->
                     ensureActive()
                     when (result) {
                         is Result.Success -> navigate(ServerList)
-                        is Result.Error -> showErrorSnackbar("Error occurred during creating guest account.")
-                        else -> Unit
+                        is Result.Error -> showErrorSnackbar(
+                            stringProvider.get(SharedRes.strings.error_creating_guest_account)
+                        )
                     }
                 }
         }
@@ -98,7 +104,7 @@ class OnboardingViewModel(
             if (!emailResult.isValid) {
                 snackbarController.sendEvent(
                     SnackbarEvent(
-                        message = "Please correct the errors above and try again.",
+                        message = stringProvider.get(SharedRes.strings.correct_errors_try_again),
                         action = null
                     )
                 )
@@ -108,15 +114,18 @@ class OnboardingViewModel(
             checkUserExistsUseCase(email)
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catchAndLog { e ->
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
+                }
                 .collectLatest { result ->
                     ensureActive()
                     when (result) {
                         is Result.Success -> navigate(
                             Credentials(email, result.data.exists, result.data.provider)
                         )
-                        is Result.Error -> showErrorSnackbar(result.exception.message ?: "Error")
-                        else -> Unit
+                        is Result.Error -> showErrorSnackbar(
+                            result.exception.toUserMessage(stringProvider)
+                        )
                     }
                 }
         }
@@ -128,7 +137,9 @@ class OnboardingViewModel(
             getGoogleClientIdUseCase()
                 .onStart { updateGoogleLoading(true) }
                 .onCompletion { updateGoogleLoading(false) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catchAndLog { e ->
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
+                }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
@@ -136,13 +147,14 @@ class OnboardingViewModel(
                             if (token != null) {
                                 loginWithGoogleToken(token)
                             } else {
-                                showErrorSnackbar("Google sign in failed")
+                                showErrorSnackbar(
+                                    stringProvider.get(SharedRes.strings.google_sign_in_failed)
+                                )
                             }
                         }
                         is Result.Error -> showErrorSnackbar(
-                            result.exception.message ?: "Unable to get client id"
+                            result.exception.toUserMessage(stringProvider)
                         )
-                        else -> Unit
                     }
                 }
         }
@@ -154,23 +166,24 @@ class OnboardingViewModel(
             loginWithGoogleUseCase(token)
                 .onStart { updateGoogleLoading(true) }
                 .onCompletion { updateGoogleLoading(false) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catchAndLog { e ->
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
+                }
                 .collectLatest { result ->
                     ensureActive()
                     when (result) {
                         is Result.Success -> navigate(ServerList)
-                        is Result.Error -> showErrorSnackbar("Error occurred during Google sign in")
-                        else -> Unit
+                        is Result.Error -> showErrorSnackbar(
+                            result.exception.toUserMessage(stringProvider)
+                                ?: stringProvider.get(SharedRes.strings.error_google_sign_in)
+                        )
                     }
                 }
         }
     }
 
-    private fun toggleOtherOptions() {
-        _state.update { it.copy(showOtherOptions = !it.showOtherOptions) }
-    }
-
-    private suspend fun showErrorSnackbar(message: String) {
+    private suspend fun showErrorSnackbar(message: String?) {
+        message ?: return
         snackbarController.sendEvent(SnackbarEvent(message = message))
     }
 

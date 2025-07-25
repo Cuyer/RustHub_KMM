@@ -1,7 +1,9 @@
 package pl.cuyer.rusthub.domain.model
 
 import kotlinx.datetime.Instant
+import androidx.compose.runtime.Immutable
 
+@Immutable
 data class ServerQuery(
     val wipe: Instant? = null,
     val ranking: Long? = null,

@@ -1,48 +1,89 @@
 package pl.cuyer.rusthub.presentation.di
 
 import dev.icerock.moko.permissions.PermissionsController
+import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
+import org.koin.dsl.bind
 import org.koin.dsl.module
+import pl.cuyer.rusthub.BuildConfig
 import pl.cuyer.rusthub.data.local.DatabaseDriverFactory
+import pl.cuyer.rusthub.data.local.DatabasePassphraseProvider
+import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
 import pl.cuyer.rusthub.data.network.HttpClientFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.AuthProvider
+import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
 import pl.cuyer.rusthub.presentation.features.auth.password.ChangePasswordViewModel
 import pl.cuyer.rusthub.presentation.features.auth.password.ResetPasswordViewModel
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
+import pl.cuyer.rusthub.presentation.features.item.ItemViewModel
+import pl.cuyer.rusthub.presentation.features.item.ItemDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
+import pl.cuyer.rusthub.common.user.UserEventController
+import pl.cuyer.rusthub.domain.usecase.ClearServersAndKeysUseCase
+import pl.cuyer.rusthub.util.AppCheckTokenProvider
 import pl.cuyer.rusthub.util.ClipboardHandler
+import pl.cuyer.rusthub.util.ConnectivityObserver
 import pl.cuyer.rusthub.util.GoogleAuthClient
+import pl.cuyer.rusthub.util.InAppUpdateManager
+import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
+import pl.cuyer.rusthub.util.ReviewRequester
 import pl.cuyer.rusthub.util.ShareHandler
 import pl.cuyer.rusthub.util.StoreNavigator
+import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
-import pl.cuyer.rusthub.util.TokenRefresher
+import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 
 actual val platformModule: Module = module {
-    single<RustHubDatabase> { DatabaseDriverFactory(androidContext()).create() }
-    single { HttpClientFactory(get(), get()).create() }
-    single { TokenRefresher(get()) }
+    single { DatabasePassphraseProvider(androidContext()) }
+    single<RustHubDatabase> {
+        if (BuildConfig.USE_ENCRYPTED_DB) {
+            val passphrase = runBlocking { get<DatabasePassphraseProvider>().getPassphrase() }
+            DatabaseDriverFactory(androidContext(), passphrase).create()
+        } else {
+            DatabaseDriverFactory(androidContext()).create()
+        }
+    }
+    single { AppCheckTokenProvider() }
+    single { HttpClientFactory(get(), get(), get(), get(), get()).create() }
     single { ClipboardHandler(get()) }
     single { ShareHandler(get()) }
     single { SyncScheduler(get()) }
     single { SubscriptionSyncScheduler(get()) }
     single { MessagingTokenScheduler(get()) }
+    single { ItemsScheduler(get()) }
+    single { ItemSyncDataSourceImpl(get()) } bind ItemSyncDataSource::class
+    single { InAppUpdateManager(androidContext(), get()) }
+    single { ReviewRequester(androidContext()) }
     single { StoreNavigator(androidContext()) }
+    single { SystemDarkThemeObserver(androidContext()) }
+    single { ConnectivityObserver(androidContext()) }
     single { GoogleAuthClient(androidContext()) }
+    single { StringProvider(androidContext()) }
     single { PermissionsController(androidContext()) }
     viewModel {
-        StartupViewModel(get(), get(), get())
+        StartupViewModel(
+            snackbarController = get(),
+            getUserUseCase = get(),
+            checkEmailConfirmedUseCase = get(),
+            setEmailConfirmedUseCase = get(),
+            stringProvider = get(),
+            getUserPreferencesUseCase = get(),
+            itemsScheduler = get(),
+            itemDataSource = get(),
+            itemSyncDataSource = get()
+        )
     }
     viewModel {
         OnboardingViewModel(
@@ -52,7 +93,8 @@ actual val platformModule: Module = module {
             getGoogleClientIdUseCase = get(),
             googleAuthClient = get(),
             snackbarController = get(),
-            emailValidator = get()
+            emailValidator = get(),
+            stringProvider = get()
         )
     }
     viewModel { (email: String, exists: Boolean, provider: AuthProvider?) ->
@@ -70,6 +112,7 @@ actual val platformModule: Module = module {
             loginWithGoogleUseCase = get(),
             getGoogleClientIdUseCase = get(),
             googleAuthClient = get()
+            , stringProvider = get()
         )
     }
     viewModel {
@@ -83,18 +126,46 @@ actual val platformModule: Module = module {
             clearFiltersUseCase = get(),
             saveSearchQueryUseCase = get(),
             getSearchQueriesUseCase = get(),
-            deleteSearchQueriesUseCase = get()
+            deleteSearchQueriesUseCase = get(),
+            clearServersAndKeysUseCase = get(),
+            stringProvider = get(),
+            connectivityObserver = get()
+        )
+    }
+    viewModel {
+        ItemViewModel(
+            getPagedItemsUseCase = get(),
+            itemSyncDataSource = get(),
+            itemsScheduler = get(),
+            snackbarController = get(),
+            stringProvider = get(),
+            saveSearchQueryUseCase = get(),
+            getSearchQueriesUseCase = get(),
+            deleteSearchQueriesUseCase = get(),
+        )
+    }
+    viewModel { (itemId: Long) ->
+        ItemDetailsViewModel(
+            getItemDetailsUseCase = get(),
+            itemId = itemId,
         )
     }
     viewModel {
         SettingsViewModel(
-            getSettingsUseCase = get(),
-            saveSettingsUseCase = get(),
             logoutUserUseCase = get(),
             getUserUseCase = get(),
+            getUserPreferencesUseCase = get(),
+            setThemeConfigUseCase = get(),
+            setDynamicColorPreferenceUseCase = get(),
+            setUseSystemColorsPreferenceUseCase = get(),
             permissionsController = get(),
             googleAuthClient = get(),
-            snackbarController = get()
+            snackbarController = get(),
+            stringProvider = get(),
+            systemDarkThemeObserver = get(),
+            itemsScheduler = get(),
+            itemSyncDataSource = get(),
+            userEventController = get()
         )
     }
     viewModel {
@@ -102,7 +173,9 @@ actual val platformModule: Module = module {
             deleteAccountUseCase = get(),
             snackbarController = get(),
             passwordValidator = get(),
-            getUserUseCase = get()
+            getUserUseCase = get(),
+            stringProvider = get(),
+            userEventController = get()
         )
     }
     viewModel {
@@ -110,6 +183,7 @@ actual val platformModule: Module = module {
             changePasswordUseCase = get(),
             snackbarController = get(),
             passwordValidator = get(),
+            stringProvider = get(),
         )
     }
     viewModel { (email: String) ->
@@ -117,7 +191,8 @@ actual val platformModule: Module = module {
             email = email,
             requestPasswordResetUseCase = get(),
             snackbarController = get(),
-            emailValidator = get()
+            emailValidator = get(),
+            stringProvider = get()
         )
     }
     viewModel {
@@ -129,7 +204,8 @@ actual val platformModule: Module = module {
             snackbarController = get(),
             usernameValidator = get(),
             passwordValidator = get(),
-            emailValidator = get()
+            emailValidator = get(),
+            stringProvider = get()
         )
     }
     viewModel {
@@ -138,7 +214,8 @@ actual val platformModule: Module = module {
             getUserUseCase = get(),
             resendConfirmationUseCase = get(),
             snackbarController = get(),
-            logoutUserUseCase = get()
+            setEmailConfirmedUseCase = get(),
+            stringProvider = get()
         )
     }
     viewModel { (serverId: Long, serverName: String?) ->
@@ -146,12 +223,18 @@ actual val platformModule: Module = module {
             getServerDetailsUseCase = get(),
             toggleFavouriteUseCase = get(),
             toggleSubscriptionUseCase = get(),
+            getUserUseCase = get(),
+            resendConfirmationUseCase = get(),
             permissionsController = get(),
+            stringProvider = get(),
             serverName = serverName,
             serverId = serverId,
             clipboardHandler = get(),
             snackbarController = get(),
-            shareHandler = get()
+            shareHandler = get(),
+            reviewRequester = get(),
+            connectivityObserver = get()
         )
     }
 }
+

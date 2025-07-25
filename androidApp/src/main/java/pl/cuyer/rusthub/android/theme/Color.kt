@@ -1,150 +1,119 @@
 package pl.cuyer.rusthub.android.theme
 import androidx.compose.ui.graphics.Color
-import pl.cuyer.rusthub.presentation.ui.Colors.BACKGROUND_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.BACKGROUND_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.ERROR_CONTAINER_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.ERROR_CONTAINER_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.ERROR_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.ERROR_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.INVERSE_ON_SURFACE_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.INVERSE_ON_SURFACE_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.INVERSE_PRIMARY_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.INVERSE_PRIMARY_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.INVERSE_SURFACE_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.INVERSE_SURFACE_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_BACKGROUND_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_BACKGROUND_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_ERROR_CONTAINER_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_ERROR_CONTAINER_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_ERROR_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_ERROR_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_PRIMARY_CONTAINER_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_PRIMARY_CONTAINER_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_PRIMARY_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_PRIMARY_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_SECONDARY_CONTAINER_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_SECONDARY_CONTAINER_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_SECONDARY_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_SECONDARY_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_SURFACE_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_SURFACE_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_SURFACE_VARIANT_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_SURFACE_VARIANT_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_TERTIARY_CONTAINER_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_TERTIARY_CONTAINER_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_TERTIARY_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.ON_TERTIARY_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.OUTLINE_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.OUTLINE_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.OUTLINE_VARIANT_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.OUTLINE_VARIANT_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.PRIMARY_CONTAINER_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.PRIMARY_CONTAINER_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.PRIMARY_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.PRIMARY_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.SCRIM_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.SCRIM_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.SECONDARY_CONTAINER_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.SECONDARY_CONTAINER_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.SECONDARY_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.SECONDARY_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_BRIGHT_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_BRIGHT_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_CONTAINER_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_CONTAINER_HIGHEST_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_CONTAINER_HIGH_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_CONTAINER_HIGH_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_CONTAINER_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_CONTAINER_LOWEST_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_CONTAINER_LOWEST_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_CONTAINER_LOW_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_CONTAINER_LOW_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_DIM_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_DIM_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_VARIANT_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.SURFACE_VARIANT_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.TERTIARY_CONTAINER_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.TERTIARY_CONTAINER_LIGHT
-import pl.cuyer.rusthub.presentation.ui.Colors.TERTIARY_DARK
-import pl.cuyer.rusthub.presentation.ui.Colors.TERTIARY_LIGHT
 
 
-val primaryLight = Color(PRIMARY_LIGHT)
-val onPrimaryLight = Color(ON_PRIMARY_LIGHT)
-val primaryContainerLight = Color(PRIMARY_CONTAINER_LIGHT)
-val onPrimaryContainerLight = Color(ON_PRIMARY_CONTAINER_LIGHT)
-val secondaryLight = Color(SECONDARY_LIGHT)
-val onSecondaryLight = Color(ON_SECONDARY_LIGHT)
-val secondaryContainerLight = Color(SECONDARY_CONTAINER_LIGHT)
-val onSecondaryContainerLight = Color(ON_SECONDARY_CONTAINER_LIGHT)
-val tertiaryLight = Color(TERTIARY_LIGHT)
-val onTertiaryLight = Color(ON_TERTIARY_LIGHT)
-val tertiaryContainerLight = Color(TERTIARY_CONTAINER_LIGHT)
-val onTertiaryContainerLight = Color(ON_TERTIARY_CONTAINER_LIGHT)
-val errorLight = Color(ERROR_LIGHT)
-val onErrorLight = Color(ON_ERROR_LIGHT)
-val errorContainerLight = Color(ERROR_CONTAINER_LIGHT)
-val onErrorContainerLight = Color(ON_ERROR_CONTAINER_LIGHT)
-val backgroundLight = Color(BACKGROUND_LIGHT)
-val onBackgroundLight = Color(ON_BACKGROUND_LIGHT)
-val surfaceLight = Color(SURFACE_LIGHT)
-val onSurfaceLight = Color(ON_SURFACE_LIGHT)
-val surfaceVariantLight = Color(SURFACE_VARIANT_LIGHT)
-val onSurfaceVariantLight = Color(ON_SURFACE_VARIANT_LIGHT)
-val outlineLight = Color(OUTLINE_LIGHT)
-val outlineVariantLight = Color(OUTLINE_VARIANT_LIGHT)
-val scrimLight = Color(SCRIM_LIGHT)
-val inverseSurfaceLight = Color(INVERSE_SURFACE_LIGHT)
-val inverseOnSurfaceLight = Color(INVERSE_ON_SURFACE_LIGHT)
-val inversePrimaryLight = Color(INVERSE_PRIMARY_LIGHT)
-val surfaceDimLight = Color(SURFACE_DIM_LIGHT)
-val surfaceBrightLight = Color(SURFACE_BRIGHT_LIGHT)
-val surfaceContainerLowestLight = Color(SURFACE_CONTAINER_LOWEST_LIGHT)
-val surfaceContainerLowLight = Color(SURFACE_CONTAINER_LOW_LIGHT)
-val surfaceContainerLight = Color(SURFACE_CONTAINER_LIGHT)
-val surfaceContainerHighLight = Color(SURFACE_CONTAINER_HIGH_LIGHT)
-val surfaceContainerHighestLight = Color(SURFACE_CONTAINER_HIGHEST_LIGHT)
+val Seed = Color(0xFF68A500)
 
+val PrimaryLight = Color(0xFF416A00)
+val OnPrimaryLight = Color(0xFFEFFFD4)
+val PrimaryContainerLight = Color(0xFFA7EB51)
+val OnPrimaryContainerLight = Color(0xFF335400)
+val InversePrimaryLight = Color(0xFFA7EB51)
+val SecondaryLight = Color(0xFF5C5C7E)
+val OnSecondaryLight = Color(0xFFFBF7FF)
+val SecondaryContainerLight = Color(0xFFE2DFFF)
+val OnSecondaryContainerLight = Color(0xFF4F4E70)
+val TertiaryLight = Color(0xFF5E53A8)
+val OnTertiaryLight = Color(0xFFFCF7FF)
+val TertiaryContainerLight = Color(0xFFB9AFFF)
+val OnTertiaryContainerLight = Color(0xFF34297C)
+val BackgroundLight = Color(0xFFEDFFE1)
+val OnBackgroundLight = Color(0xFF1D3916)
+val SurfaceLight = Color(0xFFEDFFE1)
+val OnSurfaceLight = Color(0xFF1D3916)
+val SurfaceVariantLight = Color(0xFFCAEDBA)
+val OnSurfaceVariantLight = Color(0xFF49673F)
+val SurfaceTintLight = Color(0xFF416A00)
+val InverseSurfaceLight = Color(0xFF041103)
+val InverseOnSurfaceLight = Color(0xFF90A286)
+val ErrorLight = Color(0xFFAA371C)
+val OnErrorLight = Color(0xFFFFF7F6)
+val ErrorContainerLight = Color(0xFFFA7150)
+val OnErrorContainerLight = Color(0xFF671200)
+val OutlineLight = Color(0xFF648358)
+val OutlineVariantLight = Color(0xFF9ABB8C)
+val ScrimLight = Color(0xFF000000)
+val SurfaceBrightLight = Color(0xFFEDFFE1)
+val SurfaceContainerLight = Color(0xFFDBF6CC)
+val SurfaceContainerHighLight = Color(0xFFD2F1C3)
+val SurfaceContainerHighestLight = Color(0xFFCAEDBA)
+val SurfaceContainerLowLight = Color(0xFFE3FBD6)
+val SurfaceContainerLowestLight = Color(0xFFFFFFFF)
+val SurfaceDimLight = Color(0xFFBEE5AE)
+val ShadowLight = Color(0xFF000000)
+val ControlActivatedLight = Color(0xFFA7EB51)
+val ControlNormalLight = Color(0xFF49673F)
+val ControlHighlightLight = Color(0x1F000000)
+val TextPrimaryInverseLight = Color(0xFF90A286)
+val TextSecondaryAndTertiaryInverseLight = Color(0xFF9FD58C)
+val TextPrimaryInverseDisableOnlyLight = Color(0xFFD5E8C9)
+val TextSecondaryAndTertiaryInverseDisabledLight = Color(0xFFD5E8C9)
+val TextHintInverseLight = Color(0xFFD5E8C9)
 
-val primaryDark = Color(PRIMARY_DARK)
-val onPrimaryDark = Color(ON_PRIMARY_DARK)
-val primaryContainerDark = Color(PRIMARY_CONTAINER_DARK)
-val onPrimaryContainerDark = Color(ON_PRIMARY_CONTAINER_DARK)
-val secondaryDark = Color(SECONDARY_DARK)
-val onSecondaryDark = Color(ON_SECONDARY_DARK)
-val secondaryContainerDark = Color(SECONDARY_CONTAINER_DARK)
-val onSecondaryContainerDark = Color(ON_SECONDARY_CONTAINER_DARK)
-val tertiaryDark = Color(TERTIARY_DARK)
-val onTertiaryDark = Color(ON_TERTIARY_DARK)
-val tertiaryContainerDark = Color(TERTIARY_CONTAINER_DARK)
-val onTertiaryContainerDark = Color(ON_TERTIARY_CONTAINER_DARK)
-val errorDark = Color(ERROR_DARK)
-val onErrorDark = Color(ON_ERROR_DARK)
-val errorContainerDark = Color(ERROR_CONTAINER_DARK)
-val onErrorContainerDark = Color(ON_ERROR_CONTAINER_DARK)
-val backgroundDark = Color(BACKGROUND_DARK)
-val onBackgroundDark = Color(ON_BACKGROUND_DARK)
-val surfaceDark = Color(SURFACE_DARK)
-val onSurfaceDark = Color(ON_SURFACE_DARK)
-val surfaceVariantDark = Color(SURFACE_VARIANT_DARK)
-val onSurfaceVariantDark = Color(ON_SURFACE_VARIANT_DARK)
-val outlineDark = Color(OUTLINE_DARK)
-val outlineVariantDark = Color(OUTLINE_VARIANT_DARK)
-val scrimDark = Color(SCRIM_DARK)
-val inverseSurfaceDark = Color(INVERSE_SURFACE_DARK)
-val inverseOnSurfaceDark = Color(INVERSE_ON_SURFACE_DARK)
-val inversePrimaryDark = Color(INVERSE_PRIMARY_DARK)
-val surfaceDimDark = Color(SURFACE_DIM_DARK)
-val surfaceBrightDark = Color(SURFACE_BRIGHT_DARK)
-val surfaceContainerLowestDark = Color(SURFACE_CONTAINER_LOWEST_DARK)
-val surfaceContainerLowDark = Color(SURFACE_CONTAINER_LOW_DARK)
-val surfaceContainerDark = Color(SURFACE_CONTAINER_DARK)
-val surfaceContainerHighDark = Color(SURFACE_CONTAINER_HIGH_DARK)
-val surfaceContainerHighestDark = Color(SURFACE_CONTAINER_HIGH_DARK)
+val PrimaryDark = Color(0xFFB5F95E)
+val OnPrimaryDark = Color(0xFF395D00)
+val PrimaryContainerDark = Color(0xFFA7EB51)
+val OnPrimaryContainerDark = Color(0xFF335400)
+val InversePrimaryDark = Color(0xFF416A00)
+val SecondaryDark = Color(0xFFC6C4DD)
+val OnSecondaryDark = Color(0xFF3F3E52)
+val SecondaryContainerDark = Color(0xFF242437)
+val OnSecondaryContainerDark = Color(0xFFA3A1B9)
+val TertiaryDark = Color(0xFFC7BFFF)
+val OnTertiaryDark = Color(0xFF3E3386)
+val TertiaryContainerDark = Color(0xFFB9AFFF)
+val OnTertiaryContainerDark = Color(0xFF34297C)
+val BackgroundDark = Color(0xFF071105)
+val OnBackgroundDark = Color(0xFFD3EDC6)
+val SurfaceDark = Color(0xFF071105)
+val OnSurfaceDark = Color(0xFFD3EDC6)
+val SurfaceVariantDark = Color(0xFF172A11)
+val OnSurfaceVariantDark = Color(0xFF829A78)
+val SurfaceTintDark = Color(0xFFB5F95E)
+val InverseSurfaceDark = Color(0xFFF0FEE5)
+val InverseOnSurfaceDark = Color(0xFF4C5946)
+val ErrorDark = Color(0xFFFE7453)
+val OnErrorDark = Color(0xFF450900)
+val ErrorContainerDark = Color(0xFF881F05)
+val OnErrorContainerDark = Color(0xFFFF9B82)
+val OutlineDark = Color(0xFF657C5B)
+val OutlineVariantDark = Color(0xFF384D31)
+val ScrimDark = Color(0xFF000000)
+val SurfaceBrightDark = Color(0xFF1B3115)
+val SurfaceContainerDark = Color(0xFF0E1D0A)
+val SurfaceContainerHighDark = Color(0xFF13240E)
+val SurfaceContainerHighestDark = Color(0xFF172A11)
+val SurfaceContainerLowDark = Color(0xFF0A1607)
+val SurfaceContainerLowestDark = Color(0xFF000000)
+val SurfaceDimDark = Color(0xFF071105)
+val ShadowDark = Color(0xFF000000)
+val ControlActivatedDark = Color(0xFFA7EB51)
+val ControlNormalDark = Color(0xFF829A78)
+val ControlHighlightDark = Color(0x33FFFFFF)
+val TextPrimaryInverseDark = Color(0xFF4C5946)
+val TextSecondaryAndTertiaryInverseDark = Color(0xFF2E4F24)
+val TextPrimaryInverseDisableOnlyDark = Color(0xFF141E10)
+val TextSecondaryAndTertiaryInverseDisabledDark = Color(0xFF141E10)
+val TextHintInverseDark = Color(0xFF141E10)
 
-
+val PrimaryFixed = Color(0xFFA7EB51)
+val PrimaryFixedDim = Color(0xFF9ADC44)
+val OnPrimaryFixed = Color(0xFF253F00)
+val OnPrimaryFixedVariant = Color(0xFF395E00)
+val SecondaryFixed = Color(0xFFE2DFFF)
+val SecondaryFixedDim = Color(0xFFD3D1F9)
+val OnSecondaryFixed = Color(0xFF3D3C5D)
+val OnSecondaryFixedVariant = Color(0xFF59587A)
+val TertiaryFixed = Color(0xFFB9AFFF)
+val TertiaryFixedDim = Color(0xFFABA0FB)
+val OnTertiaryFixed = Color(0xFF1D0B66)
+val OnTertiaryFixedVariant = Color(0xFF3D3286)
+val PrimaryPaletteKeyColor = Color(0xFF68A500)
+val SecondaryPaletteKeyColor = Color(0xFF757498)
+val TertiaryPaletteKeyColor = Color(0xFF766CC2)
+val NeutralPaletteKeyColor = Color(0xFF6B7C62)
+val NeutralVariantPaletteKeyColor = Color(0xFF528344)
+val ErrorPaletteKeyColor = Color(0xFFCB4F31)
 
 
 

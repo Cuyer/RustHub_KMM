@@ -1,6 +1,7 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import org.gradle.kotlin.dsl.api
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
-import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -10,6 +11,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.mokoMultiplatformResources)
     alias(libs.plugins.buildKonfig)
+    alias(libs.plugins.protobuf)
 }
 
 kotlin {
@@ -22,6 +24,11 @@ kotlin {
             }
         }
     }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
     iosX64()
     iosArm64()
     iosSimulatorArm64()
@@ -44,26 +51,43 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.sql.delight.android.driver)
+            implementation(libs.sqlcipher.android)
+            implementation(libs.androidx.datastore.preferences)
+            implementation(libs.androidx.datastore)
+            implementation(libs.androidx.security.crypto)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.compose)
             implementation(libs.androidx.navigation)
             implementation(libs.androidx.work.runtime)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.certificate.transparency)
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.messaging)
+            implementation(libs.firebase.crashlytics)
+            implementation(libs.firebase.appcheck.playintegrity)
+            implementation(libs.firebase.appcheck.debug)
             implementation(libs.google.auth)
             implementation(libs.androidx.credentials)
             implementation(libs.google.identity)
             implementation(libs.kotlin.coroutines.play.services)
+            implementation(libs.google.play.app.update)
+            implementation(libs.google.play.app.update.ktx)
+            implementation(libs.play.review.ktx)
+            implementation(libs.play.billing)
+            implementation(libs.androidx.appcompat)
         }
         commonMain.dependencies {
             implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.compose.runtime)
             implementation(libs.koin.core)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.serialization)
             implementation(libs.ktor.serialization.json)
             implementation(libs.ktor.logging)
             implementation(libs.ktor.auth)
+            implementation(libs.androidx.datastore.preferences)
+            implementation(libs.androidx.datastore)
+            implementation(libs.kotlin.serialization.protobuf)
             implementation(libs.sql.delight.runtime)
             implementation(libs.sql.delight.coroutines.extensions)
             implementation(libs.kotlin.coroutines.core)
@@ -116,13 +140,15 @@ android {
             buildConfigField("String", "BASE_URL", "\"https://api.rusthub.me/\"")
             buildConfigField("String", "PRIVACY_POLICY_URL", "\"https://rusthub.me/privacy\"")
             buildConfigField("String", "TERMS_URL", "\"https://rusthub.me/terms\"")
+            buildConfigField("Boolean", "USE_ENCRYPTED_DB", "true")
             signingConfig = signingConfigs.getByName("production")
         }
         create("development") {
             dimension = "mode"
             buildConfigField("String", "BASE_URL", "\"https://api.dev.rusthub.me/\"")
-            buildConfigField("String", "PRIVACY_POLICY_URL", "\"https://dev.rusthub.me/privacy\"")
-            buildConfigField("String", "TERMS_URL", "\"https://dev.rusthub.me/terms\"")
+            buildConfigField("String", "PRIVACY_POLICY_URL", "\"http://localhost:5173/privacy\"")
+            buildConfigField("String", "TERMS_URL", "\"http://localhost:5173/terms\"")
+            buildConfigField("Boolean", "USE_ENCRYPTED_DB", "false")
             signingConfig = signingConfigs.getByName("development")
         }
     }
@@ -170,5 +196,11 @@ sqldelight {
             packageName.set("pl.cuyer.rusthub.database")
         }
         linkSqlite.set(true)
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = libs.protobuf.protoc.get().toString()
     }
 }

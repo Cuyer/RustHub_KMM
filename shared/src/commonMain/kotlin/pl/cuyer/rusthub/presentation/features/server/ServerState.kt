@@ -3,7 +3,9 @@ package pl.cuyer.rusthub.presentation.features.server
 import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.presentation.model.SearchQueryUi
 import pl.cuyer.rusthub.domain.model.ServerFilter
+import androidx.compose.runtime.Immutable
 
+@Immutable
 data class ServerState(
     val isRefreshing: Boolean = true,
     val filters: FilterUi? = null,
@@ -11,5 +13,6 @@ data class ServerState(
     val isLoadingSearchHistory: Boolean = true,
     val isLoadingFilters: Boolean = true,
     val loadingMore: Boolean = false,
-    val filter: ServerFilter = ServerFilter.ALL
+    val filter: ServerFilter = ServerFilter.ALL,
+    val isConnected: Boolean = true
 )

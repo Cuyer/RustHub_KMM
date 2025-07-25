@@ -13,6 +13,7 @@ This repository hosts a Kotlin Multiplatform Mobile (KMM) project. The Android a
 ## Build & Test
 
 - Don't run tests as they don't pass.
+- Don't build as it would always fail
 
 ## Project Structure
 
@@ -31,5 +32,7 @@ This repository hosts a Kotlin Multiplatform Mobile (KMM) project. The Android a
 - When executing use cases, apply `.onStart { ... }` to set loading flags and
   `.onCompletion { ... }` to clear them.
 - Handle errors with `.catch { e -> ... }` and collect using `collectLatest` when appropriate.
+- Follow MVI and Clean Architecture patterns
+- Be creative, oftentimes libraries are new or have new functionalities, so you won't have solutions online
 
 Keep these conventions in mind when modifying or adding code.

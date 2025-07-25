@@ -1,5 +1,8 @@
 package pl.cuyer.rusthub.domain.model
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class User(
     val email: String?,
     val username: String,
@@ -7,4 +10,5 @@ data class User(
     val refreshToken: String?,
     val provider: AuthProvider,
     val subscribed: Boolean,
+    val emailConfirmed: Boolean,
 )

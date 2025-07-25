@@ -5,8 +5,9 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
+import pl.cuyer.rusthub.util.catchAndLog
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -15,15 +16,19 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.usecase.DeleteAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
-import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.common.user.UserEvent
+import pl.cuyer.rusthub.common.user.UserEventController
+import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 
 class DeleteAccountViewModel(
@@ -31,10 +36,9 @@ class DeleteAccountViewModel(
     private val snackbarController: SnackbarController,
     private val passwordValidator: PasswordValidator,
     private val getUserUseCase: GetUserUseCase,
+    private val stringProvider: StringProvider,
+    private val userEventController: UserEventController,
 ) : BaseViewModel() {
-    private val _uiEvent = Channel<UiEvent>(UNLIMITED)
-    val uiEvent = _uiEvent.receiveAsFlow()
-
     private val _state = MutableStateFlow(DeleteAccountState())
     val state = _state
         .onStart { observeUser() }
@@ -59,6 +63,7 @@ class DeleteAccountViewModel(
 
     private fun observeUser() {
         getUserUseCase()
+            .distinctUntilChanged()
             .onEach { user -> _state.update { it.copy(provider = user?.provider) } }
             .launchIn(coroutineScope)
     }
@@ -70,17 +75,22 @@ class DeleteAccountViewModel(
                 deleteAccountUseCase("")
                     .onStart { updateLoading(true) }
                     .onCompletion { updateLoading(false) }
-                    .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                    .catchAndLog { e ->
+                        showErrorSnackbar(e.toUserMessage(stringProvider))
+                    }
                     .collectLatest { result ->
                         when (result) {
                             is Result.Success -> {
                                 snackbarController.sendEvent(
-                                    SnackbarEvent(message = "Account deleted successfully")
+                                    SnackbarEvent(
+                                        message = stringProvider.get(SharedRes.strings.account_deleted_successfully)
+                                    )
                                 )
-                                _uiEvent.send(UiEvent.Navigate(Onboarding))
+                                userEventController.sendEvent(UserEvent.LoggedOut)
                             }
-                            is Result.Error -> showErrorSnackbar(result.exception.message ?: "Unable to delete account")
-                            else -> Unit
+                            is Result.Error -> showErrorSnackbar(
+                                result.exception.toUserMessage(stringProvider)
+                            )
                         }
                     }
                 return@launch
@@ -95,24 +105,31 @@ class DeleteAccountViewModel(
             }
             if (!passwordResult.isValid) {
                 snackbarController.sendEvent(
-                    SnackbarEvent(message = "Please correct the errors above and try again.")
+                    SnackbarEvent(
+                        message = stringProvider.get(SharedRes.strings.correct_errors_try_again)
+                    )
                 )
                 return@launch
             }
             deleteAccountUseCase(password)
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
-                .catch { e -> showErrorSnackbar(e.message ?: "Unknown error") }
+                .catchAndLog { e ->
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
+                }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
                             snackbarController.sendEvent(
-                                SnackbarEvent(message = "Account deleted successfully")
+                                SnackbarEvent(
+                                    message = stringProvider.get(SharedRes.strings.account_deleted_successfully)
+                                )
                             )
-                            _uiEvent.send(UiEvent.Navigate(Onboarding))
+                            userEventController.sendEvent(UserEvent.LoggedOut)
                         }
-                        is Result.Error -> showErrorSnackbar(result.exception.message ?: "Unable to delete account")
-                        else -> Unit
+                        is Result.Error -> showErrorSnackbar(
+                            result.exception.toUserMessage(stringProvider)
+                        )
                     }
                 }
         }
@@ -122,7 +139,8 @@ class DeleteAccountViewModel(
         _state.update { it.copy(isLoading = isLoading) }
     }
 
-    private suspend fun showErrorSnackbar(message: String) {
+    private suspend fun showErrorSnackbar(message: String?) {
+        message ?: return
         snackbarController.sendEvent(SnackbarEvent(message = message))
     }
 }

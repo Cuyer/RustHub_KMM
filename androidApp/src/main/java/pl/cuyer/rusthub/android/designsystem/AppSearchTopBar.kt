@@ -7,11 +7,12 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -29,13 +30,14 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExpandedDockedSearchBar
 import androidx.compose.material3.ExpandedFullScreenSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
@@ -45,6 +47,8 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopSearchBar
+import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -55,13 +59,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
-import pl.cuyer.rusthub.domain.model.Theme
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
+import pl.cuyer.rusthub.android.designsystem.SearchHistoryShimmer
 import pl.cuyer.rusthub.presentation.model.SearchQueryUi
+import dev.icerock.moko.resources.StringResource
 
 
 @OptIn(
@@ -74,10 +83,12 @@ fun RustSearchBarTopAppBar(
     textFieldState: TextFieldState,
     onSearchTriggered: () -> Unit,
     onOpenFilters: () -> Unit,
-    searchQueryUi: List<SearchQueryUi>,
+    searchQueryUi: () -> List<SearchQueryUi>,
     onDelete: (String) -> Unit,
     onClearSearchQuery: () -> Unit,
-    isLoadingSearchHistory: Boolean,
+    isLoadingSearchHistory: () -> Boolean,
+    showFiltersIcon: Boolean = true,
+    placeholderRes: StringResource = SharedRes.strings.search_servers,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -94,12 +105,10 @@ fun RustSearchBarTopAppBar(
             searchBarState = searchBarState,
             textFieldState = textFieldState,
             onSearch = {
-                coroutineScope.launch {
-                    searchBarState.animateToCollapsed()
-                    onSearchTriggered()
-                }
+                onSearchTriggered()
+                coroutineScope.launch { searchBarState.animateToCollapsed() }
             },
-            placeholder = { Text("Search servers...") },
+            placeholder = { Text(stringResource(placeholderRes)) },
             leadingIcon = {
                 if (searchBarState.currentValue == SearchBarValue.Expanded) {
                     IconButton(
@@ -107,19 +116,32 @@ fun RustSearchBarTopAppBar(
                             coroutineScope.launch {
                                 searchBarState.animateToCollapsed()
                             }
-                        }
+                        },
+                        modifier = Modifier.minimumInteractiveComponentSize()
                     ) {
-                        Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(SharedRes.strings.back)
+                        )
                     }
                 } else {
-                    Icon(Icons.Default.Search, contentDescription = "Search")
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = stringResource(SharedRes.strings.search)
+                    )
                 }
             },
             trailingIcon = {
                 Row {
                     if (textFieldState.text.isNotEmpty()) {
-                        IconButton(onClick = { textFieldState.setTextAndPlaceCursorAtEnd("") }) {
-                            Icon(Icons.Default.Close, contentDescription = "Clear")
+                        IconButton(
+                            onClick = { textFieldState.setTextAndPlaceCursorAtEnd("") },
+                            modifier = Modifier.minimumInteractiveComponentSize()
+                        ) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = stringResource(SharedRes.strings.clear)
+                            )
                         }
                     }
                     AnimatedVisibility(
@@ -139,10 +161,19 @@ fun RustSearchBarTopAppBar(
                             targetOffsetX = { it },
                             animationSpec = tween(durationMillis = 150)
                         ),
-                        visible = searchBarState.currentValue == SearchBarValue.Collapsed && textFieldState.text.isEmpty()
+                        visible = showFiltersIcon &&
+                            searchBarState.currentValue == SearchBarValue.Collapsed &&
+                            textFieldState.text.isEmpty()
                     ) {
-                        IconButton(onClick = onOpenFilters) {
-                            Icon(Icons.Default.FilterList, contentDescription = "Open Filters")
+                        IconButton(
+                            onClick = onOpenFilters,
+                            modifier = Modifier.minimumInteractiveComponentSize()
+                        ) {
+                            Icon(
+                                tint = contentColorFor(SearchBarDefaults.colors().containerColor),
+                                imageVector = Icons.Default.FilterList,
+                                contentDescription = stringResource(SharedRes.strings.open_filters)
+                            )
                         }
                     }
                 }
@@ -157,24 +188,73 @@ fun RustSearchBarTopAppBar(
         inputField = inputField
     )
 
-    val suggestions: @Composable () -> Unit = {
+    if (!isTabletMode) {
+        ExpandedFullScreenSearchBar(
+            state = searchBarState,
+            inputField = inputField
+        ) {
+            SearchHistorySuggestions(
+                searchQueryUi = searchQueryUi,
+                isLoadingSearchHistory = isLoadingSearchHistory,
+                textFieldState = textFieldState,
+                searchBarState = searchBarState,
+                onDelete = onDelete,
+                onSearchTriggered = onSearchTriggered
+            )
+        }
+    } else {
+        ExpandedDockedSearchBar(
+            state = searchBarState,
+            inputField = inputField
+        ) {
+            SearchHistorySuggestions(
+                searchQueryUi = searchQueryUi,
+                isLoadingSearchHistory = isLoadingSearchHistory,
+                textFieldState = textFieldState,
+                searchBarState = searchBarState,
+                onDelete = onDelete,
+                onSearchTriggered = onSearchTriggered
+            )
+        }
+
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SearchHistorySuggestions(
+    searchQueryUi:() -> List<SearchQueryUi>,
+    isLoadingSearchHistory: () -> Boolean,
+    textFieldState: TextFieldState,
+    searchBarState: SearchBarState,
+    onDelete: (String) -> Unit,
+    onSearchTriggered: () -> Unit,
+) {
+    val coroutineScope = rememberCoroutineScope()
+    if (isLoadingSearchHistory()) {
+        SearchHistoryShimmer(modifier = Modifier.fillMaxWidth())
+    } else {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(spacing.xxmedium)
         ) {
             item {
-                AnimatedVisibility(visible = searchQueryUi.isNotEmpty()) {
+                AnimatedVisibility(
+                    visible = searchQueryUi().isNotEmpty(),
+                    enter = fadeIn(animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy,)),
+                    exit = fadeOut(animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy,))
+                ) {
                     Row {
                         Text(
                             modifier = Modifier
                                 .animateItem()
                                 .padding(spacing.medium),
-                            text = "Recent searches"
+                            text = stringResource(SharedRes.strings.recent_searches)
                         )
                     }
                 }
             }
-            items(searchQueryUi, key = { it.query }) { item ->
+            items(searchQueryUi(), key = { it.query }) { item ->
                 val swipeState = rememberSwipeToDismissBoxState()
                 SwipeToDismissBox(
                     state = swipeState,
@@ -188,7 +268,7 @@ fun RustSearchBarTopAppBar(
                         ) {
                             Icon(
                                 Icons.Default.Delete,
-                                contentDescription = "Delete",
+                                contentDescription = stringResource(SharedRes.strings.delete),
                                 tint = MaterialTheme.colorScheme.onError
                             )
                         }
@@ -196,25 +276,27 @@ fun RustSearchBarTopAppBar(
                     onDismiss = { if (it == SwipeToDismissBoxValue.EndToStart) onDelete(item.query) },
                     enableDismissFromStartToEnd = false
                 ) {
-                    Text(
-                        text = item.query,
+                    ElevatedCard(
+                        onClick = {
+                            textFieldState.setTextAndPlaceCursorAtEnd(item.query)
+                            onSearchTriggered()
+                            coroutineScope.launch { searchBarState.animateToCollapsed() }
+                        },
                         modifier = Modifier
                             .animateItem()
-                            .fillMaxWidth()
-                            .clickable {
-                                textFieldState.setTextAndPlaceCursorAtEnd(item.query)
-                                coroutineScope.launch {
-                                    searchBarState.animateToCollapsed()
-                                    onSearchTriggered()
-                                }
-                            }
-                            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                            .padding(spacing.medium)
-                    )
+                            .fillMaxWidth(),
+                        shape = RectangleShape,
+                        colors = CardDefaults.elevatedCardColors()
+                    ) {
+                        Text(
+                            text = item.query,
+                            modifier = Modifier.padding(spacing.medium)
+                        )
+                    }
                 }
             }
-            item {
-                AnimatedVisibility(visible = searchQueryUi.isNotEmpty()) {
+            if (searchQueryUi().isNotEmpty()) {
+                item {
                     Row(
                         modifier = Modifier
                             .animateItem()
@@ -225,41 +307,18 @@ fun RustSearchBarTopAppBar(
                         AppButton(
                             onClick = {
                                 onDelete("")
+                                textFieldState.setTextAndPlaceCursorAtEnd("")
                                 coroutineScope.launch { searchBarState.animateToCollapsed() }
                             },
-                            colors = ButtonDefaults.elevatedButtonColors().copy(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
+                            colors = ButtonDefaults.elevatedButtonColors(
+                                containerColor = MaterialTheme.colorScheme.background,
+                                contentColor = MaterialTheme.colorScheme.onBackground
+                            ),
                         ) {
-                            Text("Clear search history")
+                            Text(stringResource(SharedRes.strings.clear_search_history))
                         }
                     }
                 }
-            }
-        }
-    }
-
-    if (!isTabletMode) {
-        ExpandedFullScreenSearchBar(
-            state = searchBarState,
-            inputField = inputField
-        ) {
-            if (isLoadingSearchHistory) {
-                LoadingIndicator()
-            } else {
-                suggestions()
-            }
-        }
-    } else {
-        ExpandedDockedSearchBar(
-            state = searchBarState,
-            inputField = inputField
-        ) {
-            if (isLoadingSearchHistory) {
-                LoadingIndicator()
-            } else {
-                suggestions()
             }
         }
     }
@@ -269,18 +328,21 @@ fun RustSearchBarTopAppBar(
 @Preview(device = "spec:parent=pixel_5,orientation=portrait")
 @Composable
 private fun AppSearchTopBarPreview() {
-    RustHubTheme(theme = Theme.SYSTEM) {
+    RustHubTheme() {
         Scaffold(
+            containerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.onBackground,
             topBar = {
                 RustSearchBarTopAppBar(
                     searchBarState = rememberSearchBarState(),
                     textFieldState = TextFieldState(""),
                     onSearchTriggered = {},
                     onOpenFilters = {},
-                    searchQueryUi = emptyList(),
+                    searchQueryUi = { emptyList() },
                     onDelete = {},
                     onClearSearchQuery = {},
-                    isLoadingSearchHistory = false
+                    isLoadingSearchHistory = { false },
+                    placeholderRes = SharedRes.strings.search_servers
                 )
             }
         ) {
