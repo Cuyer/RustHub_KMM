@@ -14,6 +14,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.lazy.LazyRow
@@ -22,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -182,6 +186,13 @@ fun ItemScreen(
         ) {
             if (syncState == ItemSyncState.PENDING) {
                 LazyColumn(
+                    contentPadding = PaddingValues(
+                        top = 0.dp,
+                        bottom = WindowInsets.safeDrawing.asPaddingValues()
+                            .calculateBottomPadding(),
+                        start = 0.dp,
+                        end = 0.dp
+                    ),
                     verticalArrangement = Arrangement.spacedBy(spacing.medium),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -258,6 +269,13 @@ fun ItemScreen(
                     }
                 ) {
                     LazyColumn(
+                        contentPadding = PaddingValues(
+                            top = 0.dp,
+                            bottom = WindowInsets.safeDrawing.asPaddingValues()
+                                .calculateBottomPadding(),
+                            start = 0.dp,
+                            end = 0.dp
+                        ),
                         state = lazyListState,
                         verticalArrangement = Arrangement.spacedBy(spacing.medium),
                         horizontalAlignment = Alignment.CenterHorizontally
