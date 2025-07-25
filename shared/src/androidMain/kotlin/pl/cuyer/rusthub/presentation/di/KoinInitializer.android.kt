@@ -43,6 +43,7 @@ import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
+import pl.cuyer.rusthub.domain.usecase.ClearRemoteKeysUseCase
 
 actual val platformModule: Module = module {
     single { DatabasePassphraseProvider(androidContext()) }
@@ -123,6 +124,7 @@ actual val platformModule: Module = module {
             getFiltersOptions = get(),
             saveFiltersUseCase = get(),
             clearFiltersUseCase = get(),
+            clearRemoteKeysUseCase = get(),
             saveSearchQueryUseCase = get(),
             getSearchQueriesUseCase = get(),
             deleteSearchQueriesUseCase = get(),
