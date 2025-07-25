@@ -71,7 +71,24 @@ actual class HttpClientFactory actual constructor(
                         }
                     }
                     refreshTokens {
-                        val oldRefresh = oldTokens?.refreshToken ?: return@refreshTokens null
+                        val user = authDataSource.getUserOnce()
+                        val oldRefresh = oldTokens?.refreshToken
+                        if (user?.provider == AuthProvider.ANONYMOUS || oldRefresh.isNullOrBlank()) {
+                            try {
+                                if (user != null) {
+                                    authDataSource.deleteUser()
+                                    withContext(Dispatchers.Main.immediate) {
+                                        userEventController.sendEvent(UserEvent.LoggedOut)
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                Napier.e(
+                                    message = "Failed to delete anonymous user on 401",
+                                    throwable = e
+                                )
+                            }
+                            return@refreshTokens null
+                        }
 
                         val response = client.post("${NetworkConstants.BASE_URL}auth/refresh") {
                             markAsRefreshTokenRequest()
