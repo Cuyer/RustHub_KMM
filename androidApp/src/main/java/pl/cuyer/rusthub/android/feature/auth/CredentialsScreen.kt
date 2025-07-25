@@ -106,8 +106,6 @@ fun CredentialsScreen(
         }
     }
 
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
     Scaffold(
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onBackground,
@@ -128,8 +126,7 @@ fun CredentialsScreen(
                             contentDescription = stringResource(SharedRes.strings.navigate_up)
                         )
                     }
-                },
-                scrollBehavior = scrollBehavior
+                }
             )
         }
     ) { innerPadding ->

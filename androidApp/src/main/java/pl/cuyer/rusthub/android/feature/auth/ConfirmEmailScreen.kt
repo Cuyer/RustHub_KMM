@@ -93,9 +93,6 @@ fun ConfirmEmailScreen(
             is UiEvent.NavigateUp -> onNavigateUp()
         }
     }
-
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
     BackHandler {
         onAction(ConfirmEmailAction.OnBack)
     }
@@ -122,8 +119,7 @@ fun ConfirmEmailScreen(
                             contentDescription = stringResource(SharedRes.strings.navigate_up)
                         )
                     }
-                },
-                scrollBehavior = scrollBehavior
+                }
             )
         }
     ) { innerPadding ->

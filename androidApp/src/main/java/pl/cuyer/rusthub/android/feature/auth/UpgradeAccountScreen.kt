@@ -95,8 +95,6 @@ fun UpgradeAccountScreen(
         if (event is UiEvent.NavigateUp) onNavigateUp()
     }
 
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
     Scaffold(
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onBackground,
@@ -117,8 +115,7 @@ fun UpgradeAccountScreen(
                             contentDescription = stringResource(SharedRes.strings.navigate_up)
                         )
                     }
-                },
-                scrollBehavior = scrollBehavior
+                }
             )
         }
     ) { innerPadding ->

@@ -78,8 +78,6 @@ fun SettingsScreen(
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
     val context = LocalContext.current
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
@@ -110,8 +108,7 @@ fun SettingsScreen(
                             contentDescription = stringResource(SharedRes.strings.logout_button)
                         )
                     }
-                },
-                scrollBehavior = scrollBehavior
+                }
             )
         }
     ) { innerPadding ->
