@@ -137,6 +137,7 @@ dependencies {
     implementation(libs.firebase.performance)
     implementation(libs.google.auth)
     implementation(libs.play.review.ktx)
+    implementation(libs.play.billing)
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.compat)
     implementation(libs.google.play.app.update)

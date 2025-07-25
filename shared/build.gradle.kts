@@ -72,6 +72,7 @@ kotlin {
             implementation(libs.google.play.app.update)
             implementation(libs.google.play.app.update.ktx)
             implementation(libs.play.review.ktx)
+            implementation(libs.play.billing)
             implementation(libs.androidx.appcompat)
         }
         commonMain.dependencies {
