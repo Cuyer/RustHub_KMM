@@ -205,7 +205,6 @@ private fun ResetPasswordScreenCompact(
         )
         AppButton(
             modifier = Modifier
-                .imePadding()
                 .fillMaxWidth(),
             enabled = buttonEnabled,
             isLoading = isLoading,
@@ -254,7 +253,6 @@ private fun ResetPasswordScreenExpanded(
             )
             AppButton(
                 modifier = Modifier
-                    .imePadding()
                     .fillMaxWidth(),
                 enabled = buttonEnabled,
                 isLoading = isLoading,

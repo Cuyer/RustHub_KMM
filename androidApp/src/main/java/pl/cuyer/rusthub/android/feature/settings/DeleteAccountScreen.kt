@@ -209,7 +209,6 @@ private fun DeleteAccountScreenCompact(
         )
         AppButton(
             modifier = Modifier
-                .imePadding()
                 .fillMaxWidth(),
             enabled = buttonEnabled,
             isLoading = isLoading,
@@ -262,7 +261,6 @@ private fun DeleteAccountScreenExpanded(
             )
             AppButton(
                 modifier = Modifier
-                    .imePadding()
                     .fillMaxWidth(),
                 enabled = buttonEnabled,
                 isLoading = isLoading,

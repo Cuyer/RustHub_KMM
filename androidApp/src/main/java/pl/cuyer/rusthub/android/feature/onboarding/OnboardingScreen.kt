@@ -393,7 +393,6 @@ private fun AuthSection(
 ) {
     Column(
         modifier = Modifier
-            .imePadding()
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.medium)

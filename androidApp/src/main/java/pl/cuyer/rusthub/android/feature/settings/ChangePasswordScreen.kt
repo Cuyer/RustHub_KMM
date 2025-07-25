@@ -196,7 +196,6 @@ private fun ChangePasswordScreenCompact(
 
         AppButton(
             modifier = Modifier
-                .imePadding()
                 .fillMaxWidth(),
             enabled = buttonEnabled,
             isLoading = isLoading(),
@@ -257,7 +256,6 @@ private fun ChangePasswordScreenExpanded(
 
             AppButton(
                 modifier = Modifier
-                    .imePadding()
                     .fillMaxWidth(),
                 enabled = buttonEnabled,
                 isLoading = isLoading(),

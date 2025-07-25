@@ -439,7 +439,6 @@ private fun SubmitButton(
         isLoading = isLoading,
         enabled = buttonEnabled,
         modifier = Modifier
-            .imePadding()
             .fillMaxWidth(),
     ) {
         Text(stringResource(SharedRes.strings.continue_further))

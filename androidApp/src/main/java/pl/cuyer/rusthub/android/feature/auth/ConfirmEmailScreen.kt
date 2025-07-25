@@ -190,7 +190,6 @@ private fun ConfirmEmailScreenCompact(
             onClick = { onAction(ConfirmEmailAction.OnConfirm) },
             isLoading = isLoading(),
             modifier = Modifier
-                .imePadding()
                 .fillMaxWidth()
         ) { Text(stringResource(SharedRes.strings.confirmed)) }
         AppTextButton(
@@ -227,7 +226,6 @@ private fun ConfirmEmailScreenExpanded(
                 onClick = { onAction(ConfirmEmailAction.OnConfirm) },
                 isLoading = isLoading(),
                 modifier = Modifier
-                    .imePadding()
                     .fillMaxWidth()
             ) { Text(stringResource(SharedRes.strings.confirmed)) }
             AppTextButton(
