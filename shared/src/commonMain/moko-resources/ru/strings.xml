@@ -48,7 +48,7 @@
     <string name="faq_cancel_question">Могу ли я отменить подписку в любой момент?</string>
     <string name="faq_switch_plan_question">Можно ли сменить тарифный план?</string>
     <string name="cancel">Отмена</string>
-    <string name="subscription_disclaimer">Вы можете отменить подписку в любое время.\n\nПодписка автоматически продлевается, если не отменить её за 24 часа до конца периода. Отменить можно через Google Play.\nRust Hub Pro Lifetime — это единоразовая покупка.</string>
+    <string name="subscription_disclaimer">Вы можете отменить подписку в любое время.\n\nПодписка автоматически продлевается, если не отменить её за 24 часа до конца периода. Отменить можно через Google Play.\nRustHub Pro Lifetime — это единоразовая покупка.</string>
     <string name="change_password">Сменить пароль</string>
     <string name="change_password_button">Сменить пароль</string>
     <string name="clear">Очистить</string>
@@ -107,12 +107,12 @@
     <string name="max_player_count">Макс. игроков</string>
     <string name="max_ranking">Макс. рейтинг</string>
     <string name="group_limit">Лимит группы</string>
-    <string name="help_us_keep_improving_rust_hub">Помогайте нам развивать Rust Hub.</string>
+    <string name="help_us_keep_improving_rust_hub">Помогайте нам развивать RustHub.</string>
     <string name="hide_password">Скрыть пароль</string>
-    <string name="faq_lifetime_question">Как работает тариф Rust Hub Pro Lifetime?</string>
+    <string name="faq_lifetime_question">Как работает тариф RustHub Pro Lifetime?</string>
     <string name="ip" translatable="false">IP</string>
     <string name="icon_to_copy_ip_address">Иконка для копирования IP</string>
-    <string name="faq_renew_question">Rust Hub Pro — это разовая оплата или подписка?</string>
+    <string name="faq_renew_question">RustHub Pro — это разовая оплата или подписка?</string>
     <string name="kits">Наборы</string>
     <string name="language">Язык</string>
     <string name="select_language">Выберите язык</string>
@@ -186,7 +186,7 @@
     <string name="resend_email">Отправить e-mail еще раз</string>
     <string name="reset_filters">Сбросить фильтры</string>
     <string name="reset_password">Сбросить пароль</string>
-    <string name="faq_include_answer">Rust Hub Pro дает неограниченное избранное и уведомления.</string>
+    <string name="faq_include_answer">RustHub Pro дает неограниченное избранное и уведомления.</string>
     <string name="rust_map_image">Изображение карты Rust</string>
     <string name="map_gesture_hint">Щипните для масштаба, перетащите для панорамирования</string>
     <string name="dismiss">Закрыть</string>
@@ -224,8 +224,8 @@
     <string name="support_development">Поддержать разработку</string>
     <string name="support_development_icon">Символ поддержки разработки</string>
     <string name="terms_conditions">Условия использования</string>
-    <string name="faq_lifetime_answer">План Rust Hub Pro Lifetime — единоразовая покупка. Доступ к Rust Hub Pro навсегда. Если у вас уже есть месячная или годовая подписка и вы хотите перейти на Lifetime, не забудьте отменить предыдущую подписку, чтобы избежать двойных списаний.</string>
-    <string name="faq_renew_answer">Месячные и годовые планы Rust Hub Pro — это подписки с автопродлением. После отмены подписки вы пользуетесь сервисом до конца оплаченного периода. Lifetime — это разовая покупка.</string>
+    <string name="faq_lifetime_answer">План RustHub Pro Lifetime — единоразовая покупка. Доступ к RustHub Pro навсегда. Если у вас уже есть месячная или годовая подписка и вы хотите перейти на Lifetime, не забудьте отменить предыдущую подписку, чтобы избежать двойных списаний.</string>
+    <string name="faq_renew_answer">Месячные и годовые планы RustHub Pro — это подписки с автопродлением. После отмены подписки вы пользуетесь сервисом до конца оплаченного периода. Lifetime — это разовая покупка.</string>
     <string name="theme">Тема</string>
     <string name="select_theme">Выберите тему</string>
     <string name="light">Светлая</string>
@@ -234,7 +234,7 @@
     <string name="dark_mode">Темный режим</string>
     <string name="dynamic_colors">Динамические цвета</string>
     <string name="system_colors">Системные цвета</string>
-    <string name="this_rust_hub_account_is_already_connected_with_social_account">Этот аккаунт Rust Hub уже привязан к другому соц. аккаунту.</string>
+    <string name="this_rust_hub_account_is_already_connected_with_social_account">Этот аккаунт RustHub уже привязан к другому соц. аккаунту.</string>
     <string name="true_str">Да</string>
     <string name="turn_off_notifications">Отключить уведомления</string>
     <string name="turn_on_notifications">Включить уведомления</string>
@@ -261,13 +261,13 @@
     <string name="biweekly">Раз в две недели</string>
     <string name="welcome_back">С возвращением!</string>
     <string name="welcome_to_rusthub">Добро пожаловать в RustHub</string>
-    <string name="faq_include_question">Что входит в Rust Hub Pro?</string>
+    <string name="faq_include_question">Что входит в RustHub Pro?</string>
     <string name="faq_devices_question">Что, если я сменю устройство или платформу?</string>
     <string name="enter_your_email">Введите e-mail</string>
     <string name="yearly">Ежегодно</string>
     <string name="yes">Да</string>
     <string name="faq_switch_plan_answer">Да, вы можете сменить тариф в любое время на вкладке “Подписка”.</string>
-    <string name="faq_cancel_answer">Да, вы можете отменить Rust Hub Pro в любое время! После отмены сервис будет доступен до конца оплаченного периода.</string>
+    <string name="faq_cancel_answer">Да, вы можете отменить RustHub Pro в любое время! После отмены сервис будет доступен до конца оплаченного периода.</string>
     <string name="faq_devices_answer">Вы можете входить на свой аккаунт на разных устройствах и платформах — подписка закреплена за аккаунтом, а не устройством.</string>
     <string name="your_gateway_to_the_rust_server_world">Ваш портал в мир серверов Rust</string>
     <string name="hello_username">Привет, %1$s!</string>

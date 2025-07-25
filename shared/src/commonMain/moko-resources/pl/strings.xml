@@ -48,7 +48,7 @@
     <string name="faq_cancel_question">Czy mogę anulować subskrypcję w dowolnym momencie?</string>
     <string name="faq_switch_plan_question">Czy mogę zmienić plan subskrypcji?</string>
     <string name="cancel">Anuluj</string>
-    <string name="subscription_disclaimer">Możesz anulować subskrypcję w każdej chwili.\n\nSubskrypcja odnawia się automatycznie, chyba że zrezygnujesz co najmniej 24 godziny przed końcem okresu rozliczeniowego. Możesz anulować kiedy chcesz przez ustawienia Google Play.\nRust Hub Pro Lifetime to jednorazowy zakup.</string>
+    <string name="subscription_disclaimer">Możesz anulować subskrypcję w każdej chwili.\n\nSubskrypcja odnawia się automatycznie, chyba że zrezygnujesz co najmniej 24 godziny przed końcem okresu rozliczeniowego. Możesz anulować kiedy chcesz przez ustawienia Google Play.\nRustHub Pro Lifetime to jednorazowy zakup.</string>
     <string name="change_password">Zmień hasło</string>
     <string name="change_password_button">Przycisk zmiany hasła</string>
     <string name="clear">Wyczyść</string>
@@ -107,12 +107,12 @@
     <string name="max_player_count">Maks. liczba graczy</string>
     <string name="max_ranking">Maks. ranking</string>
     <string name="group_limit">Limit grupy</string>
-    <string name="help_us_keep_improving_rust_hub">Pomóż nam rozwijać Rust Hub.</string>
+    <string name="help_us_keep_improving_rust_hub">Pomóż nam rozwijać RustHub.</string>
     <string name="hide_password">Ukryj hasło</string>
-    <string name="faq_lifetime_question">Jak działa plan Rust Hub Pro Lifetime?</string>
+    <string name="faq_lifetime_question">Jak działa plan RustHub Pro Lifetime?</string>
     <string name="ip" translatable="false">IP</string>
     <string name="icon_to_copy_ip_address">Ikona kopiowania IP</string>
-    <string name="faq_renew_question">Czy Rust Hub Pro to jednorazowa płatność, czy odnawia się automatycznie?</string>
+    <string name="faq_renew_question">Czy RustHub Pro to jednorazowa płatność, czy odnawia się automatycznie?</string>
     <string name="kits">Zestawy</string>
     <string name="language">Język</string>
     <string name="select_language">Wybierz język</string>
@@ -186,7 +186,7 @@
     <string name="resend_email">Wyślij e-mail ponownie</string>
     <string name="reset_filters">Resetuj filtry</string>
     <string name="reset_password">Zresetuj hasło</string>
-    <string name="faq_include_answer">Rust Hub Pro zawiera w sobie nielimitowane dodawanie serwerów do ulubionych oraz do powiadomień.</string>
+    <string name="faq_include_answer">RustHub Pro zawiera w sobie nielimitowane dodawanie serwerów do ulubionych oraz do powiadomień.</string>
     <string name="rust_map_image">Podgląd mapy</string>
     <string name="map_gesture_hint">Uszczypnij, aby powiększyć, przeciągnij, aby przesunąć</string>
     <string name="dismiss">Zamknij</string>
@@ -224,8 +224,8 @@
     <string name="support_development">Wesprzyj nasz rozwój</string>
     <string name="support_development_icon">Symbol wsparcia rozwoju</string>
     <string name="terms_conditions">Regulamin</string>
-    <string name="faq_lifetime_answer">Plan Rust Hub Pro Lifetime to jednorazowy zakup. Uzyskujesz dostęp do Rust Hub Pro na zawsze. Jeśli masz już aktywną subskrypcję miesięczną lub roczną i chcesz przejść na plan Lifetime, po jego zakupie pamiętaj o anulowaniu dotychczasowej subskrypcji, aby uniknąć dalszych opłat cyklicznych.</string>
-    <string name="faq_renew_answer">Plany Rust Hub Pro miesięczny i roczny to subskrypcje, które odnawiają się automatycznie po zakończeniu okresu subskrypcji, aby uniknąć przerw w działaniu usługi. Jeśli anulujesz subskrypcję, będziesz mieć dostęp do Rust Hub Pro aż do wygaśnięcia obecnej subskrypcji. Plan Rust Hub Pro Lifetime to jednorazowy zakup.</string>
+    <string name="faq_lifetime_answer">Plan RustHub Pro Lifetime to jednorazowy zakup. Uzyskujesz dostęp do RustHub Pro na zawsze. Jeśli masz już aktywną subskrypcję miesięczną lub roczną i chcesz przejść na plan Lifetime, po jego zakupie pamiętaj o anulowaniu dotychczasowej subskrypcji, aby uniknąć dalszych opłat cyklicznych.</string>
+    <string name="faq_renew_answer">Plany RustHub Pro miesięczny i roczny to subskrypcje, które odnawiają się automatycznie po zakończeniu okresu subskrypcji, aby uniknąć przerw w działaniu usługi. Jeśli anulujesz subskrypcję, będziesz mieć dostęp do RustHub Pro aż do wygaśnięcia obecnej subskrypcji. Plan RustHub Pro Lifetime to jednorazowy zakup.</string>
     <string name="theme">Motyw</string>
     <string name="select_theme">Wybierz motyw</string>
     <string name="light">Jasny</string>
@@ -234,7 +234,7 @@
     <string name="dark_mode">Tryb ciemny</string>
     <string name="dynamic_colors">Dynamiczne kolory</string>
     <string name="system_colors">Kolory systemowe</string>
-    <string name="this_rust_hub_account_is_already_connected_with_social_account">To konto Rust Hub jest już powiązane z innym kontem społecznościowym.</string>
+    <string name="this_rust_hub_account_is_already_connected_with_social_account">To konto RustHub jest już powiązane z innym kontem społecznościowym.</string>
     <string name="true_str">Tak</string>
     <string name="turn_off_notifications">Wyłącz powiadomienia</string>
     <string name="turn_on_notifications">Włącz powiadomienia</string>
@@ -261,13 +261,13 @@
     <string name="biweekly">Dwutygodniowy</string>
     <string name="welcome_back">Witaj ponownie!</string>
     <string name="welcome_to_rusthub">Witamy w RustHub</string>
-    <string name="faq_include_question">Co zawiera Rust Hub Pro?</string>
+    <string name="faq_include_question">Co zawiera RustHub Pro?</string>
     <string name="faq_devices_question">Co się stanie, jeśli zmienię urządzenie lub platformę?</string>
     <string name="enter_your_email">Podaj e-mail</string>
     <string name="yearly">Roczny</string>
     <string name="yes">Tak</string>
     <string name="faq_switch_plan_answer">Tak, możesz zmienić plan subskrypcji w każdej chwili w zakładce Subskrypcja.</string>
-    <string name="faq_cancel_answer">Tak, możesz anulować Rust Hub Pro kiedy chcesz! Po anulowaniu korzystasz do końca opłaconego okresu.</string>
+    <string name="faq_cancel_answer">Tak, możesz anulować RustHub Pro kiedy chcesz! Po anulowaniu korzystasz do końca opłaconego okresu.</string>
     <string name="faq_devices_answer">Możesz korzystać z konta na różnych urządzeniach i platformach – subskrypcja jest przypisana do konta, nie do urządzenia.</string>
     <string name="your_gateway_to_the_rust_server_world">Twoja brama do świata serwerów Rust</string>
     <string name="hello_username">Cześć %1$s!</string>
