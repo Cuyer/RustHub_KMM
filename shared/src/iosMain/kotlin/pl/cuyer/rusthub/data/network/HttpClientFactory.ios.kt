@@ -24,7 +24,6 @@ import io.ktor.http.encodedPath
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import kotlinx.io.IOException
@@ -95,9 +94,11 @@ actual class HttpClientFactory actual constructor(
                             BearerTokens(newTokens.accessToken, newTokens.refreshToken)
                         } else {
                             try {
-                                authDataSource.deleteUser()
-                                withContext(Dispatchers.Main.immediate) {
-                                    userEventController.sendEvent(UserEvent.LoggedOut)
+                                if (authDataSource.getUserOnce() != null) {
+                                    authDataSource.deleteUser()
+                                    withContext(Dispatchers.Main.immediate) {
+                                        userEventController.sendEvent(UserEvent.LoggedOut)
+                                    }
                                 }
                             } catch (e: Exception) {
                                 Napier.e(message = "Failed to delete user on token refresh failure", throwable = e)
