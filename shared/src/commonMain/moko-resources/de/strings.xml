@@ -48,7 +48,7 @@
     <string name="faq_cancel_question">Kann ich mein Abo jederzeit kündigen?</string>
     <string name="faq_switch_plan_question">Kann ich das Abonnement wechseln?</string>
     <string name="cancel">Abbrechen</string>
-    <string name="subscription_disclaimer">Du kannst das Abonnement jederzeit kündigen.\n\nDas Abo wird automatisch verlängert, außer du kündigst mindestens 24 Stunden vor Ende der Laufzeit. Kündigungen über die Google Play-Einstellungen.\nRust Hub Pro Lifetime ist ein einmaliger In-App-Kauf.</string>
+    <string name="subscription_disclaimer">Du kannst das Abonnement jederzeit kündigen.\n\nDas Abo wird automatisch verlängert, außer du kündigst mindestens 24 Stunden vor Ende der Laufzeit. Kündigungen über die Google Play-Einstellungen.\nRustHub Pro Lifetime ist ein einmaliger In-App-Kauf.</string>
     <string name="change_password">Passwort ändern</string>
     <string name="change_password_button">Passwort ändern</string>
     <string name="clear">Löschen</string>
@@ -107,12 +107,12 @@
     <string name="max_player_count">Max. Spieleranzahl</string>
     <string name="max_ranking">Max. Ranking</string>
     <string name="group_limit">Gruppenlimit</string>
-    <string name="help_us_keep_improving_rust_hub">Hilf uns, Rust Hub weiterzuentwickeln.</string>
+    <string name="help_us_keep_improving_rust_hub">Hilf uns, RustHub weiterzuentwickeln.</string>
     <string name="hide_password">Passwort ausblenden</string>
-    <string name="faq_lifetime_question">Wie funktioniert der Rust Hub Pro Lifetime-Plan?</string>
+    <string name="faq_lifetime_question">Wie funktioniert der RustHub Pro Lifetime-Plan?</string>
     <string name="ip" translatable="false">IP</string>
     <string name="icon_to_copy_ip_address">Icon zum Kopieren der IP-Adresse</string>
-    <string name="faq_renew_question">Rust Hub Pro – Einmalzahlung oder Abo?</string>
+    <string name="faq_renew_question">RustHub Pro – Einmalzahlung oder Abo?</string>
     <string name="kits">Kits</string>
     <string name="language">Sprache</string>
     <string name="select_language">Sprache auswählen</string>
@@ -186,7 +186,7 @@
     <string name="resend_email">E-Mail erneut senden</string>
     <string name="reset_filters">Filter zurücksetzen</string>
     <string name="reset_password">Passwort zurücksetzen</string>
-    <string name="faq_include_answer">Rust Hub Pro bietet unbegrenzte Favoriten und Benachrichtigungen.</string>
+    <string name="faq_include_answer">RustHub Pro bietet unbegrenzte Favoriten und Benachrichtigungen.</string>
     <string name="rust_map_image">Rust-Kartenbild</string>
     <string name="map_gesture_hint">Zum Zoomen zusammendrücken, zum Verschieben ziehen</string>
     <string name="dismiss">Schließen</string>
@@ -224,8 +224,8 @@
     <string name="support_development">Entwicklung unterstützen</string>
     <string name="support_development_icon">Symbol zur Unterstützung der Entwicklung</string>
     <string name="terms_conditions">AGB</string>
-    <string name="faq_lifetime_answer">Der Rust Hub Pro Lifetime-Plan ist ein einmaliger Kauf. Du hast dauerhaft Zugriff auf Rust Hub Pro. Wenn du bereits ein monatliches oder jährliches Abo hast und auf Lifetime wechseln willst, kündige das alte Abo nach dem Kauf des Lifetime-Plans, um doppelte Zahlungen zu vermeiden.</string>
-    <string name="faq_renew_answer">Die monatlichen und jährlichen Rust Hub Pro-Pläne sind Abos, die sich automatisch verlängern. Nach einer Kündigung bleibt der Zugriff bis zum Ende des Abos erhalten. Lifetime ist ein einmaliger Kauf.</string>
+    <string name="faq_lifetime_answer">Der RustHub Pro Lifetime-Plan ist ein einmaliger Kauf. Du hast dauerhaft Zugriff auf RustHub Pro. Wenn du bereits ein monatliches oder jährliches Abo hast und auf Lifetime wechseln willst, kündige das alte Abo nach dem Kauf des Lifetime-Plans, um doppelte Zahlungen zu vermeiden.</string>
+    <string name="faq_renew_answer">Die monatlichen und jährlichen RustHub Pro-Pläne sind Abos, die sich automatisch verlängern. Nach einer Kündigung bleibt der Zugriff bis zum Ende des Abos erhalten. Lifetime ist ein einmaliger Kauf.</string>
     <string name="theme">Thema</string>
     <string name="select_theme">Thema auswählen</string>
     <string name="light">Hell</string>
@@ -234,7 +234,7 @@
     <string name="dark_mode">Dunkler Modus</string>
     <string name="dynamic_colors">Dynamische Farben</string>
     <string name="system_colors">Systemfarben</string>
-    <string name="this_rust_hub_account_is_already_connected_with_social_account">Dieses Rust Hub-Konto ist bereits mit einem anderen sozialen Konto verbunden.</string>
+    <string name="this_rust_hub_account_is_already_connected_with_social_account">Dieses RustHub-Konto ist bereits mit einem anderen sozialen Konto verbunden.</string>
     <string name="true_str">Ja</string>
     <string name="turn_off_notifications">Benachrichtigungen deaktivieren</string>
     <string name="turn_on_notifications">Benachrichtigungen aktivieren</string>
@@ -261,13 +261,13 @@
     <string name="biweekly">Zweiwöchentlich</string>
     <string name="welcome_back">Willkommen zurück!</string>
     <string name="welcome_to_rusthub">Willkommen bei RustHub</string>
-    <string name="faq_include_question">Was ist bei Rust Hub Pro dabei?</string>
+    <string name="faq_include_question">Was ist bei RustHub Pro dabei?</string>
     <string name="faq_devices_question">Was passiert, wenn ich das Gerät oder die Plattform wechsle?</string>
     <string name="enter_your_email">E-Mail eingeben</string>
     <string name="yearly">Jährlich</string>
     <string name="yes">Ja</string>
     <string name="faq_switch_plan_answer">Ja, du kannst den Plan jederzeit unter "Abonnement" wechseln.</string>
-    <string name="faq_cancel_answer">Ja, du kannst Rust Hub Pro jederzeit kündigen! Nach der Kündigung hast du bis zum Ablauf des aktuellen Zeitraums weiterhin Zugriff.</string>
+    <string name="faq_cancel_answer">Ja, du kannst RustHub Pro jederzeit kündigen! Nach der Kündigung hast du bis zum Ablauf des aktuellen Zeitraums weiterhin Zugriff.</string>
     <string name="faq_devices_answer">Du kannst dich auf verschiedenen Geräten und Plattformen mit demselben Benutzernamen und Passwort anmelden. Das Abo ist an dein Konto gebunden, nicht an ein bestimmtes Gerät. Du kannst gleichzeitig auf zwei Geräten oder sogar auf zwei Plattformen angemeldet sein.</string>
     <string name="your_gateway_to_the_rust_server_world">Dein Zugang zur Rust-Server-Welt</string>
     <string name="hello_username">Hallo %1$s!</string>
