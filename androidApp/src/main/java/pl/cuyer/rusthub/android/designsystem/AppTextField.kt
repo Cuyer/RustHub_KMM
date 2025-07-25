@@ -72,7 +72,7 @@ fun AppTextField(
     val isKeyboardOpen by resolvedKeyboardState
     val resolvedFocusManager = focusManager ?: LocalFocusManager.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val focusRequester = remember { FocusRequester() }
+    val focusRequester = remember { if (requestFocus) FocusRequester() else null }
     LaunchedEffect(isKeyboardOpen) {
         if (!isKeyboardOpen) {
             resolvedFocusManager.clearFocus()
@@ -81,7 +81,7 @@ fun AppTextField(
 
     LaunchedEffect(lifecycleOwner.lifecycle) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            focusRequester.requestFocus()
+            focusRequester?.requestFocus()
         }
     }
 
@@ -111,7 +111,7 @@ fun AppTextField(
         }
 
     OutlinedTextField(
-        modifier = if (requestFocus) modifier.focusRequester(focusRequester) else modifier,
+        modifier = if (requestFocus) modifier.focusRequester(focusRequester!!) else modifier,
         state = textFieldState,
         lineLimits = TextFieldLineLimits.SingleLine,
         keyboardOptions = KeyboardOptions(
