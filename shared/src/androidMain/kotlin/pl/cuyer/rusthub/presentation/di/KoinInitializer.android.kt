@@ -29,6 +29,7 @@ import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.common.user.UserEventController
+import pl.cuyer.rusthub.domain.usecase.ClearServersAndKeysUseCase
 import pl.cuyer.rusthub.util.AppCheckTokenProvider
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.ConnectivityObserver
@@ -126,6 +127,7 @@ actual val platformModule: Module = module {
             saveSearchQueryUseCase = get(),
             getSearchQueriesUseCase = get(),
             deleteSearchQueriesUseCase = get(),
+            clearServersAndKeysUseCase = get(),
             stringProvider = get(),
             connectivityObserver = get()
         )

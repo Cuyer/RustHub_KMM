@@ -16,6 +16,7 @@ import pl.cuyer.rusthub.domain.model.RemoteKey
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
 import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
+import pl.cuyer.rusthub.domain.repository.server.ServerCacheDataSource
 import kotlinx.datetime.Clock
 import pl.cuyer.rusthub.util.CrashReporter
 
@@ -25,6 +26,7 @@ class ServerRemoteMediator(
     private val api: ServerRepository,
     private val filters: FiltersDataSource,
     private val remoteKeys: RemoteKeyDataSource,
+    private val cacheDataSource: ServerCacheDataSource,
     private val searchQuery: String?
 ) : RemoteMediator<Int, ServerEntity>() {
     private val keyId = DEFAULT_KEY
@@ -36,8 +38,15 @@ class ServerRemoteMediator(
             filters.upsertFilters(ServerQuery())
         }
         val key = remoteKeys.getKey(keyId)
+        val hasServers = dataSource.hasServers()
+        if ((key == null && hasServers) || (key != null && !hasServers)) {
+            // Detected cache corruption or upgrade. Clear all to recover.
+            cacheDataSource.clearServersAndKeys()
+            return InitializeAction.LAUNCH_INITIAL_REFRESH
+        }
         val now = Clock.System.now().toEpochMilliseconds()
         return if (key == null || now - key.lastUpdated > cacheTimeoutMillis) {
+            cacheDataSource.clearServersAndKeys()
             InitializeAction.LAUNCH_INITIAL_REFRESH
         } else {
             InitializeAction.SKIP_INITIAL_REFRESH
@@ -78,8 +87,8 @@ class ServerRemoteMediator(
                 }
                 is Result.Success -> {
                     if (loadType == LoadType.REFRESH) {
-                        dataSource.deleteServers()
-                        remoteKeys.clearKeys()
+                        // Filter or query changed, purge cache and keys before inserting new data
+                        cacheDataSource.clearServersAndKeys()
                     }
                     Napier.d(
                         "Fetched servers size: ${result.data.servers.size}",

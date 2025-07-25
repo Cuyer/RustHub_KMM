@@ -224,6 +224,9 @@ INSERT INTO serverEntity (
 clearServers:
 DELETE FROM serverEntity;
 
+countServers:
+SELECT COUNT(*) FROM serverEntity;
+
 
 getServerById:
 SELECT * FROM serverEntity WHERE id == :id;
