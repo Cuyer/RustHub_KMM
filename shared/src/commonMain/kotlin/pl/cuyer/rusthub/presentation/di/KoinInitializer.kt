@@ -83,6 +83,9 @@ import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleSubscriptionUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeWithGoogleUseCase
+import pl.cuyer.rusthub.domain.usecase.ClearServersAndKeysUseCase
+import pl.cuyer.rusthub.domain.repository.server.ServerCacheDataSource
+import pl.cuyer.rusthub.data.local.cache.ServerCacheDataSourceImpl
 import pl.cuyer.rusthub.domain.usecase.SetThemeConfigUseCase
 import pl.cuyer.rusthub.domain.usecase.SetDynamicColorPreferenceUseCase
 import pl.cuyer.rusthub.domain.usecase.SetUseSystemColorsPreferenceUseCase
@@ -130,14 +133,15 @@ val appModule = module {
     single { EmailValidator(get()) }
     single { PasswordValidator(get()) }
     single { UsernameValidator(get()) }
-    single { GetPagedServersUseCase(get(), get(), get(), get()) }
+    single { GetPagedServersUseCase(get(), get(), get(), get(), get()) }
     single { GetPagedItemsUseCase(get(), get()) }
     single { GetFiltersUseCase(get()) }
     single { SaveFiltersUseCase(get()) }
     single { SaveSearchQueryUseCase(get()) }
     single { SaveItemSearchQueryUseCase(get()) }
     single { ClearFiltersUseCase(get()) }
-    single { ClearRemoteKeysUseCase(get()) }
+    singleOf(::ServerCacheDataSourceImpl) bind ServerCacheDataSource::class
+    single { ClearServersAndKeysUseCase(get()) }
     single { GetFiltersOptionsUseCase(get(), get()) }
     single { GetSearchQueriesUseCase(get()) }
     single { GetItemSearchQueriesUseCase(get()) }

@@ -110,6 +110,12 @@ class ServerDataSourceImpl(
         }
     }
 
+    override suspend fun hasServers(): Boolean {
+        return withContext(Dispatchers.IO) {
+            queries.countServers().executeAsOne() > 0L
+        }
+    }
+
     override suspend fun updateFavourite(serverId: Long, favourite: Boolean) {
         withContext(Dispatchers.IO) {
             runCatching {

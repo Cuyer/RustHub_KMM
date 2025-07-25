@@ -13,6 +13,7 @@ interface ServerDataSource {
     ): PagingSource<Int, ServerEntity>
     fun getServerById(serverId: Long): Flow<ServerInfo?>
     suspend fun deleteServers()
+    suspend fun hasServers(): Boolean
     suspend fun updateFavourite(serverId: Long, favourite: Boolean)
     suspend fun updateSubscription(serverId: Long, subscribed: Boolean)
 }
