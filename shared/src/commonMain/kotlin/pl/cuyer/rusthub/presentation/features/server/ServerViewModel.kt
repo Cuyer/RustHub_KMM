@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.presentation.features.server
 import app.cash.paging.PagingData
 import app.cash.paging.cachedIn
 import app.cash.paging.map
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -37,7 +38,6 @@ import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
-import pl.cuyer.rusthub.domain.usecase.ClearRemoteKeysUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
 import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.presentation.model.SearchQueryUi
@@ -66,7 +66,6 @@ class ServerViewModel(
     private val getFiltersOptions: GetFiltersOptionsUseCase,
     private val saveFiltersUseCase: SaveFiltersUseCase,
     private val clearFiltersUseCase: ClearFiltersUseCase,
-    private val clearRemoteKeysUseCase: ClearRemoteKeysUseCase,
     private val saveSearchQueryUseCase: SaveSearchQueryUseCase,
     private val getSearchQueriesUseCase: GetSearchQueriesUseCase,
     private val deleteSearchQueriesUseCase: DeleteSearchQueriesUseCase,
@@ -238,7 +237,6 @@ class ServerViewModel(
 
     private fun clearSearchQuery() {
         coroutineScope.launch {
-            clearRemoteKeysUseCase()
             queryFlow.update { "" }
         }
     }
