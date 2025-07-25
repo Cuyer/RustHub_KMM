@@ -237,8 +237,10 @@ class ServerViewModel(
     }
 
     private fun clearSearchQuery() {
-        clearRemoteKeysUseCase()
-        queryFlow.update { "" }
+        coroutineScope.launch {
+            clearRemoteKeysUseCase()
+            queryFlow.update { "" }
+        }
     }
 
     private fun saveIpToClipboard(ipAddress: String?) {

@@ -160,33 +160,9 @@ tasks.register("printComposeMetrics") {
     doLast {
         val metricsDir = layout.buildDirectory.dir("composeMetrics").get().asFile
         val reportsDir = layout.buildDirectory.dir("composeReports").get().asFile
-        println("Compose metrics location: ${metricsDir}")
+        println("Compose metrics location: $metricsDir")
         metricsDir.walk().filter { it.isFile }.forEach { println(it.readText()) }
-        println("Compose reports location: ${reportsDir}")
+        println("Compose reports location: $reportsDir")
         reportsDir.walk().filter { it.isFile }.forEach { println(it.readText()) }
-    }
-}
-
-android.applicationVariants.all { variant ->
-    val flavor = variant.flavorName
-    val buildType = variant.buildType.name
-    val versionName = variant.versionName
-    val versionCode = variant.versionCode
-    val baseName = "RustHub-${flavor}-${buildType}-v${versionName}-${versionCode}"
-
-    variant.outputs.all {
-        (this as com.android.build.gradle.api.ApkVariantOutput).outputFileName =
-            "${baseName}.apk"
-    }
-
-    val bundleTaskName =
-        "package${variant.name.replaceFirstChar { it.uppercase() }}Bundle"
-    tasks.matching { it.name == bundleTaskName }.configureEach {
-        doLast {
-            val bundleDir = file("${buildDir}/outputs/bundle/${variant.name}")
-            bundleDir.listFiles()?.firstOrNull { it.extension == "aab" }?.let { file ->
-                file.renameTo(File(bundleDir, "${baseName}.aab"))
-            }
-        }
     }
 }

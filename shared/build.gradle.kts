@@ -63,6 +63,7 @@ kotlin {
             implementation(libs.certificate.transparency)
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.messaging)
+            implementation(libs.firebase.crashlytics)
             implementation(libs.firebase.appcheck.playintegrity)
             implementation(libs.firebase.appcheck.debug)
             implementation(libs.google.auth)
