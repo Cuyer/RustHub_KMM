@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -24,6 +25,7 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.catchAndLog
 import pl.cuyer.rusthub.util.toUserMessage
 
 data class SubscriptionState(
@@ -68,8 +70,8 @@ class SubscriptionViewModel(
             .onStart { _state.update { it.copy(isLoading = true) } }
             .onEach { list ->
                 val map = list.associateBy { it.id }
-                _state.update {
-                    it.copy(
+                _state.update { item ->
+                    item.copy(
                         products = SubscriptionPlan.entries.associateWith { plan -> map[plan.productId] }.filterValues { it != null } as Map<SubscriptionPlan, BillingProduct>,
                         isLoading = false
                     )
@@ -101,19 +103,20 @@ class SubscriptionViewModel(
             confirmPurchaseUseCase(token)
                 .onStart { _state.update { it.copy(isProcessing = true) } }
                 .onCompletion { _state.update { it.copy(isProcessing = false) } }
-                .catch { e ->
-                    snackbarController.sendEvent(
-                        SnackbarEvent(e.toUserMessage(stringProvider))
-                    )
+                .catchAndLog { e ->
+                    showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> _uiEvent.send(UiEvent.NavigateUp)
-                        is Result.Error -> snackbarController.sendEvent(
-                            SnackbarEvent(result.exception.toUserMessage(stringProvider))
-                        )
+                        is Result.Error -> showErrorSnackbar(result.exception.toUserMessage(stringProvider))
                     }
                 }
         }
+    }
+
+    private suspend fun showErrorSnackbar(message: String?) {
+        message ?: return
+        snackbarController.sendEvent(SnackbarEvent(message = message))
     }
 }

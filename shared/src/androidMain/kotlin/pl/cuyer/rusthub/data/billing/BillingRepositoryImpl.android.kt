@@ -4,9 +4,10 @@ import android.app.Activity
 import android.content.Context
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingFlowParams
+import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
-import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.QueryProductDetailsParams
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,20 +17,24 @@ import pl.cuyer.rusthub.domain.model.BillingProduct
 import pl.cuyer.rusthub.domain.model.PurchaseInfo
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
 
-class BillingRepositoryImpl(private val context: Context) : BillingRepository {
+class BillingRepositoryImpl(context: Context) : BillingRepository {
     private val _purchaseFlow = MutableSharedFlow<PurchaseInfo>()
     override val purchaseFlow = _purchaseFlow.asSharedFlow()
 
     private val productMap = mutableMapOf<String, ProductDetails>()
 
     private val billingClient = BillingClient.newBuilder(context)
-        .enablePendingPurchases()
-        .enableAutoServiceReconnection()
         .setListener { billingResult, purchases ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 purchases?.forEach { handlePurchase(it) }
             }
         }
+        .enableAutoServiceReconnection()
+        .enablePendingPurchases(
+            PendingPurchasesParams
+                .newBuilder()
+                .build()
+        )
         .build()
 
     override fun queryProducts(ids: List<String>): Flow<List<BillingProduct>> = callbackFlow {
@@ -42,8 +47,8 @@ class BillingRepositoryImpl(private val context: Context) : BillingRepository {
             }).build()
         billingClient.queryProductDetailsAsync(params) { result, details ->
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                details.forEach { productMap[it.productId] = it }
-                trySend(details.map { it.toBillingProduct() })
+                details.productDetailsList.forEach { productMap[it.productId] = it }
+                trySend(details.productDetailsList.map { it.toBillingProduct() })
             }
             close()
         }

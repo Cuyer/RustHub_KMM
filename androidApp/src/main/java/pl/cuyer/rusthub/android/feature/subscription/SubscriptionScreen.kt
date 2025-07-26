@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.android.feature.subscription
 
 import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -232,6 +233,7 @@ private fun SubscriptionScreenCompact(
     onTerms: () -> Unit,
     viewModel: SubscriptionViewModel
 ) {
+    val activity = LocalActivity.current as Activity
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
@@ -246,7 +248,6 @@ private fun SubscriptionScreenCompact(
             products = viewModel.state.collectAsStateWithLifecycle().value.products
         )
         SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms) {
-            val activity = LocalContext.current as Activity
             viewModel.onAction(SubscriptionAction.Subscribe(selectedPlan(), activity))
         }
         Spacer(modifier = Modifier.height(spacing.medium))
@@ -267,6 +268,7 @@ private fun SubscriptionScreenExpanded(
     onTerms: () -> Unit,
     viewModel: SubscriptionViewModel
 ) {
+    val activity = LocalActivity.current as Activity
     Row(
         modifier = modifier.padding(spacing.medium),
         horizontalArrangement = Arrangement.spacedBy(spacing.large)
@@ -285,7 +287,6 @@ private fun SubscriptionScreenExpanded(
                 products = viewModel.state.collectAsStateWithLifecycle().value.products
             )
             SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms) {
-                val activity = LocalContext.current as Activity
                 viewModel.onAction(SubscriptionAction.Subscribe(selectedPlan(), activity))
             }
         }

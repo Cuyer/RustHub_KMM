@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -458,11 +459,12 @@ private fun GreetingSection(username: String?) {
 @Preview
 @Composable
 private fun SettingsPreview() {
+    val state = remember { mutableStateOf(SettingsState()) }
     RustHubTheme {
         SettingsScreen(
             onNavigate = {},
             uiEvent = MutableStateFlow(UiEvent.Navigate(Onboarding)),
-            state = mutableStateOf(SettingsState()),
+            state = state,
             onAction = {}
         )
     }
