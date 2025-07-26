@@ -81,6 +81,7 @@ import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveItemSearchQueryUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleSubscriptionUseCase
+import pl.cuyer.rusthub.domain.usecase.ConfirmPurchaseUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeWithGoogleUseCase
 import pl.cuyer.rusthub.domain.usecase.ClearServersAndKeysUseCase
@@ -97,6 +98,8 @@ import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.validator.EmailValidator
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
+import pl.cuyer.rusthub.data.network.purchase.PurchaseRepositoryImpl
+import pl.cuyer.rusthub.domain.repository.purchase.PurchaseRepository
 
 val appModule = module {
     single<SnackbarController> { SnackbarController }
@@ -171,6 +174,8 @@ val appModule = module {
     single { UpgradeWithGoogleUseCase(get(), get(), get(), get()) }
     single { ToggleFavouriteUseCase(get(), get(), get(), get()) }
     single { ToggleSubscriptionUseCase(get(), get(), get(), get()) }
+    singleOf(::PurchaseRepositoryImpl) bind PurchaseRepository::class
+    single { ConfirmPurchaseUseCase(get()) }
 }
 
 expect val platformModule: Module

@@ -83,12 +83,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.android.util.prefersReducedMotion
-import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
+import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
+import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
+import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionAction
+import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
+import pl.cuyer.rusthub.domain.model.BillingProduct
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
@@ -134,15 +141,7 @@ private val benefits = listOf(
     )
 )
 
-@Immutable
-private enum class Plan(val label: StringResource, val billed: StringResource) {
-    MONTHLY(
-        SharedRes.strings.monthly,
-        billed = SharedRes.strings.billed_monthly,
-    ),
-    YEARLY(SharedRes.strings.yearly, billed = SharedRes.strings.billed_yearly),
-    LIFETIME(SharedRes.strings.lifetime, billed = SharedRes.strings.pay_once)
-}
+
 
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -153,9 +152,10 @@ private enum class Plan(val label: StringResource, val billed: StringResource) {
 fun SubscriptionScreen(
     onNavigateUp: () -> Unit,
     onPrivacyPolicy: () -> Unit,
-    onTerms: () -> Unit
+    onTerms: () -> Unit,
+    viewModel: SubscriptionViewModel = koinViewModel()
 ) {
-    var selectedPlan by remember { mutableStateOf(Plan.MONTHLY) }
+    var selectedPlan by remember { mutableStateOf(SubscriptionPlan.MONTHLY) }
     val pagerState = rememberPagerState(pageCount = { benefits.size })
     val context = LocalContext.current
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
@@ -185,6 +185,10 @@ fun SubscriptionScreen(
             )
         }
     ) { innerPadding ->
+        val state = viewModel.state.collectAsStateWithLifecycle()
+        ObserveAsEvents(viewModel.uiEvent) { event ->
+            if (event is UiEvent.NavigateUp) onNavigateUp()
+        }
         if (isTabletMode) {
             SubscriptionScreenExpanded(
                 modifier = Modifier
@@ -196,7 +200,8 @@ fun SubscriptionScreen(
                 onPlanSelect = { selectedPlan = it },
                 onNavigateUp = onNavigateUp,
                 onPrivacyPolicy = onPrivacyPolicy,
-                onTerms = onTerms
+                onTerms = onTerms,
+                viewModel = viewModel
             )
         } else {
             SubscriptionScreenCompact(
@@ -209,7 +214,8 @@ fun SubscriptionScreen(
                 onPlanSelect = { selectedPlan = it },
                 onNavigateUp = onNavigateUp,
                 onPrivacyPolicy = onPrivacyPolicy,
-                onTerms = onTerms
+                onTerms = onTerms,
+                viewModel = viewModel
             )
         }
     }
@@ -219,11 +225,12 @@ fun SubscriptionScreen(
 private fun SubscriptionScreenCompact(
     modifier: Modifier = Modifier,
     pagerState: PagerState,
-    selectedPlan: () -> Plan,
-    onPlanSelect: (Plan) -> Unit,
+    selectedPlan: () -> SubscriptionPlan,
+    onPlanSelect: (SubscriptionPlan) -> Unit,
     onNavigateUp: () -> Unit,
     onPrivacyPolicy: () -> Unit,
-    onTerms: () -> Unit
+    onTerms: () -> Unit,
+    viewModel: SubscriptionViewModel
 ) {
     Column(
         modifier = modifier
@@ -233,8 +240,15 @@ private fun SubscriptionScreenCompact(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         BenefitCarousel(pagerState = pagerState)
-        PlanSelector(selectedPlan = selectedPlan, onPlanSelect = onPlanSelect)
-        SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms)
+        PlanSelector(
+            selectedPlan = selectedPlan,
+            onPlanSelect = onPlanSelect,
+            products = viewModel.state.collectAsStateWithLifecycle().value.products
+        )
+        SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms) {
+            val activity = LocalContext.current as Activity
+            viewModel.onAction(SubscriptionAction.Subscribe(selectedPlan(), activity))
+        }
         Spacer(modifier = Modifier.height(spacing.medium))
         ComparisonSection()
         Spacer(modifier = Modifier.height(spacing.medium))
@@ -246,11 +260,12 @@ private fun SubscriptionScreenCompact(
 private fun SubscriptionScreenExpanded(
     modifier: Modifier = Modifier,
     pagerState: PagerState,
-    selectedPlan: () -> Plan,
-    onPlanSelect: (Plan) -> Unit,
+    selectedPlan: () -> SubscriptionPlan,
+    onPlanSelect: (SubscriptionPlan) -> Unit,
     onNavigateUp: () -> Unit,
     onPrivacyPolicy: () -> Unit,
-    onTerms: () -> Unit
+    onTerms: () -> Unit,
+    viewModel: SubscriptionViewModel
 ) {
     Row(
         modifier = modifier.padding(spacing.medium),
@@ -264,8 +279,15 @@ private fun SubscriptionScreenExpanded(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             BenefitCarousel(pagerState = pagerState)
-            PlanSelector(selectedPlan = selectedPlan, onPlanSelect = onPlanSelect)
-            SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms)
+            PlanSelector(
+                selectedPlan = selectedPlan,
+                onPlanSelect = onPlanSelect,
+                products = viewModel.state.collectAsStateWithLifecycle().value.products
+            )
+            SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms) {
+                val activity = LocalContext.current as Activity
+                viewModel.onAction(SubscriptionAction.Subscribe(selectedPlan(), activity))
+            }
         }
 
         Column(
@@ -329,8 +351,9 @@ private fun BenefitCarousel(pagerState: PagerState) {
 
 @Composable
 private fun PlanSelector(
-    selectedPlan: () -> Plan,
-    onPlanSelect: (Plan) -> Unit
+    selectedPlan: () -> SubscriptionPlan,
+    onPlanSelect: (SubscriptionPlan) -> Unit,
+    products: Map<SubscriptionPlan, BillingProduct>
 ) {
     Row(
         modifier = Modifier
@@ -341,7 +364,7 @@ private fun PlanSelector(
             Alignment.CenterHorizontally
         )
     ) {
-        Plan.entries.forEach { plan ->
+        SubscriptionPlan.entries.forEach { plan ->
             val isSelected = plan == selectedPlan()
             val sd = if (isSelected) {
                 stringResource(SharedRes.strings.plan_selected)
@@ -381,9 +404,8 @@ private fun PlanSelector(
                     Text(stringResource(plan.label), style = MaterialTheme.typography.titleMedium)
                     Text(
                         textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        text = stringResource(plan.billed),
+                        modifier = Modifier.fillMaxSize(),
+                        text = products[plan]?.price ?: stringResource(plan.billed),
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Thin)
                     )
                 }
@@ -394,14 +416,15 @@ private fun PlanSelector(
 
 @Composable
 private fun SubscribeActions(
-    selectedPlan: () -> Plan,
+    selectedPlan: () -> SubscriptionPlan,
     onNavigateUp: () -> Unit,
     onPrivacyPolicy: () -> Unit,
-    onTerms: () -> Unit
+    onTerms: () -> Unit,
+    onSubscribe: () -> Unit
 ) {
     AppButton(
         modifier = Modifier.fillMaxWidth(),
-        onClick = {}) {
+        onClick = onSubscribe) {
         Text(stringResource(SharedRes.strings.subscribe_to_plan, stringResource(selectedPlan().label)))
     }
     AppTextButton(onClick = onNavigateUp) {

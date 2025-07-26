@@ -90,6 +90,7 @@ import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
+import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
 import pl.cuyer.rusthub.presentation.navigation.Credentials
@@ -399,10 +400,12 @@ private fun AppScaffold(
                         )
                     }
                     entry<Subscription> {
+                        val viewModel = koinViewModel<SubscriptionViewModel>()
                         SubscriptionScreen(
                             onNavigateUp = { backStack.removeLastOrNull() },
                             onPrivacyPolicy = { backStack.add(PrivacyPolicy) },
-                            onTerms = { backStack.add(Terms) }
+                            onTerms = { backStack.add(Terms) },
+                            viewModel = viewModel
                         )
                     }
                 },
