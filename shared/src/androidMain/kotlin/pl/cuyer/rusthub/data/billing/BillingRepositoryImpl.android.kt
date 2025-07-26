@@ -8,6 +8,7 @@ import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryProductDetailsParams
+import io.github.aakira.napier.Napier
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -55,8 +56,10 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
                 val list = mutableListOf<BillingProduct>()
                 details.productDetailsList.forEach { pd ->
+                    Napier.d(tag = "BillingRepository", message = "queryProducts: $pd")
                     pd.subscriptionOfferDetails?.forEach { offer ->
-                        val planId = offer.basePlanId ?: return@forEach
+                        Napier.d(tag = "BillingRepository", message = "offer: ${offer.basePlanId}")
+                        val planId = offer.basePlanId
                         if (ids.contains(planId)) {
                             productMap[planId] = ProductData(pd, offer.offerToken)
                             list.add(pd.toBillingProduct(planId, offer))
