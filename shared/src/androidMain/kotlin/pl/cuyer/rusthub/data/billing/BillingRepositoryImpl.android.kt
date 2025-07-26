@@ -24,17 +24,17 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
     private val productMap = mutableMapOf<String, ProductDetails>()
 
     private val billingClient = BillingClient.newBuilder(context)
+        .enablePendingPurchases(
+            PendingPurchasesParams
+                .newBuilder()
+                .build()
+        )
         .setListener { billingResult, purchases ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 purchases?.forEach { handlePurchase(it) }
             }
         }
         .enableAutoServiceReconnection()
-        .enablePendingPurchases(
-            PendingPurchasesParams
-                .newBuilder()
-                .build()
-        )
         .build()
 
     override fun queryProducts(ids: List<String>): Flow<List<BillingProduct>> = callbackFlow {
