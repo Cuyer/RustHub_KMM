@@ -27,6 +27,7 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
         .enablePendingPurchases(
             PendingPurchasesParams
                 .newBuilder()
+                .enableOneTimeProducts()
                 .build()
         )
         .setListener { billingResult, purchases ->
