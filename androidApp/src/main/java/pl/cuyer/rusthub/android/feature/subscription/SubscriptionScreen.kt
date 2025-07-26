@@ -104,6 +104,7 @@ import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import androidx.compose.runtime.State
+import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionState
 
 @Immutable
 private data class SubscriptionBenefit(
