@@ -8,6 +8,7 @@ import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryProductDetailsParams
+import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,7 +22,9 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
     private val _purchaseFlow = MutableSharedFlow<PurchaseInfo>()
     override val purchaseFlow = _purchaseFlow.asSharedFlow()
 
-    private val productMap = mutableMapOf<String, ProductDetails>()
+    private data class ProductData(val details: ProductDetails, val offerToken: String)
+
+    private val productMap = mutableMapOf<String, ProductData>()
 
     private val billingClient = BillingClient.newBuilder(context)
         .enablePendingPurchases(
@@ -40,16 +43,27 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
 
     override fun queryProducts(ids: List<String>): Flow<List<BillingProduct>> = callbackFlow {
         val params = QueryProductDetailsParams.newBuilder()
-            .setProductList(ids.map {
-                QueryProductDetailsParams.Product.newBuilder()
-                    .setProductId(it)
-                    .setProductType(BillingClient.ProductType.SUBS)
-                    .build()
-            }).build()
+            .setProductList(
+                listOf(
+                    QueryProductDetailsParams.Product.newBuilder()
+                        .setProductId(SubscriptionPlan.SUBSCRIPTION_ID)
+                        .setProductType(BillingClient.ProductType.SUBS)
+                        .build()
+                )
+            ).build()
         billingClient.queryProductDetailsAsync(params) { result, details ->
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                details.productDetailsList.forEach { productMap[it.productId] = it }
-                trySend(details.productDetailsList.map { it.toBillingProduct() })
+                val list = mutableListOf<BillingProduct>()
+                details.productDetailsList.forEach { pd ->
+                    pd.subscriptionOfferDetails?.forEach { offer ->
+                        val planId = offer.basePlanId ?: return@forEach
+                        if (ids.contains(planId)) {
+                            productMap[planId] = ProductData(pd, offer.offerToken)
+                            list.add(pd.toBillingProduct(planId, offer))
+                        }
+                    }
+                }
+                trySend(list)
             }
             close()
         }
@@ -58,14 +72,13 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
 
     override fun launchBillingFlow(activity: Any, productId: String) {
         val act = activity as? Activity ?: return
-        val details = productMap[productId] ?: return
-        val offer = details.subscriptionOfferDetails?.firstOrNull() ?: return
+        val data = productMap[productId] ?: return
         val params = BillingFlowParams.newBuilder()
             .setProductDetailsParamsList(
                 listOf(
                     BillingFlowParams.ProductDetailsParams.newBuilder()
-                        .setProductDetails(details)
-                        .setOfferToken(offer.offerToken)
+                        .setProductDetails(data.details)
+                        .setOfferToken(data.offerToken)
                         .build()
                 )
             ).build()
@@ -77,11 +90,10 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
         _purchaseFlow.tryEmit(PurchaseInfo(product, purchase.purchaseToken))
     }
 
-    private fun ProductDetails.toBillingProduct(): BillingProduct {
-        val offer = subscriptionOfferDetails?.firstOrNull()
-        val price = offer?.pricingPhases?.pricingPhaseList?.firstOrNull()?.formattedPrice ?: ""
+    private fun ProductDetails.toBillingProduct(planId: String, offer: ProductDetails.SubscriptionOfferDetails): BillingProduct {
+        val price = offer.pricingPhases.pricingPhaseList.firstOrNull()?.formattedPrice ?: ""
         return BillingProduct(
-            id = productId,
+            id = planId,
             title = name,
             description = description,
             price = price
