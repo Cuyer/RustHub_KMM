@@ -36,7 +36,7 @@
     <string name="additional_information_available_at">Additional information available at</string>
     <string name="all">All</string>
     <string name="any_questions">Any questions?</string>
-    <string name="app_version">App version</string>
+    <string name="app_version">App version: %1$s</string>
     <string name="application_logo">Application logo</string>
     <string name="apply_filters">Apply Filters</string>
     <string name="arrow_down">Arrow down</string>
