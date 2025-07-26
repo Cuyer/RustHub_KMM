@@ -1,0 +1,119 @@
+package pl.cuyer.rusthub.presentation.features.subscription
+
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.common.BaseViewModel
+import pl.cuyer.rusthub.common.Result
+import pl.cuyer.rusthub.domain.model.BillingProduct
+import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
+import pl.cuyer.rusthub.domain.usecase.ConfirmPurchaseUseCase
+import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
+import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.toUserMessage
+
+data class SubscriptionState(
+    val products: Map<SubscriptionPlan, BillingProduct> = emptyMap(),
+    val isLoading: Boolean = false,
+    val isProcessing: Boolean = false
+)
+
+sealed interface SubscriptionAction {
+    data class Subscribe(val plan: SubscriptionPlan, val activity: Any) : SubscriptionAction
+}
+
+class SubscriptionViewModel(
+    private val billingRepository: BillingRepository,
+    private val confirmPurchaseUseCase: ConfirmPurchaseUseCase,
+    private val snackbarController: SnackbarController,
+    private val stringProvider: StringProvider
+) : BaseViewModel() {
+    private val _uiEvent = Channel<UiEvent>(UNLIMITED)
+    val uiEvent = _uiEvent.receiveAsFlow()
+
+    private val _state = MutableStateFlow(SubscriptionState())
+    val state = _state.stateIn(
+        scope = coroutineScope,
+        started = SharingStarted.WhileSubscribed(5_000L),
+        initialValue = SubscriptionState()
+    )
+
+    init {
+        observeProducts()
+        observePurchases()
+    }
+
+    fun onAction(action: SubscriptionAction) {
+        when (action) {
+            is SubscriptionAction.Subscribe -> subscribe(action.plan, action.activity)
+        }
+    }
+
+    private fun observeProducts() {
+        billingRepository.queryProducts(SubscriptionPlan.entries.map { it.productId })
+            .onStart { _state.update { it.copy(isLoading = true) } }
+            .onEach { list ->
+                val map = list.associateBy { it.id }
+                _state.update {
+                    it.copy(
+                        products = SubscriptionPlan.entries.associateWith { plan -> map[plan.productId] }.filterValues { it != null } as Map<SubscriptionPlan, BillingProduct>,
+                        isLoading = false
+                    )
+                }
+            }
+            .catch { e ->
+                _state.update { it.copy(isLoading = false) }
+                snackbarController.sendEvent(
+                    SnackbarEvent(stringProvider.get(SharedRes.strings.unknown_error))
+                )
+            }
+            .launchIn(coroutineScope)
+    }
+
+    private fun observePurchases() {
+        coroutineScope.launch {
+            billingRepository.purchaseFlow.collectLatest { purchase ->
+                confirmPurchase(purchase.purchaseToken)
+            }
+        }
+    }
+
+    private fun subscribe(plan: SubscriptionPlan, activity: Any) {
+        billingRepository.launchBillingFlow(activity, plan.productId)
+    }
+
+    private fun confirmPurchase(token: String) {
+        coroutineScope.launch {
+            confirmPurchaseUseCase(token)
+                .onStart { _state.update { it.copy(isProcessing = true) } }
+                .onCompletion { _state.update { it.copy(isProcessing = false) } }
+                .catch { e ->
+                    snackbarController.sendEvent(
+                        SnackbarEvent(e.toUserMessage(stringProvider))
+                    )
+                }
+                .collectLatest { result ->
+                    when (result) {
+                        is Result.Success -> _uiEvent.send(UiEvent.NavigateUp)
+                        is Result.Error -> snackbarController.sendEvent(
+                            SnackbarEvent(result.exception.toUserMessage(stringProvider))
+                        )
+                    }
+                }
+        }
+    }
+}
