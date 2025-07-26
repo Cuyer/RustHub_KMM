@@ -66,13 +66,13 @@ class SubscriptionViewModel(
     }
 
     private fun observeProducts() {
-        billingRepository.queryProducts(SubscriptionPlan.entries.map { it.productId })
+        billingRepository.queryProducts(SubscriptionPlan.entries.map { it.basePlanId })
             .onStart { _state.update { it.copy(isLoading = true) } }
             .onEach { list ->
                 val map = list.associateBy { it.id }
                 _state.update { item ->
                     item.copy(
-                        products = SubscriptionPlan.entries.associateWith { plan -> map[plan.productId] }.filterValues { it != null } as Map<SubscriptionPlan, BillingProduct>,
+                        products = SubscriptionPlan.entries.associateWith { plan -> map[plan.basePlanId] }.filterValues { it != null } as Map<SubscriptionPlan, BillingProduct>,
                         isLoading = false
                     )
                 }
@@ -95,7 +95,7 @@ class SubscriptionViewModel(
     }
 
     private fun subscribe(plan: SubscriptionPlan, activity: Any) {
-        billingRepository.launchBillingFlow(activity, plan.productId)
+        billingRepository.launchBillingFlow(activity, plan.basePlanId)
     }
 
     private fun confirmPurchase(token: String) {
