@@ -561,6 +561,26 @@ DELETE FROM favouriteSyncEntity;
 clearSubscriptionSync:
 DELETE FROM subscriptionSyncEntity;
 
+CREATE TABLE purchaseSyncEntity (
+    token TEXT NOT NULL PRIMARY KEY,
+    sync_state TEXT NOT NULL
+);
+
+upsertPurchaseSync:
+INSERT INTO purchaseSyncEntity (token, sync_state)
+VALUES (:token, :sync_state)
+ON CONFLICT(token) DO UPDATE SET
+    sync_state = excluded.sync_state;
+
+getPendingPurchaseSync:
+SELECT * FROM purchaseSyncEntity WHERE sync_state = 'PENDING';
+
+deletePurchaseSync:
+DELETE FROM purchaseSyncEntity WHERE token = :token;
+
+clearPurchaseSync:
+DELETE FROM purchaseSyncEntity;
+
 CREATE TABLE userEntity (
   id TEXT NOT NULL PRIMARY KEY,
   email         TEXT,

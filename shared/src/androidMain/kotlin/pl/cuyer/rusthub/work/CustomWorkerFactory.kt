@@ -12,6 +12,8 @@ import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepos
 import pl.cuyer.rusthub.util.MessagingTokenManager
 import pl.cuyer.rusthub.domain.repository.item.ItemRepository
 import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
+import pl.cuyer.rusthub.domain.repository.purchase.PurchaseRepository
+import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
 
 class CustomWorkerFactory(
     private val favouriteRepository: FavouriteRepository,
@@ -22,7 +24,9 @@ class CustomWorkerFactory(
     private val tokenManager: MessagingTokenManager,
     private val itemRepository: ItemRepository,
     private val itemDataSource: ItemDataSource,
-    private val itemSyncDataSource: pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
+    private val itemSyncDataSource: pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource,
+    private val purchaseRepository: PurchaseRepository,
+    private val purchaseSyncDataSource: PurchaseSyncDataSource
 ) : WorkerFactory() {
 
     override fun createWorker(
@@ -56,6 +60,14 @@ class CustomWorkerFactory(
                     itemRepository,
                     itemDataSource,
                     itemSyncDataSource
+                )
+            }
+            PurchaseSyncWorker::class.qualifiedName -> {
+                PurchaseSyncWorker(
+                    appContext,
+                    workerParameters,
+                    purchaseRepository,
+                    purchaseSyncDataSource
                 )
             }
             TokenRefreshWorker::class.qualifiedName -> {

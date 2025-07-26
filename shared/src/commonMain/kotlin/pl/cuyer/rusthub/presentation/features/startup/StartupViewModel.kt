@@ -35,6 +35,8 @@ import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.domain.model.ItemSyncState
+import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
+import pl.cuyer.rusthub.util.PurchaseSyncScheduler
 
 private const val SKIP_DELAY = 10_000L
 
@@ -48,6 +50,8 @@ class StartupViewModel(
     private val itemsScheduler: ItemsScheduler,
     private val itemDataSource: ItemDataSource,
     private val itemSyncDataSource: ItemSyncDataSource,
+    private val purchaseSyncDataSource: PurchaseSyncDataSource,
+    private val purchaseSyncScheduler: PurchaseSyncScheduler,
 ) : BaseViewModel() {
 
     private var startupJob: Job? = null
@@ -79,6 +83,9 @@ class StartupViewModel(
                 itemSyncDataSource.observeState().first { it == ItemSyncState.DONE }
             } else {
                 itemsScheduler.schedule()
+            }
+            if (purchaseSyncDataSource.getPendingOperations().isNotEmpty()) {
+                purchaseSyncScheduler.schedule()
             }
             initializationJob.start()
         }
