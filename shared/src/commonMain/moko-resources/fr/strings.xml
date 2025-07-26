@@ -368,4 +368,6 @@
     <string name="using_mixing_table">Utilisation du table de mixage x%1$d</string>
     <string name="time_to_raid">Temps de raid : %1$s</string>
     <string name="hp">HP</string>
+    <string name="update_ready">Mise à jour prête à être installée</string>
+    <string name="restart">Redémarrer</string>
 </resources>

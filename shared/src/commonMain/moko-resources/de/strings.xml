@@ -370,4 +370,6 @@
     <string name="using_mixing_table">Mit Mischtisch x%1$d</string>
     <string name="time_to_raid">Raidzeit: %1$s</string>
     <string name="hp">HP</string>
+    <string name="update_ready">Update bereit zur Installation</string>
+    <string name="restart">Neustart</string>
 </resources>

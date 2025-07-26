@@ -21,10 +21,13 @@ import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.SharedRes
 
 actual class InAppUpdateManager(
     context: Context,
-    private val snackbarController: SnackbarController
+    private val snackbarController: SnackbarController,
+    private val stringProvider: StringProvider
 ) {
     private val appUpdateManager = AppUpdateManagerFactory.create(context)
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -41,8 +44,10 @@ actual class InAppUpdateManager(
             scope.launch {
                 snackbarController.sendEvent(
                     SnackbarEvent(
-                        message = "Update ready to install",
-                        action = SnackbarAction("Restart") { appUpdateManager.completeUpdate() },
+                        message = stringProvider.get(SharedRes.strings.update_ready),
+                        action = SnackbarAction(stringProvider.get(SharedRes.strings.restart)) {
+                            appUpdateManager.completeUpdate()
+                        },
                         duration = Duration.INDEFINITE
                     )
                 )
@@ -51,7 +56,11 @@ actual class InAppUpdateManager(
     }
 
     private fun ensureLauncher(activity: ComponentActivity) {
-        currentActivity = activity
+        if (currentActivity != activity) {
+            launcher?.unregister()
+            launcher = null
+            currentActivity = activity
+        }
         if (launcher == null) {
             launcher = activity.registerForActivityResult(StartIntentSenderForResult()) { result ->
                 if (result.resultCode != Activity.RESULT_OK) {
@@ -134,8 +143,8 @@ actual class InAppUpdateManager(
                     scope.launch {
                         snackbarController.sendEvent(
                             SnackbarEvent(
-                                message = "Update ready to install",
-                                action = SnackbarAction("Restart") {
+                                message = stringProvider.get(SharedRes.strings.update_ready),
+                                action = SnackbarAction(stringProvider.get(SharedRes.strings.restart)) {
                                     appUpdateManager.completeUpdate()
                                 },
                                 duration = Duration.INDEFINITE
