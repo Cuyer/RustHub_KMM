@@ -126,7 +126,7 @@ class ConfirmEmailViewModel(
         return throwable.toUserMessage(stringProvider)
     }
 
-    private fun updateLoading(isLoading: Boolean) {
+    private fun updateConfirmLoading(isLoading: Boolean) {
         _state.update { it.copy(isLoading = isLoading) }
     }
 

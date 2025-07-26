@@ -8,4 +8,5 @@ data class ConfirmEmailState(
     val email: String = "",
     val provider: AuthProvider? = null,
     val isLoading: Boolean = false,
+    val resendLoading: Boolean = false,
 )
