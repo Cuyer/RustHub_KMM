@@ -221,6 +221,7 @@ class SettingsViewModel(
         coroutineScope.launch {
             updateAppLanguage(language)
             itemSyncDataSource.setState(ItemSyncState.PENDING)
+            itemsScheduler.startNow()
             itemsScheduler.schedule()
         }
     }
