@@ -21,7 +21,6 @@ import pl.cuyer.rusthub.data.local.server.ServerDataSourceImpl
 import pl.cuyer.rusthub.data.local.item.ItemDataSourceImpl
 import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
 import pl.cuyer.rusthub.data.local.subscription.SubscriptionSyncDataSourceImpl
-import pl.cuyer.rusthub.data.local.purchase.PurchaseSyncDataSourceImpl
 import pl.cuyer.rusthub.data.network.auth.AuthRepositoryImpl
 import pl.cuyer.rusthub.data.network.config.ConfigRepositoryImpl
 import pl.cuyer.rusthub.data.network.favourite.FavouriteClientImpl
@@ -50,7 +49,6 @@ import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
-import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
 import pl.cuyer.rusthub.domain.repository.user.UserRepository
 import pl.cuyer.rusthub.domain.usecase.AuthAnonymouslyUseCase
 import pl.cuyer.rusthub.domain.usecase.ChangePasswordUseCase
