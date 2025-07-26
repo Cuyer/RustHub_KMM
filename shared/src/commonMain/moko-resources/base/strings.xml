@@ -337,6 +337,14 @@
     <string name="error_not_found">Resource not found.</string>
     <string name="error_too_many_requests">You’re doing that too much. Please wait a moment.</string>
     <string name="error_invalid_refresh_token">Session expired. Please log in again.</string>
+    <string name="purchase_canceled">Purchase canceled.</string>
+    <string name="error_billing_unavailable">Billing service unavailable.</string>
+    <string name="error_item_unavailable">Item unavailable.</string>
+    <string name="error_developer_error">Developer error.</string>
+    <string name="error_billing_generic">Billing error. Try again later.</string>
+    <string name="error_item_owned">Item already owned.</string>
+    <string name="error_item_not_owned">Item not owned.</string>
+    <string name="error_feature_not_supported">Feature not supported.</string>
     <string name="weapons">Weapons</string>
     <string name="ammo">Ammo</string>
     <string name="clothes">Clothes</string>

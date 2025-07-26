@@ -335,6 +335,14 @@
     <string name="error_not_found">Ressource nicht gefunden.</string>
     <string name="error_too_many_requests">Du führst diese Aktion zu oft aus. Bitte warte einen Moment.</string>
     <string name="error_invalid_refresh_token">Sitzung abgelaufen. Bitte melde dich erneut an.</string>
+    <string name="purchase_canceled">Kauf abgebrochen.</string>
+    <string name="error_billing_unavailable">Dienst zum Abrechnen nicht verfügbar.</string>
+    <string name="error_item_unavailable">Artikel nicht verfügbar.</string>
+    <string name="error_developer_error">Entwicklerfehler.</string>
+    <string name="error_billing_generic">Abrechnungsfehler. Versuche es später erneut.</string>
+    <string name="error_item_owned">Artikel bereits gekauft.</string>
+    <string name="error_item_not_owned">Artikel nicht gekauft.</string>
+    <string name="error_feature_not_supported">Funktion nicht unterstützt.</string>
     <string name="weapons">Waffen</string>
     <string name="ammo">Munition</string>
     <string name="clothes">Kleidung</string>

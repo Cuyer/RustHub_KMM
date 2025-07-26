@@ -18,6 +18,8 @@ import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.BillingProduct
+import pl.cuyer.rusthub.domain.model.BillingErrorCode
+import pl.cuyer.rusthub.domain.model.toMessage
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
 import pl.cuyer.rusthub.domain.usecase.ConfirmPurchaseUseCase
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
@@ -57,6 +59,7 @@ class SubscriptionViewModel(
     init {
         observeProducts()
         observePurchases()
+        observeErrors()
     }
 
     fun onAction(action: SubscriptionAction) {
@@ -102,6 +105,14 @@ class SubscriptionViewModel(
         coroutineScope.launch {
             billingRepository.purchaseFlow.collectLatest { purchase ->
                 confirmPurchase(purchase.purchaseToken)
+            }
+        }
+    }
+
+    private fun observeErrors() {
+        coroutineScope.launch {
+            billingRepository.errorFlow.collectLatest { code ->
+                showErrorSnackbar(code.toMessage(stringProvider))
             }
         }
     }

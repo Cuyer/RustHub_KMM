@@ -6,6 +6,7 @@ import pl.cuyer.rusthub.domain.model.PurchaseInfo
 
 interface BillingRepository {
     val purchaseFlow: Flow<PurchaseInfo>
+    val errorFlow: Flow<BillingErrorCode>
     fun queryProducts(ids: List<String>): Flow<List<BillingProduct>>
     fun launchBillingFlow(activity: Any, productId: String)
 }
