@@ -28,6 +28,7 @@ import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.util.validator.EmailValidator
 import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
+import pl.cuyer.rusthub.util.CrashReporter
 
 class UpgradeViewModel(
     private val upgradeAccountUseCase: UpgradeAccountUseCase,
@@ -128,6 +129,7 @@ class UpgradeViewModel(
     private fun startGoogleLogin() {
         googleJob?.cancel()
         googleJob = coroutineScope.launch {
+            CrashReporter.log("Start Google login")
             getGoogleClientIdUseCase()
                 .onStart { updateGoogleLoading(true) }
                 .onCompletion { updateGoogleLoading(false) }
@@ -137,10 +139,12 @@ class UpgradeViewModel(
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
+                            CrashReporter.log("Received Google token")
                             val token = googleAuthClient.getIdToken(result.data)
                             if (token != null) {
                                 upgradeWithGoogleToken(token)
                             } else {
+                                CrashReporter.log("Google token null")
                                 showErrorSnackbar(
                                     stringProvider.get(SharedRes.strings.google_sign_in_failed)
                                 )
@@ -157,15 +161,18 @@ class UpgradeViewModel(
     private fun upgradeWithGoogleToken(token: String) {
         googleJob?.cancel()
         googleJob = coroutineScope.launch {
+            CrashReporter.log("Login with Google token")
             upgradeWithGoogleUseCase(token)
                 .onStart { updateGoogleLoading(true) }
                 .onCompletion { updateGoogleLoading(false) }
                 .catchAndLog { e ->
+                    CrashReporter.log("Google login error: ${'$'}{e.message}")
                     showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
+                            CrashReporter.log("Google login success")
                             snackbarController.sendEvent(
                                 SnackbarEvent(
                                     stringProvider.get(SharedRes.strings.account_upgraded_successfully)
