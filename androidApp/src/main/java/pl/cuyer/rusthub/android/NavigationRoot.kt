@@ -401,11 +401,14 @@ private fun AppScaffold(
                     }
                     entry<Subscription> {
                         val viewModel = koinViewModel<SubscriptionViewModel>()
+                        val state = viewModel.state.collectAsStateWithLifecycle()
                         SubscriptionScreen(
+                            state = state,
+                            onAction = viewModel::onAction,
+                            uiEvent = viewModel.uiEvent,
                             onNavigateUp = { backStack.removeLastOrNull() },
                             onPrivacyPolicy = { backStack.add(PrivacyPolicy) },
-                            onTerms = { backStack.add(Terms) },
-                            viewModel = viewModel
+                            onTerms = { backStack.add(Terms) }
                         )
                     }
                 },

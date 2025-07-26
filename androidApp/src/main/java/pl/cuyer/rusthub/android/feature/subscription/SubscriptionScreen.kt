@@ -84,16 +84,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.android.util.prefersReducedMotion
-import org.koin.compose.viewmodel.koinViewModel
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
-import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
 import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionAction
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import pl.cuyer.rusthub.domain.model.BillingProduct
@@ -103,8 +102,8 @@ import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
-import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
+import androidx.compose.runtime.State
 
 @Immutable
 private data class SubscriptionBenefit(
@@ -154,7 +153,9 @@ fun SubscriptionScreen(
     onNavigateUp: () -> Unit,
     onPrivacyPolicy: () -> Unit,
     onTerms: () -> Unit,
-    viewModel: SubscriptionViewModel = koinViewModel()
+    state: State<SubscriptionState>,
+    onAction: (SubscriptionAction) -> Unit,
+    uiEvent: Flow<UiEvent>
 ) {
     var selectedPlan by remember { mutableStateOf(SubscriptionPlan.MONTHLY) }
     val pagerState = rememberPagerState(pageCount = { benefits.size })
@@ -186,8 +187,7 @@ fun SubscriptionScreen(
             )
         }
     ) { innerPadding ->
-        val state = viewModel.state.collectAsStateWithLifecycle()
-        ObserveAsEvents(viewModel.uiEvent) { event ->
+        ObserveAsEvents(uiEvent) { event ->
             if (event is UiEvent.NavigateUp) onNavigateUp()
         }
         if (isTabletMode) {
@@ -202,7 +202,8 @@ fun SubscriptionScreen(
                 onNavigateUp = onNavigateUp,
                 onPrivacyPolicy = onPrivacyPolicy,
                 onTerms = onTerms,
-                viewModel = viewModel
+                products = state.value.products,
+                onAction = onAction
             )
         } else {
             SubscriptionScreenCompact(
@@ -216,7 +217,8 @@ fun SubscriptionScreen(
                 onNavigateUp = onNavigateUp,
                 onPrivacyPolicy = onPrivacyPolicy,
                 onTerms = onTerms,
-                viewModel = viewModel
+                products = state.value.products,
+                onAction = onAction
             )
         }
     }
@@ -231,7 +233,8 @@ private fun SubscriptionScreenCompact(
     onNavigateUp: () -> Unit,
     onPrivacyPolicy: () -> Unit,
     onTerms: () -> Unit,
-    viewModel: SubscriptionViewModel
+    products: Map<SubscriptionPlan, BillingProduct>,
+    onAction: (SubscriptionAction) -> Unit
 ) {
     val activity = LocalActivity.current as Activity
     Column(
@@ -245,10 +248,10 @@ private fun SubscriptionScreenCompact(
         PlanSelector(
             selectedPlan = selectedPlan,
             onPlanSelect = onPlanSelect,
-            products = viewModel.state.collectAsStateWithLifecycle().value.products
+            products = products
         )
         SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms) {
-            viewModel.onAction(SubscriptionAction.Subscribe(selectedPlan(), activity))
+            onAction(SubscriptionAction.Subscribe(selectedPlan(), activity))
         }
         Spacer(modifier = Modifier.height(spacing.medium))
         ComparisonSection()
@@ -266,7 +269,8 @@ private fun SubscriptionScreenExpanded(
     onNavigateUp: () -> Unit,
     onPrivacyPolicy: () -> Unit,
     onTerms: () -> Unit,
-    viewModel: SubscriptionViewModel
+    products: Map<SubscriptionPlan, BillingProduct>,
+    onAction: (SubscriptionAction) -> Unit
 ) {
     val activity = LocalActivity.current as Activity
     Row(
@@ -284,10 +288,10 @@ private fun SubscriptionScreenExpanded(
             PlanSelector(
                 selectedPlan = selectedPlan,
                 onPlanSelect = onPlanSelect,
-                products = viewModel.state.collectAsStateWithLifecycle().value.products
+                products = products
             )
             SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms) {
-                viewModel.onAction(SubscriptionAction.Subscribe(selectedPlan(), activity))
+                onAction(SubscriptionAction.Subscribe(selectedPlan(), activity))
             }
         }
 
@@ -638,11 +642,15 @@ private fun CarouselAutoPlayHandler(pagerState: PagerState, carouselSize: Int, d
 @Preview
 @Composable
 private fun SubscriptionScreenPreview() {
+    val state = remember { mutableStateOf(SubscriptionState()) }
     RustHubTheme {
         SubscriptionScreen(
             onNavigateUp = {},
             onPrivacyPolicy = {},
-            onTerms = {}
+            onTerms = {},
+            state = state,
+            onAction = {},
+            uiEvent = MutableStateFlow(UiEvent.NavigateUp)
         )
     }
 }
