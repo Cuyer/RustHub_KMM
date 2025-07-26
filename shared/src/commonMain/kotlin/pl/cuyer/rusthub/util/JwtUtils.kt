@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.util
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import pl.cuyer.rusthub.SharedRes
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlinx.datetime.Clock
@@ -32,12 +33,12 @@ fun anonymousAccountExpiresIn(token: String): Duration? {
     }
 }
 
-fun formatExpiration(duration: Duration): String {
+fun formatExpiration(duration: Duration, stringProvider: StringProvider): String {
     val days = duration.inWholeDays
     val hours = duration.inWholeHours % 24
     val minutes = duration.inWholeMinutes % 60
     return if (days > 0) {
-        "$days day" + if (days > 1) "s" else ""
+        "$days${stringProvider.get(SharedRes.strings.days)}"
     } else {
         buildString {
             if (hours > 0) append("${hours}h ")
