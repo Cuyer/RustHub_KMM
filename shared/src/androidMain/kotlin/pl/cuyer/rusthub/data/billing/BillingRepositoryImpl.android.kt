@@ -16,7 +16,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import pl.cuyer.rusthub.domain.model.BillingProduct
 import pl.cuyer.rusthub.domain.model.PurchaseInfo
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
@@ -68,28 +69,26 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
                 .setProductList(subsProducts)
                 .build()
 
-            val subsResult = suspendCancellableCoroutine<List<BillingProduct>> { cont ->
-                billingClient.queryProductDetailsAsync(subsParams) { billingResult, response ->
-                    val list = mutableListOf<BillingProduct>()
-                    if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                        response.productDetailsList.forEach { pd ->
-                            Napier.d(tag = "BillingRepository", message = "queryProducts: $pd")
-                            pd.subscriptionOfferDetails?.forEach { offer ->
-                                Napier.d(tag = "BillingRepository", message = "offer: ${offer.basePlanId}")
-                                val planId = offer.basePlanId
-                                if (subsPlans.any { it.basePlanId == planId }) {
-                                    productMap[planId] = ProductData(pd, offer.offerToken)
-                                    list.add(pd.toBillingProduct(planId, offer))
-                                }
-                            }
-                        }
-                    } else {
-                        _errorFlow.tryEmit(billingResult.responseCode.toErrorCode())
-                    }
-                    cont.resume(list) { cause, _, _ -> }
-                }
+            val subsResult = withContext(Dispatchers.IO) {
+                billingClient.queryProductDetails(subsParams)
             }
-            result.addAll(subsResult)
+            val subsList = mutableListOf<BillingProduct>()
+            if (subsResult.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                subsResult.productDetailsList.forEach { pd ->
+                    Napier.d(tag = "BillingRepository", message = "queryProducts: $pd")
+                    pd.subscriptionOfferDetails?.forEach { offer ->
+                        Napier.d(tag = "BillingRepository", message = "offer: ${offer.basePlanId}")
+                        val planId = offer.basePlanId
+                        if (subsPlans.any { it.basePlanId == planId }) {
+                            productMap[planId] = ProductData(pd, offer.offerToken)
+                            subsList.add(pd.toBillingProduct(planId, offer))
+                        }
+                    }
+                }
+            } else {
+                _errorFlow.tryEmit(subsResult.billingResult.responseCode.toErrorCode())
+            }
+            result.addAll(subsList)
         }
 
         // 3. Query INAPP products (one-time purchases)
@@ -104,25 +103,23 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
                 .setProductList(inappProducts)
                 .build()
 
-            val inappResult = suspendCancellableCoroutine<List<BillingProduct>> { cont ->
-                billingClient.queryProductDetailsAsync(inappParams) { billingResult, response ->
-                    val list = mutableListOf<BillingProduct>()
-                    if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                        response.productDetailsList.forEach { pd ->
-                            Napier.d(tag = "BillingRepository", message = "queryProducts: $pd")
-                            val id = pd.productId
-                            if (inappPlans.any { it.productId == id }) {
-                                productMap[id] = ProductData(pd, null)
-                                list.add(pd.toBillingProduct(id))
-                            }
-                        }
-                    } else {
-                        _errorFlow.tryEmit(billingResult.responseCode.toErrorCode())
-                    }
-                    cont.resume(list) { cause, _, _ -> }
-                }
+            val inappResult = withContext(Dispatchers.IO) {
+                billingClient.queryProductDetails(inappParams)
             }
-            result.addAll(inappResult)
+            val inappList = mutableListOf<BillingProduct>()
+            if (inappResult.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                inappResult.productDetailsList.forEach { pd ->
+                    Napier.d(tag = "BillingRepository", message = "queryProducts: $pd")
+                    val id = pd.productId
+                    if (inappPlans.any { it.productId == id }) {
+                        productMap[id] = ProductData(pd, null)
+                        inappList.add(pd.toBillingProduct(id))
+                    }
+                }
+            } else {
+                _errorFlow.tryEmit(inappResult.billingResult.responseCode.toErrorCode())
+            }
+            result.addAll(inappList)
         }
 
         trySend(result)
