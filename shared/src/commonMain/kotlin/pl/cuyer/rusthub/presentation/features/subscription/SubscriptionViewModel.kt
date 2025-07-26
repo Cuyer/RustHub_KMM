@@ -66,7 +66,11 @@ class SubscriptionViewModel(
     }
 
     private fun observeProducts() {
-        billingRepository.queryProducts(SubscriptionPlan.entries.map { it.basePlanId })
+        billingRepository.queryProducts(
+            SubscriptionPlan.entries.mapNotNull { plan ->
+                plan.basePlanId ?: plan.name.let { null }
+            } + SubscriptionPlan.LIFETIME.productId
+        )
             .onStart { _state.update { it.copy(isLoading = true) } }
             .onEach { list ->
                 val map = list.associateBy { it.id }
@@ -95,7 +99,8 @@ class SubscriptionViewModel(
     }
 
     private fun subscribe(plan: SubscriptionPlan, activity: Any) {
-        billingRepository.launchBillingFlow(activity, plan.basePlanId)
+        val id = plan.basePlanId ?: plan.name.let { plan.productId }
+        billingRepository.launchBillingFlow(activity, id)
     }
 
     private fun confirmPurchase(token: String) {

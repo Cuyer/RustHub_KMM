@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.suspendCancellableCoroutine
 import pl.cuyer.rusthub.domain.model.BillingProduct
 import pl.cuyer.rusthub.domain.model.PurchaseInfo
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
@@ -43,49 +44,80 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
         .build()
 
     override fun queryProducts(ids: List<String>): Flow<List<BillingProduct>> = callbackFlow {
-        val products = mutableListOf(
-            QueryProductDetailsParams.Product.newBuilder()
-                .setProductId(SubscriptionPlan.SUBSCRIPTION_ID)
-                .setProductType(BillingClient.ProductType.SUBS)
-                .build()
-        )
-        if (ids.contains(SubscriptionPlan.LIFETIME.basePlanId)) {
-            products += QueryProductDetailsParams.Product.newBuilder()
-                .setProductId(SubscriptionPlan.LIFETIME.basePlanId)
-                .setProductType(BillingClient.ProductType.INAPP)
-                .build()
-        }
+        // 1. Split IDs into SUBS and INAPP (by plan definitions)
+        val subsPlans = SubscriptionPlan.entries.filter { it.basePlanId != null && ids.contains(it.basePlanId) }
+        val inappPlans = SubscriptionPlan.entries.filter { it.basePlanId == null && ids.contains(it.productId) }
 
-        val params = QueryProductDetailsParams.newBuilder()
-            .setProductList(products)
-            .build()
+        val result = mutableListOf<BillingProduct>()
 
-        billingClient.queryProductDetailsAsync(params) { result, response ->
-            val list = mutableListOf<BillingProduct>()
-            if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                response.productDetailsList.forEach { pd ->
-                    Napier.d(tag = "BillingRepository", message = "queryProducts: $pd")
-                    if (pd.productId == SubscriptionPlan.SUBSCRIPTION_ID) {
-                        pd.subscriptionOfferDetails?.forEach { offer ->
-                            Napier.d(tag = "BillingRepository", message = "offer: ${offer.basePlanId}")
-                            val planId = offer.basePlanId
-                            if (ids.contains(planId)) {
-                                productMap[planId] = ProductData(pd, offer.offerToken)
-                                list.add(pd.toBillingProduct(planId, offer))
+        // 2. Query SUBS products (subscriptions)
+        if (subsPlans.isNotEmpty()) {
+            val subsProducts = listOf(
+                QueryProductDetailsParams.Product.newBuilder()
+                    .setProductId(SubscriptionPlan.SUBSCRIPTION_ID)
+                    .setProductType(BillingClient.ProductType.SUBS)
+                    .build()
+            )
+
+            val subsParams = QueryProductDetailsParams.newBuilder()
+                .setProductList(subsProducts)
+                .build()
+
+            val subsResult = suspendCancellableCoroutine<List<BillingProduct>> { cont ->
+                billingClient.queryProductDetailsAsync(subsParams) { billingResult, response ->
+                    val list = mutableListOf<BillingProduct>()
+                    if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                        response.productDetailsList.forEach { pd ->
+                            Napier.d(tag = "BillingRepository", message = "queryProducts: $pd")
+                            pd.subscriptionOfferDetails?.forEach { offer ->
+                                Napier.d(tag = "BillingRepository", message = "offer: ${offer.basePlanId}")
+                                val planId = offer.basePlanId
+                                if (subsPlans.any { it.basePlanId == planId }) {
+                                    productMap[planId] = ProductData(pd, offer.offerToken)
+                                    list.add(pd.toBillingProduct(planId, offer))
+                                }
                             }
                         }
-                    } else {
-                        val id = pd.productId
-                        if (ids.contains(id)) {
-                            productMap[id] = ProductData(pd, null)
-                            list.add(pd.toBillingProduct(id))
-                        }
                     }
+                    cont.resume(list) { cause, _, _ -> }
                 }
             }
-            trySend(list)
-            close()
+            result.addAll(subsResult)
         }
+
+        // 3. Query INAPP products (one-time purchases)
+        if (inappPlans.isNotEmpty()) {
+            val inappProducts = inappPlans.map {
+                QueryProductDetailsParams.Product.newBuilder()
+                    .setProductId(it.productId)
+                    .setProductType(BillingClient.ProductType.INAPP)
+                    .build()
+            }
+            val inappParams = QueryProductDetailsParams.newBuilder()
+                .setProductList(inappProducts)
+                .build()
+
+            val inappResult = suspendCancellableCoroutine<List<BillingProduct>> { cont ->
+                billingClient.queryProductDetailsAsync(inappParams) { billingResult, response ->
+                    val list = mutableListOf<BillingProduct>()
+                    if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                        response.productDetailsList.forEach { pd ->
+                            Napier.d(tag = "BillingRepository", message = "queryProducts: $pd")
+                            val id = pd.productId
+                            if (inappPlans.any { it.productId == id }) {
+                                productMap[id] = ProductData(pd, null)
+                                list.add(pd.toBillingProduct(id))
+                            }
+                        }
+                    }
+                    cont.resume(list) { cause, _, _ -> }
+                }
+            }
+            result.addAll(inappResult)
+        }
+
+        trySend(result)
+        close()
         awaitClose {}
     }
 
