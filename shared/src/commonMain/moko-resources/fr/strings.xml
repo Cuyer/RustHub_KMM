@@ -36,7 +36,7 @@
     <string name="additional_information_available_at">Informations supplémentaires sur :</string>
     <string name="all">Tous</string>
     <string name="any_questions">Des questions ?</string>
-    <string name="app_version">Version de l’application</string>
+    <string name="app_version">Version de l’application : %1$s</string>
     <string name="application_logo">Logo de l'application</string>
     <string name="apply_filters">Appliquer les filtres</string>
     <string name="arrow_down">Flèche vers le bas</string>

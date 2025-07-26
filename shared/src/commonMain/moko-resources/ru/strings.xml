@@ -36,7 +36,7 @@
     <string name="additional_information_available_at">Дополнительная информация на:</string>
     <string name="all">Все</string>
     <string name="any_questions">Есть вопросы?</string>
-    <string name="app_version">Версия приложения</string>
+    <string name="app_version">Версия приложения: %1$s</string>
     <string name="application_logo">Логотип приложения</string>
     <string name="apply_filters">Применить фильтры</string>
     <string name="arrow_down">Стрелка вниз</string>

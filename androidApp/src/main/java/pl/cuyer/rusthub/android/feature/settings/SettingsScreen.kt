@@ -433,10 +433,11 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
         }
     }
 
+    val versionName = remember { AppInfo.versionName }
     Text(
         modifier = Modifier.fillMaxWidth(),
         style = MaterialTheme.typography.bodySmall,
-        text = "${stringResource(SharedRes.strings.app_version)}: ${AppInfo.versionName}",
+        text = stringResource(SharedRes.strings.app_version, versionName),
         textAlign = TextAlign.Center
     )
 }
