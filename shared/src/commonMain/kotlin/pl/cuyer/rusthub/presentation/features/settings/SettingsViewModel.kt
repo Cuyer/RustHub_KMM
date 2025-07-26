@@ -150,7 +150,7 @@ class SettingsViewModel(
                 subscribed = user?.subscribed == true,
                 anonymousExpiration = user?.let { u ->
                     if (u.provider == AuthProvider.ANONYMOUS) {
-                        anonymousAccountExpiresIn(u.accessToken)?.let { formatExpiration(it) }
+                        anonymousAccountExpiresIn(u.accessToken)?.let { formatExpiration(it, stringProvider) }
                     } else {
                         null
                     }
