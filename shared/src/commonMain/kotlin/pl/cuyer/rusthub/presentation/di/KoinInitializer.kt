@@ -21,6 +21,7 @@ import pl.cuyer.rusthub.data.local.server.ServerDataSourceImpl
 import pl.cuyer.rusthub.data.local.item.ItemDataSourceImpl
 import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
 import pl.cuyer.rusthub.data.local.subscription.SubscriptionSyncDataSourceImpl
+import pl.cuyer.rusthub.data.local.purchase.PurchaseSyncDataSourceImpl
 import pl.cuyer.rusthub.data.network.auth.AuthRepositoryImpl
 import pl.cuyer.rusthub.data.network.config.ConfigRepositoryImpl
 import pl.cuyer.rusthub.data.network.favourite.FavouriteClientImpl
@@ -49,6 +50,7 @@ import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
+import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
 import pl.cuyer.rusthub.domain.repository.user.UserRepository
 import pl.cuyer.rusthub.domain.usecase.AuthAnonymouslyUseCase
 import pl.cuyer.rusthub.domain.usecase.ChangePasswordUseCase
@@ -100,6 +102,8 @@ import pl.cuyer.rusthub.util.validator.PasswordValidator
 import pl.cuyer.rusthub.util.validator.UsernameValidator
 import pl.cuyer.rusthub.data.network.purchase.PurchaseRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.purchase.PurchaseRepository
+import pl.cuyer.rusthub.data.local.purchase.PurchaseSyncDataSourceImpl
+import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
 
 val appModule = module {
     single<SnackbarController> { SnackbarController }
@@ -121,6 +125,7 @@ val appModule = module {
     singleOf(::ItemSyncDataSourceImpl) bind ItemSyncDataSource::class
     singleOf(::FavouriteSyncDataSourceImpl) bind FavouriteSyncDataSource::class
     singleOf(::SubscriptionSyncDataSourceImpl) bind SubscriptionSyncDataSource::class
+    singleOf(::PurchaseSyncDataSourceImpl) bind PurchaseSyncDataSource::class
     singleOf(::FiltersDataSourceImpl) bind FiltersDataSource::class
     singleOf(::SearchQueryDataSourceImpl) bind SearchQueryDataSource::class
     singleOf(::ItemSearchQueryDataSourceImpl) bind ItemSearchQueryDataSource::class
@@ -175,7 +180,7 @@ val appModule = module {
     single { ToggleFavouriteUseCase(get(), get(), get(), get()) }
     single { ToggleSubscriptionUseCase(get(), get(), get(), get()) }
     singleOf(::PurchaseRepositoryImpl) bind PurchaseRepository::class
-    single { ConfirmPurchaseUseCase(get()) }
+    single { ConfirmPurchaseUseCase(get(), get(), get()) }
 }
 
 expect val platformModule: Module

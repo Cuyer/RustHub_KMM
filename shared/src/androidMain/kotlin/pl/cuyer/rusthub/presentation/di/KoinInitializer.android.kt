@@ -43,6 +43,9 @@ import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
+import pl.cuyer.rusthub.util.PurchaseSyncScheduler
+import pl.cuyer.rusthub.data.local.purchase.PurchaseSyncDataSourceImpl
+import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import pl.cuyer.rusthub.data.billing.BillingRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
@@ -66,8 +69,10 @@ actual val platformModule: Module = module {
     single { SubscriptionSyncScheduler(get()) }
     single { MessagingTokenScheduler(get()) }
     single { ItemsScheduler(get()) }
+    single { PurchaseSyncScheduler(get()) }
     single { BillingRepositoryImpl(androidContext()) } bind BillingRepository::class
     single { ItemSyncDataSourceImpl(get()) } bind ItemSyncDataSource::class
+    single { PurchaseSyncDataSourceImpl(get()) } bind PurchaseSyncDataSource::class
     single { InAppUpdateManager(androidContext(), get(), get()) }
     single { ReviewRequester(androidContext()) }
     single { StoreNavigator(androidContext()) }
@@ -86,7 +91,9 @@ actual val platformModule: Module = module {
             getUserPreferencesUseCase = get(),
             itemsScheduler = get(),
             itemDataSource = get(),
-            itemSyncDataSource = get()
+            itemSyncDataSource = get(),
+            purchaseSyncDataSource = get(),
+            purchaseSyncScheduler = get()
         )
     }
     viewModel {
