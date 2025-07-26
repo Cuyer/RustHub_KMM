@@ -8,6 +8,7 @@ import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryProductDetailsParams
+import pl.cuyer.rusthub.domain.model.BillingErrorCode
 import io.github.aakira.napier.Napier
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import kotlinx.coroutines.channels.awaitClose
@@ -23,6 +24,8 @@ import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
 class BillingRepositoryImpl(context: Context) : BillingRepository {
     private val _purchaseFlow = MutableSharedFlow<PurchaseInfo>()
     override val purchaseFlow = _purchaseFlow.asSharedFlow()
+    private val _errorFlow = MutableSharedFlow<BillingErrorCode>()
+    override val errorFlow = _errorFlow.asSharedFlow()
 
     private data class ProductData(val details: ProductDetails, val offerToken: String?)
 
@@ -38,6 +41,8 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
         .setListener { billingResult, purchases ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 purchases?.forEach { handlePurchase(it) }
+            } else {
+                _errorFlow.tryEmit(billingResult.responseCode.toErrorCode())
             }
         }
         .enableAutoServiceReconnection()
@@ -78,6 +83,8 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
                                 }
                             }
                         }
+                    } else {
+                        _errorFlow.tryEmit(billingResult.responseCode.toErrorCode())
                     }
                     cont.resume(list) { cause, _, _ -> }
                 }
@@ -109,6 +116,8 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
                                 list.add(pd.toBillingProduct(id))
                             }
                         }
+                    } else {
+                        _errorFlow.tryEmit(billingResult.responseCode.toErrorCode())
                     }
                     cont.resume(list) { cause, _, _ -> }
                 }
@@ -133,7 +142,10 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
                         .build()
                 )
             ).build()
-        billingClient.launchBillingFlow(act, params)
+        val result = billingClient.launchBillingFlow(act, params)
+        if (result.responseCode != BillingClient.BillingResponseCode.OK) {
+            _errorFlow.tryEmit(result.responseCode.toErrorCode())
+        }
     }
 
     private fun handlePurchase(purchase: Purchase) {
@@ -159,5 +171,23 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
             description = description,
             price = price
         )
+    }
+}
+
+private fun Int.toErrorCode(): BillingErrorCode {
+    return when (this) {
+        BillingClient.BillingResponseCode.USER_CANCELED -> BillingErrorCode.USER_CANCELED
+        BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE -> BillingErrorCode.SERVICE_UNAVAILABLE
+        BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> BillingErrorCode.BILLING_UNAVAILABLE
+        BillingClient.BillingResponseCode.ITEM_UNAVAILABLE -> BillingErrorCode.ITEM_UNAVAILABLE
+        BillingClient.BillingResponseCode.DEVELOPER_ERROR -> BillingErrorCode.DEVELOPER_ERROR
+        BillingClient.BillingResponseCode.ERROR -> BillingErrorCode.ERROR
+        BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> BillingErrorCode.ITEM_ALREADY_OWNED
+        BillingClient.BillingResponseCode.ITEM_NOT_OWNED -> BillingErrorCode.ITEM_NOT_OWNED
+        BillingClient.BillingResponseCode.NETWORK_ERROR -> BillingErrorCode.NETWORK_ERROR
+        BillingClient.BillingResponseCode.SERVICE_DISCONNECTED -> BillingErrorCode.SERVICE_DISCONNECTED
+        BillingClient.BillingResponseCode.FEATURE_NOT_SUPPORTED -> BillingErrorCode.FEATURE_NOT_SUPPORTED
+        BillingClient.BillingResponseCode.SERVICE_TIMEOUT -> BillingErrorCode.SERVICE_TIMEOUT
+        else -> BillingErrorCode.UNKNOWN
     }
 }

@@ -335,6 +335,14 @@
     <string name="error_not_found">Ressource introuvable.</string>
     <string name="error_too_many_requests">Vous effectuez cette action trop souvent. Veuillez patienter.</string>
     <string name="error_invalid_refresh_token">Session expirée. Veuillez vous reconnecter.</string>
+    <string name="purchase_canceled">Achat annulé.</string>
+    <string name="error_billing_unavailable">Service de facturation indisponible.</string>
+    <string name="error_item_unavailable">Article indisponible.</string>
+    <string name="error_developer_error">Erreur développeur.</string>
+    <string name="error_billing_generic">Erreur de facturation. Réessayez plus tard.</string>
+    <string name="error_item_owned">Article déjà acheté.</string>
+    <string name="error_item_not_owned">Article non acheté.</string>
+    <string name="error_feature_not_supported">Fonction non prise en charge.</string>
     <string name="weapons">Armes</string>
     <string name="ammo">Munitions</string>
     <string name="clothes">Vêtements</string>
