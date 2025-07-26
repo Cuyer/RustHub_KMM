@@ -372,4 +372,6 @@
     <string name="using_mixing_table">Using mixing table x%1$d</string>
     <string name="time_to_raid">Time to Raid: %1$s</string>
     <string name="hp">HP</string>
+    <string name="update_ready">Update ready to install</string>
+    <string name="restart">Restart</string>
 </resources>

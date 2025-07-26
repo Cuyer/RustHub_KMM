@@ -368,4 +368,6 @@
     <string name="using_mixing_table">Используя смесительный стол x%1$d</string>
     <string name="time_to_raid">Время рейда: %1$s</string>
     <string name="hp">HP</string>
+    <string name="update_ready">Обновление готово к установке</string>
+    <string name="restart">Перезапустить</string>
 </resources>

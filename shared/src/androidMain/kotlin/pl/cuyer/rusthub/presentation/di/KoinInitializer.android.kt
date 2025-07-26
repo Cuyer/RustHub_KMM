@@ -64,7 +64,7 @@ actual val platformModule: Module = module {
     single { MessagingTokenScheduler(get()) }
     single { ItemsScheduler(get()) }
     single { ItemSyncDataSourceImpl(get()) } bind ItemSyncDataSource::class
-    single { InAppUpdateManager(androidContext(), get()) }
+    single { InAppUpdateManager(androidContext(), get(), get()) }
     single { ReviewRequester(androidContext()) }
     single { StoreNavigator(androidContext()) }
     single { SystemDarkThemeObserver(androidContext()) }
