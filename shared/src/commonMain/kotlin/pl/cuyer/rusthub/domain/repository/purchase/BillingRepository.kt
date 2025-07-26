@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.domain.repository.purchase
 
 import kotlinx.coroutines.flow.Flow
+import pl.cuyer.rusthub.domain.model.BillingErrorCode
 import pl.cuyer.rusthub.domain.model.BillingProduct
 import pl.cuyer.rusthub.domain.model.PurchaseInfo
 

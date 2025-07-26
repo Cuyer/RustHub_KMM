@@ -8,6 +8,7 @@ import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.queryProductDetails
 import pl.cuyer.rusthub.domain.model.BillingErrorCode
 import io.github.aakira.napier.Napier
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
@@ -74,7 +75,7 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
             }
             val subsList = mutableListOf<BillingProduct>()
             if (subsResult.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                subsResult.productDetailsList.forEach { pd ->
+                subsResult.productDetailsList?.forEach { pd ->
                     Napier.d(tag = "BillingRepository", message = "queryProducts: $pd")
                     pd.subscriptionOfferDetails?.forEach { offer ->
                         Napier.d(tag = "BillingRepository", message = "offer: ${offer.basePlanId}")
@@ -108,7 +109,7 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
             }
             val inappList = mutableListOf<BillingProduct>()
             if (inappResult.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                inappResult.productDetailsList.forEach { pd ->
+                inappResult.productDetailsList?.forEach { pd ->
                     Napier.d(tag = "BillingRepository", message = "queryProducts: $pd")
                     val id = pd.productId
                     if (inappPlans.any { it.productId == id }) {
