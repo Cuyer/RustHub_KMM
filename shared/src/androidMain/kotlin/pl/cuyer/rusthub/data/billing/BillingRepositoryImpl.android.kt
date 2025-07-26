@@ -23,7 +23,7 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
     private val _purchaseFlow = MutableSharedFlow<PurchaseInfo>()
     override val purchaseFlow = _purchaseFlow.asSharedFlow()
 
-    private data class ProductData(val details: ProductDetails, val offerToken: String)
+    private data class ProductData(val details: ProductDetails, val offerToken: String?)
 
     private val productMap = mutableMapOf<String, ProductData>()
 
@@ -43,31 +43,47 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
         .build()
 
     override fun queryProducts(ids: List<String>): Flow<List<BillingProduct>> = callbackFlow {
+        val products = mutableListOf(
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId(SubscriptionPlan.SUBSCRIPTION_ID)
+                .setProductType(BillingClient.ProductType.SUBS)
+                .build()
+        )
+        if (ids.contains(SubscriptionPlan.LIFETIME.basePlanId)) {
+            products += QueryProductDetailsParams.Product.newBuilder()
+                .setProductId(SubscriptionPlan.LIFETIME.basePlanId)
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build()
+        }
+
         val params = QueryProductDetailsParams.newBuilder()
-            .setProductList(
-                listOf(
-                    QueryProductDetailsParams.Product.newBuilder()
-                        .setProductId(SubscriptionPlan.SUBSCRIPTION_ID)
-                        .setProductType(BillingClient.ProductType.SUBS)
-                        .build()
-                )
-            ).build()
-        billingClient.queryProductDetailsAsync(params) { result, details ->
+            .setProductList(products)
+            .build()
+
+        billingClient.queryProductDetailsAsync(params) { result, response ->
+            val list = mutableListOf<BillingProduct>()
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                val list = mutableListOf<BillingProduct>()
-                details.productDetailsList.forEach { pd ->
+                response.productDetailsList.forEach { pd ->
                     Napier.d(tag = "BillingRepository", message = "queryProducts: $pd")
-                    pd.subscriptionOfferDetails?.forEach { offer ->
-                        Napier.d(tag = "BillingRepository", message = "offer: ${offer.basePlanId}")
-                        val planId = offer.basePlanId
-                        if (ids.contains(planId)) {
-                            productMap[planId] = ProductData(pd, offer.offerToken)
-                            list.add(pd.toBillingProduct(planId, offer))
+                    if (pd.productId == SubscriptionPlan.SUBSCRIPTION_ID) {
+                        pd.subscriptionOfferDetails?.forEach { offer ->
+                            Napier.d(tag = "BillingRepository", message = "offer: ${offer.basePlanId}")
+                            val planId = offer.basePlanId
+                            if (ids.contains(planId)) {
+                                productMap[planId] = ProductData(pd, offer.offerToken)
+                                list.add(pd.toBillingProduct(planId, offer))
+                            }
+                        }
+                    } else {
+                        val id = pd.productId
+                        if (ids.contains(id)) {
+                            productMap[id] = ProductData(pd, null)
+                            list.add(pd.toBillingProduct(id))
                         }
                     }
                 }
-                trySend(list)
             }
+            trySend(list)
             close()
         }
         awaitClose {}
@@ -81,7 +97,7 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
                 listOf(
                     BillingFlowParams.ProductDetailsParams.newBuilder()
                         .setProductDetails(data.details)
-                        .setOfferToken(data.offerToken)
+                        .apply { data.offerToken?.let { setOfferToken(it) } }
                         .build()
                 )
             ).build()
@@ -97,6 +113,16 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
         val price = offer.pricingPhases.pricingPhaseList.firstOrNull()?.formattedPrice ?: ""
         return BillingProduct(
             id = planId,
+            title = name,
+            description = description,
+            price = price
+        )
+    }
+
+    private fun ProductDetails.toBillingProduct(productId: String): BillingProduct {
+        val price = oneTimePurchaseOfferDetails?.formattedPrice ?: ""
+        return BillingProduct(
+            id = productId,
             title = name,
             description = description,
             price = price
