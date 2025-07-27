@@ -19,8 +19,8 @@ class ConfirmPurchaseUseCase(
     private val syncDataSource: PurchaseSyncDataSource,
     private val scheduler: PurchaseSyncScheduler
 ) {
-    operator fun invoke(token: String): Flow<Result<Unit>> = channelFlow {
-        repository.confirmPurchase(token).collectLatest { result ->
+    operator fun invoke(token: String, productId: String? = null): Flow<Result<Unit>> = channelFlow {
+        repository.confirmPurchase(token, productId).collectLatest { result ->
             CrashReporter.log("Calling confirmPurchase $result")
             CrashReporter.recordException(Exception("Calling confirmPurchase $result"))
             when (result) {

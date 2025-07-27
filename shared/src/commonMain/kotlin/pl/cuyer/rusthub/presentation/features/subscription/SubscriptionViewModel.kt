@@ -113,7 +113,9 @@ class SubscriptionViewModel(
             .onEach { purchase ->
                 CrashReporter.log("Observing purchases flow $purchase")
                 CrashReporter.recordException(Exception("Observing purchases flow $purchase"))
-                confirmPurchase(purchase.purchaseToken)
+                val plan = SubscriptionPlan.entries.firstOrNull { it.productId == purchase.productId }
+                val productId = plan?.takeIf { it.basePlanId == null }?.productId
+                confirmPurchase(purchase.purchaseToken, productId)
             }.launchIn(coroutineScope)
     }
 
@@ -139,9 +141,9 @@ class SubscriptionViewModel(
         billingRepository.launchBillingFlow(activity, id)
     }
 
-    private fun confirmPurchase(token: String) {
+    private fun confirmPurchase(token: String, productId: String?) {
         coroutineScope.launch {
-            confirmPurchaseUseCase(token)
+            confirmPurchaseUseCase(token, productId)
                 .onStart { _state.update { it.copy(isProcessing = true) } }
                 .onCompletion { _state.update { it.copy(isProcessing = false) } }
                 .catchAndLog { e ->
