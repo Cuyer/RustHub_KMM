@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.NotificationsNone
 import androidx.compose.material3.DropdownMenu
@@ -106,6 +107,7 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 @Composable
 fun ServerDetailsScreen(
     onNavigate: (NavKey) -> Unit,
+    onNavigateUp: () -> Unit,
     state: State<ServerDetailsState>,
     onAction: (ServerDetailsAction) -> Unit,
     uiEvent: Flow<UiEvent>
@@ -149,6 +151,14 @@ fun ServerDetailsScreen(
                         overflow = TextOverflow.Ellipsis,
                         fontWeight = FontWeight.SemiBold
                     )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateUp) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(SharedRes.strings.back)
+                        )
+                    }
                 },
                 actions = {
                     var expanded by remember { mutableStateOf(false) }
@@ -723,6 +733,7 @@ private fun ServerDetailsPrev() {
         ) {
             ServerDetailsScreen(
                 onNavigate = {},
+                onNavigateUp = {},
                 state = mutableStateOf(ServerDetailsState()),
                 onAction = {},
                 uiEvent = MutableStateFlow(

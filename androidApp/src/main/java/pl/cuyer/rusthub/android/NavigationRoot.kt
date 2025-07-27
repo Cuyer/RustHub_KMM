@@ -290,7 +290,8 @@ private fun AppScaffold(
                             state = state,
                             uiEvent = viewModel.uiEvent,
                             onAction = viewModel::onAction,
-                            onNavigate = { dest -> backStack.add(dest) }
+                            onNavigate = { dest -> backStack.add(dest) },
+                            onNavigateUp = { backStack.removeLastOrNull() }
                         )
                     }
                     entry<ItemList>(metadata = ListDetailSceneStrategy.listPane()) {
