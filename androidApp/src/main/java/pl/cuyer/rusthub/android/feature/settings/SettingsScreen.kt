@@ -369,7 +369,8 @@ private fun AccountSection(
                 )
             }
         }
-    } else if (provider != AuthProvider.ANONYMOUS) {
+    }
+    if (provider != AuthProvider.ANONYMOUS) {
         AppTextButton(
             onClick = { onAction(SettingsAction.OnSubscriptionClick) }
         ) {

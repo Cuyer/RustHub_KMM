@@ -225,6 +225,7 @@
     <string name="you_are_subscribed">Vous êtes abonné : %1$s</string>
     <string name="subscription_expiration">Expire le %1$s</string>
     <string name="change_plan">Changer de plan</string>
+    <string name="lifetime_plan_active">Plan à vie actif</string>
     <string name="support_development">Soutenir le développement</string>
     <string name="support_development_icon">Symbole de soutien au développement</string>
     <string name="terms_conditions">Conditions générales</string>
