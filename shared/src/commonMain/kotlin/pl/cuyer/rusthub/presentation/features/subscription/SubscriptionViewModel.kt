@@ -24,6 +24,7 @@ import pl.cuyer.rusthub.domain.model.toMessage
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
 import pl.cuyer.rusthub.domain.model.ActiveSubscription
 import pl.cuyer.rusthub.domain.usecase.ConfirmPurchaseUseCase
+import pl.cuyer.rusthub.domain.usecase.RefreshUserUseCase
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
@@ -47,6 +48,7 @@ sealed interface SubscriptionAction {
 class SubscriptionViewModel(
     private val billingRepository: BillingRepository,
     private val confirmPurchaseUseCase: ConfirmPurchaseUseCase,
+    private val refreshUserUseCase: RefreshUserUseCase,
     private val snackbarController: SnackbarController,
     private val stringProvider: StringProvider
 ) : BaseViewModel() {
@@ -151,11 +153,19 @@ class SubscriptionViewModel(
                 }
                 .collectLatest { result ->
                     when (result) {
-                        is Result.Success -> _uiEvent.send(UiEvent.NavigateUp)
+                        is Result.Success -> refreshUser()
                         is Result.Error -> showErrorSnackbar(result.exception.toUserMessage(stringProvider))
                     }
                 }
         }
+    }
+
+    private suspend fun refreshUser() {
+        refreshUserUseCase()
+            .catchAndLog { e ->
+                showErrorSnackbar(e.toUserMessage(stringProvider))
+            }
+            .collectLatest { _uiEvent.send(UiEvent.NavigateUp) }
     }
 
     private suspend fun showErrorSnackbar(message: String?) {

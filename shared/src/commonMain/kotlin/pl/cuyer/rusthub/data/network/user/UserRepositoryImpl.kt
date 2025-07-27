@@ -5,15 +5,17 @@ import io.ktor.client.request.get
 import io.ktor.client.request.post
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.common.Result
+import pl.cuyer.rusthub.data.network.user.mapper.toDomain
+import pl.cuyer.rusthub.data.network.user.model.UserDto
+import pl.cuyer.rusthub.data.network.user.model.UserInfoDto
 import pl.cuyer.rusthub.data.network.util.BaseApiResponse
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
+import pl.cuyer.rusthub.domain.model.User
 import pl.cuyer.rusthub.domain.repository.user.UserRepository
 
-@Serializable
-private data class UserDto(val emailConfirmed: Boolean)
+
 
 class UserRepositoryImpl(
     private val httpClient: HttpClient,
@@ -40,4 +42,16 @@ class UserRepositoryImpl(
             }
         }
     }
+
+    override fun getUser(): Flow<Result<User>> {
+        return safeApiCall<UserInfoDto> {
+            httpClient.get(NetworkConstants.BASE_URL + "me")
+        }.map { result ->
+            when (result) {
+                is Result.Success -> Result.Success(result.data.toDomain())
+                is Result.Error -> result
+            }
+        }
+    }
 }
+

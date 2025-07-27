@@ -34,9 +34,11 @@ import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
+import pl.cuyer.rusthub.util.UserSyncScheduler
 import pl.cuyer.rusthub.data.billing.BillingRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
 import pl.cuyer.rusthub.domain.usecase.ConfirmPurchaseUseCase
+import pl.cuyer.rusthub.domain.usecase.RefreshUserUseCase
 import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
 import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
@@ -59,6 +61,7 @@ actual val platformModule: Module = module {
     single { MessagingTokenScheduler() }
     single { ItemsScheduler() }
     single { PurchaseSyncScheduler() }
+    single { UserSyncScheduler() }
     single { BillingRepositoryImpl() } bind BillingRepository::class
     single { ItemSyncDataSourceImpl(get()) } bind ItemSyncDataSource::class
     single { PurchaseSyncDataSourceImpl(get()) } bind PurchaseSyncDataSource::class
@@ -196,6 +199,7 @@ actual val platformModule: Module = module {
         SubscriptionViewModel(
             billingRepository = get(),
             confirmPurchaseUseCase = get(),
+            refreshUserUseCase = get(),
             snackbarController = get(),
             stringProvider = get()
         )

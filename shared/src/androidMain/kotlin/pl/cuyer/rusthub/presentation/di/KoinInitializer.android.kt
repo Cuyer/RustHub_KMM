@@ -44,6 +44,7 @@ import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
+import pl.cuyer.rusthub.util.UserSyncScheduler
 import pl.cuyer.rusthub.data.local.purchase.PurchaseSyncDataSourceImpl
 import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
@@ -70,6 +71,7 @@ actual val platformModule: Module = module {
     single { MessagingTokenScheduler(get()) }
     single { ItemsScheduler(get()) }
     single { PurchaseSyncScheduler(get()) }
+    single { UserSyncScheduler(get()) }
     single { BillingRepositoryImpl(androidContext()) } bind BillingRepository::class
     single { ItemSyncDataSourceImpl(get()) } bind ItemSyncDataSource::class
     single { PurchaseSyncDataSourceImpl(get()) } bind PurchaseSyncDataSource::class
@@ -252,6 +254,7 @@ actual val platformModule: Module = module {
         SubscriptionViewModel(
             billingRepository = get(),
             confirmPurchaseUseCase = get(),
+            refreshUserUseCase = get(),
             snackbarController = get(),
             stringProvider = get()
         )

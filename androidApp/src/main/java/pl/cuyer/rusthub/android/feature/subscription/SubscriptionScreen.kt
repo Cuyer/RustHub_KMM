@@ -48,6 +48,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -195,40 +196,44 @@ fun SubscriptionScreen(
         ObserveAsEvents(uiEvent) { event ->
             if (event is UiEvent.NavigateUp) onNavigateUp()
         }
-        if (isTabletMode) {
-            SubscriptionScreenExpanded(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding)
-                    .fillMaxSize(),
-                pagerState = pagerState,
-                selectedPlan = { selectedPlan },
-                onPlanSelect = { selectedPlan = it },
-                onNavigateUp = onNavigateUp,
-                onPrivacyPolicy = onPrivacyPolicy,
-                onTerms = onTerms,
-                products = state.value.products,
-                isLoading = state.value.isLoading,
-                currentPlan = state.value.currentPlan,
-                onAction = onAction
-            )
-        } else {
-            SubscriptionScreenCompact(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding)
-                    .fillMaxSize(),
-                pagerState = pagerState,
-                selectedPlan = { selectedPlan },
-                onPlanSelect = { selectedPlan = it },
-                onNavigateUp = onNavigateUp,
-                onPrivacyPolicy = onPrivacyPolicy,
-                onTerms = onTerms,
-                products = state.value.products,
-                isLoading = state.value.isLoading,
-                currentPlan = state.value.currentPlan,
-                onAction = onAction
-            )
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .fillMaxSize()
+        ) {
+            if (state.value.isProcessing) {
+                LoadingIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+            if (isTabletMode) {
+                SubscriptionScreenExpanded(
+                    modifier = Modifier.fillMaxSize(),
+                    pagerState = pagerState,
+                    selectedPlan = { selectedPlan },
+                    onPlanSelect = { selectedPlan = it },
+                    onNavigateUp = onNavigateUp,
+                    onPrivacyPolicy = onPrivacyPolicy,
+                    onTerms = onTerms,
+                    products = state.value.products,
+                    isLoading = state.value.isLoading,
+                    currentPlan = state.value.currentPlan,
+                    onAction = onAction
+                )
+            } else {
+                SubscriptionScreenCompact(
+                    modifier = Modifier.fillMaxSize(),
+                    pagerState = pagerState,
+                    selectedPlan = { selectedPlan },
+                    onPlanSelect = { selectedPlan = it },
+                    onNavigateUp = onNavigateUp,
+                    onPrivacyPolicy = onPrivacyPolicy,
+                    onTerms = onTerms,
+                    products = state.value.products,
+                    isLoading = state.value.isLoading,
+                    currentPlan = state.value.currentPlan,
+                    onAction = onAction
+                )
+            }
         }
     }
 }
