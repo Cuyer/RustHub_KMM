@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.matchParentSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -202,9 +203,6 @@ fun SubscriptionScreen(
                 .consumeWindowInsets(innerPadding)
                 .fillMaxSize()
         ) {
-            if (state.value.isProcessing) {
-                LoadingIndicator(modifier = Modifier.align(Alignment.Center))
-            }
             if (isTabletMode) {
                 SubscriptionScreenExpanded(
                     modifier = Modifier.fillMaxSize(),
@@ -232,6 +230,13 @@ fun SubscriptionScreen(
                     isLoading = state.value.isLoading,
                     currentPlan = state.value.currentPlan,
                     onAction = onAction
+                )
+            }
+            if (state.value.isProcessing) {
+                LoadingIndicator(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .matchParentSize()
                 )
             }
         }
