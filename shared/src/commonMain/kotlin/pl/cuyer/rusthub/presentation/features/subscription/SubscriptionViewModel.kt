@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -27,6 +28,7 @@ import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.util.CrashReporter
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.catchAndLog
 import pl.cuyer.rusthub.util.toUserMessage
@@ -105,23 +107,29 @@ class SubscriptionViewModel(
     }
 
     private fun observePurchases() {
-        coroutineScope.launch {
-            billingRepository.purchaseFlow.collectLatest { purchase ->
+        billingRepository
+            .purchaseFlow
+            .distinctUntilChanged()
+            .onEach { purchase ->
+                CrashReporter.log("Observing purchases flow $purchase")
+                CrashReporter.recordException(Exception("Observing purchases flow $purchase"))
                 confirmPurchase(purchase.purchaseToken)
-            }
-        }
+            }.launchIn(coroutineScope)
     }
 
     private fun observeErrors() {
-        coroutineScope.launch {
-            billingRepository.errorFlow.collectLatest { code ->
+        billingRepository
+            .errorFlow
+            .distinctUntilChanged()
+            .onEach { code ->
                 showErrorSnackbar(code.toMessage(stringProvider))
             }
-        }
+            .launchIn(coroutineScope)
     }
 
     private fun observeUser() {
         billingRepository.getActiveSubscription()
+            .distinctUntilChanged()
             .onEach { info -> _state.update { it.copy(currentPlan = info?.plan) } }
             .launchIn(coroutineScope)
     }
