@@ -24,7 +24,7 @@ class PurchaseSyncWorker(
         val tasks = operations.map { operation ->
             async {
                 var success = false
-                repository.confirmPurchase(operation.token).collectLatest { result ->
+                repository.confirmPurchase(operation.token, operation.productId).collectLatest { result ->
                     when (result) {
                         is DomainResult.Success -> {
                             syncDataSource.deleteOperation(operation.token)

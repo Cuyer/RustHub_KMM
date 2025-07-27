@@ -13,16 +13,16 @@ import pl.cuyer.rusthub.data.network.util.NetworkConstants
 import pl.cuyer.rusthub.domain.repository.purchase.PurchaseRepository
 
 @Serializable
-private data class PurchaseRequest(val token: String)
+private data class PurchaseRequest(val token: String, val productId: String? = null)
 
 class PurchaseRepositoryImpl(
     private val httpClient: HttpClient,
     json: Json
 ) : PurchaseRepository, BaseApiResponse(json) {
-    override fun confirmPurchase(token: String): Flow<Result<Unit>> {
+    override fun confirmPurchase(token: String, productId: String?): Flow<Result<Unit>> {
         return safeApiCall<Unit> {
             httpClient.post(NetworkConstants.BASE_URL + "billing/confirm") {
-                setBody(PurchaseRequest(token))
+                setBody(PurchaseRequest(token, productId))
             }
         }.map { result ->
             when (result) {
