@@ -15,7 +15,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
@@ -29,9 +32,9 @@ import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import pl.cuyer.rusthub.util.CrashReporter
 
 class BillingRepositoryImpl(context: Context) : BillingRepository {
-    private val _purchaseFlow = MutableSharedFlow<PurchaseInfo>()
+    private val _purchaseFlow = MutableSharedFlow<PurchaseInfo>(replay = 1)
     override val purchaseFlow = _purchaseFlow.asSharedFlow()
-    private val _errorFlow = MutableSharedFlow<BillingErrorCode>()
+    private val _errorFlow = MutableSharedFlow<BillingErrorCode>(replay = 1)
     override val errorFlow = _errorFlow.asSharedFlow()
 
     private data class ProductData(val details: ProductDetails, val offerToken: String?)
@@ -47,6 +50,8 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
             CrashReporter.recordException(Exception("Billing listener: $billingResult\n$purchases"))
 
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                CrashReporter.log("Handling purchase: before purchase check")
+                CrashReporter.recordException(Exception("Billing listener: before purchase check"))
                 purchases?.forEach {
                     CrashReporter.log("Handling purchase: $it")
                     handlePurchase(it)

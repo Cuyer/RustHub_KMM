@@ -11,6 +11,7 @@ import pl.cuyer.rusthub.domain.model.SyncState
 import pl.cuyer.rusthub.domain.exception.NetworkUnavailableException
 import pl.cuyer.rusthub.domain.exception.TimeoutException
 import pl.cuyer.rusthub.domain.exception.ServiceUnavailableException
+import pl.cuyer.rusthub.util.CrashReporter
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
 
 class ConfirmPurchaseUseCase(
@@ -20,6 +21,8 @@ class ConfirmPurchaseUseCase(
 ) {
     operator fun invoke(token: String): Flow<Result<Unit>> = channelFlow {
         repository.confirmPurchase(token).collectLatest { result ->
+            CrashReporter.log("Calling confirmPurchase $result")
+            CrashReporter.recordException(Exception("Calling confirmPurchase $result"))
             when (result) {
                 is Result.Success -> {
                     syncDataSource.deleteOperation(token)
