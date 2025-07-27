@@ -99,6 +99,7 @@ import pl.cuyer.rusthub.domain.model.BillingProduct
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
+import pl.cuyer.rusthub.android.designsystem.PlanSelectorShimmer
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
@@ -158,7 +159,10 @@ fun SubscriptionScreen(
     onAction: (SubscriptionAction) -> Unit,
     uiEvent: Flow<UiEvent>
 ) {
-    var selectedPlan by remember { mutableStateOf(SubscriptionPlan.MONTHLY) }
+    var selectedPlan by remember { mutableStateOf(state.value.currentPlan ?: SubscriptionPlan.MONTHLY) }
+    LaunchedEffect(state.value.currentPlan) {
+        state.value.currentPlan?.let { selectedPlan = it }
+    }
     val pagerState = rememberPagerState(pageCount = { benefits.size })
     val context = LocalContext.current
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
@@ -204,6 +208,8 @@ fun SubscriptionScreen(
                 onPrivacyPolicy = onPrivacyPolicy,
                 onTerms = onTerms,
                 products = state.value.products,
+                isLoading = state.value.isLoading,
+                currentPlan = state.value.currentPlan,
                 onAction = onAction
             )
         } else {
@@ -219,6 +225,8 @@ fun SubscriptionScreen(
                 onPrivacyPolicy = onPrivacyPolicy,
                 onTerms = onTerms,
                 products = state.value.products,
+                isLoading = state.value.isLoading,
+                currentPlan = state.value.currentPlan,
                 onAction = onAction
             )
         }
@@ -235,6 +243,8 @@ private fun SubscriptionScreenCompact(
     onPrivacyPolicy: () -> Unit,
     onTerms: () -> Unit,
     products: Map<SubscriptionPlan, BillingProduct>,
+    isLoading: Boolean,
+    currentPlan: SubscriptionPlan?,
     onAction: (SubscriptionAction) -> Unit
 ) {
     val activity = LocalActivity.current as Activity
@@ -246,12 +256,17 @@ private fun SubscriptionScreenCompact(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         BenefitCarousel(pagerState = pagerState)
-        PlanSelector(
-            selectedPlan = selectedPlan,
-            onPlanSelect = onPlanSelect,
-            products = products
-        )
-        SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms) {
+        if (isLoading) {
+            PlanSelectorShimmer(Modifier.fillMaxWidth())
+        } else {
+            PlanSelector(
+                selectedPlan = selectedPlan,
+                onPlanSelect = onPlanSelect,
+                products = products,
+                currentPlan = currentPlan
+            )
+        }
+        SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms, currentPlan) {
             onAction(SubscriptionAction.Subscribe(selectedPlan(), activity))
         }
         Spacer(modifier = Modifier.height(spacing.medium))
@@ -271,6 +286,8 @@ private fun SubscriptionScreenExpanded(
     onPrivacyPolicy: () -> Unit,
     onTerms: () -> Unit,
     products: Map<SubscriptionPlan, BillingProduct>,
+    isLoading: Boolean,
+    currentPlan: SubscriptionPlan?,
     onAction: (SubscriptionAction) -> Unit
 ) {
     val activity = LocalActivity.current as Activity
@@ -286,12 +303,17 @@ private fun SubscriptionScreenExpanded(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             BenefitCarousel(pagerState = pagerState)
-            PlanSelector(
-                selectedPlan = selectedPlan,
-                onPlanSelect = onPlanSelect,
-                products = products
-            )
-            SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms) {
+            if (isLoading) {
+                PlanSelectorShimmer(Modifier.fillMaxWidth())
+            } else {
+                PlanSelector(
+                    selectedPlan = selectedPlan,
+                    onPlanSelect = onPlanSelect,
+                    products = products,
+                    currentPlan = currentPlan
+                )
+            }
+            SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms, currentPlan) {
                 onAction(SubscriptionAction.Subscribe(selectedPlan(), activity))
             }
         }
@@ -359,7 +381,8 @@ private fun BenefitCarousel(pagerState: PagerState) {
 private fun PlanSelector(
     selectedPlan: () -> SubscriptionPlan,
     onPlanSelect: (SubscriptionPlan) -> Unit,
-    products: Map<SubscriptionPlan, BillingProduct>
+    products: Map<SubscriptionPlan, BillingProduct>,
+    currentPlan: SubscriptionPlan?
 ) {
     Row(
         modifier = Modifier
@@ -380,6 +403,7 @@ private fun PlanSelector(
 
             ElevatedCard(
                 onClick = { onPlanSelect(plan) },
+                enabled = plan != currentPlan,
                 modifier = Modifier
                     .semantics {
                         role = Role.RadioButton
@@ -426,13 +450,22 @@ private fun SubscribeActions(
     onNavigateUp: () -> Unit,
     onPrivacyPolicy: () -> Unit,
     onTerms: () -> Unit,
+    currentPlan: SubscriptionPlan?,
     onSubscribe: () -> Unit
 ) {
+    val plan = selectedPlan()
+    val samePlan = plan == currentPlan
+    val sameProduct = plan.productId == currentPlan?.productId && !samePlan
+    val text = when {
+        samePlan -> stringResource(SharedRes.strings.subscribed)
+        sameProduct -> stringResource(SharedRes.strings.change_plan)
+        else -> stringResource(SharedRes.strings.subscribe_to_plan, stringResource(plan.label))
+    }
     AppButton(
         modifier = Modifier.fillMaxWidth(),
-        onClick = onSubscribe) {
-        Text(stringResource(SharedRes.strings.subscribe_to_plan, stringResource(selectedPlan().label)))
-    }
+        onClick = onSubscribe,
+        enabled = !samePlan
+    ) { Text(text) }
     AppTextButton(onClick = onNavigateUp) {
         Text(stringResource(SharedRes.strings.not_now))
     }

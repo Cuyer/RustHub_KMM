@@ -147,6 +147,7 @@ actual val platformModule: Module = module {
             stringProvider = get(),
             systemDarkThemeObserver = get(),
             itemsScheduler = get(),
+            billingRepository = get(),
             itemSyncDataSource = get(),
             userEventController = get()
         )

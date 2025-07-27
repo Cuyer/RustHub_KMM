@@ -21,6 +21,7 @@ import pl.cuyer.rusthub.domain.model.BillingProduct
 import pl.cuyer.rusthub.domain.model.BillingErrorCode
 import pl.cuyer.rusthub.domain.model.toMessage
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
+import pl.cuyer.rusthub.domain.model.ActiveSubscription
 import pl.cuyer.rusthub.domain.usecase.ConfirmPurchaseUseCase
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
@@ -33,7 +34,8 @@ import pl.cuyer.rusthub.util.toUserMessage
 data class SubscriptionState(
     val products: Map<SubscriptionPlan, BillingProduct> = emptyMap(),
     val isLoading: Boolean = false,
-    val isProcessing: Boolean = false
+    val isProcessing: Boolean = false,
+    val currentPlan: SubscriptionPlan? = null
 )
 
 sealed interface SubscriptionAction {
@@ -59,6 +61,7 @@ class SubscriptionViewModel(
     init {
         observeProducts()
         observePurchases()
+        observeUser()
         observeErrors()
     }
 
@@ -115,6 +118,12 @@ class SubscriptionViewModel(
                 showErrorSnackbar(code.toMessage(stringProvider))
             }
         }
+    }
+
+    private fun observeUser() {
+        billingRepository.getActiveSubscription()
+            .onEach { info -> _state.update { it.copy(currentPlan = info?.plan) } }
+            .launchIn(coroutineScope)
     }
 
     private fun subscribe(plan: SubscriptionPlan, activity: Any) {

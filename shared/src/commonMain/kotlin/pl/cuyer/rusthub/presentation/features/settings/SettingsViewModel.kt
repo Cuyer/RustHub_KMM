@@ -35,10 +35,12 @@ import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
 import pl.cuyer.rusthub.presentation.navigation.Subscription
+import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.navigation.UpgradeAccount
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.common.user.UserEvent
 import pl.cuyer.rusthub.common.user.UserEventController
 import pl.cuyer.rusthub.util.GoogleAuthClient
@@ -48,6 +50,8 @@ import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import pl.cuyer.rusthub.util.anonymousAccountExpiresIn
 import pl.cuyer.rusthub.util.formatExpiration
 import pl.cuyer.rusthub.util.ItemsScheduler
+import pl.cuyer.rusthub.domain.model.ActiveSubscription
+import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.domain.model.ItemSyncState
 import pl.cuyer.rusthub.util.updateAppLanguage
@@ -65,6 +69,7 @@ class SettingsViewModel(
     private val stringProvider: StringProvider,
     private val systemDarkThemeObserver: SystemDarkThemeObserver,
     private val itemsScheduler: ItemsScheduler,
+    private val billingRepository: BillingRepository,
     private val itemSyncDataSource: ItemSyncDataSource,
     private val userEventController: UserEventController
 ) : BaseViewModel() {
@@ -73,6 +78,7 @@ class SettingsViewModel(
     val uiEvent = _uiEvent.receiveAsFlow()
 
     private var logoutJob: Job? = null
+    private var emailConfirmed: Boolean = true
     private val _state = MutableStateFlow(SettingsState())
     val state = _state
         .onStart {
@@ -90,7 +96,13 @@ class SettingsViewModel(
             SettingsAction.OnChangePasswordClick -> navigateChangePassword()
             SettingsAction.OnNotificationsClick -> permissionsController.openAppSettings()
             SettingsAction.OnLogout -> logout()
-            SettingsAction.OnSubscriptionClick -> navigateSubscription()
+            SettingsAction.OnSubscriptionClick -> {
+                if (!emailConfirmed) {
+                    showUnconfirmedSnackbar()
+                } else {
+                    navigateSubscription()
+                }
+            }
             SettingsAction.OnDismissSubscriptionDialog -> Unit
             SettingsAction.OnSubscribe -> Unit
             SettingsAction.OnPrivacyPolicy -> openPrivacyPolicy()
@@ -136,18 +148,20 @@ class SettingsViewModel(
 
     private fun observeUser() {
         getUserUseCase()
-            .onEach { updateUser(it) }
+            .combine(billingRepository.getActiveSubscription()) { user, sub -> user to sub }
+            .onEach { (user, sub) -> updateUser(user, sub) }
             .launchIn(coroutineScope)
     }
 
-    private fun updateUser(user: User?) {
+    private fun updateUser(user: User?, subscription: ActiveSubscription?) {
+        emailConfirmed = user?.emailConfirmed == true
         _state.update {
             it.copy(
-                username = if (user?.provider == AuthProvider.GOOGLE) user.username.substringBefore(
-                    "-"
-                ) else user?.username,
+                username = if (user?.provider == AuthProvider.GOOGLE) user.username.substringBefore("-") else user?.username,
                 provider = user?.provider,
                 subscribed = user?.subscribed == true,
+                currentPlan = subscription?.plan,
+                subscriptionExpiration = subscription?.expiration?.toString(),
                 anonymousExpiration = user?.let { u ->
                     if (u.provider == AuthProvider.ANONYMOUS) {
                         anonymousAccountExpiresIn(u.accessToken)?.let { formatExpiration(it, stringProvider) }
@@ -214,6 +228,25 @@ class SettingsViewModel(
     private fun navigateSubscription() {
         coroutineScope.launch {
             _uiEvent.send(UiEvent.Navigate(Subscription))
+        }
+    }
+
+    private fun navigateConfirmEmail() {
+        coroutineScope.launch {
+            _uiEvent.send(UiEvent.Navigate(ConfirmEmail))
+        }
+    }
+
+    private fun showUnconfirmedSnackbar() {
+        coroutineScope.launch {
+            snackbarController.sendEvent(
+                SnackbarEvent(
+                    message = stringProvider.get(SharedRes.strings.email_not_confirmed),
+                    action = SnackbarAction(stringProvider.get(SharedRes.strings.resend)) {
+                        navigateConfirmEmail()
+                    }
+                )
+            )
         }
     }
 

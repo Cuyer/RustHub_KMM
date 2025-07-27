@@ -221,6 +221,10 @@
     <string name="subscribe_to_plan">Subskrybuj plan %s</string>
     <string name="subscription">Subskrypcja</string>
     <string name="subscription_button">Przycisk subskrypcji</string>
+    <string name="manage_subscription">Zarządzaj subskrypcją</string>
+    <string name="you_are_subscribed">Subskrybujesz: %1$s</string>
+    <string name="subscription_expiration">Wygasa %1$s</string>
+    <string name="change_plan">Zmień plan</string>
     <string name="support_development">Wesprzyj nasz rozwój</string>
     <string name="support_development_icon">Symbol wsparcia rozwoju</string>
     <string name="terms_conditions">Regulamin</string>
