@@ -16,6 +16,7 @@ class PurchaseSyncDataSourceImpl(
         withContext(Dispatchers.IO) {
             queries.upsertPurchaseSync(
                 token = operation.token,
+                product_id = operation.productId,
                 sync_state = operation.syncState.name
             )
         }
@@ -32,6 +33,7 @@ class PurchaseSyncDataSourceImpl(
                 .map {
                     PurchaseSyncOperation(
                         token = it.token,
+                        productId = it.product_id,
                         syncState = SyncState.valueOf(it.sync_state)
                     )
                 }

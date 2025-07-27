@@ -563,13 +563,15 @@ DELETE FROM subscriptionSyncEntity;
 
 CREATE TABLE purchaseSyncEntity (
     token TEXT NOT NULL PRIMARY KEY,
+    product_id TEXT,
     sync_state TEXT NOT NULL
 );
 
 upsertPurchaseSync:
-INSERT INTO purchaseSyncEntity (token, sync_state)
-VALUES (:token, :sync_state)
+INSERT INTO purchaseSyncEntity (token, product_id, sync_state)
+VALUES (:token, :product_id, :sync_state)
 ON CONFLICT(token) DO UPDATE SET
+    product_id = excluded.product_id,
     sync_state = excluded.sync_state;
 
 getPendingPurchaseSync:
