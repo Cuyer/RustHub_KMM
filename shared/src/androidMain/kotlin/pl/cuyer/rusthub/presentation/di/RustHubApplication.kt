@@ -45,6 +45,8 @@ class RustHubApplication : Application(), Configuration.Provider {
     val itemSyncDataSource by inject<ItemSyncDataSource>()
     val purchaseRepository by inject<pl.cuyer.rusthub.domain.repository.purchase.PurchaseRepository>()
     val purchaseSyncDataSource by inject<pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource>()
+    val userRepository by inject<pl.cuyer.rusthub.domain.repository.user.UserRepository>()
+    val authDataSource by inject<pl.cuyer.rusthub.domain.repository.auth.AuthDataSource>()
 
     override fun onCreate() {
         super.onCreate()
@@ -98,7 +100,9 @@ class RustHubApplication : Application(), Configuration.Provider {
                     itemDataSource = itemDataSource,
                     itemSyncDataSource = itemSyncDataSource,
                     purchaseRepository = purchaseRepository,
-                    purchaseSyncDataSource = purchaseSyncDataSource
+                    purchaseSyncDataSource = purchaseSyncDataSource,
+                    userRepository = userRepository,
+                    authDataSource = authDataSource
                 )
             )
             .build()
