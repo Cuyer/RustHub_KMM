@@ -150,29 +150,47 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
     }
 
     override fun getActiveSubscription(): Flow<ActiveSubscription?> = callbackFlow {
-        val params = QueryPurchasesParams.newBuilder()
+        val subsParams = QueryPurchasesParams.newBuilder()
             .setProductType(BillingClient.ProductType.SUBS)
             .build()
 
-        billingClient.queryPurchasesAsync(params) { billingResult, purchasesList ->
+        billingClient.queryPurchasesAsync(subsParams) { billingResult, purchasesList ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 val purchase = purchasesList.firstOrNull()
                 val planId = purchase?.products?.firstOrNull()
-                val plan = SubscriptionPlan.entries.firstOrNull { it.basePlanId == planId }
+                if (purchase != null && planId != null) {
+                    val plan = SubscriptionPlan.entries.firstOrNull { it.basePlanId == planId }
 
-                val json = purchase?.originalJson
-                val exp = try {
-                    if (json != null) org.json.JSONObject(json).optLong("expiryTimeMillis", 0L) else 0L
-                } catch (_: Exception) { 0L }
+                    val json = purchase.originalJson
+                    val exp = try {
+                        org.json.JSONObject(json).optLong("expiryTimeMillis", 0L)
+                    } catch (_: Exception) { 0L }
 
-                val expiration = exp.takeIf { it > 0 }?.let { Instant.fromEpochMilliseconds(it) }
-
-                trySend(plan?.let { ActiveSubscription(it, expiration) })
-            } else {
-                trySend(null)
+                    val expiration = exp.takeIf { it > 0 }?.let { Instant.fromEpochMilliseconds(it) }
+                    trySend(plan?.let { ActiveSubscription(it, expiration) })
+                    close()
+                    return@queryPurchasesAsync
+                }
             }
 
-            close()
+            val inAppParams = QueryPurchasesParams.newBuilder()
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build()
+
+            billingClient.queryPurchasesAsync(inAppParams) { br, inappPurchases ->
+                if (br.responseCode == BillingClient.BillingResponseCode.OK) {
+                    val owned = inappPurchases.any { it.products.contains(SubscriptionPlan.LIFETIME.productId) }
+                    if (owned) {
+                        trySend(ActiveSubscription(SubscriptionPlan.LIFETIME, null))
+                    } else {
+                        trySend(null)
+                    }
+                } else {
+                    trySend(null)
+                }
+
+                close()
+            }
         }
 
         awaitClose {}
