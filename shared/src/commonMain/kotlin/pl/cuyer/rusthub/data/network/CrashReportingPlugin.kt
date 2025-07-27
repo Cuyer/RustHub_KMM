@@ -11,10 +11,8 @@ val CrashReportingPlugin = createClientPlugin("CrashReportingPlugin") {
             append(request.method.value)
             append(' ')
             append(request.url)
-            append("\nBody: ")
-            append(body)
-            append("\n")
-            append(Throwable().stackTraceToString())
+            append("\nHeaders: ")
+            append(request.headers)
         }
         CrashReporter.log(message)
     }
