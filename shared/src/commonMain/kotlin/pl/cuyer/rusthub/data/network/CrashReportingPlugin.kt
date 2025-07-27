@@ -5,14 +5,18 @@ import pl.cuyer.rusthub.util.CrashReporter
 
 val CrashReportingPlugin = createClientPlugin("CrashReportingPlugin") {
     onRequest { request, _ ->
-        val body = request.body.toString()
         val message = buildString {
-            append("Request ")
-            append(request.method.value)
-            append(' ')
-            append(request.url)
-            append("\nHeaders: ")
-            append(request.headers)
+            appendLine("Request ${request.method.value} ${request.url}")
+            appendLine("Headers:")
+            request.headers.entries().forEach { (key, values) ->
+                values.forEach { value ->
+                    appendLine("$key: $value")
+                }
+            }
+            val bodyText = request.body.toString()
+            if (bodyText.isNotBlank()) {
+                appendLine("Body: $bodyText")
+            }
         }
         CrashReporter.log(message)
     }
