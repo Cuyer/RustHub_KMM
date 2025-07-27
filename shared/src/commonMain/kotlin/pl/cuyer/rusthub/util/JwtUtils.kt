@@ -3,11 +3,14 @@ package pl.cuyer.rusthub.util
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.longOrNull
+import kotlinx.serialization.json.contentOrNull
 import pl.cuyer.rusthub.SharedRes
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import kotlin.time.Duration
 
 private val json = Json { ignoreUnknownKeys = true }
@@ -45,4 +48,34 @@ fun formatExpiration(duration: Duration, stringProvider: StringProvider): String
             append("${minutes}m")
         }
     }
+}
+
+@OptIn(ExperimentalEncodingApi::class)
+private fun decodePayload(token: String): kotlinx.serialization.json.JsonObject? {
+    val parts = token.split(".")
+    if (parts.size < 2) return null
+    val payload = parts[1]
+        .replace('-', '+')
+        .replace('_', '/')
+        .let { if (it.length % 4 != 0) it.padEnd((it.length + 3) / 4 * 4, '=') else it }
+    return try {
+        val decoded = Base64.decode(payload).decodeToString()
+        json.parseToJsonElement(decoded).jsonObject
+    } catch (_: Exception) {
+        null
+    }
+}
+
+@OptIn(ExperimentalEncodingApi::class)
+fun subscriptionPlan(token: String): SubscriptionPlan? {
+    val obj = decodePayload(token) ?: return null
+    val id = obj["plan"]?.jsonPrimitive?.contentOrNull ?: obj["sub_plan"]?.jsonPrimitive?.contentOrNull
+    return SubscriptionPlan.entries.firstOrNull { it.basePlanId == id || it.productId == id }
+}
+
+@OptIn(ExperimentalEncodingApi::class)
+fun subscriptionExpiration(token: String): String? {
+    val obj = decodePayload(token) ?: return null
+    val epoch = obj["plan_exp"]?.jsonPrimitive?.longOrNull ?: obj["plan_expiration"]?.jsonPrimitive?.longOrNull
+    return epoch?.let { Instant.fromEpochSeconds(it).toString() }
 }

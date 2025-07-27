@@ -221,6 +221,10 @@
     <string name="subscribe_to_plan">%s-Plan abonnieren</string>
     <string name="subscription">Abonnement</string>
     <string name="subscription_button">Abo-Button</string>
+    <string name="manage_subscription">Abo verwalten</string>
+    <string name="you_are_subscribed">Du hast abonniert: %1$s</string>
+    <string name="subscription_expiration">Läuft ab am %1$s</string>
+    <string name="change_plan">Plan wechseln</string>
     <string name="support_development">Entwicklung unterstützen</string>
     <string name="support_development_icon">Symbol zur Unterstützung der Entwicklung</string>
     <string name="terms_conditions">AGB</string>

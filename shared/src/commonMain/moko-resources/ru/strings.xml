@@ -221,6 +221,10 @@
     <string name="subscribe_to_plan">Подписаться на план %s</string>
     <string name="subscription">Подписка</string>
     <string name="subscription_button">Кнопка подписки</string>
+    <string name="manage_subscription">Управлять подпиской</string>
+    <string name="you_are_subscribed">Вы подписаны: %1$s</string>
+    <string name="subscription_expiration">Истекает %1$s</string>
+    <string name="change_plan">Сменить план</string>
     <string name="support_development">Поддержать разработку</string>
     <string name="support_development_icon">Символ поддержки разработки</string>
     <string name="terms_conditions">Условия использования</string>
