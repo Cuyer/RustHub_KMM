@@ -398,6 +398,7 @@ private fun PlanSelector(
             Alignment.CenterHorizontally
         )
     ) {
+        val lifetimeOwned = currentPlan == SubscriptionPlan.LIFETIME
         SubscriptionPlan.entries.forEach { plan ->
             val isSelected = plan == selectedPlan()
             val sd = if (isSelected) {
@@ -408,7 +409,7 @@ private fun PlanSelector(
 
             ElevatedCard(
                 onClick = { onPlanSelect(plan) },
-                enabled = plan != currentPlan,
+                enabled = !lifetimeOwned && plan != currentPlan,
                 modifier = Modifier
                     .semantics {
                         role = Role.RadioButton
@@ -461,7 +462,9 @@ private fun SubscribeActions(
     val plan = selectedPlan()
     val samePlan = plan == currentPlan
     val sameProduct = plan.productId == currentPlan?.productId && !samePlan
+    val lifetimeOwned = currentPlan == SubscriptionPlan.LIFETIME
     val text = when {
+        lifetimeOwned -> stringResource(SharedRes.strings.lifetime_plan_active)
         samePlan -> stringResource(SharedRes.strings.subscribed)
         sameProduct -> stringResource(SharedRes.strings.change_plan)
         else -> stringResource(SharedRes.strings.subscribe_to_plan, stringResource(plan.label))
@@ -469,7 +472,7 @@ private fun SubscribeActions(
     AppButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = onSubscribe,
-        enabled = !samePlan
+        enabled = !samePlan && !lifetimeOwned
     ) { Text(text) }
     AppTextButton(onClick = onNavigateUp) {
         Text(stringResource(SharedRes.strings.not_now))

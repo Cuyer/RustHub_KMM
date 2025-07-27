@@ -225,6 +225,7 @@
     <string name="you_are_subscribed">Вы подписаны: %1$s</string>
     <string name="subscription_expiration">Истекает %1$s</string>
     <string name="change_plan">Сменить план</string>
+    <string name="lifetime_plan_active">Пожизненный план активен</string>
     <string name="support_development">Поддержать разработку</string>
     <string name="support_development_icon">Символ поддержки разработки</string>
     <string name="terms_conditions">Условия использования</string>
