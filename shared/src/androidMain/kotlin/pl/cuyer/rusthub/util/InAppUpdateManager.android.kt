@@ -3,9 +3,9 @@ package pl.cuyer.rusthub.util
 import android.app.Activity
 import android.content.Context
 import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.InstallStateUpdatedListener
@@ -17,26 +17,25 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
-import pl.cuyer.rusthub.util.StringProvider
-import pl.cuyer.rusthub.SharedRes
 
 actual class InAppUpdateManager(
     context: Context,
     private val snackbarController: SnackbarController,
     private val stringProvider: StringProvider
 ) {
+
     private val appUpdateManager = AppUpdateManagerFactory.create(context)
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     private var currentActivity: ComponentActivity? = null
-    private var immediateInProgress = false
-
     private var launcher: ActivityResultLauncher<IntentSenderRequest>? = null
     private var listenerRegistered = false
+    private var immediateInProgress = false
 
     private val listener = InstallStateUpdatedListener { state ->
         if (state.installStatus() == InstallStatus.DOWNLOADED) {
@@ -55,20 +54,19 @@ actual class InAppUpdateManager(
         }
     }
 
-    private fun ensureLauncher(activity: ComponentActivity) {
-        if (currentActivity != activity) {
-            launcher?.unregister()
-            launcher = null
-            currentActivity = activity
-        }
-        if (launcher == null) {
-            launcher = activity.registerForActivityResult(StartIntentSenderForResult()) { result ->
-                if (result.resultCode != Activity.RESULT_OK) {
-                    Napier.d("In-app update flow failed: ${result.resultCode}")
-                    if (immediateInProgress) {
-                        currentActivity?.finishAffinity()
-                    }
-                }
+    fun setLauncher(
+        launcher: ActivityResultLauncher<IntentSenderRequest>,
+        activity: ComponentActivity
+    ) {
+        this.launcher = launcher
+        this.currentActivity = activity
+    }
+
+    fun onUpdateResult(result: ActivityResult, activity: ComponentActivity) {
+        if (result.resultCode != Activity.RESULT_OK) {
+            Napier.d("In-app update flow failed: ${result.resultCode}")
+            if (immediateInProgress) {
+                activity.finishAffinity()
             }
         }
     }
@@ -89,7 +87,7 @@ actual class InAppUpdateManager(
 
     actual fun check(activity: Any) {
         val act = activity as? ComponentActivity ?: return
-        ensureLauncher(act)
+        currentActivity = act
         appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
             when {
                 info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
@@ -123,11 +121,10 @@ actual class InAppUpdateManager(
 
     actual fun onResume(activity: Any) {
         val act = activity as? ComponentActivity ?: return
-        ensureLauncher(act)
+        currentActivity = act
         appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
             when {
-                info.updateAvailability() ==
-                        UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS -> {
+                info.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS -> {
                     immediateInProgress = true
                     val options = AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
                     launcher?.let {

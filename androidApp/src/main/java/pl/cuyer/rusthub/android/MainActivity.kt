@@ -6,6 +6,9 @@ import android.os.Bundle
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
@@ -36,6 +39,8 @@ class MainActivity : AppCompatActivity() {
     private val startupViewModel: StartupViewModel by viewModel()
     private val inAppUpdateManager: InAppUpdateManager by inject()
 
+    private lateinit var updateLauncher: ActivityResultLauncher<IntentSenderRequest>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -46,6 +51,11 @@ class MainActivity : AppCompatActivity() {
                 dynamicColor = false
             )
         )
+
+        updateLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+            inAppUpdateManager.onUpdateResult(result, this)
+        }
+        inAppUpdateManager.setLauncher(updateLauncher, this)
 
         inAppUpdateManager.check(this)
 
