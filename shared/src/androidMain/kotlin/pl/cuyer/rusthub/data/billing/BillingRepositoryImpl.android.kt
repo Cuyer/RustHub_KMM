@@ -8,20 +8,23 @@ import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryPurchasesParams
 import com.android.billingclient.api.queryProductDetails
-import pl.cuyer.rusthub.domain.model.BillingErrorCode
 import io.github.aakira.napier.Napier
-import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Instant
+import pl.cuyer.rusthub.domain.model.ActiveSubscription
+import pl.cuyer.rusthub.domain.model.BillingErrorCode
 import pl.cuyer.rusthub.domain.model.BillingProduct
 import pl.cuyer.rusthub.domain.model.PurchaseInfo
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
+import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 
 class BillingRepositoryImpl(context: Context) : BillingRepository {
     private val _purchaseFlow = MutableSharedFlow<PurchaseInfo>()
@@ -147,26 +150,31 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
     }
 
     override fun getActiveSubscription(): Flow<ActiveSubscription?> = callbackFlow {
-        val params = com.android.billingclient.api.QueryPurchasesParams.newBuilder()
+        val params = QueryPurchasesParams.newBuilder()
             .setProductType(BillingClient.ProductType.SUBS)
             .build()
-        val result = withContext(Dispatchers.IO) {
-            billingClient.queryPurchases(params)
+
+        billingClient.queryPurchasesAsync(params) { billingResult, purchasesList ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                val purchase = purchasesList.firstOrNull()
+                val planId = purchase?.products?.firstOrNull()
+                val plan = SubscriptionPlan.entries.firstOrNull { it.basePlanId == planId }
+
+                val json = purchase?.originalJson
+                val exp = try {
+                    if (json != null) org.json.JSONObject(json).optLong("expiryTimeMillis", 0L) else 0L
+                } catch (_: Exception) { 0L }
+
+                val expiration = exp.takeIf { it > 0 }?.let { Instant.fromEpochMilliseconds(it) }
+
+                trySend(plan?.let { ActiveSubscription(it, expiration) })
+            } else {
+                trySend(null)
+            }
+
+            close()
         }
-        if (result.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-            val purchase = result.purchasesList.firstOrNull()
-            val planId = purchase?.products?.firstOrNull()
-            val plan = SubscriptionPlan.entries.firstOrNull { it.basePlanId == planId }
-            val json = purchase?.originalJson
-            val exp = try {
-                if (json != null) org.json.JSONObject(json).optLong("expiryTimeMillis") else 0L
-            } catch (_: Exception) { 0L }
-            val expiration = exp.takeIf { it > 0 }?.let { kotlinx.datetime.Instant.fromEpochMilliseconds(it) }
-            trySend(plan?.let { ActiveSubscription(it, expiration) })
-        } else {
-            trySend(null)
-        }
-        close()
+
         awaitClose {}
     }
 
