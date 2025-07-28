@@ -25,12 +25,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
+import androidx.compose.foundation.layout.matchParentSize
+import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
+import pl.cuyer.rusthub.android.designsystem.shimmer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,15 +65,27 @@ fun ItemTooltipImage(
                     )
                 }
 
-                AsyncImage(
+                SubcomposeAsyncImage(
                     modifier = Modifier.matchParentSize(),
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(imageUrl)
                         .crossfade(true)
                         .build(),
-                    placeholder = painterResource(getImageByFileName("ic_placeholder").drawableResId),
-                    error = painterResource(getImageByFileName("ic_error").drawableResId),
                     contentDescription = null,
+                    loading = {
+                        Box(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .shimmer()
+                        )
+                    },
+                    error = {
+                        Image(
+                            painter = painterResource(getImageByFileName("ic_error").drawableResId),
+                            contentDescription = null,
+                            modifier = Modifier.matchParentSize()
+                        )
+                    },
                     onSuccess = {
                         success = true
                     },
