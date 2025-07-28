@@ -55,6 +55,7 @@ import pl.cuyer.rusthub.domain.model.ActiveSubscription
 import pl.cuyer.rusthub.domain.usecase.GetActiveSubscriptionUseCase
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.domain.model.ItemSyncState
+import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.util.updateAppLanguage
 
 class SettingsViewModel(
