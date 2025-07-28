@@ -25,6 +25,8 @@ sealed interface SettingsAction {
     @Immutable
     data object OnUpgradeAccount : SettingsAction
     @Immutable
+    data object OnResume : SettingsAction
+    @Immutable
     data class OnThemeChange(val theme: Theme) : SettingsAction
     @Immutable
     data class OnDynamicColorsChange(val enabled: Boolean) : SettingsAction

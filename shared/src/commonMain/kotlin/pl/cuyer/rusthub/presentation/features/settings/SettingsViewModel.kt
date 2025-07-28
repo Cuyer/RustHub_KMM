@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
@@ -79,6 +80,7 @@ class SettingsViewModel(
 
     private var logoutJob: Job? = null
     private var emailConfirmed: Boolean = true
+    private var subscriptionJob: Job? = null
     private val _state = MutableStateFlow(SettingsState())
     val state = _state
         .onStart {
@@ -108,6 +110,7 @@ class SettingsViewModel(
             SettingsAction.OnPrivacyPolicy -> openPrivacyPolicy()
             SettingsAction.OnDeleteAccount -> navigateDeleteAccount()
             SettingsAction.OnUpgradeAccount -> navigateUpgrade()
+            SettingsAction.OnResume -> refreshSubscription()
             is SettingsAction.OnThemeChange -> setTheme(action.theme)
             is SettingsAction.OnDynamicColorsChange -> setDynamicColors(action.enabled)
             is SettingsAction.OnUseSystemColorsChange -> setUseSystemColors(action.enabled)
@@ -148,8 +151,10 @@ class SettingsViewModel(
 
     private fun observeUser() {
         getUserUseCase()
-            .combine(getActiveSubscriptionUseCase()) { user, sub -> user to sub }
-            .onEach { (user, sub) -> updateUser(user, sub) }
+            .onEach { user ->
+                _state.update { it.copy(currentUser = user) }
+                updateUser(user, state.value.currentSubscription)
+            }
             .launchIn(coroutineScope)
     }
 
@@ -159,16 +164,19 @@ class SettingsViewModel(
             it.copy(
                 username = if (user?.provider == AuthProvider.GOOGLE) user.username.substringBefore("-") else user?.username,
                 provider = user?.provider,
-                subscribed = user?.subscribed == true,
+                subscribed = subscription != null || user?.subscribed == true,
                 currentPlan = subscription?.plan,
                 subscriptionExpiration = subscription?.expiration?.toString(),
+                subscriptionStatus = subscription?.state?.displayName(stringProvider),
                 anonymousExpiration = user?.let { u ->
                     if (u.provider == AuthProvider.ANONYMOUS) {
                         anonymousAccountExpiresIn(u.accessToken)?.let { formatExpiration(it, stringProvider) }
                     } else {
                         null
                     }
-                }
+                },
+                currentSubscription = subscription,
+                currentUser = user
             )
         }
     }
@@ -212,6 +220,18 @@ class SettingsViewModel(
 
     private fun setUseSystemColors(enabled: Boolean) {
         coroutineScope.launch { setUseSystemColorsPreferenceUseCase(enabled) }
+    }
+
+    private fun refreshSubscription() {
+        subscriptionJob?.cancel()
+        subscriptionJob = coroutineScope.launch {
+            getActiveSubscriptionUseCase()
+                .catchAndLog { updateUser(state.value.currentUser, null) }
+                .collectLatest { sub ->
+                    val user = getUserUseCase().first()
+                    updateUser(user, sub)
+                }
+        }
     }
 
     private fun showErrorSnackbar(message: String?) {
