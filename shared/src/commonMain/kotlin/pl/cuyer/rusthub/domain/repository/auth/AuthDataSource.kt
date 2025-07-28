@@ -21,5 +21,7 @@ interface AuthDataSource {
 
     suspend fun updateEmailConfirmed(confirmed: Boolean)
 
+    suspend fun updateSubscribed(subscribed: Boolean)
+
     suspend fun getUserOnce(): User?
 }

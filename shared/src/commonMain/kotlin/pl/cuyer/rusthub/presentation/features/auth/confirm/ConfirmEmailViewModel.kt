@@ -84,7 +84,7 @@ class ConfirmEmailViewModel(
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
-                            if (result.data) {
+                            if (result.data.emailConfirmed) {
                                 setEmailConfirmedUseCase(true)
                                 _uiEvent.send(UiEvent.Navigate(ServerList))
                             } else {

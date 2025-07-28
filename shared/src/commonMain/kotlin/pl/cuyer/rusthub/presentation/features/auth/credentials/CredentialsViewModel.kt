@@ -192,7 +192,7 @@ class CredentialsViewModel(
 
             when (val result = checkEmailConfirmedUseCase().first()) {
                 is Result.Success -> {
-                    if (result.data) {
+                    if (result.data.emailConfirmed) {
                         navigate(ServerList)
                     } else {
                         navigate(ConfirmEmail)

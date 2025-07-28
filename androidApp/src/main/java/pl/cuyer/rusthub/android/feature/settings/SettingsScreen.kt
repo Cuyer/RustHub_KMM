@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -19,7 +20,9 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LoadingIndicator
+import pl.cuyer.rusthub.android.designsystem.shimmer
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -46,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -122,12 +126,8 @@ fun SettingsScreen(
                 .padding(spacing.medium)
         ) {
             if (state.value.isLoading) {
-                LoadingIndicator(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                )
-            }
-            if (isTabletMode) {
+                SettingsShimmer(isTabletMode)
+            } else if (isTabletMode) {
                 SettingsScreenExpanded(
                     username = state.value.username,
                     provider = state.value.provider,
@@ -496,6 +496,53 @@ private fun GreetingSection(username: String?) {
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(bottom = spacing.medium)
         )
+    }
+}
+
+@Composable
+private fun SettingsShimmer(isTablet: Boolean) {
+    if (isTablet) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(spacing.medium),
+            horizontalArrangement = Arrangement.spacedBy(spacing.large)
+        ) {
+            SettingsColumnShimmer(Modifier.weight(1f))
+            SettingsColumnShimmer(Modifier.weight(1f))
+        }
+    } else {
+        SettingsColumnShimmer(
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(spacing.medium)
+        )
+    }
+}
+
+@Composable
+private fun SettingsColumnShimmer(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(spacing.medium)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.5f)
+                .height(28.dp)
+                .clip(MaterialTheme.shapes.extraSmall)
+                .shimmer()
+        )
+        repeat(8) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .clip(MaterialTheme.shapes.extraSmall)
+                    .shimmer()
+            )
+        }
     }
 }
 

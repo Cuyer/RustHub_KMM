@@ -47,7 +47,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LoadingIndicator
+import pl.cuyer.rusthub.android.designsystem.shimmer
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -201,40 +203,47 @@ fun SubscriptionScreen(
                 .consumeWindowInsets(innerPadding)
                 .fillMaxSize()
         ) {
-            if (isTabletMode) {
-                SubscriptionScreenExpanded(
-                    modifier = Modifier.fillMaxSize(),
-                    pagerState = pagerState,
-                    selectedPlan = { selectedPlan },
-                    onPlanSelect = { selectedPlan = it },
-                    onNavigateUp = onNavigateUp,
-                    onPrivacyPolicy = onPrivacyPolicy,
-                    onTerms = onTerms,
-                    products = state.value.products,
-                    isLoading = state.value.isLoading,
-                    currentPlan = state.value.currentPlan,
-                    onAction = onAction
+            if (state.value.isLoading) {
+                SubscriptionShimmer(
+                    isTablet = isTabletMode,
+                    modifier = Modifier.fillMaxSize()
                 )
             } else {
-                SubscriptionScreenCompact(
-                    modifier = Modifier.fillMaxSize(),
-                    pagerState = pagerState,
-                    selectedPlan = { selectedPlan },
-                    onPlanSelect = { selectedPlan = it },
-                    onNavigateUp = onNavigateUp,
-                    onPrivacyPolicy = onPrivacyPolicy,
-                    onTerms = onTerms,
-                    products = state.value.products,
-                    isLoading = state.value.isLoading,
-                    currentPlan = state.value.currentPlan,
-                    onAction = onAction
-                )
-            }
-            if (state.value.isProcessing) {
-                LoadingIndicator(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                )
+                if (isTabletMode) {
+                    SubscriptionScreenExpanded(
+                        modifier = Modifier.fillMaxSize(),
+                        pagerState = pagerState,
+                        selectedPlan = { selectedPlan },
+                        onPlanSelect = { selectedPlan = it },
+                        onNavigateUp = onNavigateUp,
+                        onPrivacyPolicy = onPrivacyPolicy,
+                        onTerms = onTerms,
+                        products = state.value.products,
+                        isLoading = state.value.isLoading,
+                        currentPlan = state.value.currentPlan,
+                        onAction = onAction
+                    )
+                } else {
+                    SubscriptionScreenCompact(
+                        modifier = Modifier.fillMaxSize(),
+                        pagerState = pagerState,
+                        selectedPlan = { selectedPlan },
+                        onPlanSelect = { selectedPlan = it },
+                        onNavigateUp = onNavigateUp,
+                        onPrivacyPolicy = onPrivacyPolicy,
+                        onTerms = onTerms,
+                        products = state.value.products,
+                        isLoading = state.value.isLoading,
+                        currentPlan = state.value.currentPlan,
+                        onAction = onAction
+                    )
+                }
+                if (state.value.isProcessing) {
+                    SubscriptionShimmer(
+                        isTablet = isTabletMode,
+                        modifier = Modifier.matchParentSize()
+                    )
+                }
             }
         }
     }
@@ -713,3 +722,98 @@ private fun ComparisonSectionPreview() {
     RustHubTheme {
         ComparisonSection()
     }}
+
+@Composable
+private fun SubscriptionShimmer(isTablet: Boolean, modifier: Modifier = Modifier) {
+    if (isTablet) {
+        SubscriptionShimmerExpanded(modifier)
+    } else {
+        SubscriptionShimmerCompact(modifier)
+    }
+}
+
+@Composable
+private fun SubscriptionShimmerCompact(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(spacing.medium),
+        verticalArrangement = Arrangement.spacedBy(spacing.medium),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .size(200.dp)
+                .clip(MaterialTheme.shapes.extraSmall)
+                .shimmer()
+        )
+        PlanSelectorShimmer(Modifier.fillMaxWidth())
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .clip(MaterialTheme.shapes.extraSmall)
+                .shimmer()
+        )
+        repeat(3) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp)
+                    .clip(MaterialTheme.shapes.extraSmall)
+                    .shimmer()
+            )
+        }
+    }
+}
+
+@Composable
+private fun SubscriptionShimmerExpanded(modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(spacing.medium),
+        horizontalArrangement = Arrangement.spacedBy(spacing.large)
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(spacing.medium),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(200.dp)
+                    .clip(MaterialTheme.shapes.extraSmall)
+                    .shimmer()
+            )
+            PlanSelectorShimmer(Modifier.fillMaxWidth())
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .clip(MaterialTheme.shapes.extraSmall)
+                    .shimmer()
+            )
+        }
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(spacing.medium),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            repeat(5) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp)
+                        .clip(MaterialTheme.shapes.extraSmall)
+                        .shimmer()
+                )
+            }
+        }
+    }
+}

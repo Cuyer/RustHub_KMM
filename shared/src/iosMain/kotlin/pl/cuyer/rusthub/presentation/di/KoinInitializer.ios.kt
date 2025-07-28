@@ -77,6 +77,7 @@ actual val platformModule: Module = module {
             getUserUseCase = get(),
             checkEmailConfirmedUseCase = get(),
             setEmailConfirmedUseCase = get(),
+            setSubscribedUseCase = get(),
             stringProvider = get(),
             getUserPreferencesUseCase = get(),
             itemsScheduler = get(),

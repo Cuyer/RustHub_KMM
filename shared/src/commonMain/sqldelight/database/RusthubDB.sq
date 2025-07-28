@@ -620,6 +620,9 @@ SELECT * FROM userEntity LIMIT 1;
 updateEmailConfirmed:
 UPDATE userEntity SET email_confirmed = CASE WHEN :confirmed THEN 1 ELSE 0 END WHERE id = :id;
 
+updateSubscribed:
+UPDATE userEntity SET subscribed = CASE WHEN :subscribed THEN 1 ELSE 0 END WHERE id = :id;
+
 CREATE TABLE itemEntity (
     id INTEGER NOT NULL,
     slug TEXT,

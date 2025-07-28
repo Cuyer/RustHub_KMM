@@ -37,7 +37,7 @@ fun SearchHistoryShimmer(modifier: Modifier = Modifier) {
                         .padding(spacing.medium)
                         .fillMaxWidth(0.9f)
                         .height(20.dp)
-                        .clip(RectangleShape)
+                        .clip(MaterialTheme.shapes.extraSmall)
                         .shimmer()
                         .clearAndSetSemantics {}
                 )
