@@ -1,7 +1,8 @@
 package pl.cuyer.rusthub.android.designsystem
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
@@ -18,8 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalContext
+
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pl.cuyer.rusthub.android.theme.RustHubTheme
@@ -27,7 +27,6 @@ import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppButton(
     modifier: Modifier = Modifier,
@@ -50,9 +49,12 @@ fun AppButton(
         shape = MaterialTheme.shapes.extraSmall,
         colors = colors
     ) {
-        AnimatedContent(
+        Crossfade(
             targetState = isLoading,
-            transitionSpec = { defaultFadeTransition() }
+            animationSpec = spring(
+                stiffness = Spring.StiffnessLow,
+                dampingRatio = Spring.DampingRatioLowBouncy
+            )
         ) { loading ->
             if (loading) {
                 loadingIndicator()
@@ -63,7 +65,6 @@ fun AppButton(
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppOutlinedButton(
     modifier: Modifier = Modifier,
@@ -80,9 +81,12 @@ fun AppOutlinedButton(
         shape = MaterialTheme.shapes.extraSmall,
         colors = colors
     ) {
-        AnimatedContent(
+        Crossfade(
             targetState = isLoading,
-            transitionSpec = { defaultFadeTransition() }
+            animationSpec = spring(
+                stiffness = Spring.StiffnessLow,
+                dampingRatio = Spring.DampingRatioLowBouncy
+            )
         ) { loading ->
             if (loading) {
                 CircularProgressIndicator(
@@ -96,7 +100,6 @@ fun AppOutlinedButton(
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppTextButton(
     modifier: Modifier = Modifier,
@@ -113,9 +116,12 @@ fun AppTextButton(
         shape = MaterialTheme.shapes.extraSmall,
         colors = colors
     ) {
-        AnimatedContent(
+        Crossfade(
             targetState = isLoading,
-            transitionSpec = { defaultFadeTransition() }
+            animationSpec = spring(
+                stiffness = Spring.StiffnessLow,
+                dampingRatio = Spring.DampingRatioLowBouncy
+            )
         ) { loading ->
             if (loading) {
                 CircularProgressIndicator(
@@ -132,7 +138,6 @@ fun AppTextButton(
 
 @Preview(name = "AppButton — Idle & Loading", showBackground = true, widthDp = 200)
 @Composable
-@OptIn(ExperimentalAnimationApi::class)
 fun PreviewAppButton() {
     RustHubTheme() {
         Column(
@@ -159,7 +164,6 @@ fun PreviewAppButton() {
 
 @Preview(name = "AppOutlinedButton — Idle & Loading", showBackground = true, widthDp = 200)
 @Composable
-@OptIn(ExperimentalAnimationApi::class)
 fun PreviewAppOutlinedButton() {
     RustHubTheme() {
         Column(
