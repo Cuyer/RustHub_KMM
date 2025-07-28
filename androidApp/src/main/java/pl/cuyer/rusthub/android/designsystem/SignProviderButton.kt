@@ -5,8 +5,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -55,34 +58,24 @@ fun SignProviderButton(
             )
         }
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(
-                spacing.xxmedium,
-                Alignment.CenterHorizontally
-            ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            tint?.let {
-                Icon(
-                    painter = painterResource(id = image),
-                    contentDescription = contentDescription,
-                    modifier = Modifier.size(24.dp),
-                    tint = it
-                )
-            } ?: run {
-                Image(
-                    painter = painterResource(id = image),
-                    contentDescription = contentDescription,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-
-            Text(
-                text = text
+        tint?.let {
+            Icon(
+                painter = painterResource(id = image),
+                contentDescription = contentDescription,
+                modifier = Modifier.size(24.dp),
+                tint = it
+            )
+        } ?: run {
+            Image(
+                painter = painterResource(id = image),
+                contentDescription = contentDescription,
+                modifier = Modifier.size(24.dp)
             )
         }
+        Spacer(Modifier.width(spacing.xxmedium))
+        Text(
+            text = text
+        )
     }
 }
 
