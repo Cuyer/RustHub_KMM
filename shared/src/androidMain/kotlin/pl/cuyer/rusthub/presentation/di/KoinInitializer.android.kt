@@ -45,6 +45,7 @@ import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
 import pl.cuyer.rusthub.util.UserSyncScheduler
+import pl.cuyer.rusthub.domain.usecase.SetSubscribedUseCase
 import pl.cuyer.rusthub.data.local.purchase.PurchaseSyncDataSourceImpl
 import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
@@ -89,6 +90,7 @@ actual val platformModule: Module = module {
             getUserUseCase = get(),
             checkEmailConfirmedUseCase = get(),
             setEmailConfirmedUseCase = get(),
+            setSubscribedUseCase = get(),
             stringProvider = get(),
             getUserPreferencesUseCase = get(),
             itemsScheduler = get(),

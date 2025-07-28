@@ -76,6 +76,7 @@ import pl.cuyer.rusthub.domain.usecase.RegisterUserUseCase
 import pl.cuyer.rusthub.domain.usecase.RequestPasswordResetUseCase
 import pl.cuyer.rusthub.domain.usecase.ResendConfirmationUseCase
 import pl.cuyer.rusthub.domain.usecase.SetEmailConfirmedUseCase
+import pl.cuyer.rusthub.domain.usecase.SetSubscribedUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveItemSearchQueryUseCase
@@ -165,6 +166,7 @@ val appModule = module {
     single { CheckEmailConfirmedUseCase(get()) }
     single { ResendConfirmationUseCase(get()) }
     single { SetEmailConfirmedUseCase(get()) }
+    single { SetSubscribedUseCase(get()) }
     single { GetUserUseCase(get()) }
     single { GetUserPreferencesUseCase(get()) }
     single { SetThemeConfigUseCase(get()) }

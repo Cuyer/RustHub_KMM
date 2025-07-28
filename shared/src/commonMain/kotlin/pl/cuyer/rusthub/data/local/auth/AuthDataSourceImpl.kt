@@ -105,4 +105,13 @@ class AuthDataSourceImpl(
         }
     }
 
+    override suspend fun updateSubscribed(subscribed: Boolean) {
+        withContext(Dispatchers.IO) {
+            queries.updateSubscribed(
+                id = Constants.DEFAULT_KEY,
+                subscribed = subscribed
+            )
+        }
+    }
+
 }
