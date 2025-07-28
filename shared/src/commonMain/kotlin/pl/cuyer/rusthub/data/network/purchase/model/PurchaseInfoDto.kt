@@ -2,34 +2,46 @@ package pl.cuyer.rusthub.data.network.purchase.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonNames
 
 @Serializable
 enum class SubscriptionStateDto {
     @SerialName("SUBSCRIPTION_STATE_UNSPECIFIED")
+    @JsonNames("UNSPECIFIED")
     UNSPECIFIED,
     @SerialName("SUBSCRIPTION_STATE_PENDING")
+    @JsonNames("PENDING")
     PENDING,
     @SerialName("SUBSCRIPTION_STATE_ACTIVE")
+    @JsonNames("ACTIVE")
     ACTIVE,
     @SerialName("SUBSCRIPTION_STATE_PAUSED")
+    @JsonNames("PAUSED")
     PAUSED,
     @SerialName("SUBSCRIPTION_STATE_IN_GRACE_PERIOD")
+    @JsonNames("IN_GRACE_PERIOD")
     IN_GRACE_PERIOD,
     @SerialName("SUBSCRIPTION_STATE_ON_HOLD")
+    @JsonNames("ON_HOLD")
     ON_HOLD,
     @SerialName("SUBSCRIPTION_STATE_CANCELED")
+    @JsonNames("CANCELED")
     CANCELED,
     @SerialName("SUBSCRIPTION_STATE_EXPIRED")
+    @JsonNames("EXPIRED")
     EXPIRED
 }
 
 @Serializable
 enum class AcknowledgementStateDto {
     @SerialName("ACKNOWLEDGEMENT_STATE_UNSPECIFIED")
+    @JsonNames("UNSPECIFIED")
     UNSPECIFIED,
     @SerialName("ACKNOWLEDGEMENT_STATE_PENDING")
+    @JsonNames("PENDING")
     PENDING,
     @SerialName("ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED")
+    @JsonNames("ACKNOWLEDGED")
     ACKNOWLEDGED
 }
 
