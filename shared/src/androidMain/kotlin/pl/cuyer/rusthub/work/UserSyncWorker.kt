@@ -28,6 +28,7 @@ class UserSyncWorker(
                             username = user.username,
                             accessToken = current.accessToken,
                             refreshToken = current.refreshToken,
+                            obfuscatedId = user.obfuscatedId ?: current.obfuscatedId,
                             provider = user.provider,
                             subscribed = user.subscribed,
                             emailConfirmed = user.emailConfirmed

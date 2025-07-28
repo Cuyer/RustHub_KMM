@@ -14,6 +14,6 @@ class BillingRepositoryImpl : BillingRepository {
     override val purchaseFlow: Flow<PurchaseInfo> = emptyFlow()
     override val errorFlow: Flow<BillingErrorCode> = emptyFlow()
     override fun queryProducts(ids: List<String>): Flow<List<BillingProduct>> = flowOf(emptyList())
-    override fun launchBillingFlow(activity: Any, productId: String) {}
+    override fun launchBillingFlow(activity: Any, productId: String, obfuscatedId: String?) {}
     override fun getActiveSubscription(): Flow<ActiveSubscription?> = flowOf(null)
 }

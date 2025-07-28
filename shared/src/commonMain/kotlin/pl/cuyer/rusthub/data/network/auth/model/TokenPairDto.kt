@@ -11,4 +11,5 @@ data class TokenPairDto(
     val provider: String,
     val subscribed: Boolean = false,
     val emailConfirmed: Boolean? = null,
+    val obfuscatedId: String? = null,
 )

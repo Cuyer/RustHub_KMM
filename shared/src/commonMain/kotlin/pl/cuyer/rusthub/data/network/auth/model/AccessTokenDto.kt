@@ -7,5 +7,6 @@ data class AccessTokenDto(
     val accessToken: String,
     val username: String,
     val provider: String,
-    val subscribed: Boolean = false
+    val subscribed: Boolean = false,
+    val obfuscatedId: String? = null
 )
