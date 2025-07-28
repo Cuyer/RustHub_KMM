@@ -84,6 +84,7 @@ import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleSubscriptionUseCase
 import pl.cuyer.rusthub.domain.usecase.ConfirmPurchaseUseCase
 import pl.cuyer.rusthub.domain.usecase.RefreshUserUseCase
+import pl.cuyer.rusthub.domain.usecase.GetActiveSubscriptionUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeWithGoogleUseCase
 import pl.cuyer.rusthub.domain.usecase.ClearServersAndKeysUseCase
@@ -182,6 +183,7 @@ val appModule = module {
     single { ToggleSubscriptionUseCase(get(), get(), get(), get()) }
     singleOf(::PurchaseRepositoryImpl) bind PurchaseRepository::class
     single { ConfirmPurchaseUseCase(get(), get(), get()) }
+    single { GetActiveSubscriptionUseCase(get(), get()) }
     single { RefreshUserUseCase(get(), get(), get()) }
 }
 

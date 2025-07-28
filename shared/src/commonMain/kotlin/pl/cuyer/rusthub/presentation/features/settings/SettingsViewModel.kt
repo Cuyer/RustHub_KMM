@@ -51,7 +51,7 @@ import pl.cuyer.rusthub.util.anonymousAccountExpiresIn
 import pl.cuyer.rusthub.util.formatExpiration
 import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.domain.model.ActiveSubscription
-import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
+import pl.cuyer.rusthub.domain.usecase.GetActiveSubscriptionUseCase
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.domain.model.ItemSyncState
 import pl.cuyer.rusthub.util.updateAppLanguage
@@ -69,7 +69,7 @@ class SettingsViewModel(
     private val stringProvider: StringProvider,
     private val systemDarkThemeObserver: SystemDarkThemeObserver,
     private val itemsScheduler: ItemsScheduler,
-    private val billingRepository: BillingRepository,
+    private val getActiveSubscriptionUseCase: GetActiveSubscriptionUseCase,
     private val itemSyncDataSource: ItemSyncDataSource,
     private val userEventController: UserEventController
 ) : BaseViewModel() {
@@ -148,7 +148,7 @@ class SettingsViewModel(
 
     private fun observeUser() {
         getUserUseCase()
-            .combine(billingRepository.getActiveSubscription()) { user, sub -> user to sub }
+            .combine(getActiveSubscriptionUseCase()) { user, sub -> user to sub }
             .onEach { (user, sub) -> updateUser(user, sub) }
             .launchIn(coroutineScope)
     }

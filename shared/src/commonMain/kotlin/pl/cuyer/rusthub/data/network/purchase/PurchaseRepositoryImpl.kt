@@ -2,7 +2,9 @@ package pl.cuyer.rusthub.data.network.purchase
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
+import io.ktor.client.request.get
 import io.ktor.client.request.setBody
+import io.ktor.client.request.parameter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
@@ -11,6 +13,9 @@ import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.data.network.util.BaseApiResponse
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
 import pl.cuyer.rusthub.domain.repository.purchase.PurchaseRepository
+import pl.cuyer.rusthub.domain.model.ActiveSubscription
+import pl.cuyer.rusthub.data.network.purchase.model.PurchaseInfoDto
+import pl.cuyer.rusthub.data.network.purchase.mapper.toDomain
 
 @Serializable
 private data class PurchaseRequest(val token: String, val productId: String? = null)
@@ -27,6 +32,22 @@ class PurchaseRepositoryImpl(
         }.map { result ->
             when (result) {
                 is Result.Success -> Result.Success(Unit)
+                is Result.Error -> result
+            }
+        }
+    }
+
+    override fun getActiveSubscription(obfuscatedId: String): Flow<Result<ActiveSubscription?>> {
+        return safeApiCall<List<PurchaseInfoDto>> {
+            httpClient.get(NetworkConstants.BASE_URL + "billing/purchase") {
+                parameter("obfuscatedAccountId", obfuscatedId)
+            }
+        }.map { result ->
+            when (result) {
+                is Result.Success -> {
+                    val sub = result.data.firstNotNullOfOrNull { it.toDomain() }
+                    Result.Success(sub)
+                }
                 is Result.Error -> result
             }
         }
