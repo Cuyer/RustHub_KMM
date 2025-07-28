@@ -35,6 +35,7 @@ class RegisterUserUseCase(
                             refreshToken = refreshToken,
                             username = username,
                             email = email,
+                            obfuscatedId = obfuscatedId,
                             provider = provider,
                             subscribed = subscribed,
                             emailConfirmed = false

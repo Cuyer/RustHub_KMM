@@ -136,7 +136,7 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
         awaitClose {}
     }
 
-    override fun launchBillingFlow(activity: Any, productId: String) {
+    override fun launchBillingFlow(activity: Any, productId: String, obfuscatedId: String?) {
         val act = activity as? Activity ?: return
         val data = productMap[productId] ?: return
 
@@ -150,7 +150,9 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
                         .apply { data.offerToken?.let { setOfferToken(it) } }
                         .build()
                 )
-            ).build()
+            )
+            .apply { obfuscatedId?.let { setObfuscatedAccountId(it) } }
+            .build()
 
         val result = billingClient.launchBillingFlow(act, params)
         if (result.responseCode != BillingClient.BillingResponseCode.OK) {

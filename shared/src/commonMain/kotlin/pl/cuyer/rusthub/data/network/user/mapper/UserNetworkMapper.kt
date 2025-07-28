@@ -10,6 +10,7 @@ fun UserInfoDto.toDomain(): User {
         username = username,
         accessToken = "",
         refreshToken = null,
+        obfuscatedId = obfuscatedId,
         provider = AuthProvider.valueOf(provider),
         subscribed = subscribed,
         emailConfirmed = emailConfirmed

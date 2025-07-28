@@ -13,7 +13,8 @@ fun AccessTokenDto.toDomain(): AccessToken {
         accessToken = accessToken,
         username = username,
         provider = AuthProvider.valueOf(provider),
-        subscribed = subscribed
+        subscribed = subscribed,
+        obfuscatedId = obfuscatedId
     )
 }
 
@@ -24,7 +25,8 @@ fun TokenPairDto.toDomain(): TokenPair {
         username = username,
         email = email,
         provider = AuthProvider.valueOf(provider),
-        subscribed = subscribed
+        subscribed = subscribed,
+        obfuscatedId = obfuscatedId
     )
 }
 

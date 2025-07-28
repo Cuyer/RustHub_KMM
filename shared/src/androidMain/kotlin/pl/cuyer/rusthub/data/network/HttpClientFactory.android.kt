@@ -114,6 +114,7 @@ actual class HttpClientFactory actual constructor(
                                 username = newTokens.username,
                                 accessToken = newTokens.accessToken,
                                 refreshToken = newTokens.refreshToken,
+                                obfuscatedId = newTokens.obfuscatedId,
                                 provider = AuthProvider.valueOf(newTokens.provider),
                                 subscribed = newTokens.subscribed,
                                 emailConfirmed = confirmed

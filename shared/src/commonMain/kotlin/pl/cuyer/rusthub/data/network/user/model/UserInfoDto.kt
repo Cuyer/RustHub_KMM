@@ -9,6 +9,7 @@ data class UserInfoDto(
     val provider: String,
     val emailConfirmed: Boolean,
     val subscribed: Boolean,
+    val obfuscatedId: String? = null,
     val favourites: List<String> = emptyList(),
     val subscriptions: List<String> = emptyList()
 )

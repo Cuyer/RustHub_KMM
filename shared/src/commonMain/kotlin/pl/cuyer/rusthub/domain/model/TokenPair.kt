@@ -10,4 +10,5 @@ data class TokenPair(
     val email: String,
     val provider: AuthProvider,
     val subscribed: Boolean,
+    val obfuscatedId: String?,
 )

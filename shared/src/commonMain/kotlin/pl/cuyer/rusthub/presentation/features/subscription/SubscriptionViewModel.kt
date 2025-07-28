@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
@@ -25,6 +26,7 @@ import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
 import pl.cuyer.rusthub.domain.model.ActiveSubscription
 import pl.cuyer.rusthub.domain.usecase.ConfirmPurchaseUseCase
 import pl.cuyer.rusthub.domain.usecase.RefreshUserUseCase
+import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
@@ -49,6 +51,7 @@ class SubscriptionViewModel(
     private val billingRepository: BillingRepository,
     private val confirmPurchaseUseCase: ConfirmPurchaseUseCase,
     private val refreshUserUseCase: RefreshUserUseCase,
+    private val getUserUseCase: GetUserUseCase,
     private val snackbarController: SnackbarController,
     private val stringProvider: StringProvider
 ) : BaseViewModel() {
@@ -137,8 +140,11 @@ class SubscriptionViewModel(
     }
 
     private fun subscribe(plan: SubscriptionPlan, activity: Any) {
-        val id = plan.basePlanId ?: plan.name.let { plan.productId }
-        billingRepository.launchBillingFlow(activity, id)
+        coroutineScope.launch {
+            val id = plan.basePlanId ?: plan.productId
+            val obfuscated = getUserUseCase().first()?.obfuscatedId
+            billingRepository.launchBillingFlow(activity, id, obfuscated)
+        }
     }
 
     private fun confirmPurchase(productId: String, token: String) {

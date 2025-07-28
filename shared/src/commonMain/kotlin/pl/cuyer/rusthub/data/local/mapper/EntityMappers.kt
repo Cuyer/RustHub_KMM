@@ -201,6 +201,7 @@ fun UserEntity.toUser(): User = User(
     username,
     access_token,
     refresh_token,
+    obfuscated_id,
     AuthProvider.valueOf(provider),
     subscribed = subscribed == 1L,
     emailConfirmed = email_confirmed == 1L

@@ -27,6 +27,7 @@ class LoginWithGoogleUseCase(
                             username = username,
                             accessToken = accessToken,
                             refreshToken = refreshToken,
+                            obfuscatedId = obfuscatedId,
                             provider = provider,
                             subscribed = subscribed,
                             emailConfirmed = true

@@ -255,6 +255,7 @@ actual val platformModule: Module = module {
             billingRepository = get(),
             confirmPurchaseUseCase = get(),
             refreshUserUseCase = get(),
+            getUserUseCase = get(),
             snackbarController = get(),
             stringProvider = get()
         )

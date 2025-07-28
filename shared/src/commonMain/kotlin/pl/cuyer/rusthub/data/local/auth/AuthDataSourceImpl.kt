@@ -45,6 +45,7 @@ class AuthDataSourceImpl(
         username: String,
         accessToken: String,
         refreshToken: String?,
+        obfuscatedId: String?,
         provider: AuthProvider,
         subscribed: Boolean,
         emailConfirmed: Boolean,
@@ -56,6 +57,7 @@ class AuthDataSourceImpl(
                 username = username,
                 accessToken = accessToken,
                 refreshToken = refreshToken,
+                obfuscatedId = obfuscatedId,
                 provider = provider.name,
                 subscribed = if (subscribed) 1L else 0L,
                 emailConfirmed = if (emailConfirmed) 1L else 0L

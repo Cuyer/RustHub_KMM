@@ -8,4 +8,5 @@ data class AccessToken(
     val username: String,
     val provider: AuthProvider,
     val subscribed: Boolean,
+    val obfuscatedId: String?,
 )
