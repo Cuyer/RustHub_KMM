@@ -190,7 +190,7 @@ fun ServerListItemShimmer(modifier: Modifier = Modifier) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(16.dp)
-                            .clip(RoundedCornerShape(MaterialTheme.shapes.extraSmall))
+                            .clip(MaterialTheme.shapes.extraSmall)
                             .shimmer()
                             .clearAndSetSemantics {}
                     )
