@@ -30,6 +30,7 @@ class LoginUserUseCase(
                             refreshToken = refreshToken,
                             username = this.username,
                             email = email,
+                            obfuscatedId = obfuscatedId,
                             provider = provider,
                             subscribed = subscribed,
                             emailConfirmed = false

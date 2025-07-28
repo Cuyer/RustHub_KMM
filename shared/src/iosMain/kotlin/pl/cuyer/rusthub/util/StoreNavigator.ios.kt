@@ -12,4 +12,11 @@ actual class StoreNavigator {
             UIApplication.sharedApplication.openURL(url)
         }
     }
+
+    actual fun openSubscriptionManagement(productId: String) {
+        val url = NSURL.URLWithString("https://apps.apple.com/account/subscriptions")
+        if (url != null) {
+            UIApplication.sharedApplication.openURL(url)
+        }
+    }
 }

@@ -36,7 +36,7 @@
     <string name="additional_information_available_at">Więcej informacji na:</string>
     <string name="all">Wszystkie</string>
     <string name="any_questions">Masz pytania?</string>
-    <string name="app_version">Wersja aplikacji</string>
+    <string name="app_version">Wersja aplikacji: %1$s</string>
     <string name="application_logo">Logo aplikacji</string>
     <string name="apply_filters">Zastosuj filtry</string>
     <string name="arrow_down">Strzałka w dół</string>
@@ -221,6 +221,11 @@
     <string name="subscribe_to_plan">Subskrybuj plan %s</string>
     <string name="subscription">Subskrypcja</string>
     <string name="subscription_button">Przycisk subskrypcji</string>
+    <string name="manage_subscription">Zarządzaj subskrypcją</string>
+    <string name="you_are_subscribed">Subskrybujesz: %1$s</string>
+    <string name="subscription_expiration">Wygasa %1$s</string>
+    <string name="change_plan">Zmień plan</string>
+    <string name="lifetime_plan_active">Plan Lifetime aktywny</string>
     <string name="support_development">Wesprzyj nasz rozwój</string>
     <string name="support_development_icon">Symbol wsparcia rozwoju</string>
     <string name="terms_conditions">Regulamin</string>
@@ -335,6 +340,14 @@
     <string name="error_not_found">Nie znaleziono zasobu.</string>
     <string name="error_too_many_requests">Wykonujesz tę akcję zbyt często. Poczekaj chwilę.</string>
     <string name="error_invalid_refresh_token">Sesja wygasła. Zaloguj się ponownie.</string>
+    <string name="purchase_canceled">Zakup anulowany.</string>
+    <string name="error_billing_unavailable">Usługa rozliczeń niedostępna.</string>
+    <string name="error_item_unavailable">Produkt niedostępny.</string>
+    <string name="error_developer_error">Błąd dewelopera.</string>
+    <string name="error_billing_generic">Błąd rozliczeń. Spróbuj ponownie później.</string>
+    <string name="error_item_owned">Produkt już zakupiony.</string>
+    <string name="error_item_not_owned">Produkt nie został zakupiony.</string>
+    <string name="error_feature_not_supported">Funkcja nie jest obsługiwana.</string>
     <string name="weapons">Bronie</string>
     <string name="ammo">Amunicja</string>
     <string name="clothes">Ubrania</string>
@@ -366,4 +379,6 @@
     <string name="using_mixing_table">Używając stołu mieszającego x%1$d</string>
     <string name="time_to_raid">Czas rajdu: %1$s</string>
     <string name="hp">HP</string>
+    <string name="update_ready">Aktualizacja gotowa do instalacji</string>
+    <string name="restart">Uruchom ponownie</string>
 </resources>

@@ -561,12 +561,35 @@ DELETE FROM favouriteSyncEntity;
 clearSubscriptionSync:
 DELETE FROM subscriptionSyncEntity;
 
+CREATE TABLE purchaseSyncEntity (
+    token TEXT NOT NULL PRIMARY KEY,
+    product_id TEXT,
+    sync_state TEXT NOT NULL
+);
+
+upsertPurchaseSync:
+INSERT INTO purchaseSyncEntity (token, product_id, sync_state)
+VALUES (:token, :product_id, :sync_state)
+ON CONFLICT(token) DO UPDATE SET
+    product_id = excluded.product_id,
+    sync_state = excluded.sync_state;
+
+getPendingPurchaseSync:
+SELECT * FROM purchaseSyncEntity WHERE sync_state = 'PENDING';
+
+deletePurchaseSync:
+DELETE FROM purchaseSyncEntity WHERE token = :token;
+
+clearPurchaseSync:
+DELETE FROM purchaseSyncEntity;
+
 CREATE TABLE userEntity (
   id TEXT NOT NULL PRIMARY KEY,
   email         TEXT,
   username      TEXT   NOT NULL,
   access_token  TEXT   NOT NULL,
   refresh_token TEXT,
+  obfuscated_id TEXT,
   provider TEXT NOT NULL DEFAULT 'LOCAL',
   subscribed INTEGER NOT NULL DEFAULT 0,
   email_confirmed INTEGER NOT NULL DEFAULT 0
@@ -574,15 +597,16 @@ CREATE TABLE userEntity (
 
 insertUser:
 INSERT INTO userEntity (
-id, email, username, access_token, refresh_token, provider, subscribed, email_confirmed
+id, email, username, access_token, refresh_token, obfuscated_id, provider, subscribed, email_confirmed
 ) VALUES (
-  :id, :email, :username, :accessToken, :refreshToken, :provider, :subscribed, :emailConfirmed
+  :id, :email, :username, :accessToken, :refreshToken, :obfuscatedId, :provider, :subscribed, :emailConfirmed
 )
 ON CONFLICT(id) DO UPDATE SET
   email = excluded.email,
   username = excluded.username,
   access_token  = excluded.access_token,
   refresh_token = excluded.refresh_token,
+  obfuscated_id = excluded.obfuscated_id,
   provider = excluded.provider,
   subscribed = excluded.subscribed,
   email_confirmed = excluded.email_confirmed;

@@ -10,6 +10,7 @@ interface AuthDataSource {
         username: String,
         accessToken: String,
         refreshToken: String?,
+        obfuscatedId: String?,
         provider: AuthProvider,
         subscribed: Boolean,
         emailConfirmed: Boolean,

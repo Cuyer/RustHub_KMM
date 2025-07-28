@@ -8,6 +8,7 @@ data class User(
     val username: String,
     val accessToken: String,
     val refreshToken: String?,
+    val obfuscatedId: String?,
     val provider: AuthProvider,
     val subscribed: Boolean,
     val emailConfirmed: Boolean,

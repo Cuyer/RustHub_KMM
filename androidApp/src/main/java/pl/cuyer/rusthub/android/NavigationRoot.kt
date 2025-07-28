@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -90,6 +91,7 @@ import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
+import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
 import pl.cuyer.rusthub.presentation.navigation.Credentials
@@ -119,8 +121,10 @@ import pl.cuyer.rusthub.common.user.UserEventController
 fun NavigationRoot(startDestination: NavKey) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
     ObserveAsEvents(flow = SnackbarController.events, snackbarHostState) { event ->
         scope.launch {
+            keyboardController?.hide()
             snackbarHostState.currentSnackbarData?.dismiss()
             val result = snackbarHostState.showSnackbar(
                 message = event.message,
@@ -289,7 +293,8 @@ private fun AppScaffold(
                             state = state,
                             uiEvent = viewModel.uiEvent,
                             onAction = viewModel::onAction,
-                            onNavigate = { dest -> backStack.add(dest) }
+                            onNavigate = { dest -> backStack.add(dest) },
+                            onNavigateUp = { backStack.removeLastOrNull() }
                         )
                     }
                     entry<ItemList>(metadata = ListDetailSceneStrategy.listPane()) {
@@ -399,7 +404,12 @@ private fun AppScaffold(
                         )
                     }
                     entry<Subscription> {
+                        val viewModel = koinViewModel<SubscriptionViewModel>()
+                        val state = viewModel.state.collectAsStateWithLifecycle()
                         SubscriptionScreen(
+                            state = state,
+                            onAction = viewModel::onAction,
+                            uiEvent = viewModel.uiEvent,
                             onNavigateUp = { backStack.removeLastOrNull() },
                             onPrivacyPolicy = { backStack.add(PrivacyPolicy) },
                             onTerms = { backStack.add(Terms) }

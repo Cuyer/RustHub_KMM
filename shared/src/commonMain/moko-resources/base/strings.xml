@@ -36,7 +36,7 @@
     <string name="additional_information_available_at">Additional information available at</string>
     <string name="all">All</string>
     <string name="any_questions">Any questions?</string>
-    <string name="app_version">App version</string>
+    <string name="app_version">App version: %1$s</string>
     <string name="application_logo">Application logo</string>
     <string name="apply_filters">Apply Filters</string>
     <string name="arrow_down">Arrow down</string>
@@ -222,6 +222,11 @@
     <string name="subscribe_to_plan">Subscribe to %s plan</string>
     <string name="subscription">Subscription</string>
     <string name="subscription_button">Subscription button</string>
+    <string name="manage_subscription">Manage subscription</string>
+    <string name="you_are_subscribed">You are subscribed: %1$s</string>
+    <string name="subscription_expiration">Expires on %1$s</string>
+    <string name="change_plan">Change plan</string>
+    <string name="lifetime_plan_active">Lifetime plan active</string>
     <string name="support_development">Support development</string>
     <string name="support_development_icon">Support development symbol</string>
     <string name="terms_conditions">Terms &amp; conditions</string>
@@ -337,6 +342,14 @@
     <string name="error_not_found">Resource not found.</string>
     <string name="error_too_many_requests">You’re doing that too much. Please wait a moment.</string>
     <string name="error_invalid_refresh_token">Session expired. Please log in again.</string>
+    <string name="purchase_canceled">Purchase canceled.</string>
+    <string name="error_billing_unavailable">Billing service unavailable.</string>
+    <string name="error_item_unavailable">Item unavailable.</string>
+    <string name="error_developer_error">Developer error.</string>
+    <string name="error_billing_generic">Billing error. Try again later.</string>
+    <string name="error_item_owned">Item already owned.</string>
+    <string name="error_item_not_owned">Item not owned.</string>
+    <string name="error_feature_not_supported">Feature not supported.</string>
     <string name="weapons">Weapons</string>
     <string name="ammo">Ammo</string>
     <string name="clothes">Clothes</string>
@@ -372,4 +385,6 @@
     <string name="using_mixing_table">Using mixing table x%1$d</string>
     <string name="time_to_raid">Time to Raid: %1$s</string>
     <string name="hp">HP</string>
+    <string name="update_ready">Update ready to install</string>
+    <string name="restart">Restart</string>
 </resources>

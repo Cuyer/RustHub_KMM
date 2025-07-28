@@ -43,7 +43,14 @@ import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
+import pl.cuyer.rusthub.util.PurchaseSyncScheduler
+import pl.cuyer.rusthub.util.UserSyncScheduler
+import pl.cuyer.rusthub.data.local.purchase.PurchaseSyncDataSourceImpl
+import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
+import pl.cuyer.rusthub.data.billing.BillingRepositoryImpl
+import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
+import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
 
 actual val platformModule: Module = module {
     single { DatabasePassphraseProvider(androidContext()) }
@@ -63,8 +70,12 @@ actual val platformModule: Module = module {
     single { SubscriptionSyncScheduler(get()) }
     single { MessagingTokenScheduler(get()) }
     single { ItemsScheduler(get()) }
+    single { PurchaseSyncScheduler(get()) }
+    single { UserSyncScheduler(get()) }
+    single { BillingRepositoryImpl(androidContext()) } bind BillingRepository::class
     single { ItemSyncDataSourceImpl(get()) } bind ItemSyncDataSource::class
-    single { InAppUpdateManager(androidContext(), get()) }
+    single { PurchaseSyncDataSourceImpl(get()) } bind PurchaseSyncDataSource::class
+    single { InAppUpdateManager(androidContext(), get(), get()) }
     single { ReviewRequester(androidContext()) }
     single { StoreNavigator(androidContext()) }
     single { SystemDarkThemeObserver(androidContext()) }
@@ -82,7 +93,9 @@ actual val platformModule: Module = module {
             getUserPreferencesUseCase = get(),
             itemsScheduler = get(),
             itemDataSource = get(),
-            itemSyncDataSource = get()
+            itemSyncDataSource = get(),
+            purchaseSyncDataSource = get(),
+            purchaseSyncScheduler = get()
         )
     }
     viewModel {
@@ -164,6 +177,7 @@ actual val platformModule: Module = module {
             stringProvider = get(),
             systemDarkThemeObserver = get(),
             itemsScheduler = get(),
+            billingRepository = get(),
             itemSyncDataSource = get(),
             userEventController = get()
         )
@@ -234,6 +248,16 @@ actual val platformModule: Module = module {
             shareHandler = get(),
             reviewRequester = get(),
             connectivityObserver = get()
+        )
+    }
+    viewModel {
+        SubscriptionViewModel(
+            billingRepository = get(),
+            confirmPurchaseUseCase = get(),
+            refreshUserUseCase = get(),
+            getUserUseCase = get(),
+            snackbarController = get(),
+            stringProvider = get()
         )
     }
 }

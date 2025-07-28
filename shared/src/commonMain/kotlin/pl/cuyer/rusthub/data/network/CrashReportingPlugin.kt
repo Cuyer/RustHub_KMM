@@ -6,20 +6,18 @@ import pl.cuyer.rusthub.data.network.APP_CHECK_HEADER
 
 val CrashReportingPlugin = createClientPlugin("CrashReportingPlugin") {
     onRequest { request, _ ->
-        val body = request.body.toString()
-        val authHeader = request.headers["Authorization"] ?: ""
-        val appCheck = request.headers[APP_CHECK_HEADER] ?: ""
         val message = buildString {
-            append("Request ")
-            append(request.method.value)
-            append(' ')
-            append(request.url)
-            append("\nAuth: ")
-            append(authHeader)
-            append("\n$APP_CHECK_HEADER: ")
-            append(appCheck)
-            append("\nBody: ")
-            append(body)
+            appendLine("Request ${request.method.value} ${request.url}")
+            appendLine("Headers:")
+            request.headers.entries().forEach { (key, values) ->
+                values.forEach { value ->
+                    appendLine("$key: $value")
+                }
+            }
+            val bodyText = request.body.toString()
+            if (bodyText.isNotBlank()) {
+                appendLine("Body: $bodyText")
+            }
         }
         CrashReporter.log(message)
     }

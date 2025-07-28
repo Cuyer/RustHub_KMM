@@ -14,6 +14,8 @@ import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
+import pl.cuyer.rusthub.domain.repository.purchase.PurchaseRepository
+import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
 import pl.cuyer.rusthub.util.MessagingTokenManager
 import pl.cuyer.rusthub.util.NotificationPresenter
 import pl.cuyer.rusthub.work.CustomWorkerFactory
@@ -41,6 +43,10 @@ class RustHubApplication : Application(), Configuration.Provider {
     val itemRepository by inject<ItemRepository>()
     val itemDataSource by inject<ItemDataSource>()
     val itemSyncDataSource by inject<ItemSyncDataSource>()
+    val purchaseRepository by inject<pl.cuyer.rusthub.domain.repository.purchase.PurchaseRepository>()
+    val purchaseSyncDataSource by inject<pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource>()
+    val userRepository by inject<pl.cuyer.rusthub.domain.repository.user.UserRepository>()
+    val authDataSource by inject<pl.cuyer.rusthub.domain.repository.auth.AuthDataSource>()
 
     override fun onCreate() {
         super.onCreate()
@@ -92,7 +98,11 @@ class RustHubApplication : Application(), Configuration.Provider {
                     tokenManager = tokenManager,
                     itemRepository = itemRepository,
                     itemDataSource = itemDataSource,
-                    itemSyncDataSource = itemSyncDataSource
+                    itemSyncDataSource = itemSyncDataSource,
+                    purchaseRepository = purchaseRepository,
+                    purchaseSyncDataSource = purchaseSyncDataSource,
+                    userRepository = userRepository,
+                    authDataSource = authDataSource
                 )
             )
             .build()

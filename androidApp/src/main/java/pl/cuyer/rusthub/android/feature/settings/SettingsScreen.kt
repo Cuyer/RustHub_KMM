@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -59,6 +60,7 @@ import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.presentation.features.settings.SettingsAction
 import pl.cuyer.rusthub.presentation.features.settings.SettingsState
+import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.AppInfo
@@ -130,7 +132,9 @@ fun SettingsScreen(
                     username = state.value.username,
                     provider = state.value.provider,
                     subscribed = state.value.subscribed,
-                    expiration = state.value.anonymousExpiration,
+                    anonymousExpiration = state.value.anonymousExpiration,
+                    plan = state.value.currentPlan,
+                    planExpiration = state.value.subscriptionExpiration,
                     onAction = onAction,
                     onThemeClick = { showThemeSheet = true },
                     onLanguageClick = { showLanguageSheet = true }
@@ -142,7 +146,9 @@ fun SettingsScreen(
                     username = state.value.username,
                     provider = state.value.provider,
                     subscribed = state.value.subscribed,
-                    expiration = state.value.anonymousExpiration,
+                    anonymousExpiration = state.value.anonymousExpiration,
+                    plan = state.value.currentPlan,
+                    planExpiration = state.value.subscriptionExpiration,
                     onAction = onAction,
                     onThemeClick = { showThemeSheet = true },
                     onLanguageClick = { showLanguageSheet = true }
@@ -181,7 +187,9 @@ private fun SettingsScreenCompact(
     username: String?,
     provider: AuthProvider?,
     subscribed: Boolean,
-    expiration: String?,
+    anonymousExpiration: String?,
+    plan: SubscriptionPlan?,
+    planExpiration: String?,
     onAction: (SettingsAction) -> Unit,
     onThemeClick: () -> Unit,
     onLanguageClick: () -> Unit
@@ -193,7 +201,7 @@ private fun SettingsScreenCompact(
         GreetingSection(username)
         PreferencesSection(onAction, onThemeClick, onLanguageClick)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
-        AccountSection(provider, subscribed, expiration, onAction)
+        AccountSection(provider, subscribed, anonymousExpiration, plan, planExpiration, onAction)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
         OtherSection(onAction)
     }
@@ -205,7 +213,9 @@ private fun SettingsScreenExpanded(
     username: String?,
     provider: AuthProvider?,
     subscribed: Boolean,
-    expiration: String?,
+    anonymousExpiration: String?,
+    plan: SubscriptionPlan?,
+    planExpiration: String?,
     onAction: (SettingsAction) -> Unit,
     onThemeClick: () -> Unit,
     onLanguageClick: () -> Unit
@@ -223,7 +233,7 @@ private fun SettingsScreenExpanded(
             GreetingSection(username)
             PreferencesSection(onAction, onThemeClick, onLanguageClick)
             HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
-            AccountSection(provider, subscribed, expiration, onAction)
+            AccountSection(provider, subscribed, anonymousExpiration, plan, planExpiration, onAction)
         }
         Column(
             modifier = Modifier
@@ -298,7 +308,9 @@ private fun PreferencesSection(
 private fun AccountSection(
     provider: AuthProvider?,
     subscribed: Boolean,
-    expiration: String?,
+    anonymousExpiration: String?,
+    plan: SubscriptionPlan?,
+    planExpiration: String?,
     onAction: (SettingsAction) -> Unit
 ) {
     Text(
@@ -326,7 +338,39 @@ private fun AccountSection(
         }
     }
 
-    if (!subscribed && provider != AuthProvider.ANONYMOUS) {
+    val storeNavigator = koinInject<StoreNavigator>()
+
+    if (subscribed) {
+        Text(
+            text = stringResource(
+                SharedRes.strings.you_are_subscribed,
+                stringResource(plan?.label ?: SharedRes.strings.pro)
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = spacing.xsmall)
+        )
+        planExpiration?.let {
+            Text(
+                text = stringResource(SharedRes.strings.subscription_expiration, it),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(bottom = spacing.xsmall)
+            )
+        }
+        AppTextButton(onClick = { storeNavigator.openSubscriptionManagement(SubscriptionPlan.SUBSCRIPTION_ID) }) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(SharedRes.strings.manage_subscription))
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowRight,
+                    contentDescription = stringResource(SharedRes.strings.manage_subscription)
+                )
+            }
+        }
+    }
+    if (provider != AuthProvider.ANONYMOUS) {
         AppTextButton(
             onClick = { onAction(SettingsAction.OnSubscriptionClick) }
         ) {
@@ -346,7 +390,7 @@ private fun AccountSection(
     }
 
     if (provider == AuthProvider.ANONYMOUS) {
-        expiration?.let {
+        anonymousExpiration?.let {
             Text(
                 text = stringResource(SharedRes.strings.temporary_account_expiration, it),
                 style = MaterialTheme.typography.bodyMedium,
@@ -433,10 +477,11 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
         }
     }
 
+    val versionName = remember { AppInfo.versionName }
     Text(
         modifier = Modifier.fillMaxWidth(),
         style = MaterialTheme.typography.bodySmall,
-        text = "${stringResource(SharedRes.strings.app_version)}: ${AppInfo.versionName}",
+        text = stringResource(SharedRes.strings.app_version, versionName),
         textAlign = TextAlign.Center
     )
 }
@@ -457,11 +502,12 @@ private fun GreetingSection(username: String?) {
 @Preview
 @Composable
 private fun SettingsPreview() {
+    val state = remember { mutableStateOf(SettingsState()) }
     RustHubTheme {
         SettingsScreen(
             onNavigate = {},
             uiEvent = MutableStateFlow(UiEvent.Navigate(Onboarding)),
-            state = mutableStateOf(SettingsState()),
+            state = state,
             onAction = {}
         )
     }

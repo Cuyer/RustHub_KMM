@@ -99,12 +99,15 @@ actual class HttpClientFactory actual constructor(
 
                         if (response.status.isSuccess()) {
                             val newTokens: TokenPairDto = response.body()
-                            val confirmed = authDataSource.getUserOnce()?.emailConfirmed ?: false
+                            val confirmed = newTokens.emailConfirmed
+                                ?: authDataSource.getUserOnce()?.emailConfirmed
+                                ?: false
                             authDataSource.insertUser(
                                 email = newTokens.email,
                                 username = newTokens.username,
                                 accessToken = newTokens.accessToken,
                                 refreshToken = newTokens.refreshToken,
+                                obfuscatedId = newTokens.obfuscatedId,
                                 provider = AuthProvider.valueOf(newTokens.provider),
                                 subscribed = newTokens.subscribed,
                                 emailConfirmed = confirmed

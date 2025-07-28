@@ -12,6 +12,10 @@ import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepos
 import pl.cuyer.rusthub.util.MessagingTokenManager
 import pl.cuyer.rusthub.domain.repository.item.ItemRepository
 import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
+import pl.cuyer.rusthub.domain.repository.purchase.PurchaseRepository
+import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
+import pl.cuyer.rusthub.domain.repository.user.UserRepository
+import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 
 class CustomWorkerFactory(
     private val favouriteRepository: FavouriteRepository,
@@ -22,7 +26,11 @@ class CustomWorkerFactory(
     private val tokenManager: MessagingTokenManager,
     private val itemRepository: ItemRepository,
     private val itemDataSource: ItemDataSource,
-    private val itemSyncDataSource: pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
+    private val itemSyncDataSource: pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource,
+    private val purchaseRepository: PurchaseRepository,
+    private val purchaseSyncDataSource: PurchaseSyncDataSource,
+    private val userRepository: UserRepository,
+    private val authDataSource: AuthDataSource
 ) : WorkerFactory() {
 
     override fun createWorker(
@@ -56,6 +64,22 @@ class CustomWorkerFactory(
                     itemRepository,
                     itemDataSource,
                     itemSyncDataSource
+                )
+            }
+            PurchaseSyncWorker::class.qualifiedName -> {
+                PurchaseSyncWorker(
+                    appContext,
+                    workerParameters,
+                    purchaseRepository,
+                    purchaseSyncDataSource
+                )
+            }
+            UserSyncWorker::class.qualifiedName -> {
+                UserSyncWorker(
+                    appContext,
+                    workerParameters,
+                    userRepository,
+                    authDataSource
                 )
             }
             TokenRefreshWorker::class.qualifiedName -> {

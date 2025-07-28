@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.android.feature.subscription
 
 import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -26,6 +27,7 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.matchParentSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -47,6 +49,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -85,18 +88,26 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.flowWithLifecycle
 import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.android.util.prefersReducedMotion
-import org.koin.compose.koinInject
+import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
+import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionAction
+import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
+import pl.cuyer.rusthub.domain.model.BillingProduct
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
+import pl.cuyer.rusthub.android.designsystem.PlanSelectorShimmer
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
-import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
+import androidx.compose.runtime.State
+import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionState
 
 @Immutable
 private data class SubscriptionBenefit(
@@ -134,15 +145,7 @@ private val benefits = listOf(
     )
 )
 
-@Immutable
-private enum class Plan(val label: StringResource, val billed: StringResource) {
-    MONTHLY(
-        SharedRes.strings.monthly,
-        billed = SharedRes.strings.billed_monthly,
-    ),
-    YEARLY(SharedRes.strings.yearly, billed = SharedRes.strings.billed_yearly),
-    LIFETIME(SharedRes.strings.lifetime, billed = SharedRes.strings.pay_once)
-}
+
 
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -153,9 +156,15 @@ private enum class Plan(val label: StringResource, val billed: StringResource) {
 fun SubscriptionScreen(
     onNavigateUp: () -> Unit,
     onPrivacyPolicy: () -> Unit,
-    onTerms: () -> Unit
+    onTerms: () -> Unit,
+    state: State<SubscriptionState>,
+    onAction: (SubscriptionAction) -> Unit,
+    uiEvent: Flow<UiEvent>
 ) {
-    var selectedPlan by remember { mutableStateOf(Plan.MONTHLY) }
+    var selectedPlan by remember { mutableStateOf(state.value.currentPlan ?: SubscriptionPlan.MONTHLY) }
+    LaunchedEffect(state.value.currentPlan) {
+        state.value.currentPlan?.let { selectedPlan = it }
+    }
     val pagerState = rememberPagerState(pageCount = { benefits.size })
     val context = LocalContext.current
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
@@ -185,32 +194,51 @@ fun SubscriptionScreen(
             )
         }
     ) { innerPadding ->
-        if (isTabletMode) {
-            SubscriptionScreenExpanded(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding)
-                    .fillMaxSize(),
-                pagerState = pagerState,
-                selectedPlan = { selectedPlan },
-                onPlanSelect = { selectedPlan = it },
-                onNavigateUp = onNavigateUp,
-                onPrivacyPolicy = onPrivacyPolicy,
-                onTerms = onTerms
-            )
-        } else {
-            SubscriptionScreenCompact(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding)
-                    .fillMaxSize(),
-                pagerState = pagerState,
-                selectedPlan = { selectedPlan },
-                onPlanSelect = { selectedPlan = it },
-                onNavigateUp = onNavigateUp,
-                onPrivacyPolicy = onPrivacyPolicy,
-                onTerms = onTerms
-            )
+        ObserveAsEvents(uiEvent) { event ->
+            if (event is UiEvent.NavigateUp) onNavigateUp()
+        }
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .fillMaxSize()
+        ) {
+            if (isTabletMode) {
+                SubscriptionScreenExpanded(
+                    modifier = Modifier.fillMaxSize(),
+                    pagerState = pagerState,
+                    selectedPlan = { selectedPlan },
+                    onPlanSelect = { selectedPlan = it },
+                    onNavigateUp = onNavigateUp,
+                    onPrivacyPolicy = onPrivacyPolicy,
+                    onTerms = onTerms,
+                    products = state.value.products,
+                    isLoading = state.value.isLoading,
+                    currentPlan = state.value.currentPlan,
+                    onAction = onAction
+                )
+            } else {
+                SubscriptionScreenCompact(
+                    modifier = Modifier.fillMaxSize(),
+                    pagerState = pagerState,
+                    selectedPlan = { selectedPlan },
+                    onPlanSelect = { selectedPlan = it },
+                    onNavigateUp = onNavigateUp,
+                    onPrivacyPolicy = onPrivacyPolicy,
+                    onTerms = onTerms,
+                    products = state.value.products,
+                    isLoading = state.value.isLoading,
+                    currentPlan = state.value.currentPlan,
+                    onAction = onAction
+                )
+            }
+            if (state.value.isProcessing) {
+                LoadingIndicator(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .matchParentSize()
+                )
+            }
         }
     }
 }
@@ -219,12 +247,17 @@ fun SubscriptionScreen(
 private fun SubscriptionScreenCompact(
     modifier: Modifier = Modifier,
     pagerState: PagerState,
-    selectedPlan: () -> Plan,
-    onPlanSelect: (Plan) -> Unit,
+    selectedPlan: () -> SubscriptionPlan,
+    onPlanSelect: (SubscriptionPlan) -> Unit,
     onNavigateUp: () -> Unit,
     onPrivacyPolicy: () -> Unit,
-    onTerms: () -> Unit
+    onTerms: () -> Unit,
+    products: Map<SubscriptionPlan, BillingProduct>,
+    isLoading: Boolean,
+    currentPlan: SubscriptionPlan?,
+    onAction: (SubscriptionAction) -> Unit
 ) {
+    val activity = LocalActivity.current as Activity
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
@@ -233,8 +266,19 @@ private fun SubscriptionScreenCompact(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         BenefitCarousel(pagerState = pagerState)
-        PlanSelector(selectedPlan = selectedPlan, onPlanSelect = onPlanSelect)
-        SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms)
+        if (isLoading) {
+            PlanSelectorShimmer(Modifier.fillMaxWidth())
+        } else {
+            PlanSelector(
+                selectedPlan = selectedPlan,
+                onPlanSelect = onPlanSelect,
+                products = products,
+                currentPlan = currentPlan
+            )
+        }
+        SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms, currentPlan) {
+            onAction(SubscriptionAction.Subscribe(selectedPlan(), activity))
+        }
         Spacer(modifier = Modifier.height(spacing.medium))
         ComparisonSection()
         Spacer(modifier = Modifier.height(spacing.medium))
@@ -246,12 +290,17 @@ private fun SubscriptionScreenCompact(
 private fun SubscriptionScreenExpanded(
     modifier: Modifier = Modifier,
     pagerState: PagerState,
-    selectedPlan: () -> Plan,
-    onPlanSelect: (Plan) -> Unit,
+    selectedPlan: () -> SubscriptionPlan,
+    onPlanSelect: (SubscriptionPlan) -> Unit,
     onNavigateUp: () -> Unit,
     onPrivacyPolicy: () -> Unit,
-    onTerms: () -> Unit
+    onTerms: () -> Unit,
+    products: Map<SubscriptionPlan, BillingProduct>,
+    isLoading: Boolean,
+    currentPlan: SubscriptionPlan?,
+    onAction: (SubscriptionAction) -> Unit
 ) {
+    val activity = LocalActivity.current as Activity
     Row(
         modifier = modifier.padding(spacing.medium),
         horizontalArrangement = Arrangement.spacedBy(spacing.large)
@@ -264,8 +313,19 @@ private fun SubscriptionScreenExpanded(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             BenefitCarousel(pagerState = pagerState)
-            PlanSelector(selectedPlan = selectedPlan, onPlanSelect = onPlanSelect)
-            SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms)
+            if (isLoading) {
+                PlanSelectorShimmer(Modifier.fillMaxWidth())
+            } else {
+                PlanSelector(
+                    selectedPlan = selectedPlan,
+                    onPlanSelect = onPlanSelect,
+                    products = products,
+                    currentPlan = currentPlan
+                )
+            }
+            SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms, currentPlan) {
+                onAction(SubscriptionAction.Subscribe(selectedPlan(), activity))
+            }
         }
 
         Column(
@@ -329,8 +389,10 @@ private fun BenefitCarousel(pagerState: PagerState) {
 
 @Composable
 private fun PlanSelector(
-    selectedPlan: () -> Plan,
-    onPlanSelect: (Plan) -> Unit
+    selectedPlan: () -> SubscriptionPlan,
+    onPlanSelect: (SubscriptionPlan) -> Unit,
+    products: Map<SubscriptionPlan, BillingProduct>,
+    currentPlan: SubscriptionPlan?
 ) {
     Row(
         modifier = Modifier
@@ -341,7 +403,8 @@ private fun PlanSelector(
             Alignment.CenterHorizontally
         )
     ) {
-        Plan.entries.forEach { plan ->
+        val lifetimeOwned = currentPlan == SubscriptionPlan.LIFETIME
+        SubscriptionPlan.entries.forEach { plan ->
             val isSelected = plan == selectedPlan()
             val sd = if (isSelected) {
                 stringResource(SharedRes.strings.plan_selected)
@@ -351,6 +414,7 @@ private fun PlanSelector(
 
             ElevatedCard(
                 onClick = { onPlanSelect(plan) },
+                enabled = !lifetimeOwned && plan != currentPlan,
                 modifier = Modifier
                     .semantics {
                         role = Role.RadioButton
@@ -381,9 +445,8 @@ private fun PlanSelector(
                     Text(stringResource(plan.label), style = MaterialTheme.typography.titleMedium)
                     Text(
                         textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        text = stringResource(plan.billed),
+                        modifier = Modifier.fillMaxSize(),
+                        text = products[plan]?.price ?: stringResource(plan.billed),
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Thin)
                     )
                 }
@@ -394,16 +457,28 @@ private fun PlanSelector(
 
 @Composable
 private fun SubscribeActions(
-    selectedPlan: () -> Plan,
+    selectedPlan: () -> SubscriptionPlan,
     onNavigateUp: () -> Unit,
     onPrivacyPolicy: () -> Unit,
-    onTerms: () -> Unit
+    onTerms: () -> Unit,
+    currentPlan: SubscriptionPlan?,
+    onSubscribe: () -> Unit
 ) {
+    val plan = selectedPlan()
+    val samePlan = plan == currentPlan
+    val sameProduct = plan.productId == currentPlan?.productId && !samePlan
+    val lifetimeOwned = currentPlan == SubscriptionPlan.LIFETIME
+    val text = when {
+        lifetimeOwned -> stringResource(SharedRes.strings.lifetime_plan_active)
+        samePlan -> stringResource(SharedRes.strings.subscribed)
+        sameProduct -> stringResource(SharedRes.strings.change_plan)
+        else -> stringResource(SharedRes.strings.subscribe_to_plan, stringResource(plan.label))
+    }
     AppButton(
         modifier = Modifier.fillMaxWidth(),
-        onClick = {}) {
-        Text(stringResource(SharedRes.strings.subscribe_to_plan, stringResource(selectedPlan().label)))
-    }
+        onClick = onSubscribe,
+        enabled = !samePlan && !lifetimeOwned
+    ) { Text(text) }
     AppTextButton(onClick = onNavigateUp) {
         Text(stringResource(SharedRes.strings.not_now))
     }
@@ -614,11 +689,15 @@ private fun CarouselAutoPlayHandler(pagerState: PagerState, carouselSize: Int, d
 @Preview
 @Composable
 private fun SubscriptionScreenPreview() {
+    val state = remember { mutableStateOf(SubscriptionState()) }
     RustHubTheme {
         SubscriptionScreen(
             onNavigateUp = {},
             onPrivacyPolicy = {},
-            onTerms = {}
+            onTerms = {},
+            state = state,
+            onAction = {},
+            uiEvent = MutableStateFlow(UiEvent.NavigateUp)
         )
     }
 }

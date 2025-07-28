@@ -36,7 +36,7 @@
     <string name="additional_information_available_at">Informations supplémentaires sur :</string>
     <string name="all">Tous</string>
     <string name="any_questions">Des questions ?</string>
-    <string name="app_version">Version de l’application</string>
+    <string name="app_version">Version de l’application : %1$s</string>
     <string name="application_logo">Logo de l'application</string>
     <string name="apply_filters">Appliquer les filtres</string>
     <string name="arrow_down">Flèche vers le bas</string>
@@ -221,6 +221,11 @@
     <string name="subscribe_to_plan">S’abonner au plan %s</string>
     <string name="subscription">Abonnement</string>
     <string name="subscription_button">Bouton d’abonnement</string>
+    <string name="manage_subscription">Gérer l’abonnement</string>
+    <string name="you_are_subscribed">Vous êtes abonné : %1$s</string>
+    <string name="subscription_expiration">Expire le %1$s</string>
+    <string name="change_plan">Changer de plan</string>
+    <string name="lifetime_plan_active">Plan à vie actif</string>
     <string name="support_development">Soutenir le développement</string>
     <string name="support_development_icon">Symbole de soutien au développement</string>
     <string name="terms_conditions">Conditions générales</string>
@@ -335,6 +340,14 @@
     <string name="error_not_found">Ressource introuvable.</string>
     <string name="error_too_many_requests">Vous effectuez cette action trop souvent. Veuillez patienter.</string>
     <string name="error_invalid_refresh_token">Session expirée. Veuillez vous reconnecter.</string>
+    <string name="purchase_canceled">Achat annulé.</string>
+    <string name="error_billing_unavailable">Service de facturation indisponible.</string>
+    <string name="error_item_unavailable">Article indisponible.</string>
+    <string name="error_developer_error">Erreur développeur.</string>
+    <string name="error_billing_generic">Erreur de facturation. Réessayez plus tard.</string>
+    <string name="error_item_owned">Article déjà acheté.</string>
+    <string name="error_item_not_owned">Article non acheté.</string>
+    <string name="error_feature_not_supported">Fonction non prise en charge.</string>
     <string name="weapons">Armes</string>
     <string name="ammo">Munitions</string>
     <string name="clothes">Vêtements</string>
@@ -368,4 +381,6 @@
     <string name="using_mixing_table">Utilisation du table de mixage x%1$d</string>
     <string name="time_to_raid">Temps de raid : %1$s</string>
     <string name="hp">HP</string>
+    <string name="update_ready">Mise à jour prête à être installée</string>
+    <string name="restart">Redémarrer</string>
 </resources>

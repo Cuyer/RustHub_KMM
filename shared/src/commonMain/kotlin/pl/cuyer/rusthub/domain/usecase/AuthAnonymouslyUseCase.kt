@@ -27,6 +27,7 @@ class AuthAnonymouslyUseCase(
                             username = username,
                             accessToken = accessToken,
                             refreshToken = null,
+                            obfuscatedId = obfuscatedId,
                             provider = provider,
                             subscribed = subscribed,
                             emailConfirmed = true

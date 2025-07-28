@@ -17,17 +17,14 @@ google-services = "4.4.3"
 firebase-bom = "34.0.0"
 crashlytics-gradle = "3.0.5"
 lifecycle = "2.9.1"
-navigation = "1.0.0-alpha05"
-navigation-viewmodel = "1.0.0-alpha03"
+navigation3 = "1.0.0-SNAPSHOT"
 activity-compose = "1.12.0-alpha04"
-compose-material3 = "1.4.0-alpha18"
+compose-material3 = "1.5.0-SNAPSHOT"
 compose-bom = "2025.07.00"
 moko-resources = "0.25.0"
 moko-permissions = "0.19.1"
 paging = "3.3.0-alpha02-0.5.1"
-material3-adaptive = "1.2.0-alpha09"
-material3-adaptive-navigation-suite = "1.4.0-alpha18"
-material3-adaptive-navigation3 = "1.0.0-SNAPSHOT"
+material3-adaptive = "1.2.0-SNAPSHOT"
 work = "2.10.2"
 serialization = "1.8.1"
 coil = "3.3.0"
@@ -105,17 +102,17 @@ kotlin-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serial
 androidx-compose-material3-adaptive = { module = "androidx.compose.material3.adaptive:adaptive", version.ref = "material3-adaptive" }
 androidx-compose-material3-adaptive-layout = { module = "androidx.compose.material3.adaptive:adaptive-layout", version.ref = "material3-adaptive" }
 androidx-compose-material3-adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-navigation", version.ref = "material3-adaptive" }
-androidx-compose-material3-adaptive-navigation-suite = { module = "androidx.compose.material3:material3-adaptive-navigation-suite", version.ref = "material3-adaptive-navigation-suite" }
-androidx-compose-material3-adaptive-navigation3 = { module = "androidx.compose.material3.adaptive:adaptive-navigation3", version.ref = "material3-adaptive-navigation3" }
-androidx-compose-material3-windowsizeclass = { group = "androidx.compose.material3", name = "material3-window-size-class-android", version.ref = "material3-adaptive-navigation-suite" }
+androidx-compose-material3-adaptive-navigation-suite = { module = "androidx.compose.material3:material3-adaptive-navigation-suite", version.ref = "compose-material3" }
+androidx-compose-material3-adaptive-navigation3 = { module = "androidx.compose.material3.adaptive:adaptive-navigation3", version.ref = "navigation3" }
+androidx-compose-material3-windowsizeclass = { group = "androidx.compose.material3", name = "material3-window-size-class-android", version.ref = "compose-material3" }
 
 #ANDROIDX(outside BOM)
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
-androidx-navigation = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation" }
-androidx-navigation-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation" }
-androidx-navigation-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "navigation-viewmodel" }
+androidx-navigation = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
+androidx-navigation-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
+androidx-navigation-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "navigation3" }
 lifecycle-runtime = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycle" }

@@ -8,6 +8,10 @@ internal fun navigateBottomBar(backStack: MutableList<NavKey>, item: BottomNavKe
             backStack.removeLastOrNull()
         }
         backStack.add(item.root)
+    } else if (backStack.lastOrNull() != item.root) {
+        while (backStack.isNotEmpty() && backStack.last() != item.root) {
+            backStack.removeLastOrNull()
+        }
     }
 }
 

@@ -1,0 +1,246 @@
+package pl.cuyer.rusthub.data.billing
+
+import android.app.Activity
+import android.content.Context
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingFlowParams
+import com.android.billingclient.api.PendingPurchasesParams
+import com.android.billingclient.api.ProductDetails
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryPurchasesParams
+import com.android.billingclient.api.queryProductDetails
+import io.github.aakira.napier.Napier
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.withContext
+import kotlinx.datetime.Instant
+import org.json.JSONObject
+import pl.cuyer.rusthub.domain.model.ActiveSubscription
+import pl.cuyer.rusthub.domain.model.BillingErrorCode
+import pl.cuyer.rusthub.domain.model.BillingProduct
+import pl.cuyer.rusthub.domain.model.PurchaseInfo
+import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
+import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
+import pl.cuyer.rusthub.util.CrashReporter
+
+class BillingRepositoryImpl(context: Context) : BillingRepository {
+    private val _purchaseFlow = MutableSharedFlow<PurchaseInfo>(replay = 1)
+    override val purchaseFlow = _purchaseFlow.asSharedFlow()
+    private val _errorFlow = MutableSharedFlow<BillingErrorCode>(replay = 1)
+    override val errorFlow = _errorFlow.asSharedFlow()
+
+    private data class ProductData(val details: ProductDetails, val offerToken: String?)
+
+    private val productMap = mutableMapOf<String, ProductData>()
+
+    private val billingClient = BillingClient.newBuilder(context)
+        .enablePendingPurchases(
+            PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
+        )
+        .setListener { billingResult, purchases ->
+            CrashReporter.log("Billing listener invoked: $billingResult with purchases: $purchases")
+            CrashReporter.recordException(Exception("Billing listener: $billingResult\n$purchases"))
+
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                CrashReporter.log("Handling purchase: before purchase check")
+                CrashReporter.recordException(Exception("Billing listener: before purchase check"))
+                purchases?.forEach {
+                    CrashReporter.log("Handling purchase: $it")
+                    handlePurchase(it)
+                }
+            } else {
+                CrashReporter.log("Billing error in listener: ${billingResult.responseCode}")
+                _errorFlow.tryEmit(billingResult.responseCode.toErrorCode())
+            }
+        }
+        .enableAutoServiceReconnection()
+        .build()
+
+    override fun queryProducts(ids: List<String>): Flow<List<BillingProduct>> = callbackFlow {
+        val subsPlans = SubscriptionPlan.entries.filter { it.basePlanId != null && ids.contains(it.basePlanId) }
+        val inappPlans = SubscriptionPlan.entries.filter { it.basePlanId == null && ids.contains(it.productId) }
+
+        val result = mutableListOf<BillingProduct>()
+
+        if (subsPlans.isNotEmpty()) {
+            val subsProducts = listOf(
+                QueryProductDetailsParams.Product.newBuilder()
+                    .setProductId(SubscriptionPlan.SUBSCRIPTION_ID)
+                    .setProductType(BillingClient.ProductType.SUBS)
+                    .build()
+            )
+
+            val subsParams = QueryProductDetailsParams.newBuilder().setProductList(subsProducts).build()
+
+            val subsResult = withContext(Dispatchers.IO) { billingClient.queryProductDetails(subsParams) }
+            CrashReporter.log("Subscription query result: ${subsResult.billingResult}, products: ${subsResult.productDetailsList?.size}")
+
+            val subsList = mutableListOf<BillingProduct>()
+            if (subsResult.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                subsResult.productDetailsList?.forEach { pd ->
+                    pd.subscriptionOfferDetails?.forEach { offer ->
+                        val planId = offer.basePlanId
+                        if (subsPlans.any { it.basePlanId == planId }) {
+                            productMap[planId] = ProductData(pd, offer.offerToken)
+                            subsList.add(pd.toBillingProduct(planId, offer))
+                        }
+                    }
+                }
+            } else {
+                CrashReporter.log("Subscription query error: ${subsResult.billingResult}")
+                CrashReporter.recordException(Exception("Failed to fetch SUBS product details: ${subsResult.billingResult}"))
+                _errorFlow.tryEmit(subsResult.billingResult.responseCode.toErrorCode())
+            }
+            result.addAll(subsList)
+        }
+
+        if (inappPlans.isNotEmpty()) {
+            val inappProducts = inappPlans.map {
+                QueryProductDetailsParams.Product.newBuilder()
+                    .setProductId(it.productId)
+                    .setProductType(BillingClient.ProductType.INAPP)
+                    .build()
+            }
+            val inappParams = QueryProductDetailsParams.newBuilder().setProductList(inappProducts).build()
+
+            val inappResult = withContext(Dispatchers.IO) { billingClient.queryProductDetails(inappParams) }
+            CrashReporter.log("INAPP query result: ${inappResult.billingResult}, products: ${inappResult.productDetailsList?.size}")
+
+            val inappList = mutableListOf<BillingProduct>()
+            if (inappResult.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                inappResult.productDetailsList?.forEach { pd ->
+                    val id = pd.productId
+                    if (inappPlans.any { it.productId == id }) {
+                        productMap[id] = ProductData(pd, null)
+                        inappList.add(pd.toBillingProduct(id))
+                    }
+                }
+            } else {
+                CrashReporter.log("In-app query error: ${inappResult.billingResult}")
+                CrashReporter.recordException(Exception("Failed to fetch INAPP product details: ${inappResult.billingResult}"))
+                _errorFlow.tryEmit(inappResult.billingResult.responseCode.toErrorCode())
+            }
+            result.addAll(inappList)
+        }
+
+        trySend(result)
+        close()
+        awaitClose {}
+    }
+
+    override fun launchBillingFlow(activity: Any, productId: String, obfuscatedId: String?) {
+        val act = activity as? Activity ?: return
+        val data = productMap[productId] ?: return
+
+        CrashReporter.log("Launching billing flow for $productId")
+
+        val params = BillingFlowParams.newBuilder()
+            .setProductDetailsParamsList(
+                listOf(
+                    BillingFlowParams.ProductDetailsParams.newBuilder()
+                        .setProductDetails(data.details)
+                        .apply { data.offerToken?.let { setOfferToken(it) } }
+                        .build()
+                )
+            )
+            .apply { obfuscatedId?.let { setObfuscatedAccountId(it) } }
+            .build()
+
+        val result = billingClient.launchBillingFlow(act, params)
+        if (result.responseCode != BillingClient.BillingResponseCode.OK) {
+            CrashReporter.log("Billing flow failed: ${result.responseCode}")
+            _errorFlow.tryEmit(result.responseCode.toErrorCode())
+        }
+    }
+
+    override fun getActiveSubscription(): Flow<ActiveSubscription?> = callbackFlow {
+        CrashReporter.log("Querying active subscription...")
+        val subsParams = QueryPurchasesParams.newBuilder()
+            .setProductType(BillingClient.ProductType.SUBS)
+            .build()
+
+        billingClient.queryPurchasesAsync(subsParams) { billingResult, purchasesList ->
+            CrashReporter.log("Subscription purchases result: $billingResult with ${purchasesList.size} items")
+
+            val purchase = purchasesList.firstOrNull()
+            val planId = purchase?.products?.firstOrNull()
+            if (purchase != null && planId != null) {
+                val plan = SubscriptionPlan.entries.firstOrNull { it.basePlanId == planId }
+
+                val json = purchase.originalJson
+                val exp = try {
+                    JSONObject(json).optLong("expiryTimeMillis", 0L)
+                } catch (e: Exception) {
+                    CrashReporter.recordException(e)
+                    CrashReporter.log("Failed to parse expiryTimeMillis: ${e.message}")
+                    0L
+                }
+
+                val expiration = exp.takeIf { it > 0 }?.let { Instant.fromEpochMilliseconds(it) }
+                trySend(plan?.let { ActiveSubscription(it, expiration) })
+                close()
+                return@queryPurchasesAsync
+            }
+
+            val inAppParams = QueryPurchasesParams.newBuilder()
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build()
+
+            CrashReporter.log("Querying in-app purchases fallback")
+            billingClient.queryPurchasesAsync(inAppParams) { br, inappPurchases ->
+                CrashReporter.log("In-app purchases result: $br with ${inappPurchases.size} items")
+
+                val owned = inappPurchases.any { it.products.contains(SubscriptionPlan.LIFETIME.productId) }
+                trySend(if (owned) ActiveSubscription(SubscriptionPlan.LIFETIME, null) else null)
+                close()
+            }
+        }
+        awaitClose {}
+    }
+
+    private fun handlePurchase(purchase: Purchase) {
+        CrashReporter.log("handlePurchase called with: $purchase")
+        val product = purchase.products.firstOrNull()
+        if (product == null) {
+            CrashReporter.log("handlePurchase: product list is empty")
+            return
+        }
+        _purchaseFlow.tryEmit(PurchaseInfo(product, purchase.purchaseToken))
+    }
+
+    private fun ProductDetails.toBillingProduct(planId: String, offer: ProductDetails.SubscriptionOfferDetails): BillingProduct {
+        val price = offer.pricingPhases.pricingPhaseList.firstOrNull()?.formattedPrice ?: ""
+        return BillingProduct(id = planId, title = name, description = description, price = price)
+    }
+
+    private fun ProductDetails.toBillingProduct(productId: String): BillingProduct {
+        val price = oneTimePurchaseOfferDetails?.formattedPrice ?: ""
+        return BillingProduct(id = productId, title = name, description = description, price = price)
+    }
+}
+
+private fun Int.toErrorCode(): BillingErrorCode {
+    return when (this) {
+        BillingClient.BillingResponseCode.USER_CANCELED -> BillingErrorCode.USER_CANCELED
+        BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE -> BillingErrorCode.SERVICE_UNAVAILABLE
+        BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> BillingErrorCode.BILLING_UNAVAILABLE
+        BillingClient.BillingResponseCode.ITEM_UNAVAILABLE -> BillingErrorCode.ITEM_UNAVAILABLE
+        BillingClient.BillingResponseCode.DEVELOPER_ERROR -> BillingErrorCode.DEVELOPER_ERROR
+        BillingClient.BillingResponseCode.ERROR -> BillingErrorCode.ERROR
+        BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> BillingErrorCode.ITEM_ALREADY_OWNED
+        BillingClient.BillingResponseCode.ITEM_NOT_OWNED -> BillingErrorCode.ITEM_NOT_OWNED
+        BillingClient.BillingResponseCode.NETWORK_ERROR -> BillingErrorCode.NETWORK_ERROR
+        BillingClient.BillingResponseCode.SERVICE_DISCONNECTED -> BillingErrorCode.SERVICE_DISCONNECTED
+        BillingClient.BillingResponseCode.FEATURE_NOT_SUPPORTED -> BillingErrorCode.FEATURE_NOT_SUPPORTED
+        BillingClient.BillingResponseCode.SERVICE_TIMEOUT -> BillingErrorCode.SERVICE_TIMEOUT
+        else -> BillingErrorCode.UNKNOWN
+    }
+}
