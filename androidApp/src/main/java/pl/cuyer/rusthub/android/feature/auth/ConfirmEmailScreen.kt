@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -262,28 +263,28 @@ private fun ConfirmEmailShimmerCompact() {
         Box(
             modifier = Modifier
                 .size(64.dp)
-                .clip(RectangleShape)
+                .clip(MaterialTheme.shapes.extraSmall)
                 .shimmer()
         )
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .height(20.dp)
-                .clip(RectangleShape)
+                .clip(MaterialTheme.shapes.extraSmall)
                 .shimmer()
         )
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
-                .clip(RectangleShape)
+                .clip(MaterialTheme.shapes.extraSmall)
                 .shimmer()
         )
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.5f)
                 .height(36.dp)
-                .clip(RectangleShape)
+                .clip(MaterialTheme.shapes.extraSmall)
                 .shimmer()
         )
     }
@@ -304,7 +305,7 @@ private fun ConfirmEmailShimmerExpanded() {
             Box(
                 modifier = Modifier
                     .size(64.dp)
-                    .clip(RectangleShape)
+                    .clip(MaterialTheme.shapes.extraSmall)
                     .shimmer()
             )
             Spacer(Modifier.size(spacing.small))
@@ -312,7 +313,7 @@ private fun ConfirmEmailShimmerExpanded() {
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .height(20.dp)
-                    .clip(RectangleShape)
+                    .clip(MaterialTheme.shapes.extraSmall)
                     .shimmer()
             )
         }
@@ -328,14 +329,14 @@ private fun ConfirmEmailShimmerExpanded() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
-                    .clip(RectangleShape)
+                    .clip(MaterialTheme.shapes.extraSmall)
                     .shimmer()
             )
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.5f)
                     .height(36.dp)
-                    .clip(RectangleShape)
+                    .clip(MaterialTheme.shapes.extraSmall)
                     .shimmer()
             )
         }

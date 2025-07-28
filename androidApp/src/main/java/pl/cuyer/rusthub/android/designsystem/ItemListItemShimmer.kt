@@ -35,7 +35,7 @@ fun ItemListItemShimmer(modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .clip(RectangleShape)
+                    .clip(MaterialTheme.shapes.extraSmall)
                     .shimmer()
                     .clearAndSetSemantics {}
             )
@@ -44,7 +44,7 @@ fun ItemListItemShimmer(modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
                         .height(20.dp)
-                        .clip(RectangleShape)
+                        .clip(MaterialTheme.shapes.extraSmall)
                         .shimmer()
                         .clearAndSetSemantics {}
                 )
@@ -52,7 +52,7 @@ fun ItemListItemShimmer(modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
                         .height(16.dp)
-                        .clip(RectangleShape)
+                        .clip(MaterialTheme.shapes.extraSmall)
                         .shimmer()
                         .clearAndSetSemantics {}
                 )

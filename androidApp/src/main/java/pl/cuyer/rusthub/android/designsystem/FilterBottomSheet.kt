@@ -56,6 +56,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.builtins.ListSerializer
@@ -370,7 +371,7 @@ private fun FilterBottomSheetShimmer(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
                     .height(40.dp)
-                    .clip(RectangleShape)
+                    .clip(MaterialTheme.shapes.extraSmall)
                     .shimmer()
             )
         }

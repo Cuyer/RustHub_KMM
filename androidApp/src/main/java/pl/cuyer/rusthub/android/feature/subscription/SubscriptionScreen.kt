@@ -745,7 +745,7 @@ private fun SubscriptionShimmerCompact(modifier: Modifier = Modifier) {
         Box(
             modifier = Modifier
                 .size(200.dp)
-                .clip(RectangleShape)
+                .clip(MaterialTheme.shapes.extraSmall)
                 .shimmer()
         )
         PlanSelectorShimmer(Modifier.fillMaxWidth())
@@ -753,7 +753,7 @@ private fun SubscriptionShimmerCompact(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
-                .clip(RectangleShape)
+                .clip(MaterialTheme.shapes.extraSmall)
                 .shimmer()
         )
         repeat(3) {
@@ -761,7 +761,7 @@ private fun SubscriptionShimmerCompact(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(40.dp)
-                    .clip(RectangleShape)
+                    .clip(MaterialTheme.shapes.extraSmall)
                     .shimmer()
             )
         }
@@ -786,7 +786,7 @@ private fun SubscriptionShimmerExpanded(modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .size(200.dp)
-                    .clip(RectangleShape)
+                    .clip(MaterialTheme.shapes.extraSmall)
                     .shimmer()
             )
             PlanSelectorShimmer(Modifier.fillMaxWidth())
@@ -794,7 +794,7 @@ private fun SubscriptionShimmerExpanded(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
-                    .clip(RectangleShape)
+                    .clip(MaterialTheme.shapes.extraSmall)
                     .shimmer()
             )
         }
@@ -810,7 +810,7 @@ private fun SubscriptionShimmerExpanded(modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(40.dp)
-                        .clip(RectangleShape)
+                        .clip(MaterialTheme.shapes.extraSmall)
                         .shimmer()
                 )
             }

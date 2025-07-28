@@ -157,7 +157,7 @@ fun ServerListItemShimmer(modifier: Modifier = Modifier) {
                     Box(
                         modifier = Modifier
                             .size(24.dp)
-                            .clip(RectangleShape)
+                            .clip(MaterialTheme.shapes.extraSmall)
                             .shimmer()
                             .clearAndSetSemantics {}
                     )
@@ -175,7 +175,7 @@ fun ServerListItemShimmer(modifier: Modifier = Modifier) {
                         modifier = Modifier
                             .height(30.dp)
                             .width(60.dp)
-                            .clip(RectangleShape)
+                            .clip(MaterialTheme.shapes.extraSmall)
                             .shimmer()
                             .clearAndSetSemantics {}
                     )
@@ -190,7 +190,7 @@ fun ServerListItemShimmer(modifier: Modifier = Modifier) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(16.dp)
-                            .clip(RoundedCornerShape(4.dp))
+                            .clip(RoundedCornerShape(MaterialTheme.shapes.extraSmall))
                             .shimmer()
                             .clearAndSetSemantics {}
                     )

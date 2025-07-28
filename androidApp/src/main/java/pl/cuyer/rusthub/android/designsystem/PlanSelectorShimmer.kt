@@ -31,7 +31,7 @@ fun PlanSelectorShimmer(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
-                    .clip(RectangleShape)
+                    .clip(MaterialTheme.shapes.extraSmall)
                     .shimmer()
                     .clearAndSetSemantics {}
             )
