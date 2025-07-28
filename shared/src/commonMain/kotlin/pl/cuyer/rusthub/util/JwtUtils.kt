@@ -49,33 +49,3 @@ fun formatExpiration(duration: Duration, stringProvider: StringProvider): String
         }
     }
 }
-
-@OptIn(ExperimentalEncodingApi::class)
-private fun decodePayload(token: String): kotlinx.serialization.json.JsonObject? {
-    val parts = token.split(".")
-    if (parts.size < 2) return null
-    val payload = parts[1]
-        .replace('-', '+')
-        .replace('_', '/')
-        .let { if (it.length % 4 != 0) it.padEnd((it.length + 3) / 4 * 4, '=') else it }
-    return try {
-        val decoded = Base64.decode(payload).decodeToString()
-        json.parseToJsonElement(decoded).jsonObject
-    } catch (_: Exception) {
-        null
-    }
-}
-
-@OptIn(ExperimentalEncodingApi::class)
-fun subscriptionPlan(token: String): SubscriptionPlan? {
-    val obj = decodePayload(token) ?: return null
-    val id = obj["plan"]?.jsonPrimitive?.contentOrNull ?: obj["sub_plan"]?.jsonPrimitive?.contentOrNull
-    return SubscriptionPlan.entries.firstOrNull { it.basePlanId == id || it.productId == id }
-}
-
-@OptIn(ExperimentalEncodingApi::class)
-fun subscriptionExpiration(token: String): String? {
-    val obj = decodePayload(token) ?: return null
-    val epoch = obj["plan_exp"]?.jsonPrimitive?.longOrNull ?: obj["plan_expiration"]?.jsonPrimitive?.longOrNull
-    return epoch?.let { Instant.fromEpochSeconds(it).toString() }
-}
