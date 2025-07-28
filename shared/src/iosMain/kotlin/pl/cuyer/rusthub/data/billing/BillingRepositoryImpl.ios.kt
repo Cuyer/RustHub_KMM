@@ -7,7 +7,6 @@ import pl.cuyer.rusthub.domain.model.BillingProduct
 import pl.cuyer.rusthub.domain.model.PurchaseInfo
 import pl.cuyer.rusthub.domain.model.BillingErrorCode
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
-import pl.cuyer.rusthub.domain.model.ActiveSubscription
 import kotlinx.coroutines.flow.flowOf
 
 class BillingRepositoryImpl : BillingRepository {
@@ -15,5 +14,4 @@ class BillingRepositoryImpl : BillingRepository {
     override val errorFlow: Flow<BillingErrorCode> = emptyFlow()
     override fun queryProducts(ids: List<String>): Flow<List<BillingProduct>> = flowOf(emptyList())
     override fun launchBillingFlow(activity: Any, productId: String, obfuscatedId: String?) {}
-    override fun getActiveSubscription(): Flow<ActiveSubscription?> = flowOf(null)
 }

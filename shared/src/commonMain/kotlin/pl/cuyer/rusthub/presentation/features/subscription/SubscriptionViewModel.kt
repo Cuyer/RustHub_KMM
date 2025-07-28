@@ -23,7 +23,7 @@ import pl.cuyer.rusthub.domain.model.BillingProduct
 import pl.cuyer.rusthub.domain.model.BillingErrorCode
 import pl.cuyer.rusthub.domain.model.toMessage
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
-import pl.cuyer.rusthub.domain.model.ActiveSubscription
+import pl.cuyer.rusthub.domain.usecase.GetActiveSubscriptionUseCase
 import pl.cuyer.rusthub.domain.usecase.ConfirmPurchaseUseCase
 import pl.cuyer.rusthub.domain.usecase.RefreshUserUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
@@ -52,6 +52,7 @@ class SubscriptionViewModel(
     private val confirmPurchaseUseCase: ConfirmPurchaseUseCase,
     private val refreshUserUseCase: RefreshUserUseCase,
     private val getUserUseCase: GetUserUseCase,
+    private val getActiveSubscriptionUseCase: GetActiveSubscriptionUseCase,
     private val snackbarController: SnackbarController,
     private val stringProvider: StringProvider
 ) : BaseViewModel() {
@@ -133,7 +134,7 @@ class SubscriptionViewModel(
     }
 
     private fun observeUser() {
-        billingRepository.getActiveSubscription()
+        getActiveSubscriptionUseCase()
             .distinctUntilChanged()
             .onEach { info -> _state.update { it.copy(currentPlan = info?.plan) } }
             .launchIn(coroutineScope)

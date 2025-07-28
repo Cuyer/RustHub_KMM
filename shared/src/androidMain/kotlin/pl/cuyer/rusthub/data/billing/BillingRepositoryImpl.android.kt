@@ -21,9 +21,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Instant
-import org.json.JSONObject
-import pl.cuyer.rusthub.domain.model.ActiveSubscription
 import pl.cuyer.rusthub.domain.model.BillingErrorCode
 import pl.cuyer.rusthub.domain.model.BillingProduct
 import pl.cuyer.rusthub.domain.model.PurchaseInfo
@@ -161,53 +158,6 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
         }
     }
 
-    override fun getActiveSubscription(): Flow<ActiveSubscription?> = callbackFlow {
-        CrashReporter.log("Querying active subscription...")
-        val subsParams = QueryPurchasesParams.newBuilder()
-            .setProductType(BillingClient.ProductType.SUBS)
-            .build()
-
-        billingClient.queryPurchasesAsync(subsParams) { billingResult, purchasesList ->
-            CrashReporter.log("Subscription purchases result: $billingResult with ${purchasesList.size} items")
-            CrashReporter.log("Purchases list: $purchasesList")
-
-            val purchase = purchasesList.firstOrNull()
-            val planId = purchase?.products?.firstOrNull()
-            if (purchase != null && planId != null) {
-                val plan = SubscriptionPlan.entries.firstOrNull {
-                    it.basePlanId == planId || it.productId == planId
-                }
-
-                val json = purchase.originalJson
-                val exp = try {
-                    JSONObject(json).optLong("expiryTimeMillis", 0L)
-                } catch (e: Exception) {
-                    CrashReporter.recordException(e)
-                    CrashReporter.log("Failed to parse expiryTimeMillis: ${e.message}")
-                    0L
-                }
-
-                val expiration = exp.takeIf { it > 0 }?.let { Instant.fromEpochMilliseconds(it) }
-                trySend(plan?.let { ActiveSubscription(it, expiration) })
-                close()
-                return@queryPurchasesAsync
-            }
-
-            val inAppParams = QueryPurchasesParams.newBuilder()
-                .setProductType(BillingClient.ProductType.INAPP)
-                .build()
-
-            CrashReporter.log("Querying in-app purchases fallback")
-            billingClient.queryPurchasesAsync(inAppParams) { br, inappPurchases ->
-                CrashReporter.log("In-app purchases result: $br with ${inappPurchases.size} items")
-
-                val owned = inappPurchases.any { it.products.contains(SubscriptionPlan.LIFETIME.productId) }
-                trySend(if (owned) ActiveSubscription(SubscriptionPlan.LIFETIME, null) else null)
-                close()
-            }
-        }
-        awaitClose {}
-    }
 
     private fun handlePurchase(purchase: Purchase) {
         CrashReporter.log("handlePurchase called with: $purchase")
