@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.Alignment
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -49,17 +52,22 @@ fun AppButton(
         shape = MaterialTheme.shapes.extraSmall,
         colors = colors
     ) {
-        Crossfade(
-            targetState = isLoading,
-            animationSpec = spring(
-                stiffness = Spring.StiffnessLow,
-                dampingRatio = Spring.DampingRatioLowBouncy
-            )
-        ) { loading ->
-            if (loading) {
-                loadingIndicator()
-            } else {
-                content()
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Crossfade(
+                targetState = isLoading,
+                animationSpec = spring(
+                    stiffness = Spring.StiffnessLow,
+                    dampingRatio = Spring.DampingRatioLowBouncy
+                )
+            ) { loading ->
+                if (loading) {
+                    loadingIndicator()
+                } else {
+                    content()
+                }
             }
         }
     }
@@ -81,20 +89,25 @@ fun AppOutlinedButton(
         shape = MaterialTheme.shapes.extraSmall,
         colors = colors
     ) {
-        Crossfade(
-            targetState = isLoading,
-            animationSpec = spring(
-                stiffness = Spring.StiffnessLow,
-                dampingRatio = Spring.DampingRatioLowBouncy
-            )
-        ) { loading ->
-            if (loading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(16.dp),
-                    strokeWidth = 2.dp
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Crossfade(
+                targetState = isLoading,
+                animationSpec = spring(
+                    stiffness = Spring.StiffnessLow,
+                    dampingRatio = Spring.DampingRatioLowBouncy
                 )
-            } else {
-                content()
+            ) { loading ->
+                if (loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    content()
+                }
             }
         }
     }
@@ -116,20 +129,25 @@ fun AppTextButton(
         shape = MaterialTheme.shapes.extraSmall,
         colors = colors
     ) {
-        Crossfade(
-            targetState = isLoading,
-            animationSpec = spring(
-                stiffness = Spring.StiffnessLow,
-                dampingRatio = Spring.DampingRatioLowBouncy
-            )
-        ) { loading ->
-            if (loading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(16.dp),
-                    strokeWidth = 2.dp
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Crossfade(
+                targetState = isLoading,
+                animationSpec = spring(
+                    stiffness = Spring.StiffnessLow,
+                    dampingRatio = Spring.DampingRatioLowBouncy
                 )
-            } else {
-                content()
+            ) { loading ->
+                if (loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    content()
+                }
             }
         }
     }
