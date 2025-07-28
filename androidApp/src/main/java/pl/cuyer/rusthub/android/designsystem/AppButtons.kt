@@ -43,7 +43,7 @@ fun AppButton(
             strokeWidth = 2.dp
         )
     },
-    content: @Composable RowScope.() -> Unit
+    content: @Composable () -> Unit
 ) {
     ElevatedButton(
         onClick = onClick,
@@ -80,7 +80,7 @@ fun AppOutlinedButton(
     enabled: Boolean = true,
     colors: ButtonColors = ButtonDefaults.outlinedButtonColors(),
     isLoading: Boolean = false,
-    content: @Composable RowScope.() -> Unit
+    content: @Composable () -> Unit
 ) {
     OutlinedButton(
         onClick = onClick,
@@ -120,7 +120,7 @@ fun AppTextButton(
     enabled: Boolean = true,
     colors: ButtonColors = ButtonDefaults.textButtonColors(),
     isLoading: Boolean = false,
-    content: @Composable RowScope.() -> Unit
+    content: @Composable () -> Unit
 ) {
     TextButton(
         onClick = onClick,

@@ -179,9 +179,9 @@ actual val platformModule: Module = module {
             stringProvider = get(),
             systemDarkThemeObserver = get(),
             itemsScheduler = get(),
-            billingRepository = get(),
             itemSyncDataSource = get(),
-            userEventController = get()
+            userEventController = get(),
+            getActiveSubscriptionUseCase = get(),
         )
     }
     viewModel {
@@ -259,7 +259,8 @@ actual val platformModule: Module = module {
             refreshUserUseCase = get(),
             getUserUseCase = get(),
             snackbarController = get(),
-            stringProvider = get()
+            stringProvider = get(),
+            getActiveSubscriptionUseCase = get()
         )
     }
 }
