@@ -16,6 +16,8 @@ import pl.cuyer.rusthub.domain.repository.purchase.PurchaseRepository
 import pl.cuyer.rusthub.domain.model.ActiveSubscription
 import pl.cuyer.rusthub.data.network.purchase.model.PurchaseInfoDto
 import pl.cuyer.rusthub.data.network.purchase.mapper.toDomain
+import io.github.aakira.napier.Napier
+import pl.cuyer.rusthub.util.CrashReporter
 
 @Serializable
 private data class PurchaseRequest(val token: String, val productId: String? = null)
@@ -45,10 +47,23 @@ class PurchaseRepositoryImpl(
         }.map { result ->
             when (result) {
                 is Result.Success -> {
-                    val sub = result.data.firstNotNullOfOrNull { it.toDomain() }
+                    CrashReporter.log("Raw subscription data: ${result.data}")
+                    Napier.d(
+                        "Raw subscription data: ${result.data}",
+                        tag = "PurchaseRepository"
+                    )
+                    val sub = result.data.firstNotNullOfOrNull { dto ->
+                        val mapped = dto.toDomain()
+                        Napier.d("Mapped $dto to $mapped", tag = "PurchaseRepository")
+                        mapped
+                    }
+                    CrashReporter.log("Mapped subscription: $sub")
                     Result.Success(sub)
                 }
-                is Result.Error -> result
+                is Result.Error -> {
+                    CrashReporter.recordException(result.exception)
+                    result
+                }
             }
         }
     }
