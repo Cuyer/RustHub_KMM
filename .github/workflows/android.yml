@@ -62,11 +62,11 @@ jobs:
           gpg --batch --yes --passphrase "$PROD_KEYSTORE_PASSWORD" \
           --decrypt --output androidApp/keystore-prod.jks keystore-prod.gpg
 
-      - name: Build Production APK
-        run: ./gradlew :androidApp:assembleProductionRelease
+      - name: Build Production Bundle
+        run: ./gradlew :androidApp:bundleProductionRelease
 
-      - name: Upload Production APK
+      - name: Upload Production Bundle
         uses: actions/upload-artifact@v4
         with:
-          name: production-apk
-          path: androidApp/build/outputs/apk/production/release/*.apk
+          name: production-bundle
+          path: androidApp/build/outputs/bundle/productionRelease/*.aab
