@@ -24,7 +24,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.LoadingIndicator
+import pl.cuyer.rusthub.android.designsystem.shimmer
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -132,16 +134,9 @@ fun FilterBottomSheet(
             transitionSpec = { defaultFadeTransition() }
         ) { loading ->
             if (loading) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight(0.85f)
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    LoadingIndicator(
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
+                FilterBottomSheetShimmer(
+                    modifier = Modifier.fillMaxHeight(0.85f)
+                )
             } else {
                 if (localLists.isEmpty() && localCheckboxes.isEmpty() && localRanges.isEmpty()) {
                     Box(
@@ -356,6 +351,27 @@ fun ButtonsSection(
         ) {
             Text(
                 text = stringResource(SharedRes.strings.reset_filters),
+            )
+        }
+    }
+}
+
+@Composable
+private fun FilterBottomSheetShimmer(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(spacing.medium)
+    ) {
+        repeat(5) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .height(40.dp)
+                    .clip(RectangleShape)
+                    .shimmer()
             )
         }
     }
