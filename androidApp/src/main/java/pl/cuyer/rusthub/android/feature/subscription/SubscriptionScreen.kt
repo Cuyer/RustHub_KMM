@@ -76,6 +76,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.invisibleToUser
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.Role
@@ -150,7 +151,7 @@ private val benefits = listOf(
 @OptIn(
     ExperimentalMaterial3Api::class,
     ExperimentalMaterial3WindowSizeClassApi::class,
-    ExperimentalAnimationApi::class
+    ExperimentalAnimationApi::class, ExperimentalMaterial3ExpressiveApi::class
 )
 @Composable
 fun SubscriptionScreen(
@@ -236,7 +237,6 @@ fun SubscriptionScreen(
                 LoadingIndicator(
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .matchParentSize()
                 )
             }
         }
