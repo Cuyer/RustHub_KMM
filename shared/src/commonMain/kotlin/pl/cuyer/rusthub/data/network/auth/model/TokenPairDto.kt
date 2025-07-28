@@ -9,5 +9,6 @@ data class TokenPairDto(
     val username: String,
     val email: String,
     val provider: String,
-    val subscribed: Boolean = false
+    val subscribed: Boolean = false,
+    val emailConfirmed: Boolean? = null,
 )
