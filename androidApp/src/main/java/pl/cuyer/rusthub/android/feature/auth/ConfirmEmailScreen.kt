@@ -29,9 +29,7 @@ import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
@@ -44,7 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -60,6 +57,9 @@ import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
+import pl.cuyer.rusthub.android.designsystem.shimmer
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
@@ -132,20 +132,25 @@ fun ConfirmEmailScreen(
             contentAlignment = Alignment.Center
         ) {
             if (state.value.resendLoading) {
-                LoadingIndicator()
-            }
-            if (isTabletMode) {
-                ConfirmEmailScreenExpanded(
-                    email = { state.value.email },
-                    isLoading = { state.value.isLoading },
-                    onAction = onAction
-                )
+                if (isTabletMode) {
+                    ConfirmEmailShimmerExpanded()
+                } else {
+                    ConfirmEmailShimmerCompact()
+                }
             } else {
-                ConfirmEmailScreenCompact(
-                    email = { state.value.email },
-                    isLoading = { state.value.isLoading },
-                    onAction = onAction
-                )
+                if (isTabletMode) {
+                    ConfirmEmailScreenExpanded(
+                        email = { state.value.email },
+                        isLoading = { state.value.isLoading },
+                        onAction = onAction
+                    )
+                } else {
+                    ConfirmEmailScreenCompact(
+                        email = { state.value.email },
+                        isLoading = { state.value.isLoading },
+                        onAction = onAction
+                    )
+                }
             }
         }
     }
@@ -241,5 +246,98 @@ private fun ConfirmEmailStaticContent(email: () -> String, modifier: Modifier = 
             text = annotated,
             style = MaterialTheme.typography.bodyMedium
         )
+    }
+}
+
+@Composable
+private fun ConfirmEmailShimmerCompact() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(spacing.medium),
+        verticalArrangement = Arrangement.spacedBy(spacing.small),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .size(64.dp)
+                .clip(RectangleShape)
+                .shimmer()
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .height(20.dp)
+                .clip(RectangleShape)
+                .shimmer()
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .clip(RectangleShape)
+                .shimmer()
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.5f)
+                .height(36.dp)
+                .clip(RectangleShape)
+                .shimmer()
+        )
+    }
+}
+
+@Composable
+private fun ConfirmEmailShimmerExpanded() {
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(spacing.medium),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier.weight(1f),
+            horizontalAlignment = Alignment.Start
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(RectangleShape)
+                    .shimmer()
+            )
+            Spacer(Modifier.size(spacing.small))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .height(20.dp)
+                    .clip(RectangleShape)
+                    .shimmer()
+            )
+        }
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(spacing.small),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(Modifier.size(spacing.medium))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .clip(RectangleShape)
+                    .shimmer()
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .height(36.dp)
+                    .clip(RectangleShape)
+                    .shimmer()
+            )
+        }
     }
 }
