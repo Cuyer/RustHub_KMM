@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
@@ -45,6 +46,7 @@ data class SubscriptionState(
 
 sealed interface SubscriptionAction {
     data class Subscribe(val plan: SubscriptionPlan, val activity: Any) : SubscriptionAction
+    data object OnResume : SubscriptionAction
 }
 
 class SubscriptionViewModel(
@@ -66,6 +68,8 @@ class SubscriptionViewModel(
         initialValue = SubscriptionState()
     )
 
+    private var subscriptionJob: Job? = null
+
     init {
         observeProducts()
         observePurchases()
@@ -76,6 +80,7 @@ class SubscriptionViewModel(
     fun onAction(action: SubscriptionAction) {
         when (action) {
             is SubscriptionAction.Subscribe -> subscribe(action.plan, action.activity)
+            SubscriptionAction.OnResume -> refreshSubscription()
         }
     }
 
@@ -164,6 +169,15 @@ class SubscriptionViewModel(
                         is Result.Error -> showErrorSnackbar(result.exception.toUserMessage(stringProvider))
                     }
                 }
+        }
+    }
+
+    private fun refreshSubscription() {
+        subscriptionJob?.cancel()
+        subscriptionJob = coroutineScope.launch {
+            getActiveSubscriptionUseCase()
+                .catchAndLog { _state.update { it.copy(currentPlan = null) } }
+                .collectLatest { info -> _state.update { it.copy(currentPlan = info?.plan) } }
         }
     }
 
