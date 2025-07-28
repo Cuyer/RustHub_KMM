@@ -19,7 +19,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.matchParentSize
+import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import pl.cuyer.rusthub.android.theme.RustHubTheme
@@ -29,6 +32,7 @@ import pl.cuyer.rusthub.domain.model.LootAmount
 import pl.cuyer.rusthub.domain.model.Looting
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.getImageByFileName
+import pl.cuyer.rusthub.android.designsystem.shimmer
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -45,15 +49,27 @@ fun LootingListItem(
             horizontalArrangement = Arrangement.spacedBy(spacing.medium),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AsyncImage(
+            SubcomposeAsyncImage(
                 modifier = Modifier.size(48.dp),
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(looting.image)
                     .crossfade(true)
                     .build(),
                 contentDescription = looting.from,
-                placeholder = painterResource(getImageByFileName("ic_placeholder").drawableResId),
-                error = painterResource(getImageByFileName("ic_error").drawableResId),
+                loading = {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .shimmer()
+                    )
+                },
+                error = {
+                    Image(
+                        painter = painterResource(getImageByFileName("ic_error").drawableResId),
+                        contentDescription = looting.from,
+                        modifier = Modifier.matchParentSize()
+                    )
+                }
             )
             Column(verticalArrangement = Arrangement.spacedBy(spacing.xxsmall)) {
                 Text(
