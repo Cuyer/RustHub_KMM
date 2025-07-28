@@ -23,16 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.matchParentSize
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
-import pl.cuyer.rusthub.android.designsystem.shimmer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
