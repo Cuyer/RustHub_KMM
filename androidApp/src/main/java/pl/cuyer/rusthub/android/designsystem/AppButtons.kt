@@ -135,19 +135,17 @@ fun AppTextButton(
         shape = MaterialTheme.shapes.extraSmall,
         colors = colors
     ) {
-        Crossfade(
-            modifier = Modifier.fillMaxSize(),
-            targetState = isLoading,
-            animationSpec = spring(
-                stiffness = Spring.StiffnessLow,
-                dampingRatio = Spring.DampingRatioLowBouncy
-            )
-        ) { loading ->
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Crossfade(
+                targetState = isLoading,
+                animationSpec = spring(
+                    stiffness = Spring.StiffnessLow,
+                    dampingRatio = Spring.DampingRatioLowBouncy
+                )
+            ) { loading ->
                 if (loading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(16.dp),
