@@ -78,9 +78,16 @@ class MainActivity : AppCompatActivity() {
                     .distinctUntilChanged()
                     .collect { darkTheme ->
                         enableEdgeToEdge(
-                            navigationBarStyle = SystemBarStyle.dark(
-                                scrim = Color.TRANSPARENT
-                            )
+                            navigationBarStyle = if (darkTheme) {
+                                SystemBarStyle.dark(
+                                    scrim = Color.TRANSPARENT
+                                )
+                            } else {
+                                SystemBarStyle.light(
+                                    scrim = Color.TRANSPARENT,
+                                    darkScrim = Color.TRANSPARENT
+                                )
+                            }
                         )
                     }
             }

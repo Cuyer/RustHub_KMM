@@ -40,7 +40,7 @@ class PurchaseRepositoryImpl(
     override fun getActiveSubscription(obfuscatedId: String): Flow<Result<ActiveSubscription?>> {
         return safeApiCall<List<PurchaseInfoDto>> {
             httpClient.get(NetworkConstants.BASE_URL + "billing/purchase") {
-                parameter("obfuscatedAccountId", obfuscatedId)
+                parameter("account", obfuscatedId)
             }
         }.map { result ->
             when (result) {
