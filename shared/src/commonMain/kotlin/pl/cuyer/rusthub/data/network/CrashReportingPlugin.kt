@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.data.network
 
 import io.ktor.client.plugins.api.createClientPlugin
 import pl.cuyer.rusthub.util.CrashReporter
+import pl.cuyer.rusthub.data.network.APP_CHECK_HEADER
 
 val CrashReportingPlugin = createClientPlugin("CrashReportingPlugin") {
     onRequest { request, _ ->
