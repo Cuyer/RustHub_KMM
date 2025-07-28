@@ -169,11 +169,14 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
 
         billingClient.queryPurchasesAsync(subsParams) { billingResult, purchasesList ->
             CrashReporter.log("Subscription purchases result: $billingResult with ${purchasesList.size} items")
+            CrashReporter.log("Purchases list: $purchasesList")
 
             val purchase = purchasesList.firstOrNull()
             val planId = purchase?.products?.firstOrNull()
             if (purchase != null && planId != null) {
-                val plan = SubscriptionPlan.entries.firstOrNull { it.basePlanId == planId }
+                val plan = SubscriptionPlan.entries.firstOrNull {
+                    it.basePlanId == planId || it.productId == planId
+                }
 
                 val json = purchase.originalJson
                 val exp = try {
