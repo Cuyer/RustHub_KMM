@@ -24,6 +24,7 @@ import pl.cuyer.rusthub.domain.usecase.GetUserPreferencesUseCase
 import pl.cuyer.rusthub.domain.usecase.CheckEmailConfirmedUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.SetEmailConfirmedUseCase
+import pl.cuyer.rusthub.domain.usecase.SetSubscribedUseCase
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
@@ -45,6 +46,7 @@ class StartupViewModel(
     private val getUserUseCase: GetUserUseCase,
     private val checkEmailConfirmedUseCase: CheckEmailConfirmedUseCase,
     private val setEmailConfirmedUseCase: SetEmailConfirmedUseCase,
+    private val setSubscribedUseCase: SetSubscribedUseCase,
     private val stringProvider: StringProvider,
     private val getUserPreferencesUseCase: GetUserPreferencesUseCase,
     private val itemsScheduler: ItemsScheduler,
@@ -109,7 +111,10 @@ class StartupViewModel(
             val user = getUserUseCase().first()
             if (user != null && user.provider == AuthProvider.LOCAL) {
                 when (val result = checkEmailConfirmedUseCase().first()) {
-                    is Result.Success -> setEmailConfirmedUseCase(result.data)
+                    is Result.Success -> {
+                        setEmailConfirmedUseCase(result.data.emailConfirmed)
+                        setSubscribedUseCase(result.data.subscribed)
+                    }
                     is Result.Error -> Unit
                 }
             }
