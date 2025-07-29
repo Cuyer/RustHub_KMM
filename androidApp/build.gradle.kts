@@ -24,6 +24,7 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 25
         versionName = project.property("VERSION_NAME") as String
+        buildConfigField("String", "ADMOB_NATIVE_AD_ID", "\"ca-app-pub-3940256099942544/1044960115\"")
     }
 
     androidResources {
@@ -149,6 +150,7 @@ dependencies {
     implementation(libs.google.play.app.update)
     implementation(libs.google.play.app.update.ktx)
     implementation(libs.androidx.appcompat)
+    implementation(libs.play.services.ads)
     coreLibraryDesugaring(libs.desugar.jdk.libs.v215)
     debugImplementation(libs.compose.ui.tooling)
 }
