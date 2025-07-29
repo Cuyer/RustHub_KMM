@@ -33,15 +33,15 @@ class PagingHandlerScope<T : Any>(
     }
 
     @LazyScopeMarker
-    fun LazyListScope.onPagingItems(
+    fun LazyListScope.onPagingItemsIndexed(
         key: ((T) -> Any)? = null,
-        body: @Composable LazyItemScope.(T) -> Unit
+        body: @Composable LazyItemScope.(Int, T) -> Unit
     ) {
         items(
             count = items.itemCount,
             key = items.itemKey(key)
         ) { index ->
-            items[index]?.let { body(it) }
+            items[index]?.let { body(index, it) }
         }
     }
 }

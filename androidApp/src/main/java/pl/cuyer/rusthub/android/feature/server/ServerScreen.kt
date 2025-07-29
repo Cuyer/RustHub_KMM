@@ -332,7 +332,7 @@ fun ServerScreen(
                     verticalArrangement = Arrangement.spacedBy(spacing.medium),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    items(pagedList.itemCount + 1) { index ->
+                    onPagingItemsIndexed(key = { it.id ?: UUID.randomUUID() }) { index, item ->
                         if (index == 3) {
                             NativeAdCard(
                                 modifier = Modifier
@@ -340,37 +340,33 @@ fun ServerScreen(
                                     .animateItem()
                                     .padding(horizontal = spacing.xmedium)
                             )
-                        } else {
-                            val item = pagedList[index.takeIf { it < pagedList.itemCount } ?: 0]
-                            item?.let { server ->
-                                val interactionSource = remember { MutableInteractionSource() }
-                                ServerListItem(
-                                    modifier = Modifier
-                                        .animateItem()
-                                        .padding(horizontal = spacing.xmedium)
-                                        .combinedClickable(
-                                            interactionSource = interactionSource,
-                                            onLongClick = {
-                                                onAction(ServerAction.OnLongServerClick(server.serverIp))
-                                            },
-                                            onClick = {
-                                                onAction(
-                                                    ServerAction.OnServerClick(
-                                                        server.id ?: Long.MAX_VALUE,
-                                                        server.name ?: ""
-                                                    )
-                                                )
-                                            },
-                                            onClickLabel = stringResource(SharedRes.strings.view_details)
-                                        ),
-                                    serverName = server.name.orEmpty(),
-                                    flag = server.serverFlag,
-                                    labels = { server.createLabels(stringProvider) },
-                                    details = { server.createDetails(stringProvider) },
-                                    isOnline = server.serverStatus == ServerStatus.ONLINE
-                                )
-                            }
                         }
+                        val interactionSource = remember { MutableInteractionSource() }
+                        ServerListItem(
+                            modifier = Modifier
+                                .animateItem()
+                                .padding(horizontal = spacing.xmedium)
+                                .combinedClickable(
+                                    interactionSource = interactionSource,
+                                    onLongClick = {
+                                        onAction(ServerAction.OnLongServerClick(item.serverIp))
+                                    },
+                                    onClick = {
+                                        onAction(
+                                            ServerAction.OnServerClick(
+                                                item.id ?: Long.MAX_VALUE,
+                                                item.name ?: ""
+                                            )
+                                        )
+                                    },
+                                    onClickLabel = stringResource(SharedRes.strings.view_details)
+                                ),
+                            serverName = item.name.orEmpty(),
+                            flag = item.serverFlag,
+                            labels = { item.createLabels(stringProvider) },
+                            details = { item.createDetails(stringProvider) },
+                            isOnline = item.serverStatus == ServerStatus.ONLINE
+                        )
                     }
                     onAppendItem {
                         Row(

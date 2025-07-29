@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +39,7 @@ import com.google.android.gms.compose_util.NativeAdMediaView
 import com.google.android.gms.compose_util.NativeAdView
 import pl.cuyer.rusthub.android.BuildConfig
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun NativeAdCard(modifier: Modifier = Modifier) {
     var nativeAd by remember { mutableStateOf<NativeAd?>(null) }
@@ -70,26 +72,33 @@ fun NativeAdCard(modifier: Modifier = Modifier) {
                         NativeAdIconView(modifier = Modifier.padding(end = 8.dp)) {
                             ad.icon?.drawable?.toBitmap()?.let { bmp ->
                                 SubcomposeAsyncImage(
-                                    model = ImageRequest.Builder(context).data(bmp).crossfade(true).build(),
-                                contentDescription = ad.headline,
-                                modifier = Modifier.height(40.dp)
+                                    model = ImageRequest.Builder(context).data(bmp).crossfade(true)
+                                        .build(),
+                                    contentDescription = ad.headline,
+                                    modifier = Modifier.height(40.dp)
+                                )
+                            }
+                        }
+                        NativeAdHeadlineView {
+                            Text(
+                                text = ad.headline ?: "",
+                                style = MaterialTheme.typography.titleLargeEmphasized
                             )
                         }
                     }
-                    NativeAdHeadlineView {
-                        Text(text = ad.headline ?: "", style = MaterialTheme.typography.titleLargeEmphasized)
+                    NativeAdBodyView(modifier = Modifier.padding(top = 4.dp)) {
+                        ad.body?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
                     }
-                }
-                NativeAdBodyView(modifier = Modifier.padding(top = 4.dp)) {
-                    ad.body?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
-                }
-                NativeAdMediaView(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp))
-                ad.callToAction?.let { cta ->
-                    NativeAdCallToActionView(modifier = Modifier.padding(top = 4.dp)) {
-                        Box(modifier = Modifier.align(Alignment.End)) {
-                            Text(text = cta, style = MaterialTheme.typography.labelLarge)
+                    NativeAdMediaView(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp)
+                    )
+                    ad.callToAction?.let { cta ->
+                        NativeAdCallToActionView(modifier = Modifier.padding(top = 4.dp)) {
+                            Box(modifier = Modifier.align(Alignment.End)) {
+                                Text(text = cta, style = MaterialTheme.typography.labelLarge)
+                            }
                         }
                     }
                 }
