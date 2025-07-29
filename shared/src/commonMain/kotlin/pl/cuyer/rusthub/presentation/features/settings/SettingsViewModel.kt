@@ -50,7 +50,10 @@ import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import pl.cuyer.rusthub.util.anonymousAccountExpiresIn
 import pl.cuyer.rusthub.util.formatExpiration
+import pl.cuyer.rusthub.util.formatLocalDateTime
 import pl.cuyer.rusthub.util.ItemsScheduler
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import pl.cuyer.rusthub.domain.model.ActiveSubscription
 import pl.cuyer.rusthub.domain.usecase.GetActiveSubscriptionUseCase
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
@@ -167,7 +170,9 @@ class SettingsViewModel(
                 provider = user?.provider,
                 subscribed = subscription != null,
                 currentPlan = subscription?.plan,
-                subscriptionExpiration = subscription?.expiration?.toString(),
+                subscriptionExpiration = subscription?.expiration?.let {
+                    formatLocalDateTime(it.toLocalDateTime(TimeZone.currentSystemDefault()))
+                },
                 subscriptionStatus = subscription?.state?.displayName(stringProvider),
                 anonymousExpiration = user?.let { u ->
                     if (u.provider == AuthProvider.ANONYMOUS) {
@@ -229,10 +234,12 @@ class SettingsViewModel(
             getActiveSubscriptionUseCase()
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
-                .catchAndLog { updateUser(state.value.currentUser, null) }
-                .collectLatest { sub ->
+                .collectLatest { result ->
                     val user = getUserUseCase().first()
-                    updateUser(user, sub)
+                    when (result) {
+                        is Result.Success -> updateUser(user, result.data)
+                        is Result.Error -> updateUser(user, null)
+                    }
                 }
         }
     }

@@ -4,7 +4,6 @@ import android.app.Activity
 import androidx.activity.compose.LocalActivity
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateBounds
@@ -53,7 +52,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import pl.cuyer.rusthub.android.designsystem.shimmer
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -221,12 +219,7 @@ fun SubscriptionScreen(
                 .consumeWindowInsets(innerPadding)
                 .fillMaxSize()
         ) {
-            if (state.value.isLoading) {
-                SubscriptionShimmer(
-                    isTablet = isTabletMode,
-                    modifier = Modifier.fillMaxSize()
-                )
-            } else if (state.value.hasError) {
+            if (state.value.hasError) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -328,7 +321,7 @@ private fun SubscriptionScreenCompact(
                 currentPlan = currentPlan
             )
         }
-        SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms, currentPlan) {
+        SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms, currentPlan, isLoading) {
             onAction(SubscriptionAction.Subscribe(selectedPlan(), activity))
         }
         Spacer(modifier = Modifier.height(spacing.medium))
@@ -375,7 +368,7 @@ private fun SubscriptionScreenExpanded(
                     currentPlan = currentPlan
                 )
             }
-            SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms, currentPlan) {
+            SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms, currentPlan, isLoading) {
                 onAction(SubscriptionAction.Subscribe(selectedPlan(), activity))
             }
         }
@@ -514,6 +507,7 @@ private fun SubscribeActions(
     onPrivacyPolicy: () -> Unit,
     onTerms: () -> Unit,
     currentPlan: SubscriptionPlan?,
+    isLoading: Boolean,
     onSubscribe: () -> Unit
 ) {
     val plan = selectedPlan()
@@ -526,18 +520,26 @@ private fun SubscribeActions(
         sameProduct -> stringResource(SharedRes.strings.change_plan)
         else -> stringResource(SharedRes.strings.subscribe_to_plan, stringResource(plan.label))
     }
-    AppButton(
-        modifier = Modifier.fillMaxWidth(),
-        onClick = onSubscribe,
-        colors = ButtonDefaults.elevatedButtonColors(
-            containerColor = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground
-        ),
-        enabled = !samePlan && !lifetimeOwned
-    ) { Text(text) }
-    AppTextButton(
-        onClick = onNavigateUp
-    ) {
+    if (isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .clip(MaterialTheme.shapes.extraSmall)
+                .shimmer()
+        )
+    } else {
+        AppButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = onSubscribe,
+            colors = ButtonDefaults.elevatedButtonColors(
+                containerColor = MaterialTheme.colorScheme.background,
+                contentColor = MaterialTheme.colorScheme.onBackground
+            ),
+            enabled = !samePlan && !lifetimeOwned
+        ) { Text(text) }
+    }
+    AppTextButton(onClick = onNavigateUp) {
         Text(stringResource(SharedRes.strings.not_now))
     }
     Text(

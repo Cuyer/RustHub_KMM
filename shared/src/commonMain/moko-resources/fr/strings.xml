@@ -229,10 +229,11 @@
     <string name="subscription">Abonnement</string>
     <string name="subscription_button">Bouton d’abonnement</string>
     <string name="manage_subscription">Gérer l’abonnement</string>
-    <string name="you_are_subscribed">Vous êtes abonné : %1$s</string>
+    <string name="you_are_subscribed">Vous êtes abonné : Plan %1$s</string>
     <string name="subscription_expiration">Expire le %1$s</string>
     <string name="change_plan">Changer de plan</string>
     <string name="lifetime_plan_active">Plan à vie actif</string>
+    <string name="cancel_current_before_lifetime">Annulez votre abonnement actuel pour éviter des frais supplémentaires avant d'acheter le plan à vie.</string>
     <string name="support_development">Soutenir le développement</string>
     <string name="support_development_icon">Symbole de soutien au développement</string>
     <string name="no_ads_title">Sans publicité</string>

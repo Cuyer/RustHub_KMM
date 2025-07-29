@@ -229,10 +229,11 @@
     <string name="subscription">Subskrypcja</string>
     <string name="subscription_button">Przycisk subskrypcji</string>
     <string name="manage_subscription">Zarządzaj subskrypcją</string>
-    <string name="you_are_subscribed">Subskrybujesz: %1$s</string>
+    <string name="you_are_subscribed">Subskrybujesz: Plan %1$s</string>
     <string name="subscription_expiration">Wygasa %1$s</string>
     <string name="change_plan">Zmień plan</string>
     <string name="lifetime_plan_active">Plan Lifetime aktywny</string>
+    <string name="cancel_current_before_lifetime">Anuluj aktualną subskrypcję, aby uniknąć dodatkowych opłat przed zakupem planu Lifetime.</string>
     <string name="support_development">Wesprzyj nasz rozwój</string>
     <string name="support_development_icon">Symbol wsparcia rozwoju</string>
     <string name="no_ads_title">Brak reklam</string>

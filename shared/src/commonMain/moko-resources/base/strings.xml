@@ -230,10 +230,11 @@
     <string name="subscription">Subscription</string>
     <string name="subscription_button">Subscription button</string>
     <string name="manage_subscription">Manage subscription</string>
-    <string name="you_are_subscribed">You are subscribed: %1$s</string>
+    <string name="you_are_subscribed">You are subscribed: Plan %1$s</string>
     <string name="subscription_expiration">Expires on %1$s</string>
     <string name="change_plan">Change plan</string>
     <string name="lifetime_plan_active">Lifetime plan active</string>
+    <string name="cancel_current_before_lifetime">Cancel your current subscription to avoid additional costs when buying the Lifetime plan.</string>
     <string name="support_development">Support development</string>
     <string name="support_development_icon">Support development symbol</string>
     <string name="no_ads_title">No Ads</string>
