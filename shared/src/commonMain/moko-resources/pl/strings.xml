@@ -394,5 +394,6 @@
     <string name="time_to_raid">Czas rajdu: %1$s</string>
     <string name="hp">HP</string>
     <string name="update_ready">Aktualizacja gotowa do instalacji</string>
+    <string name="error_image_emote">(×_×)</string>
     <string name="restart">Uruchom ponownie</string>
 </resources>
