@@ -257,7 +257,7 @@ class SettingsViewModel(
 
     private fun navigateSubscription() {
         coroutineScope.launch {
-            _uiEvent.send(UiEvent.Navigate(Subscription))
+            _uiEvent.send(UiEvent.Navigate(Subscription(state.value.currentPlan)))
         }
     }
 

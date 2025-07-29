@@ -52,6 +52,7 @@ import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import pl.cuyer.rusthub.data.billing.BillingRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
 import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
+import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 
 actual val platformModule: Module = module {
     single { DatabasePassphraseProvider(androidContext()) }
@@ -253,7 +254,7 @@ actual val platformModule: Module = module {
             connectivityObserver = get()
         )
     }
-    viewModel {
+    viewModel { (plan: SubscriptionPlan?) ->
         SubscriptionViewModel(
             billingRepository = get(),
             confirmPurchaseUseCase = get(),
@@ -261,7 +262,8 @@ actual val platformModule: Module = module {
             getUserUseCase = get(),
             snackbarController = get(),
             stringProvider = get(),
-            getActiveSubscriptionUseCase = get()
+            getActiveSubscriptionUseCase = get(),
+            initialPlan = plan
         )
     }
 }

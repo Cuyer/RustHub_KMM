@@ -403,8 +403,10 @@ private fun AppScaffold(
                             onNavigateUp = { backStack.removeLastOrNull() }
                         )
                     }
-                    entry<Subscription> {
-                        val viewModel = koinViewModel<SubscriptionViewModel>()
+                    entry<Subscription> { key ->
+                        val viewModel: SubscriptionViewModel = koinViewModel {
+                            parametersOf(key.plan)
+                        }
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         SubscriptionScreen(
                             state = state,

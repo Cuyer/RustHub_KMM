@@ -105,7 +105,6 @@ import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
-import pl.cuyer.rusthub.android.util.composeUtil.OnLifecycleEvent
 import pl.cuyer.rusthub.android.util.prefersReducedMotion
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.BillingProduct
@@ -175,11 +174,6 @@ fun SubscriptionScreen(
     var selectedPlan by remember { mutableStateOf(state.value.currentPlan ?: SubscriptionPlan.MONTHLY) }
     LaunchedEffect(state.value.currentPlan) {
         state.value.currentPlan?.let { selectedPlan = it }
-    }
-    OnLifecycleEvent { event ->
-        if (event == Lifecycle.Event.ON_RESUME) {
-            onAction(SubscriptionAction.OnResume)
-        }
     }
     val pagerState = rememberPagerState(pageCount = { benefits.size })
     val context = LocalContext.current
