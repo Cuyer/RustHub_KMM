@@ -172,7 +172,7 @@ class SettingsViewModel(
             it.copy(
                 username = if (user?.provider == AuthProvider.GOOGLE) user.username.substringBefore("-") else user?.username,
                 provider = user?.provider,
-                subscribed = subscribed,
+                subscribed = subscribed == true,
                 currentPlan = subscription?.plan,
                 subscriptionExpiration = subscription?.expiration?.let {
                     formatLocalDateTime(it.toLocalDateTime(TimeZone.currentSystemDefault()))
@@ -189,15 +189,18 @@ class SettingsViewModel(
                 currentUser = user
             )
         }
-        coroutineScope.launch { setSubscribedUseCase(subscribed) }
+        subscribed?.let {
+            coroutineScope.launch { setSubscribedUseCase(it) }
+        }
     }
 
-    private fun hasValidSubscription(subscription: ActiveSubscription?): Boolean {
+    private fun hasValidSubscription(subscription: ActiveSubscription?): Boolean? {
         return when (subscription?.state) {
             SubscriptionState.ACTIVE,
             SubscriptionState.IN_GRACE_PERIOD,
             SubscriptionState.PAUSED,
             SubscriptionState.CANCELED -> true
+            null -> null
             else -> false
         }
     }
