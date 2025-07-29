@@ -460,6 +460,10 @@ private fun PlanSelector(
             ElevatedCard(
                 onClick = { onPlanSelect(plan) },
                 enabled = !lifetimeOwned && plan != currentPlan,
+                colors = CardDefaults.elevatedCardColors().copy(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                ),
                 modifier = Modifier
                     .semantics {
                         role = Role.RadioButton
