@@ -166,6 +166,7 @@
     <string name="premium" translatable="false">Premium</string>
     <string name="privacy_policy">Politique de confidentialité</string>
     <string name="privacy_policy_button">Bouton politique de confidentialité</string>
+    <string name="onboarding_disclaimer">En créant un compte, vous confirmez avoir lu et accepter notre politique de confidentialité et nos conditions générales.</string>
     <string name="protect_your_account_by_providing_a_strong_password">Protégez votre compte avec un mot de passe solide.</string>
     <string name="provide_credentials_or_connect_google_account_to_upgrade">Entrez vos identifiants ou connectez-vous via Google pour passer à la version supérieure.</string>
     <string name="quickly_copy_server_ip_addresses_to_send_them_to_your_friends">Copiez les adresses IP du serveur et envoyez à vos amis.</string>

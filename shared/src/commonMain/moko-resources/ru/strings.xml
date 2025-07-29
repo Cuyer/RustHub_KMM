@@ -166,6 +166,7 @@
     <string name="premium" translatable="false">Premium</string>
     <string name="privacy_policy">Политика конфиденциальности</string>
     <string name="privacy_policy_button">Кнопка политики конфиденциальности</string>
+    <string name="onboarding_disclaimer">Создавая аккаунт, вы подтверждаете, что ознакомились и принимаете нашу политику конфиденциальности и условия использования.</string>
     <string name="protect_your_account_by_providing_a_strong_password">Создайте надежный пароль для защиты аккаунта.</string>
     <string name="provide_credentials_or_connect_google_account_to_upgrade">Введите данные или подключите Google для обновления.</string>
     <string name="quickly_copy_server_ip_addresses_to_send_them_to_your_friends">Копируйте IP-адреса сервера и отправляйте друзьям.</string>
