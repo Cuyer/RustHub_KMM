@@ -165,7 +165,7 @@ class SettingsViewModel(
             it.copy(
                 username = if (user?.provider == AuthProvider.GOOGLE) user.username.substringBefore("-") else user?.username,
                 provider = user?.provider,
-                subscribed = subscription != null || user?.subscribed == true,
+                subscribed = subscription != null,
                 currentPlan = subscription?.plan,
                 subscriptionExpiration = subscription?.expiration?.toString(),
                 subscriptionStatus = subscription?.state?.displayName(stringProvider),
@@ -227,6 +227,8 @@ class SettingsViewModel(
         subscriptionJob?.cancel()
         subscriptionJob = coroutineScope.launch {
             getActiveSubscriptionUseCase()
+                .onStart { updateLoading(true) }
+                .onCompletion { updateLoading(false) }
                 .catchAndLog { updateUser(state.value.currentUser, null) }
                 .collectLatest { sub ->
                     val user = getUserUseCase().first()

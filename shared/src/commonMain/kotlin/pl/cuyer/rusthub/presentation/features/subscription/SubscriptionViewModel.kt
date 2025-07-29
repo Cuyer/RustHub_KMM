@@ -41,7 +41,8 @@ data class SubscriptionState(
     val products: Map<SubscriptionPlan, BillingProduct> = emptyMap(),
     val isLoading: Boolean = false,
     val isProcessing: Boolean = false,
-    val currentPlan: SubscriptionPlan? = null
+    val currentPlan: SubscriptionPlan? = null,
+    val hasError: Boolean = false
 )
 
 sealed interface SubscriptionAction {
@@ -73,7 +74,6 @@ class SubscriptionViewModel(
     init {
         observeProducts()
         observePurchases()
-        observeUser()
         observeErrors()
     }
 
@@ -138,13 +138,6 @@ class SubscriptionViewModel(
             .launchIn(coroutineScope)
     }
 
-    private fun observeUser() {
-        getActiveSubscriptionUseCase()
-            .distinctUntilChanged()
-            .onEach { info -> _state.update { it.copy(currentPlan = info?.plan) } }
-            .launchIn(coroutineScope)
-    }
-
     private fun subscribe(plan: SubscriptionPlan, activity: Any) {
         coroutineScope.launch {
             val id = plan.basePlanId ?: plan.productId
@@ -176,8 +169,10 @@ class SubscriptionViewModel(
         subscriptionJob?.cancel()
         subscriptionJob = coroutineScope.launch {
             getActiveSubscriptionUseCase()
-                .catchAndLog { _state.update { it.copy(currentPlan = null) } }
-                .collectLatest { info -> _state.update { it.copy(currentPlan = info?.plan) } }
+                .onStart { _state.update { it.copy(isLoading = true, hasError = false) } }
+                .onCompletion { _state.update { it.copy(isLoading = false) } }
+                .catchAndLog { _state.update { it.copy(currentPlan = null, hasError = true) } }
+                .collectLatest { info -> _state.update { it.copy(currentPlan = info?.plan, hasError = false) } }
         }
     }
 

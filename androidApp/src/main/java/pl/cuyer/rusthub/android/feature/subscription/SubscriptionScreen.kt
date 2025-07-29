@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -86,6 +87,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.Lifecycle
 import dev.icerock.moko.resources.StringResource
@@ -215,6 +217,34 @@ fun SubscriptionScreen(
                     isTablet = isTabletMode,
                     modifier = Modifier.fillMaxSize()
                 )
+            } else if (state.value.hasError) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    item {
+                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "(×_×)",
+                                    style = MaterialTheme.typography.headlineLarge,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 96.sp
+                                )
+                                Text(
+                                    text = stringResource(SharedRes.strings.error_oops),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
+                }
             } else {
                 if (isTabletMode) {
                     SubscriptionScreenExpanded(
