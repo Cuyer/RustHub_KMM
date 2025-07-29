@@ -44,9 +44,17 @@ import pl.cuyer.rusthub.android.BuildConfig
 fun NativeAdCard(modifier: Modifier = Modifier, adId: String) {
     var nativeAd by remember { mutableStateOf<NativeAd?>(null) }
     val context = LocalContext.current
+    var isDisposed by remember { mutableStateOf(false) }
+
     DisposableEffect(Unit) {
         val loader = AdLoader.Builder(context, adId)
-            .forNativeAd { ad -> nativeAd = ad }
+            .forNativeAd { ad ->
+                if (!isDisposed) {
+                    nativeAd = ad
+                } else {
+                    ad.destroy()
+                }
+            }
             .withAdListener(object : AdListener() {
                 override fun onAdFailedToLoad(error: LoadAdError) {
                     nativeAd = null
@@ -56,10 +64,12 @@ fun NativeAdCard(modifier: Modifier = Modifier, adId: String) {
             .build()
         loader.loadAd(AdRequest.Builder().build())
         onDispose {
+            isDisposed = true
             nativeAd?.destroy()
             nativeAd = null
         }
     }
+
     nativeAd?.let { ad ->
         ElevatedCard(modifier = modifier.fillMaxWidth()) {
             NativeAdView(modifier = Modifier.fillMaxWidth()) {
