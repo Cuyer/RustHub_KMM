@@ -198,6 +198,7 @@
     <string name="search_and_explore_rust_servers_by_name_type_last_wipe_or_more">Search and explore Rust servers by name, type, last wipe or more.</string>
     <string name="search_servers">Search servers...</string>
     <string name="search_items">Search items...</string>
+    <string name="search_items_check_details_how_to_craft_drop_and_raid_costs">Search items and check their details, crafting, drops and raid costs.</string>
     <string name="see_server_info_like_time_of_last_wipe_map_ranking_and_more">See server info like time of last wipe, map, ranking and more.</string>
     <string name="seed" translatable="false">Seed</string>
     <string name="send_email">Send email</string>
