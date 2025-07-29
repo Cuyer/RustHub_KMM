@@ -44,6 +44,7 @@ import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.domain.usecase.SaveItemSearchQueryUseCase
 import pl.cuyer.rusthub.domain.usecase.GetItemSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteItemSearchQueriesUseCase
+import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.model.SearchQuery
 import pl.cuyer.rusthub.presentation.model.SearchQueryUi
 import pl.cuyer.rusthub.presentation.model.toUi
@@ -58,6 +59,7 @@ class ItemViewModel(
     private val saveSearchQueryUseCase: SaveItemSearchQueryUseCase,
     private val getSearchQueriesUseCase: GetItemSearchQueriesUseCase,
     private val deleteSearchQueriesUseCase: DeleteItemSearchQueriesUseCase,
+    private val getUserUseCase: GetUserUseCase,
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -72,6 +74,14 @@ class ItemViewModel(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = ItemState()
+        )
+
+    val showAds = getUserUseCase()
+        .map { user -> !(user?.subscribed ?: false) }
+        .stateIn(
+            scope = coroutineScope,
+            started = SharingStarted.WhileSubscribed(5_000L),
+            initialValue = true
         )
 
     init {

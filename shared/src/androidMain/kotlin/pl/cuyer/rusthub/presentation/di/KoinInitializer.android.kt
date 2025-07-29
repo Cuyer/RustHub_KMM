@@ -145,7 +145,8 @@ actual val platformModule: Module = module {
             deleteSearchQueriesUseCase = get(),
             clearServersAndKeysUseCase = get(),
             stringProvider = get(),
-            connectivityObserver = get()
+            connectivityObserver = get(),
+            getUserUseCase = get()
         )
     }
     viewModel {
@@ -158,6 +159,7 @@ actual val platformModule: Module = module {
             saveSearchQueryUseCase = get(),
             getSearchQueriesUseCase = get(),
             deleteSearchQueriesUseCase = get(),
+            getUserUseCase = get(),
         )
     }
     viewModel { (itemId: Long) ->

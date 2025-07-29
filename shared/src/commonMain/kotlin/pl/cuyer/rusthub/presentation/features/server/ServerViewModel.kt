@@ -56,6 +56,7 @@ import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.ConnectivityObserver
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import kotlinx.datetime.Clock.System
 import pl.cuyer.rusthub.util.toUserMessage
 
@@ -73,6 +74,7 @@ class ServerViewModel(
     private val clearServersAndKeysUseCase: ClearServersAndKeysUseCase,
     private val stringProvider: StringProvider,
     private val connectivityObserver: ConnectivityObserver,
+    private val getUserUseCase: GetUserUseCase,
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -91,6 +93,14 @@ class ServerViewModel(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = ServerState()
+        )
+
+    val showAds = getUserUseCase()
+        .map { user -> !(user?.subscribed ?: false) }
+        .stateIn(
+            scope = coroutineScope,
+            started = SharingStarted.WhileSubscribed(5_000L),
+            initialValue = true
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)

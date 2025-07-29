@@ -112,7 +112,8 @@ fun ItemScreen(
     state: State<ItemState>,
     onAction: (ItemAction) -> Unit,
     pagedList: LazyPagingItems<RustItem>,
-    uiEvent: Flow<UiEvent>
+    uiEvent: Flow<UiEvent>,
+    showAds: Boolean
 ) {
     val syncState = state.value.syncState
     val searchBarState = rememberSearchBarState()
@@ -282,7 +283,7 @@ fun ItemScreen(
                     )
                     {
                         onPagingItemsIndexed(key = { it.id ?: it.slug ?: it.hashCode() }) { index, item ->
-                            if (index == 3) {
+                            if (showAds && (index + 1) % 5 == 0) {
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -392,7 +393,8 @@ private fun ItemScreenPreview() {
             onAction = {},
             onNavigate = {},
             uiEvent = flowOf(UiEvent.Navigate(ItemList)),
-            pagedList = flowOf(PagingData.from(emptyList<RustItem>())).collectAsLazyPagingItems()
+            pagedList = flowOf(PagingData.from(emptyList<RustItem>())).collectAsLazyPagingItems(),
+            showAds = true
         )
     }
 }
