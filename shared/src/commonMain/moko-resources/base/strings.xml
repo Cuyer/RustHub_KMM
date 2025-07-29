@@ -187,7 +187,7 @@
     <string name="resend_email">Resend email</string>
     <string name="reset_filters">Reset Filters</string>
     <string name="reset_password">Reset password</string>
-    <string name="faq_include_answer">RustHub Pro includes unlimited favourite servers and unlimited notifications.</string>
+    <string name="faq_include_answer">RustHub Pro includes unlimited adding of servers to favorites and notifications, as well as an ad-free experience.</string>
     <string name="rust_map_image">Rust map image</string>
     <string name="map_gesture_hint">Pinch to zoom, drag to pan</string>
     <string name="dismiss">Dismiss</string>
@@ -236,6 +236,9 @@
     <string name="lifetime_plan_active">Lifetime plan active</string>
     <string name="support_development">Support development</string>
     <string name="support_development_icon">Support development symbol</string>
+    <string name="no_ads_title">No Ads</string>
+    <string name="no_ads_desc">Enjoy an ad-free experience.</string>
+    <string name="no_ads_icon_desc">No ads icon</string>
     <string name="terms_conditions">Terms &amp; conditions</string>
     <string name="faq_lifetime_answer">The RustHub Pro Lifetime plan is a one time purchase. You will have access to RustHub Pro forever.\n\nIf you are already subscribed to a monthly or yearly plan and want to switch to a lifetime plan, make sure to cancel your monthly or yearly subscription after you purchase the lifetime plan to avoid any recurring charges.</string>
     <string name="faq_renew_answer">The RustHub Pro monthly and yearly plans are subscriptions that renew automatically at the end of your subscription term to avoid any interruption to your service. If you cancel your subscription, you will continue to have access to RustHub Pro until your subscription expires. The RustHub Pro Lifetime plan is a one time purchase.</string>

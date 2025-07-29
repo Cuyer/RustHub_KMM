@@ -186,7 +186,7 @@
     <string name="resend_email">Renvoyer l’e-mail</string>
     <string name="reset_filters">Réinitialiser les filtres</string>
     <string name="reset_password">Réinitialiser le mot de passe</string>
-    <string name="faq_include_answer">RustHub Pro inclut un nombre illimité de serveurs favoris et de notifications.</string>
+    <string name="faq_include_answer">RustHub Pro comprend l’ajout illimité de serveurs aux favoris et aux notifications, ainsi qu’une expérience sans publicité.</string>
     <string name="rust_map_image">Image de la carte Rust</string>
     <string name="map_gesture_hint">Pincez pour zoomer, faites glisser pour déplacer</string>
     <string name="dismiss">Fermer</string>
@@ -235,6 +235,9 @@
     <string name="lifetime_plan_active">Plan à vie actif</string>
     <string name="support_development">Soutenir le développement</string>
     <string name="support_development_icon">Symbole de soutien au développement</string>
+    <string name="no_ads_title">Sans publicité</string>
+    <string name="no_ads_desc">Profitez sans publicité.</string>
+    <string name="no_ads_icon_desc">Icône sans pub</string>
     <string name="terms_conditions">Conditions générales</string>
     <string name="faq_lifetime_answer">Le plan RustHub Pro Lifetime est un achat unique. Vous aurez un accès à vie à RustHub Pro.\n\nSi vous avez déjà un abonnement mensuel ou annuel et que vous souhaitez passer au Lifetime, pensez à annuler votre ancien abonnement pour éviter toute facturation récurrente.</string>
     <string name="faq_renew_answer">Les formules mensuelles et annuelles de RustHub Pro sont des abonnements qui se renouvellent automatiquement. Après annulation, vous gardez l'accès à RustHub Pro jusqu'à la fin de la période en cours. La formule Lifetime est un achat unique.</string>
