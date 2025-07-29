@@ -213,6 +213,13 @@
     <string name="status">Статус</string>
     <string name="online">Онлайн</string>
     <string name="offline">Оффлайн</string>
+    <string name="status_active">Активна</string>
+    <string name="status_paused">Приостановлена</string>
+    <string name="status_canceled">Отменена</string>
+    <string name="status_in_grace">Льготный период</string>
+    <string name="status_expired">Истекла</string>
+    <string name="status_pending">В ожидании</string>
+    <string name="status_unknown">Неизвестно</string>
     <string name="stay_up_to_date_with_updates_and_news">Будьте в курсе новостей и обновлений.</string>
     <string name="submit">Отправить</string>
     <string name="subscribe">Подписаться</string>

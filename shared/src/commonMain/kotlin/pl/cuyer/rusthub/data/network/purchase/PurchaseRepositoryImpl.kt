@@ -2,7 +2,9 @@ package pl.cuyer.rusthub.data.network.purchase
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
+import io.ktor.client.request.get
 import io.ktor.client.request.setBody
+import io.ktor.client.request.parameter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
@@ -11,6 +13,11 @@ import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.data.network.util.BaseApiResponse
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
 import pl.cuyer.rusthub.domain.repository.purchase.PurchaseRepository
+import pl.cuyer.rusthub.domain.model.ActiveSubscription
+import pl.cuyer.rusthub.data.network.purchase.model.PurchaseInfoDto
+import pl.cuyer.rusthub.data.network.purchase.mapper.toDomain
+import io.github.aakira.napier.Napier
+import pl.cuyer.rusthub.util.CrashReporter
 
 @Serializable
 private data class PurchaseRequest(val token: String, val productId: String? = null)
@@ -28,6 +35,35 @@ class PurchaseRepositoryImpl(
             when (result) {
                 is Result.Success -> Result.Success(Unit)
                 is Result.Error -> result
+            }
+        }
+    }
+
+    override fun getActiveSubscription(obfuscatedId: String): Flow<Result<ActiveSubscription?>> {
+        return safeApiCall<List<PurchaseInfoDto>> {
+            httpClient.get(NetworkConstants.BASE_URL + "billing/purchase") {
+                parameter("account", obfuscatedId)
+            }
+        }.map { result ->
+            when (result) {
+                is Result.Success -> {
+                    CrashReporter.log("Raw subscription data: ${result.data}")
+                    Napier.d(
+                        "Raw subscription data: ${result.data}",
+                        tag = "PurchaseRepository"
+                    )
+                    val sub = result.data.firstNotNullOfOrNull { dto ->
+                        val mapped = dto.toDomain()
+                        Napier.d("Mapped $dto to $mapped", tag = "PurchaseRepository")
+                        mapped
+                    }
+                    CrashReporter.log("Mapped subscription: $sub")
+                    Result.Success(sub)
+                }
+                is Result.Error -> {
+                    CrashReporter.recordException(result.exception)
+                    result
+                }
             }
         }
     }

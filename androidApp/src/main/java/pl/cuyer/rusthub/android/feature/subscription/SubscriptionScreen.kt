@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -86,7 +87,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.Lifecycle
 import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -101,6 +104,7 @@ import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
+import pl.cuyer.rusthub.android.util.composeUtil.OnLifecycleEvent
 import pl.cuyer.rusthub.android.util.prefersReducedMotion
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.BillingProduct
@@ -165,6 +169,11 @@ fun SubscriptionScreen(
     LaunchedEffect(state.value.currentPlan) {
         state.value.currentPlan?.let { selectedPlan = it }
     }
+    OnLifecycleEvent { event ->
+        if (event == Lifecycle.Event.ON_RESUME) {
+            onAction(SubscriptionAction.OnResume)
+        }
+    }
     val pagerState = rememberPagerState(pageCount = { benefits.size })
     val context = LocalContext.current
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
@@ -208,6 +217,34 @@ fun SubscriptionScreen(
                     isTablet = isTabletMode,
                     modifier = Modifier.fillMaxSize()
                 )
+            } else if (state.value.hasError) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    item {
+                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "(×_×)",
+                                    style = MaterialTheme.typography.headlineLarge,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 96.sp
+                                )
+                                Text(
+                                    text = stringResource(SharedRes.strings.error_oops),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
+                }
             } else {
                 if (isTabletMode) {
                     SubscriptionScreenExpanded(

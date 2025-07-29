@@ -69,6 +69,8 @@ import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.AppInfo
 import pl.cuyer.rusthub.util.StoreNavigator
+import pl.cuyer.rusthub.android.util.composeUtil.OnLifecycleEvent
+import androidx.lifecycle.Lifecycle
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class,
@@ -83,6 +85,11 @@ fun SettingsScreen(
 ) {
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
+    }
+    OnLifecycleEvent { event ->
+        if (event == Lifecycle.Event.ON_RESUME) {
+            onAction(SettingsAction.OnResume)
+        }
     }
     val context = LocalContext.current
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
@@ -135,6 +142,7 @@ fun SettingsScreen(
                     anonymousExpiration = state.value.anonymousExpiration,
                     plan = state.value.currentPlan,
                     planExpiration = state.value.subscriptionExpiration,
+                    status = state.value.subscriptionStatus,
                     onAction = onAction,
                     onThemeClick = { showThemeSheet = true },
                     onLanguageClick = { showLanguageSheet = true }
@@ -149,6 +157,7 @@ fun SettingsScreen(
                     anonymousExpiration = state.value.anonymousExpiration,
                     plan = state.value.currentPlan,
                     planExpiration = state.value.subscriptionExpiration,
+                    status = state.value.subscriptionStatus,
                     onAction = onAction,
                     onThemeClick = { showThemeSheet = true },
                     onLanguageClick = { showLanguageSheet = true }
@@ -190,6 +199,7 @@ private fun SettingsScreenCompact(
     anonymousExpiration: String?,
     plan: SubscriptionPlan?,
     planExpiration: String?,
+    status: String?,
     onAction: (SettingsAction) -> Unit,
     onThemeClick: () -> Unit,
     onLanguageClick: () -> Unit
@@ -201,7 +211,7 @@ private fun SettingsScreenCompact(
         GreetingSection(username)
         PreferencesSection(onAction, onThemeClick, onLanguageClick)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
-        AccountSection(provider, subscribed, anonymousExpiration, plan, planExpiration, onAction)
+        AccountSection(provider, subscribed, anonymousExpiration, plan, planExpiration, status, onAction)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
         OtherSection(onAction)
     }
@@ -216,6 +226,7 @@ private fun SettingsScreenExpanded(
     anonymousExpiration: String?,
     plan: SubscriptionPlan?,
     planExpiration: String?,
+    status: String?,
     onAction: (SettingsAction) -> Unit,
     onThemeClick: () -> Unit,
     onLanguageClick: () -> Unit
@@ -233,7 +244,7 @@ private fun SettingsScreenExpanded(
             GreetingSection(username)
             PreferencesSection(onAction, onThemeClick, onLanguageClick)
             HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
-            AccountSection(provider, subscribed, anonymousExpiration, plan, planExpiration, onAction)
+            AccountSection(provider, subscribed, anonymousExpiration, plan, planExpiration, status, onAction)
         }
         Column(
             modifier = Modifier
@@ -311,6 +322,7 @@ private fun AccountSection(
     anonymousExpiration: String?,
     plan: SubscriptionPlan?,
     planExpiration: String?,
+    status: String?,
     onAction: (SettingsAction) -> Unit
 ) {
     Text(
@@ -352,6 +364,13 @@ private fun AccountSection(
         planExpiration?.let {
             Text(
                 text = stringResource(SharedRes.strings.subscription_expiration, it),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(bottom = spacing.xsmall)
+            )
+        }
+        status?.let {
+            Text(
+                text = stringResource(SharedRes.strings.status) + ": " + it,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(bottom = spacing.xsmall)
             )

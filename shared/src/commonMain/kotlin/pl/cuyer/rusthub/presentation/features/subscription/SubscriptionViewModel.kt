@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
@@ -23,7 +24,7 @@ import pl.cuyer.rusthub.domain.model.BillingProduct
 import pl.cuyer.rusthub.domain.model.BillingErrorCode
 import pl.cuyer.rusthub.domain.model.toMessage
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
-import pl.cuyer.rusthub.domain.model.ActiveSubscription
+import pl.cuyer.rusthub.domain.usecase.GetActiveSubscriptionUseCase
 import pl.cuyer.rusthub.domain.usecase.ConfirmPurchaseUseCase
 import pl.cuyer.rusthub.domain.usecase.RefreshUserUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
@@ -40,11 +41,13 @@ data class SubscriptionState(
     val products: Map<SubscriptionPlan, BillingProduct> = emptyMap(),
     val isLoading: Boolean = false,
     val isProcessing: Boolean = false,
-    val currentPlan: SubscriptionPlan? = null
+    val currentPlan: SubscriptionPlan? = null,
+    val hasError: Boolean = false
 )
 
 sealed interface SubscriptionAction {
     data class Subscribe(val plan: SubscriptionPlan, val activity: Any) : SubscriptionAction
+    data object OnResume : SubscriptionAction
 }
 
 class SubscriptionViewModel(
@@ -52,6 +55,7 @@ class SubscriptionViewModel(
     private val confirmPurchaseUseCase: ConfirmPurchaseUseCase,
     private val refreshUserUseCase: RefreshUserUseCase,
     private val getUserUseCase: GetUserUseCase,
+    private val getActiveSubscriptionUseCase: GetActiveSubscriptionUseCase,
     private val snackbarController: SnackbarController,
     private val stringProvider: StringProvider
 ) : BaseViewModel() {
@@ -65,16 +69,18 @@ class SubscriptionViewModel(
         initialValue = SubscriptionState()
     )
 
+    private var subscriptionJob: Job? = null
+
     init {
         observeProducts()
         observePurchases()
-        observeUser()
         observeErrors()
     }
 
     fun onAction(action: SubscriptionAction) {
         when (action) {
             is SubscriptionAction.Subscribe -> subscribe(action.plan, action.activity)
+            SubscriptionAction.OnResume -> refreshSubscription()
         }
     }
 
@@ -132,13 +138,6 @@ class SubscriptionViewModel(
             .launchIn(coroutineScope)
     }
 
-    private fun observeUser() {
-        billingRepository.getActiveSubscription()
-            .distinctUntilChanged()
-            .onEach { info -> _state.update { it.copy(currentPlan = info?.plan) } }
-            .launchIn(coroutineScope)
-    }
-
     private fun subscribe(plan: SubscriptionPlan, activity: Any) {
         coroutineScope.launch {
             val id = plan.basePlanId ?: plan.productId
@@ -163,6 +162,17 @@ class SubscriptionViewModel(
                         is Result.Error -> showErrorSnackbar(result.exception.toUserMessage(stringProvider))
                     }
                 }
+        }
+    }
+
+    private fun refreshSubscription() {
+        subscriptionJob?.cancel()
+        subscriptionJob = coroutineScope.launch {
+            getActiveSubscriptionUseCase()
+                .onStart { _state.update { it.copy(isLoading = true, hasError = false) } }
+                .onCompletion { _state.update { it.copy(isLoading = false) } }
+                .catchAndLog { _state.update { it.copy(currentPlan = null, hasError = true) } }
+                .collectLatest { info -> _state.update { it.copy(currentPlan = info?.plan, hasError = false) } }
         }
     }
 

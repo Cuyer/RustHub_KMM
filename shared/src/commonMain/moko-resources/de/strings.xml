@@ -213,6 +213,13 @@
     <string name="status">Status</string>
     <string name="online">Online</string>
     <string name="offline">Offline</string>
+    <string name="status_active">Aktiv</string>
+    <string name="status_paused">Pausiert</string>
+    <string name="status_canceled">Storniert</string>
+    <string name="status_in_grace">Kulanzzeit</string>
+    <string name="status_expired">Abgelaufen</string>
+    <string name="status_pending">Ausstehend</string>
+    <string name="status_unknown">Unbekannt</string>
     <string name="stay_up_to_date_with_updates_and_news">Bleibe mit Updates und Neuigkeiten auf dem Laufenden.</string>
     <string name="submit">Senden</string>
     <string name="subscribe">Abonnieren</string>

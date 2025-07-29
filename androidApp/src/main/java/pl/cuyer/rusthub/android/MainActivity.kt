@@ -78,14 +78,16 @@ class MainActivity : AppCompatActivity() {
                     .distinctUntilChanged()
                     .collect { darkTheme ->
                         enableEdgeToEdge(
-                            statusBarStyle = SystemBarStyle.auto(
-                                lightScrim = Color.TRANSPARENT,
-                                darkScrim = Color.TRANSPARENT,
-                            ) { darkTheme },
-                            navigationBarStyle = SystemBarStyle.auto(
-                                lightScrim = lightScrim,
-                                darkScrim = darkScrim,
-                            ) { darkTheme }
+                            navigationBarStyle = if (darkTheme) {
+                                SystemBarStyle.dark(
+                                    scrim = Color.TRANSPARENT
+                                )
+                            } else {
+                                SystemBarStyle.light(
+                                    scrim = Color.TRANSPARENT,
+                                    darkScrim = Color.TRANSPARENT
+                                )
+                            }
                         )
                     }
             }
@@ -116,9 +118,6 @@ class MainActivity : AppCompatActivity() {
         inAppUpdateManager.onResume(this)
     }
 }
-
-private val lightScrim = Color.argb(0xe6, 0xFF, 0xFF, 0x00)
-private val darkScrim = Color.argb(0xe6, 0xFF, 0xFF, 0x00)
 
 @Immutable
 private data class ThemeSettings(

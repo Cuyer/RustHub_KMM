@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
@@ -51,9 +52,10 @@ import pl.cuyer.rusthub.util.anonymousAccountExpiresIn
 import pl.cuyer.rusthub.util.formatExpiration
 import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.domain.model.ActiveSubscription
-import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
+import pl.cuyer.rusthub.domain.usecase.GetActiveSubscriptionUseCase
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.domain.model.ItemSyncState
+import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.util.updateAppLanguage
 
 class SettingsViewModel(
@@ -69,7 +71,7 @@ class SettingsViewModel(
     private val stringProvider: StringProvider,
     private val systemDarkThemeObserver: SystemDarkThemeObserver,
     private val itemsScheduler: ItemsScheduler,
-    private val billingRepository: BillingRepository,
+    private val getActiveSubscriptionUseCase: GetActiveSubscriptionUseCase,
     private val itemSyncDataSource: ItemSyncDataSource,
     private val userEventController: UserEventController
 ) : BaseViewModel() {
@@ -79,6 +81,7 @@ class SettingsViewModel(
 
     private var logoutJob: Job? = null
     private var emailConfirmed: Boolean = true
+    private var subscriptionJob: Job? = null
     private val _state = MutableStateFlow(SettingsState())
     val state = _state
         .onStart {
@@ -108,6 +111,7 @@ class SettingsViewModel(
             SettingsAction.OnPrivacyPolicy -> openPrivacyPolicy()
             SettingsAction.OnDeleteAccount -> navigateDeleteAccount()
             SettingsAction.OnUpgradeAccount -> navigateUpgrade()
+            SettingsAction.OnResume -> refreshSubscription()
             is SettingsAction.OnThemeChange -> setTheme(action.theme)
             is SettingsAction.OnDynamicColorsChange -> setDynamicColors(action.enabled)
             is SettingsAction.OnUseSystemColorsChange -> setUseSystemColors(action.enabled)
@@ -148,8 +152,10 @@ class SettingsViewModel(
 
     private fun observeUser() {
         getUserUseCase()
-            .combine(billingRepository.getActiveSubscription()) { user, sub -> user to sub }
-            .onEach { (user, sub) -> updateUser(user, sub) }
+            .onEach { user ->
+                _state.update { it.copy(currentUser = user) }
+                updateUser(user, state.value.currentSubscription)
+            }
             .launchIn(coroutineScope)
     }
 
@@ -159,16 +165,19 @@ class SettingsViewModel(
             it.copy(
                 username = if (user?.provider == AuthProvider.GOOGLE) user.username.substringBefore("-") else user?.username,
                 provider = user?.provider,
-                subscribed = user?.subscribed == true,
+                subscribed = subscription != null,
                 currentPlan = subscription?.plan,
                 subscriptionExpiration = subscription?.expiration?.toString(),
+                subscriptionStatus = subscription?.state?.displayName(stringProvider),
                 anonymousExpiration = user?.let { u ->
                     if (u.provider == AuthProvider.ANONYMOUS) {
                         anonymousAccountExpiresIn(u.accessToken)?.let { formatExpiration(it, stringProvider) }
                     } else {
                         null
                     }
-                }
+                },
+                currentSubscription = subscription,
+                currentUser = user
             )
         }
     }
@@ -212,6 +221,20 @@ class SettingsViewModel(
 
     private fun setUseSystemColors(enabled: Boolean) {
         coroutineScope.launch { setUseSystemColorsPreferenceUseCase(enabled) }
+    }
+
+    private fun refreshSubscription() {
+        subscriptionJob?.cancel()
+        subscriptionJob = coroutineScope.launch {
+            getActiveSubscriptionUseCase()
+                .onStart { updateLoading(true) }
+                .onCompletion { updateLoading(false) }
+                .catchAndLog { updateUser(state.value.currentUser, null) }
+                .collectLatest { sub ->
+                    val user = getUserUseCase().first()
+                    updateUser(user, sub)
+                }
+        }
     }
 
     private fun showErrorSnackbar(message: String?) {
