@@ -398,4 +398,6 @@
     <string name="update_ready">Обновление готово к установке</string>
     <string name="error_image_emote">(×_×)</string>
     <string name="restart">Перезапустить</string>
+    <string name="ad_label">Реклама</string>
+    <string name="rated">Оценка %1$s</string>
 </resources>
