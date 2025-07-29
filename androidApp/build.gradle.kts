@@ -24,7 +24,8 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 25
         versionName = project.property("VERSION_NAME") as String
-        buildConfigField("String", "ADMOB_NATIVE_AD_ID", "\"ca-app-pub-3940256099942544/1044960115\"")
+        buildConfigField("String", "SERVERS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/4096035325\"")
+        buildConfigField("String", "ITEMS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/1469871989\"")
     }
 
     androidResources {

@@ -81,6 +81,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.BuildConfig
 import pl.cuyer.rusthub.android.designsystem.ItemListItem
 import pl.cuyer.rusthub.android.designsystem.ItemListItemShimmer
 import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
@@ -291,7 +292,8 @@ fun ItemScreen(
                                     NativeAdCard(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(horizontal = spacing.xmedium)
+                                            .padding(horizontal = spacing.xmedium),
+                                        adId = BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID
                                     )
                                     Spacer(modifier = Modifier.height(spacing.medium))
                                 }

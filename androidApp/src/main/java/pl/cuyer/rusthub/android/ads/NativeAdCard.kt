@@ -41,11 +41,11 @@ import pl.cuyer.rusthub.android.BuildConfig
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun NativeAdCard(modifier: Modifier = Modifier) {
+fun NativeAdCard(modifier: Modifier = Modifier, adId: String) {
     var nativeAd by remember { mutableStateOf<NativeAd?>(null) }
     val context = LocalContext.current
     DisposableEffect(Unit) {
-        val loader = AdLoader.Builder(context, BuildConfig.ADMOB_NATIVE_AD_ID)
+        val loader = AdLoader.Builder(context, adId)
             .forNativeAd { ad -> nativeAd = ad }
             .withAdListener(object : AdListener() {
                 override fun onAdFailedToLoad(error: LoadAdError) {

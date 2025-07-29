@@ -88,6 +88,7 @@ import kotlinx.datetime.Instant
 import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent.inject
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.BuildConfig
 import pl.cuyer.rusthub.android.designsystem.FilterBottomSheet
 import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.designsystem.ServerListItem
@@ -344,7 +345,8 @@ fun ServerScreen(
                                 NativeAdCard(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(horizontal = spacing.xmedium)
+                                        .padding(horizontal = spacing.xmedium),
+                                    adId = BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID
                                 )
                                 Spacer(modifier = Modifier.height(spacing.medium))
                             }
