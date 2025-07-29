@@ -197,6 +197,7 @@
     <string name="search_and_explore_rust_servers_by_name_type_last_wipe_or_more">Ищите и изучайте серверы Rust по имени, типу, последнему вайпу и др.</string>
     <string name="search_servers">Поиск серверов...</string>
     <string name="search_items">Поиск предметов...</string>
+    <string name="search_items_check_details_how_to_craft_drop_and_raid_costs">Ищите предметы и смотрите их характеристики, крафт, выпадение и стоимость рейда.</string>
     <string name="see_server_info_like_time_of_last_wipe_map_ranking_and_more">Смотрите инфо о сервере: время последнего вайпа, карта, рейтинг и т.д.</string>
     <string name="seed" translatable="false">Seed</string>
     <string name="send_email">Отправить e-mail</string>
