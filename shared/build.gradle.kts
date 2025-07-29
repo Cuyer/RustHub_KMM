@@ -1,5 +1,6 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import org.gradle.kotlin.dsl.api
+import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 
@@ -75,6 +76,7 @@ kotlin {
             implementation(libs.play.review.ktx)
             implementation(libs.play.billing)
             implementation(libs.androidx.appcompat)
+            implementation(libs.user.messaging.platform)
         }
         commonMain.dependencies {
             implementation(project.dependencies.platform(libs.koin.bom))

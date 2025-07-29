@@ -44,6 +44,7 @@ play-billing = "8.0.0"
 protobufPlugin = "0.9.5"
 protobuf = "4.31.1"
 runtime = "1.9.0-beta03"
+userMessagingPlatform = "3.2.0"
 
 [libraries]
 
@@ -152,6 +153,7 @@ google-play-app-update-ktx = { module = "com.google.android.play:app-update-ktx"
 desugar_jdk_libs-v215 = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
 protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
+user-messaging-platform = { group = "com.google.android.ump", name = "user-messaging-platform", version.ref = "userMessagingPlatform" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

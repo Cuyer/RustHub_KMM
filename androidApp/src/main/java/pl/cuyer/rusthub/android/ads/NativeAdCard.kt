@@ -71,7 +71,7 @@ fun NativeAdCard(modifier: Modifier = Modifier, adId: String) {
             .build()
         loader.loadAd(AdRequest.Builder().build())
         onDispose {
-            isDisposxed = true
+            isDisposed = true
             nativeAd?.destroy()
             nativeAd = null
         }

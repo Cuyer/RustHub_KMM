@@ -6,6 +6,7 @@ import com.google.android.ump.ConsentDebugSettings
 import com.google.android.ump.ConsentInformation
 import com.google.android.ump.ConsentRequestParameters
 import com.google.android.ump.UserMessagingPlatform
+import pl.cuyer.rusthub.BuildConfig
 
 actual class AdsConsentManager private constructor(context: Context) {
     private val consentInformation = UserMessagingPlatform.getConsentInformation(context)
@@ -19,12 +20,15 @@ actual class AdsConsentManager private constructor(context: Context) {
 
     actual fun gatherConsent(activity: Any, onComplete: (String?) -> Unit) {
         val act = activity as? Activity ?: return
-        val debugSettings = ConsentDebugSettings.Builder(act)
-            .addTestDeviceHashedId(TEST_DEVICE_HASHED_ID)
-            .build()
-        val params = ConsentRequestParameters.Builder()
-            .setConsentDebugSettings(debugSettings)
-            .build()
+        val paramsBuilder = ConsentRequestParameters.Builder()
+        if (BuildType.isDebug) {
+            val debugSettings = ConsentDebugSettings.Builder(act)
+                .addTestDeviceHashedId(TEST_DEVICE_HASHED_ID)
+                .build()
+            paramsBuilder.setConsentDebugSettings(debugSettings)
+        }
+        val params = paramsBuilder.build()
+
         consentInformation.requestConsentInfoUpdate(
             act,
             params,
