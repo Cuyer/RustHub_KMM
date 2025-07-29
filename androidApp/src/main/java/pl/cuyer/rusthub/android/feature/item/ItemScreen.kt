@@ -131,9 +131,6 @@ fun ItemScreen(
     }
 
     val context = LocalContext.current
-    val windowSizeClass = calculateWindowSizeClass(context as Activity)
-    val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
-
     Scaffold(
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onBackground,
@@ -282,7 +279,7 @@ fun ItemScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     )
                     {
-                        items(pagedList.itemCount + 1) { index ->
+                        onPagingItemsIndexed(key = { it.id ?: it.slug ?: it.hashCode() }) { index, item ->
                             if (index == 3) {
                                 NativeAdCard(
                                     modifier = Modifier
@@ -290,19 +287,18 @@ fun ItemScreen(
                                         .animateItem()
                                         .padding(horizontal = spacing.xmedium)
                                 )
-                            } else {
-                                val item = pagedList[index.takeIf { it < pagedList.itemCount } ?: 0]
-                                item?.let { element ->
-                                    ItemListItem(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .animateItem()
-                                            .padding(horizontal = spacing.xmedium),
-                                        item = element,
-                                        onClick = { id -> onAction(ItemAction.OnItemClick(id)) }
-                                    )
-                                }
                             }
+
+                            ItemListItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
+                                    .padding(horizontal = spacing.xmedium),
+                                item = item,
+                                onClick = { id ->
+                                    onAction(ItemAction.OnItemClick(id))
+                                }
+                            )
                         }
                     }
                 }
