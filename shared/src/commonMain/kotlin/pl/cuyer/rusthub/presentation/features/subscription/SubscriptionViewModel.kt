@@ -140,6 +140,12 @@ class SubscriptionViewModel(
 
     private fun subscribe(plan: SubscriptionPlan, activity: Any) {
         coroutineScope.launch {
+            if (plan == SubscriptionPlan.LIFETIME && _state.value.currentPlan in listOf(SubscriptionPlan.MONTHLY, SubscriptionPlan.YEARLY)) {
+                snackbarController.sendEvent(
+                    SnackbarEvent(stringProvider.get(SharedRes.strings.cancel_current_before_lifetime))
+                )
+                return@launch
+            }
             val id = plan.basePlanId ?: plan.productId
             val obfuscated = getUserUseCase().first()?.obfuscatedId
             billingRepository.launchBillingFlow(activity, id, obfuscated)
@@ -171,8 +177,16 @@ class SubscriptionViewModel(
             getActiveSubscriptionUseCase()
                 .onStart { _state.update { it.copy(isLoading = true, hasError = false) } }
                 .onCompletion { _state.update { it.copy(isLoading = false) } }
-                .catchAndLog { _state.update { it.copy(currentPlan = null, hasError = true) } }
-                .collectLatest { info -> _state.update { it.copy(currentPlan = info?.plan, hasError = false) } }
+                .collectLatest { result ->
+                    when (result) {
+                        is Result.Success -> _state.update {
+                            it.copy(currentPlan = result.data?.plan, hasError = false)
+                        }
+                        is Result.Error -> _state.update {
+                            it.copy(currentPlan = null, hasError = true)
+                        }
+                    }
+                }
         }
     }
 
