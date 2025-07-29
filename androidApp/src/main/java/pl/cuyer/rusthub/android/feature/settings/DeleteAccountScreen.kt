@@ -59,6 +59,7 @@ import pl.cuyer.rusthub.android.theme.spacing
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.focus.FocusManager
 import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
@@ -66,6 +67,7 @@ import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountAction
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountState
+import pl.cuyer.rusthub.android.designsystem.AppTextButton
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class,
@@ -83,6 +85,24 @@ fun DeleteAccountScreen(
     val interactionSource = remember { MutableInteractionSource() }
     val focusManager = LocalFocusManager.current
     val currentState = state.value
+
+    if (currentState.showSubscriptionDialog) {
+        AlertDialog(
+            onDismissRequest = { onAction(DeleteAccountAction.OnDismissDialog) },
+            title = { Text(text = stringResource(SharedRes.strings.delete_account)) },
+            text = { Text(text = stringResource(SharedRes.strings.delete_account_subscription_warning)) },
+            confirmButton = {
+                AppButton(onClick = { onAction(DeleteAccountAction.OnConfirmDelete) }) {
+                    Text(stringResource(SharedRes.strings.delete))
+                }
+            },
+            dismissButton = {
+                AppTextButton(onClick = { onAction(DeleteAccountAction.OnDismissDialog) }) {
+                    Text(stringResource(SharedRes.strings.cancel))
+                }
+            }
+        )
+    }
 
     Scaffold(
         containerColor = Color.Transparent,

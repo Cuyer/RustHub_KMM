@@ -70,6 +70,7 @@
     <string name="delete_icon">Delete icon</string>
     <string name="delete_account">Delete account</string>
     <string name="delete_account_button">Delete account button</string>
+    <string name="delete_account_subscription_warning">Deleting your account will permanently remove access to your subscription and one time products. RustHub is not responsible for any consequences.</string>
     <string name="deleting_your_account_is_irreversible_all_your_data_will_be_removed">Deleting your account is irreversible. All your data will be removed.</string>
     <string name="demo_with_icon">Switch with icon</string>
     <string name="description">Description</string>

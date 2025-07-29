@@ -71,6 +71,7 @@
     <string name="delete_icon">Icône de suppression</string>
     <string name="delete_account">Supprimer le compte</string>
     <string name="delete_account_button">Supprimer le compte</string>
+    <string name="delete_account_subscription_warning">La suppression de votre compte entraînera la perte définitive de votre abonnement et de vos achats uniques. RustHub n'est pas responsable des conséquences.</string>
     <string name="deleting_your_account_is_irreversible_all_your_data_will_be_removed">La suppression de votre compte est irréversible. Toutes vos données seront supprimées.</string>
     <string name="demo_with_icon">Démo avec icône</string>
     <string name="description">Description</string>

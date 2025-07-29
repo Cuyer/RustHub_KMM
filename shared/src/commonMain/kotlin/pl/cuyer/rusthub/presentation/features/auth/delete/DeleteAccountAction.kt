@@ -7,5 +7,9 @@ sealed interface DeleteAccountAction {
     @Immutable
     data object OnDelete : DeleteAccountAction
     @Immutable
+    data object OnConfirmDelete : DeleteAccountAction
+    @Immutable
+    data object OnDismissDialog : DeleteAccountAction
+    @Immutable
     data class OnPasswordChange(val password: String) : DeleteAccountAction
 }
