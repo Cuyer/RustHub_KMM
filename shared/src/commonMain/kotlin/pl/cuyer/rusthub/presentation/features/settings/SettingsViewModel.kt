@@ -249,11 +249,15 @@ class SettingsViewModel(
     private fun refreshSubscription() {
         subscriptionJob?.cancel()
         subscriptionJob = coroutineScope.launch {
+            val user = getUserUseCase().first()
+            if (user?.provider == AuthProvider.ANONYMOUS) {
+                updateUser(user, null)
+                return@launch
+            }
             getActiveSubscriptionUseCase()
                 .onStart { updateLoading(true) }
                 .onCompletion { updateLoading(false) }
                 .collectLatest { result ->
-                    val user = getUserUseCase().first()
                     when (result) {
                         is Result.Success -> updateUser(user, result.data)
                         is Result.Error -> updateUser(user, null)
