@@ -183,6 +183,7 @@ actual val platformModule: Module = module {
             itemSyncDataSource = get(),
             userEventController = get(),
             getActiveSubscriptionUseCase = get(),
+            setSubscribedUseCase = get(),
         )
     }
     viewModel {

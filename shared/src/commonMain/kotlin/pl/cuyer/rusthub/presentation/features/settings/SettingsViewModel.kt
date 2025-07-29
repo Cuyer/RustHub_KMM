@@ -31,6 +31,7 @@ import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
 import pl.cuyer.rusthub.domain.usecase.SetDynamicColorPreferenceUseCase
 import pl.cuyer.rusthub.domain.usecase.SetThemeConfigUseCase
 import pl.cuyer.rusthub.domain.usecase.SetUseSystemColorsPreferenceUseCase
+import pl.cuyer.rusthub.domain.usecase.SetSubscribedUseCase
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
@@ -60,6 +61,7 @@ import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.domain.model.ItemSyncState
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.util.updateAppLanguage
+import pl.cuyer.rusthub.domain.model.SubscriptionState
 
 class SettingsViewModel(
     private val logoutUserUseCase: LogoutUserUseCase,
@@ -76,7 +78,8 @@ class SettingsViewModel(
     private val itemsScheduler: ItemsScheduler,
     private val getActiveSubscriptionUseCase: GetActiveSubscriptionUseCase,
     private val itemSyncDataSource: ItemSyncDataSource,
-    private val userEventController: UserEventController
+    private val userEventController: UserEventController,
+    private val setSubscribedUseCase: SetSubscribedUseCase
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -164,11 +167,12 @@ class SettingsViewModel(
 
     private fun updateUser(user: User?, subscription: ActiveSubscription?) {
         emailConfirmed = user?.emailConfirmed == true
+        val subscribed = hasValidSubscription(subscription)
         _state.update {
             it.copy(
                 username = if (user?.provider == AuthProvider.GOOGLE) user.username.substringBefore("-") else user?.username,
                 provider = user?.provider,
-                subscribed = subscription != null,
+                subscribed = subscribed,
                 currentPlan = subscription?.plan,
                 subscriptionExpiration = subscription?.expiration?.let {
                     formatLocalDateTime(it.toLocalDateTime(TimeZone.currentSystemDefault()))
@@ -184,6 +188,17 @@ class SettingsViewModel(
                 currentSubscription = subscription,
                 currentUser = user
             )
+        }
+        coroutineScope.launch { setSubscribedUseCase(subscribed) }
+    }
+
+    private fun hasValidSubscription(subscription: ActiveSubscription?): Boolean {
+        return when (subscription?.state) {
+            SubscriptionState.ACTIVE,
+            SubscriptionState.IN_GRACE_PERIOD,
+            SubscriptionState.PAUSED,
+            SubscriptionState.CANCELED -> true
+            else -> false
         }
     }
 

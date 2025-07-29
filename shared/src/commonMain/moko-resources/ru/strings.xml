@@ -396,5 +396,6 @@
     <string name="time_to_raid">Время рейда: %1$s</string>
     <string name="hp">HP</string>
     <string name="update_ready">Обновление готово к установке</string>
+    <string name="error_image_emote">(×_×)</string>
     <string name="restart">Перезапустить</string>
 </resources>

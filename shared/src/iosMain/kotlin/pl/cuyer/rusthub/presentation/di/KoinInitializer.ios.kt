@@ -154,7 +154,8 @@ actual val platformModule: Module = module {
             itemsScheduler = get(),
             billingRepository = get(),
             itemSyncDataSource = get(),
-            userEventController = get()
+            userEventController = get(),
+            setSubscribedUseCase = get()
         )
     }
     factory {
