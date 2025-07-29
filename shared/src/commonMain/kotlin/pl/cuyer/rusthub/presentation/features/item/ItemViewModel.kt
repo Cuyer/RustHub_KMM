@@ -49,6 +49,7 @@ import pl.cuyer.rusthub.domain.model.SearchQuery
 import pl.cuyer.rusthub.presentation.model.SearchQueryUi
 import pl.cuyer.rusthub.presentation.model.toUi
 import kotlinx.datetime.Clock
+import pl.cuyer.rusthub.util.AdsConsentManager
 
 class ItemViewModel(
     private val getPagedItemsUseCase: GetPagedItemsUseCase,
@@ -60,6 +61,7 @@ class ItemViewModel(
     private val getSearchQueriesUseCase: GetItemSearchQueriesUseCase,
     private val deleteSearchQueriesUseCase: DeleteItemSearchQueriesUseCase,
     private val getUserUseCase: GetUserUseCase,
+    private val adsConsentManager: AdsConsentManager,
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -77,7 +79,7 @@ class ItemViewModel(
         )
 
     val showAds = getUserUseCase()
-        .map { user -> !(user?.subscribed ?: false) }
+        .map { user -> !(user?.subscribed ?: false) && adsConsentManager.canRequestAds }
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),

@@ -398,4 +398,5 @@
     <string name="update_ready">Mise à jour prête à être installée</string>
     <string name="error_image_emote">(×_×)</string>
     <string name="restart">Redémarrer</string>
+    <string name="ads_consent_error">Impossible d'obtenir le consentement pour les publicités</string>
 </resources>

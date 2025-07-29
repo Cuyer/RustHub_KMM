@@ -402,4 +402,5 @@
     <string name="update_ready">Update ready to install</string>
     <string name="error_image_emote">(×_×)</string>
     <string name="restart">Restart</string>
+    <string name="ads_consent_error">Unable to obtain ad consent</string>
 </resources>

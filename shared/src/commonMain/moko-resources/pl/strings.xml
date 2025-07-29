@@ -396,4 +396,5 @@
     <string name="update_ready">Aktualizacja gotowa do instalacji</string>
     <string name="error_image_emote">(×_×)</string>
     <string name="restart">Uruchom ponownie</string>
+    <string name="ads_consent_error">Nie można uzyskać zgody na reklamy</string>
 </resources>

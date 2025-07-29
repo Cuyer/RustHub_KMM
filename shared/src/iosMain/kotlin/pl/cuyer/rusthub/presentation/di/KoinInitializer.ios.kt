@@ -35,6 +35,7 @@ import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
 import pl.cuyer.rusthub.util.UserSyncScheduler
+import pl.cuyer.rusthub.util.AdsConsentManager
 import pl.cuyer.rusthub.data.billing.BillingRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
 import pl.cuyer.rusthub.domain.usecase.ConfirmPurchaseUseCase
@@ -72,6 +73,7 @@ actual val platformModule: Module = module {
     single { SystemDarkThemeObserver() }
     single { GoogleAuthClient() }
     single { StringProvider() }
+    single { AdsConsentManager() }
     factory {
         StartupViewModel(
             snackbarController = get(),
@@ -93,7 +95,8 @@ actual val platformModule: Module = module {
             getPagedItemsUseCase = get(),
             itemSyncDataSource = get(),
             itemsScheduler = get(),
-            getUserUseCase = get()
+            getUserUseCase = get(),
+            adsConsentManager = get()
         )
     }
     factory { (itemId: Long) ->

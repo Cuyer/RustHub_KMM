@@ -400,4 +400,5 @@
     <string name="update_ready">Update bereit zur Installation</string>
     <string name="error_image_emote">(×_×)</string>
     <string name="restart">Neustart</string>
+    <string name="ads_consent_error">Fehler beim Abrufen der Anzeigenzustimmung</string>
 </resources>
