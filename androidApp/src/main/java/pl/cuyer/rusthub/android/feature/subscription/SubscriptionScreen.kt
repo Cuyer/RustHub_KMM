@@ -41,7 +41,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -139,6 +141,12 @@ private val benefits = listOf(
         SharedRes.strings.unlimited_notifications,
         SharedRes.strings.get_notified_about_all_your_servers,
         SharedRes.strings.unlimited_notifications_icon
+    ),
+    SubscriptionBenefit(
+        getImageByFileName("il_no_ads").drawableResId,
+        SharedRes.strings.no_ads_title,
+        SharedRes.strings.no_ads_desc,
+        SharedRes.strings.no_ads_icon_desc
     ),
     SubscriptionBenefit(
         getImageByFileName("il_support_development").drawableResId,
@@ -452,6 +460,10 @@ private fun PlanSelector(
             ElevatedCard(
                 onClick = { onPlanSelect(plan) },
                 enabled = !lifetimeOwned && plan != currentPlan,
+                colors = CardDefaults.elevatedCardColors().copy(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                ),
                 modifier = Modifier
                     .semantics {
                         role = Role.RadioButton
@@ -524,6 +536,10 @@ private fun SubscribeActions(
         AppButton(
             modifier = Modifier.fillMaxWidth(),
             onClick = onSubscribe,
+            colors = ButtonDefaults.elevatedButtonColors(
+                containerColor = MaterialTheme.colorScheme.background,
+                contentColor = MaterialTheme.colorScheme.onBackground
+            ),
             enabled = !samePlan && !lifetimeOwned
         ) { Text(text) }
     }
@@ -613,6 +629,26 @@ private fun ComparisonSection() {
                     modifier = Modifier.weight(0.25f)
                 )
             }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(SharedRes.strings.no_ads_title), modifier = Modifier.weight(0.5f))
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = stringResource(SharedRes.strings.no),
+                    tint = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.weight(0.25f)
+                )
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = stringResource(SharedRes.strings.yes),
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.weight(0.25f)
+                )
+            }
         }
     }
 }
@@ -645,7 +681,13 @@ private fun FaqSection() {
                 targetValue = if (expanded) 180f else 0f,
                 label = "rotation"
             )
-            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.elevatedCardColors().copy(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                )
+            ) {
                 LookaheadScope {
                     val sd = if (expanded) {
                         stringResource(SharedRes.strings.expanded)

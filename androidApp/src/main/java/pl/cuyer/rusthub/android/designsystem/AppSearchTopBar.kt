@@ -286,7 +286,10 @@ private fun SearchHistorySuggestions(
                             .animateItem()
                             .fillMaxWidth(),
                         shape = RectangleShape,
-                        colors = CardDefaults.elevatedCardColors()
+                        colors = CardDefaults.elevatedCardColors().copy(
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.onBackground
+                        )
                     ) {
                         Text(
                             text = item.query,

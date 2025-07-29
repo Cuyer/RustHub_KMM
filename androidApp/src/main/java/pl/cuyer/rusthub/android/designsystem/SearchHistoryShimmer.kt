@@ -29,8 +29,11 @@ fun SearchHistoryShimmer(modifier: Modifier = Modifier) {
         items(5) {
             ElevatedCard(
                 modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.extraSmall,
-                colors = CardDefaults.elevatedCardColors()
+                colors = CardDefaults.elevatedCardColors().copy(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                ),
+                shape = MaterialTheme.shapes.extraSmall
             ) {
                 Box(
                     modifier = Modifier

@@ -186,7 +186,7 @@
     <string name="resend_email">Отправить e-mail еще раз</string>
     <string name="reset_filters">Сбросить фильтры</string>
     <string name="reset_password">Сбросить пароль</string>
-    <string name="faq_include_answer">RustHub Pro дает неограниченное избранное и уведомления.</string>
+    <string name="faq_include_answer">RustHub Pro включает неограниченное добавление серверов в избранное и уведомления, а также использование без рекламы.</string>
     <string name="rust_map_image">Изображение карты Rust</string>
     <string name="map_gesture_hint">Щипните для масштаба, перетащите для панорамирования</string>
     <string name="dismiss">Закрыть</string>
@@ -197,6 +197,7 @@
     <string name="search_and_explore_rust_servers_by_name_type_last_wipe_or_more">Ищите и изучайте серверы Rust по имени, типу, последнему вайпу и др.</string>
     <string name="search_servers">Поиск серверов...</string>
     <string name="search_items">Поиск предметов...</string>
+    <string name="search_items_check_details_how_to_craft_drop_and_raid_costs">Ищите предметы и смотрите их характеристики, крафт, выпадение и стоимость рейда.</string>
     <string name="see_server_info_like_time_of_last_wipe_map_ranking_and_more">Смотрите инфо о сервере: время последнего вайпа, карта, рейтинг и т.д.</string>
     <string name="seed" translatable="false">Seed</string>
     <string name="send_email">Отправить e-mail</string>
@@ -236,6 +237,9 @@
     <string name="cancel_current_before_lifetime">Отмените текущую подписку, чтобы избежать дополнительных платежей при покупке пожизненного плана.</string>
     <string name="support_development">Поддержать разработку</string>
     <string name="support_development_icon">Символ поддержки разработки</string>
+    <string name="no_ads_title">Без рекламы</string>
+    <string name="no_ads_desc">Наслаждайтесь без рекламы.</string>
+    <string name="no_ads_icon_desc">Иконка без рекламы</string>
     <string name="terms_conditions">Условия использования</string>
     <string name="faq_lifetime_answer">План RustHub Pro Lifetime — единоразовая покупка. Доступ к RustHub Pro навсегда. Если у вас уже есть месячная или годовая подписка и вы хотите перейти на Lifetime, не забудьте отменить предыдущую подписку, чтобы избежать двойных списаний.</string>
     <string name="faq_renew_answer">Месячные и годовые планы RustHub Pro — это подписки с автопродлением. После отмены подписки вы пользуетесь сервисом до конца оплаченного периода. Lifetime — это разовая покупка.</string>

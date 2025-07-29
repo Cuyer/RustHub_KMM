@@ -43,6 +43,7 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
@@ -200,6 +201,11 @@ private val features = listOf(
         Icons.Default.Favorite,
         SharedRes.strings.favourites,
         SharedRes.strings.add_servers_to_your_favourites_to_easily_access_them
+    ),
+    Feature(
+        Icons.Default.Inventory,
+        SharedRes.strings.items,
+        SharedRes.strings.search_items_check_details_how_to_craft_drop_and_raid_costs
     )
 )
 
