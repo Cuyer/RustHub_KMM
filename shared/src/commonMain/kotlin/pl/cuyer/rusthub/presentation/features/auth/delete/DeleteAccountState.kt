@@ -8,5 +8,7 @@ data class DeleteAccountState(
     val password: String = "",
     val passwordError: String? = null,
     val provider: AuthProvider? = null,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val hasSubscription: Boolean = false,
+    val showSubscriptionDialog: Boolean = false
 )

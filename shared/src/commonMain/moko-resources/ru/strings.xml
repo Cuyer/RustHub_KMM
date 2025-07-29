@@ -71,6 +71,7 @@
     <string name="delete_icon">Иконка удаления</string>
     <string name="delete_account">Удалить аккаунт</string>
     <string name="delete_account_button">Удалить аккаунт</string>
+    <string name="delete_account_subscription_warning">Удалив аккаунт, вы навсегда потеряете доступ к подписке и одноразовым покупкам. RustHub не несет ответственности за последствия.</string>
     <string name="deleting_your_account_is_irreversible_all_your_data_will_be_removed">Удаление аккаунта необратимо. Все ваши данные будут удалены.</string>
     <string name="demo_with_icon">Демо с иконкой</string>
     <string name="description">Описание</string>

@@ -162,6 +162,7 @@ actual val platformModule: Module = module {
             snackbarController = get(),
             passwordValidator = get(),
             getUserUseCase = get(),
+            getActiveSubscriptionUseCase = get(),
             stringProvider = get(),
             userEventController = get()
         )
