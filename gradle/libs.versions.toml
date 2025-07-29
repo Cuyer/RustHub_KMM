@@ -38,6 +38,7 @@ datastore = "1.2.0-alpha02"
 security-crypto = "1.1.0-beta01"
 sqlcipher = "4.9.0"
 playcore = "2.1.0"
+play-services-ads = "24.5.0"
 play-review = "2.0.2"
 play-billing = "8.0.0"
 protobufPlugin = "0.9.5"
@@ -142,6 +143,7 @@ moko-permissions-compose = { module = "dev.icerock.moko:permissions-compose", ve
 moko-permissions-notifications = { module = "dev.icerock.moko:permissions-notifications", version.ref = "moko-permissions" }
 google-identity = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "identity" }
 google-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "google-auth" }
+play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "play-services-ads" }
 play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "play-review" }
 play-billing = { module = "com.android.billingclient:billing-ktx", version.ref = "play-billing" }
 certificate-transparency = { module = "com.appmattus.certificatetransparency:certificatetransparency-android", version.ref = "certificate-transparency" }

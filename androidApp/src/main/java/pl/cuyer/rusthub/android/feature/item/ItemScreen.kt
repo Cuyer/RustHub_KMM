@@ -85,6 +85,7 @@ import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.android.ads.NativeAdCard
 import pl.cuyer.rusthub.android.util.HandlePagingItems
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.common.getImageByFileName
@@ -281,17 +282,27 @@ fun ItemScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     )
                     {
-                        onPagingItems(key = { it.id ?: it.slug ?: it.hashCode() }) { item ->
-                            ItemListItem(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .animateItem()
-                                    .padding(horizontal = spacing.xmedium),
-                                item = item,
-                                onClick = { id ->
-                                    onAction(ItemAction.OnItemClick(id))
+                        items(pagedList.itemCount + 1) { index ->
+                            if (index == 3) {
+                                NativeAdCard(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .animateItem()
+                                        .padding(horizontal = spacing.xmedium)
+                                )
+                            } else {
+                                val item = pagedList[index.takeIf { it < pagedList.itemCount } ?: 0]
+                                item?.let { element ->
+                                    ItemListItem(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .animateItem()
+                                            .padding(horizontal = spacing.xmedium),
+                                        item = element,
+                                        onClick = { id -> onAction(ItemAction.OnItemClick(id)) }
+                                    )
                                 }
-                            )
+                            }
                         }
                     }
                 }
