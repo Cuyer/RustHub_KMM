@@ -33,11 +33,15 @@ import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.presentation.ui.Colors
 import pl.cuyer.rusthub.util.InAppUpdateManager
+import pl.cuyer.rusthub.util.AdsConsentManager
+import com.google.android.gms.ads.MobileAds
+import io.github.aakira.napier.Napier
 import pl.cuyer.rusthub.android.feature.startup.StartupScreen
 
 class MainActivity : AppCompatActivity() {
     private val startupViewModel: StartupViewModel by viewModel()
     private val inAppUpdateManager: InAppUpdateManager by inject()
+    private val adsConsentManager: AdsConsentManager by inject()
 
     private lateinit var updateLauncher: ActivityResultLauncher<IntentSenderRequest>
 
@@ -58,6 +62,13 @@ class MainActivity : AppCompatActivity() {
         inAppUpdateManager.setLauncher(updateLauncher, this)
 
         inAppUpdateManager.check(this)
+
+        adsConsentManager.gatherConsent(this) { error ->
+            error?.let { Napier.d("Ads consent error: $it") }
+            if (adsConsentManager.canRequestAds) {
+                MobileAds.initialize(this)
+            }
+        }
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {

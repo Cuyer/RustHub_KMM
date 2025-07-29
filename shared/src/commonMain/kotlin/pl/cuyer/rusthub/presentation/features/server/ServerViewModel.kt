@@ -59,6 +59,7 @@ import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import kotlinx.datetime.Clock.System
 import pl.cuyer.rusthub.util.toUserMessage
+import pl.cuyer.rusthub.util.AdsConsentManager
 
 class ServerViewModel(
     private val clipboardHandler: ClipboardHandler,
@@ -75,6 +76,7 @@ class ServerViewModel(
     private val stringProvider: StringProvider,
     private val connectivityObserver: ConnectivityObserver,
     private val getUserUseCase: GetUserUseCase,
+    private val adsConsentManager: AdsConsentManager,
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -96,7 +98,7 @@ class ServerViewModel(
         )
 
     val showAds = getUserUseCase()
-        .map { user -> !(user?.subscribed ?: false) }
+        .map { user -> !(user?.subscribed ?: false) && adsConsentManager.canRequestAds }
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),

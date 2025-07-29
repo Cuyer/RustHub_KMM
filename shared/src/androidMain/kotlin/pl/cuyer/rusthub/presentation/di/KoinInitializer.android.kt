@@ -43,6 +43,7 @@ import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
+import pl.cuyer.rusthub.util.AdsConsentManager
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
 import pl.cuyer.rusthub.util.UserSyncScheduler
 import pl.cuyer.rusthub.domain.usecase.SetSubscribedUseCase
@@ -68,6 +69,7 @@ actual val platformModule: Module = module {
     single { HttpClientFactory(get(), get(), get(), get(), get()).create() }
     single { ClipboardHandler(get()) }
     single { ShareHandler(get()) }
+    single { AdsConsentManager.getInstance(androidContext()) }
     single { SyncScheduler(get()) }
     single { SubscriptionSyncScheduler(get()) }
     single { MessagingTokenScheduler(get()) }
@@ -146,7 +148,8 @@ actual val platformModule: Module = module {
             clearServersAndKeysUseCase = get(),
             stringProvider = get(),
             connectivityObserver = get(),
-            getUserUseCase = get()
+            getUserUseCase = get(),
+            adsConsentManager = get()
         )
     }
     viewModel {
@@ -160,6 +163,7 @@ actual val platformModule: Module = module {
             getSearchQueriesUseCase = get(),
             deleteSearchQueriesUseCase = get(),
             getUserUseCase = get(),
+            adsConsentManager = get(),
         )
     }
     viewModel { (itemId: Long) ->
