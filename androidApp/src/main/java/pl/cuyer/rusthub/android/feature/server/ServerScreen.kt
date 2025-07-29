@@ -19,12 +19,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -334,12 +336,18 @@ fun ServerScreen(
                 ) {
                     onPagingItemsIndexed(key = { it.id ?: UUID.randomUUID() }) { index, item ->
                         if (index == 3) {
-                            NativeAdCard(
+                            Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .animateItem()
-                                    .padding(horizontal = spacing.xmedium)
-                            )
+                            ) {
+                                NativeAdCard(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = spacing.xmedium)
+                                )
+                                Spacer(modifier = Modifier.height(spacing.medium))
+                            }
                         }
                         val interactionSource = remember { MutableInteractionSource() }
                         ServerListItem(
