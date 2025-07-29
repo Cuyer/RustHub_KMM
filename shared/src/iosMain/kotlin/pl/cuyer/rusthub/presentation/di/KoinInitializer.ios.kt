@@ -40,6 +40,7 @@ import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
 import pl.cuyer.rusthub.domain.usecase.ConfirmPurchaseUseCase
 import pl.cuyer.rusthub.domain.usecase.RefreshUserUseCase
 import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
+import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
@@ -197,7 +198,7 @@ actual val platformModule: Module = module {
             stringProvider = get()
         )
     }
-    factory {
+    factory { (plan: SubscriptionPlan?) ->
         SubscriptionViewModel(
             billingRepository = get(),
             confirmPurchaseUseCase = get(),
@@ -205,7 +206,8 @@ actual val platformModule: Module = module {
             getUserUseCase = get(),
             getActiveSubscriptionUseCase = get(),
             snackbarController = get(),
-            stringProvider = get()
+            stringProvider = get(),
+            initialPlan = plan
         )
     }
 }
