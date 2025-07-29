@@ -274,6 +274,7 @@ private fun AppScaffold(
                         val viewModel = koinViewModel<ServerViewModel>()
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         val paging = viewModel.paging.collectAsLazyPagingItems()
+                        val showAds by viewModel.showAds.collectAsStateWithLifecycle()
                         ServerScreen(
                             state = state,
                             uiEvent = viewModel.uiEvent,
@@ -281,7 +282,8 @@ private fun AppScaffold(
                             pagedList = paging,
                             onNavigate = { dest ->
                                 backStack.add(dest)
-                            }
+                            },
+                            showAds = showAds
                         )
                     }
                     entry<ServerDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
@@ -301,12 +303,14 @@ private fun AppScaffold(
                         val viewModel = koinViewModel<ItemViewModel>()
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         val paging = viewModel.paging.collectAsLazyPagingItems()
+                        val showAds by viewModel.showAds.collectAsStateWithLifecycle()
                         ItemScreen(
                             state = state,
                             uiEvent = viewModel.uiEvent,
                             onAction = viewModel::onAction,
                             pagedList = paging,
-                            onNavigate = { dest -> backStack.add(dest) }
+                            onNavigate = { dest -> backStack.add(dest) },
+                            showAds = showAds
                         )
                     }
                     entry<ItemDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->

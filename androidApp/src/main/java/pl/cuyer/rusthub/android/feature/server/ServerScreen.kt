@@ -125,7 +125,8 @@ fun ServerScreen(
     state: State<ServerState>,
     onAction: (ServerAction) -> Unit,
     pagedList: LazyPagingItems<ServerInfoUi>,
-    uiEvent: Flow<UiEvent>
+    uiEvent: Flow<UiEvent>,
+    showAds: Boolean
 ) {
     var showSheet by rememberSaveable { mutableStateOf(false) }
     val searchBarState = rememberSearchBarState()
@@ -336,7 +337,7 @@ fun ServerScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     onPagingItemsIndexed(key = { it.id ?: UUID.randomUUID() }) { index, item ->
-                        if (index == 3) {
+                        if (showAds && (index + 1) % 5 == 0) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -505,7 +506,8 @@ private fun ServerScreenPreview() {
                         )
                     )
                 ),
-                pagedList = flowOf(PagingData.from(emptyList<ServerInfoUi>())).collectAsLazyPagingItems()
+                pagedList = flowOf(PagingData.from(emptyList<ServerInfoUi>())).collectAsLazyPagingItems(),
+                showAds = true
             )
         }
     }

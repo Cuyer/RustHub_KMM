@@ -92,7 +92,8 @@ actual val platformModule: Module = module {
         ItemViewModel(
             getPagedItemsUseCase = get(),
             itemSyncDataSource = get(),
-            itemsScheduler = get()
+            itemsScheduler = get(),
+            getUserUseCase = get()
         )
     }
     factory { (itemId: Long) ->
