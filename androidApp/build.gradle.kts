@@ -22,7 +22,7 @@ android {
         applicationId = "pl.cuyer.rusthub.android"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 23
+        versionCode = 24
         versionName = project.property("VERSION_NAME") as String
     }
 
