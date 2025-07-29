@@ -22,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import pl.cuyer.rusthub.android.designsystem.shimmer
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -132,9 +131,7 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .padding(spacing.medium)
         ) {
-            if (state.value.isLoading) {
-                SettingsShimmer(isTabletMode)
-            } else if (isTabletMode) {
+            if (isTabletMode) {
                 SettingsScreenExpanded(
                     username = state.value.username,
                     provider = state.value.provider,
@@ -143,6 +140,7 @@ fun SettingsScreen(
                     plan = state.value.currentPlan,
                     planExpiration = state.value.subscriptionExpiration,
                     status = state.value.subscriptionStatus,
+                    loading = state.value.isLoading,
                     onAction = onAction,
                     onThemeClick = { showThemeSheet = true },
                     onLanguageClick = { showLanguageSheet = true }
@@ -158,6 +156,7 @@ fun SettingsScreen(
                     plan = state.value.currentPlan,
                     planExpiration = state.value.subscriptionExpiration,
                     status = state.value.subscriptionStatus,
+                    loading = state.value.isLoading,
                     onAction = onAction,
                     onThemeClick = { showThemeSheet = true },
                     onLanguageClick = { showLanguageSheet = true }
@@ -200,6 +199,7 @@ private fun SettingsScreenCompact(
     plan: SubscriptionPlan?,
     planExpiration: String?,
     status: String?,
+    loading: Boolean,
     onAction: (SettingsAction) -> Unit,
     onThemeClick: () -> Unit,
     onLanguageClick: () -> Unit
@@ -211,7 +211,16 @@ private fun SettingsScreenCompact(
         GreetingSection(username)
         PreferencesSection(onAction, onThemeClick, onLanguageClick)
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
-        AccountSection(provider, subscribed, anonymousExpiration, plan, planExpiration, status, onAction)
+        AccountSection(
+            provider = provider,
+            subscribed = subscribed,
+            anonymousExpiration = anonymousExpiration,
+            plan = plan,
+            planExpiration = planExpiration,
+            status = status,
+            loading = loading,
+            onAction = onAction
+        )
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
         OtherSection(onAction)
     }
@@ -227,6 +236,7 @@ private fun SettingsScreenExpanded(
     plan: SubscriptionPlan?,
     planExpiration: String?,
     status: String?,
+    loading: Boolean,
     onAction: (SettingsAction) -> Unit,
     onThemeClick: () -> Unit,
     onLanguageClick: () -> Unit
@@ -244,7 +254,16 @@ private fun SettingsScreenExpanded(
             GreetingSection(username)
             PreferencesSection(onAction, onThemeClick, onLanguageClick)
             HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
-            AccountSection(provider, subscribed, anonymousExpiration, plan, planExpiration, status, onAction)
+            AccountSection(
+                provider = provider,
+                subscribed = subscribed,
+                anonymousExpiration = anonymousExpiration,
+                plan = plan,
+                planExpiration = planExpiration,
+                status = status,
+                loading = loading,
+                onAction = onAction
+            )
         }
         Column(
             modifier = Modifier
@@ -323,6 +342,7 @@ private fun AccountSection(
     plan: SubscriptionPlan?,
     planExpiration: String?,
     status: String?,
+    loading: Boolean,
     onAction: (SettingsAction) -> Unit
 ) {
     Text(
@@ -352,7 +372,9 @@ private fun AccountSection(
 
     val storeNavigator = koinInject<StoreNavigator>()
 
-    if (subscribed) {
+    if (loading) {
+        AccountSectionShimmer()
+    } else if (subscribed) {
         Text(
             text = stringResource(
                 SharedRes.strings.you_are_subscribed,
@@ -514,6 +536,28 @@ private fun GreetingSection(username: String?) {
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(bottom = spacing.medium)
+        )
+    }
+}
+
+@Composable
+private fun AccountSectionShimmer() {
+    Column(verticalArrangement = Arrangement.spacedBy(spacing.xsmall)) {
+        repeat(3) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
+                    .height(16.dp)
+                    .clip(MaterialTheme.shapes.extraSmall)
+                    .shimmer()
+            )
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .clip(MaterialTheme.shapes.extraSmall)
+                .shimmer()
         )
     }
 }
