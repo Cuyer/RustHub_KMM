@@ -422,6 +422,11 @@ private fun AuthSection(
                 focusManager.clearFocus()
             }
         )
+
+        PoliciesDisclaimer(
+            onPrivacyPolicy = { onAction(OnboardingAction.OnPrivacyPolicy) },
+            onTerms = { onAction(OnboardingAction.OnTerms) }
+        )
     }
 }
 
@@ -605,6 +610,25 @@ private fun ActionButtons(
         isLoading = continueAsGuestLoading()
     ) {
         Text(stringResource(SharedRes.strings.continue_as_guest))
+    }
+}
+
+@Composable
+private fun PoliciesDisclaimer(onPrivacyPolicy: () -> Unit, onTerms: () -> Unit) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = stringResource(SharedRes.strings.onboarding_disclaimer),
+            style = MaterialTheme.typography.bodySmall,
+            textAlign = TextAlign.Center
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(spacing.medium)) {
+            AppTextButton(onClick = onPrivacyPolicy) {
+                Text(stringResource(SharedRes.strings.privacy_policy))
+            }
+            AppTextButton(onClick = onTerms) {
+                Text(stringResource(SharedRes.strings.terms_conditions))
+            }
+        }
     }
 }
 

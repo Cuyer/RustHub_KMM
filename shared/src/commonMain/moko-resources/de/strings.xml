@@ -166,6 +166,7 @@
     <string name="premium" translatable="false">Premium</string>
     <string name="privacy_policy">Datenschutzerklärung</string>
     <string name="privacy_policy_button">Datenschutz-Button</string>
+    <string name="onboarding_disclaimer">Durch das Erstellen eines Kontos bestätigst du, dass du unsere Datenschutzrichtlinie und unsere AGB gelesen hast und akzeptierst.</string>
     <string name="protect_your_account_by_providing_a_strong_password">Verwende ein sicheres Passwort zum Schutz deines Kontos.</string>
     <string name="provide_credentials_or_connect_google_account_to_upgrade">Daten eingeben oder mit Google verbinden, um zu upgraden.</string>
     <string name="quickly_copy_server_ip_addresses_to_send_them_to_your_friends">Kopiere Server-IP-Adressen und sende an deine Freunde.</string>

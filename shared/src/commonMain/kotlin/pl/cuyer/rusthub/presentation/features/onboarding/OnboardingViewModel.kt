@@ -24,6 +24,8 @@ import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
 import pl.cuyer.rusthub.presentation.navigation.Credentials
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
+import pl.cuyer.rusthub.presentation.navigation.Terms
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
@@ -62,6 +64,8 @@ class OnboardingViewModel(
             is OnboardingAction.OnEmailChange -> updateEmail(action.email)
             OnboardingAction.OnContinueWithEmail -> continueWithEmail()
             OnboardingAction.OnGoogleLogin -> startGoogleLogin()
+            OnboardingAction.OnPrivacyPolicy -> openPrivacyPolicy()
+            OnboardingAction.OnTerms -> openTerms()
         }
     }
 
@@ -197,6 +201,14 @@ class OnboardingViewModel(
 
     private fun updateContinueAsGuestLoading(isLoading: Boolean) {
         _state.update { it.copy(continueAsGuestLoading = isLoading) }
+    }
+
+    private fun openPrivacyPolicy() {
+        navigate(PrivacyPolicy)
+    }
+
+    private fun openTerms() {
+        navigate(Terms)
     }
 
     private fun navigate(destination: NavKey) {
