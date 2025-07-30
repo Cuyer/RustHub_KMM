@@ -48,6 +48,8 @@ import pl.cuyer.rusthub.data.ads.NativeAdRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.ads.NativeAdRepository
 import pl.cuyer.rusthub.domain.usecase.ads.GetNativeAdUseCase
 import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
+import pl.cuyer.rusthub.domain.usecase.ads.ClearNativeAdsUseCase
+import pl.cuyer.rusthub.presentation.features.ads.NativeAdViewModel
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
 import pl.cuyer.rusthub.util.UserSyncScheduler
 import pl.cuyer.rusthub.domain.usecase.SetSubscribedUseCase
@@ -77,6 +79,8 @@ actual val platformModule: Module = module {
     single<NativeAdRepository> { NativeAdRepositoryImpl(androidContext()) }
     factory { PreloadNativeAdUseCase(get()) }
     factory { GetNativeAdUseCase(get()) }
+    factory { ClearNativeAdsUseCase(get()) }
+    viewModel { NativeAdViewModel(get(), get(), get()) }
     single { SyncScheduler(get()) }
     single { SubscriptionSyncScheduler(get()) }
     single { MessagingTokenScheduler(get()) }

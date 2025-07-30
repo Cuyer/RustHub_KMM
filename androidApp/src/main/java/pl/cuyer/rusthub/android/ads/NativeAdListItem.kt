@@ -27,11 +27,8 @@ import com.google.android.gms.compose_util.NativeAdHeadlineView
 import com.google.android.gms.compose_util.NativeAdPriceView
 import com.google.android.gms.compose_util.NativeAdStarRatingView
 import com.google.android.gms.compose_util.NativeAdView
-import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.domain.model.ads.NativeAdWrapper
-import pl.cuyer.rusthub.domain.usecase.ads.GetNativeAdUseCase
-import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @Composable
@@ -97,17 +94,8 @@ private fun NativeAdListLayout(
 @Composable
 fun NativeAdListItem(
     modifier: Modifier = Modifier,
-    adId: String
+    ad: NativeAdWrapper?
 ) {
-    val preload: PreloadNativeAdUseCase = koinInject()
-    val getAd: GetNativeAdUseCase = koinInject()
-    var nativeAd by remember { mutableStateOf<NativeAdWrapper?>(null) }
-    LaunchedEffect(adId) {
-        nativeAd = getAd(adId)
-        if (nativeAd == null) {
-            preload(adId)
-        }
-    }
-    nativeAd?.let { NativeAdListLayout(modifier, it) }
+    ad?.let { NativeAdListLayout(modifier, it) }
 }
 

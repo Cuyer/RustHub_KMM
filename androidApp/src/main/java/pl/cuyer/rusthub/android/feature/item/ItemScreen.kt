@@ -90,7 +90,8 @@ import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.ads.NativeAdListItem
-import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
+import pl.cuyer.rusthub.presentation.features.ads.AdAction
+import pl.cuyer.rusthub.presentation.features.ads.NativeAdState
 import pl.cuyer.rusthub.android.util.HandlePagingItems
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.common.getImageByFileName
@@ -116,7 +117,9 @@ fun ItemScreen(
     onAction: (ItemAction) -> Unit,
     pagedList: LazyPagingItems<RustItem>,
     uiEvent: Flow<UiEvent>,
-    showAds: Boolean
+    showAds: Boolean,
+    adState: State<NativeAdState>,
+    onAdAction: (AdAction) -> Unit
 ) {
     val syncState = state.value.syncState
     val searchBarState = rememberSearchBarState()
@@ -131,7 +134,7 @@ fun ItemScreen(
                     lazyListState.firstVisibleItemScrollOffset == 0
         }
     }
-    val preloadAd: PreloadNativeAdUseCase = koinInject()
+    val ads = adState
 
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
@@ -139,7 +142,7 @@ fun ItemScreen(
 
     LaunchedEffect(showAds) {
         if (showAds) {
-            preloadAd(BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID)
+            onAdAction(AdAction.LoadAd(BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID))
         }
     }
     Scaffold(
@@ -315,7 +318,7 @@ fun ItemScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(horizontal = spacing.xmedium),
-                                        adId = BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID
+                                        ad = ads.value.ads[BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID]
                                     )
                                     Spacer(modifier = Modifier.height(spacing.medium))
                                 }
@@ -417,7 +420,9 @@ private fun ItemScreenPreview() {
             onNavigate = {},
             uiEvent = flowOf(UiEvent.Navigate(ItemList)),
             pagedList = flowOf(PagingData.from(emptyList<RustItem>())).collectAsLazyPagingItems(),
-            showAds = true
+            showAds = true,
+            adState = remember { mutableStateOf(NativeAdState()) },
+            onAdAction = {}
         )
     }
 }

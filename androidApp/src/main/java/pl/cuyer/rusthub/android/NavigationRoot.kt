@@ -92,6 +92,7 @@ import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
+import pl.cuyer.rusthub.presentation.features.ads.NativeAdViewModel
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
 import pl.cuyer.rusthub.presentation.navigation.Credentials
@@ -272,9 +273,11 @@ private fun AppScaffold(
                     }
                     entry<ServerList>(metadata = ListDetailSceneStrategy.listPane()) {
                         val viewModel = koinViewModel<ServerViewModel>()
+                        val adViewModel = koinViewModel<NativeAdViewModel>()
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         val paging = viewModel.paging.collectAsLazyPagingItems()
                         val showAds by viewModel.showAds.collectAsStateWithLifecycle()
+                        val adState = adViewModel.state.collectAsStateWithLifecycle()
                         ServerScreen(
                             state = state,
                             uiEvent = viewModel.uiEvent,
@@ -283,7 +286,9 @@ private fun AppScaffold(
                             onNavigate = { dest ->
                                 backStack.add(dest)
                             },
-                            showAds = showAds
+                            showAds = showAds,
+                            adState = adState,
+                            onAdAction = adViewModel::onAction
                         )
                     }
                     entry<ServerDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
@@ -301,16 +306,20 @@ private fun AppScaffold(
                     }
                     entry<ItemList>(metadata = ListDetailSceneStrategy.listPane()) {
                         val viewModel = koinViewModel<ItemViewModel>()
+                        val adViewModel = koinViewModel<NativeAdViewModel>()
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         val paging = viewModel.paging.collectAsLazyPagingItems()
                         val showAds by viewModel.showAds.collectAsStateWithLifecycle()
+                        val adState = adViewModel.state.collectAsStateWithLifecycle()
                         ItemScreen(
                             state = state,
                             uiEvent = viewModel.uiEvent,
                             onAction = viewModel::onAction,
                             pagedList = paging,
                             onNavigate = { dest -> backStack.add(dest) },
-                            showAds = showAds
+                            showAds = showAds,
+                            adState = adState,
+                            onAdAction = adViewModel::onAction
                         )
                     }
                     entry<ItemDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
