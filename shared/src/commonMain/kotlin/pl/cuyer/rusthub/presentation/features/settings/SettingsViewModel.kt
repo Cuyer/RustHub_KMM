@@ -53,6 +53,7 @@ import pl.cuyer.rusthub.util.anonymousAccountExpiresIn
 import pl.cuyer.rusthub.util.formatExpiration
 import pl.cuyer.rusthub.util.formatLocalDateTime
 import pl.cuyer.rusthub.util.ItemsScheduler
+import pl.cuyer.rusthub.util.ConnectivityObserver
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import pl.cuyer.rusthub.domain.model.ActiveSubscription
@@ -79,7 +80,8 @@ class SettingsViewModel(
     private val getActiveSubscriptionUseCase: GetActiveSubscriptionUseCase,
     private val itemSyncDataSource: ItemSyncDataSource,
     private val userEventController: UserEventController,
-    private val setSubscribedUseCase: SetSubscribedUseCase
+    private val setSubscribedUseCase: SetSubscribedUseCase,
+    private val connectivityObserver: ConnectivityObserver
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -93,6 +95,7 @@ class SettingsViewModel(
         .onStart {
             observeUser()
             observePreferences()
+            observeConnectivity()
         }
         .stateIn(
             scope = coroutineScope,
@@ -108,6 +111,8 @@ class SettingsViewModel(
             SettingsAction.OnSubscriptionClick -> {
                 if (!emailConfirmed) {
                     showUnconfirmedSnackbar()
+                } else if (!state.value.isConnected) {
+                    showErrorSnackbar(stringProvider.get(SharedRes.strings.connect_manage_subscription))
                 } else {
                     navigateSubscription()
                 }
@@ -152,6 +157,16 @@ class SettingsViewModel(
             }
             .onEach { (theme, dynamic, systemColors) ->
                 _state.update { it.copy(theme = theme, dynamicColors = dynamic, useSystemColors = systemColors) }
+            }
+            .launchIn(coroutineScope)
+    }
+
+    private fun observeConnectivity() {
+        connectivityObserver.isConnected
+            .onEach { connected ->
+                val wasDisconnected = state.value.isConnected.not() && connected
+                _state.update { it.copy(isConnected = connected) }
+                if (wasDisconnected) refreshSubscription()
             }
             .launchIn(coroutineScope)
     }
@@ -255,8 +270,8 @@ class SettingsViewModel(
                 return@launch
             }
             getActiveSubscriptionUseCase()
-                .onStart { updateLoading(true) }
-                .onCompletion { updateLoading(false) }
+                .onStart { if (state.value.currentSubscription == null) updateLoading(true) }
+                .onCompletion { if (state.value.currentSubscription == null) updateLoading(false) }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> updateUser(user, result.data)

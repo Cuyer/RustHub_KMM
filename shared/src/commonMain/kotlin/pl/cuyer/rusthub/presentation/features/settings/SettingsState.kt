@@ -24,4 +24,5 @@ data class SettingsState(
     val useSystemColors: Boolean = true,
     val currentSubscription: ActiveSubscription? = null,
     val currentUser: User? = null,
+    val isConnected: Boolean = true,
 )
