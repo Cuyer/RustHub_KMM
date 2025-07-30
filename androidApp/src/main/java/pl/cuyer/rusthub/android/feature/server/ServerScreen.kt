@@ -168,10 +168,7 @@ fun ServerScreen(
     LaunchedEffect(adsConsentManager, context) {
         adsConsentManager.gatherConsent(activity) { _ ->
             if (adsConsentManager.canRequestAds) {
-                coroutineScope.launch {
-                    withContext(Dispatchers.IO) { MobileAds.initialize(context) }
-                    onAdAction(AdAction.LoadAd(BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID))
-                }
+                onAdAction(AdAction.LoadAd(BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID))
             }
         }
     }

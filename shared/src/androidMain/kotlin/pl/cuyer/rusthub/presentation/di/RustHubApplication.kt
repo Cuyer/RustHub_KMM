@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.presentation.di
 
+import android.annotation.SuppressLint
 import android.app.Application
 import androidx.work.Configuration
 import androidx.work.WorkManager
@@ -27,6 +28,12 @@ import android.os.Build
 import android.os.StrictMode
 import com.appmattus.certificatetransparency.installCertificateTransparencyProvider
 import com.appmattus.certificatetransparency.BasicAndroidCTLogger
+import com.google.android.gms.ads.MobileAds
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private fun needCtProvider(): Boolean {
     return Build.VERSION.SDK_INT < 36
@@ -43,11 +50,12 @@ class RustHubApplication : Application(), Configuration.Provider {
     val itemRepository by inject<ItemRepository>()
     val itemDataSource by inject<ItemDataSource>()
     val itemSyncDataSource by inject<ItemSyncDataSource>()
-    val purchaseRepository by inject<pl.cuyer.rusthub.domain.repository.purchase.PurchaseRepository>()
-    val purchaseSyncDataSource by inject<pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource>()
+    val purchaseRepository by inject<PurchaseRepository>()
+    val purchaseSyncDataSource by inject<PurchaseSyncDataSource>()
     val userRepository by inject<pl.cuyer.rusthub.domain.repository.user.UserRepository>()
     val authDataSource by inject<pl.cuyer.rusthub.domain.repository.auth.AuthDataSource>()
 
+    @SuppressLint("MissingPermission")
     override fun onCreate() {
         super.onCreate()
         if (BuildConfig.DEBUG) {
@@ -82,6 +90,11 @@ class RustHubApplication : Application(), Configuration.Provider {
             }
             modules(appModule, platformModule)
         }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            MobileAds.initialize(this@RustHubApplication)
+        }
+
         NotificationPresenter(this).createDefaultChannels()
         WorkManager.initialize(this, workManagerConfiguration)
     }
