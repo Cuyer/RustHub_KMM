@@ -32,10 +32,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import com.google.android.gms.ads.MediaContent
 import com.google.android.gms.ads.nativead.AdChoicesView
 import com.google.android.gms.ads.nativead.MediaView
 import com.google.android.gms.ads.nativead.NativeAdView
-import com.google.android.gms.ads.nativead.MediaContent
 
 /**
  * A CompositionLocal that can provide a `NativeAdView` to ad attributes such as `NativeHeadline`.
@@ -227,7 +227,7 @@ fun NativeAdMediaView(mediaContent: MediaContent?, modifier: Modifier = Modifier
       }
     },
     update = { view ->
-      mediaContent?.let { view.setMediaContent(it) }
+      mediaContent?.let { view.mediaContent = it }
     },
     modifier = modifier,
   )
