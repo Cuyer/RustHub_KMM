@@ -42,6 +42,7 @@ import com.google.android.gms.compose_util.NativeAdPriceView
 import com.google.android.gms.compose_util.NativeAdStarRatingView
 import com.google.android.gms.compose_util.NativeAdStoreView
 import com.google.android.gms.compose_util.NativeAdView
+import com.google.android.gms.compose_util.NativeAdButton
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.android.BuildConfig
@@ -165,9 +166,10 @@ fun NativeAdCard(
                         }
                     ad.callToAction?.let { cta ->
                         NativeAdCallToActionView {
-                            Box(modifier = Modifier.align(Alignment.CenterVertically)) {
-                                Text(text = cta, style = MaterialTheme.typography.labelLarge)
-                            }
+                            NativeAdButton(
+                                text = cta,
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            )
                         }
                     }
                 }
