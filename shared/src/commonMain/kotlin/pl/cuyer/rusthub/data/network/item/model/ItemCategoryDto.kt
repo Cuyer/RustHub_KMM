@@ -29,6 +29,8 @@ enum class ItemCategoryDto {
     CONSTRUCTION,
     @SerialName("Resources")
     RESOURCES,
+    @SerialName("World")
+    WORLD,
     @SerialName("Misc")
     MISC,
     @SerialName("Traps")
