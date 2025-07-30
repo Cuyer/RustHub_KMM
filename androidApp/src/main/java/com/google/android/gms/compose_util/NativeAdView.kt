@@ -122,6 +122,7 @@ fun NativeAdBodyView(modifier: Modifier = Modifier, content: @Composable () -> U
       localComposeView.apply { setContent(content) }
     },
     modifier = modifier,
+    update = { view -> view.setContent(content) },
   )
 }
 
@@ -143,6 +144,7 @@ fun NativeAdCallToActionView(modifier: Modifier = Modifier, content: @Composable
       localComposeView.apply { setContent(content) }
     },
     modifier = modifier,
+    update = { view -> view.setContent(content) },
   )
 }
 
@@ -186,6 +188,7 @@ fun NativeAdHeadlineView(modifier: Modifier = Modifier, content: @Composable () 
       localComposeView.apply { setContent(content) }
     },
     modifier = modifier,
+    update = { view -> view.setContent(content) },
   )
 }
 
@@ -207,6 +210,7 @@ fun NativeAdIconView(modifier: Modifier = Modifier, content: @Composable () -> U
       localComposeView.apply { setContent(content) }
     },
     modifier = modifier,
+    update = { view -> view.setContent(content) },
   )
 }
 
@@ -252,6 +256,7 @@ fun NativeAdPriceView(modifier: Modifier = Modifier, content: @Composable () -> 
       localComposeView.apply { setContent(content) }
     },
     modifier = modifier,
+    update = { view -> view.setContent(content) },
   )
 }
 
@@ -273,6 +278,7 @@ fun NativeAdStarRatingView(modifier: Modifier = Modifier, content: @Composable (
       localComposeView.apply { setContent(content) }
     },
     modifier = modifier,
+    update = { view -> view.setContent(content) },
   )
 }
 
@@ -294,6 +300,7 @@ fun NativeAdStoreView(modifier: Modifier = Modifier, content: @Composable () -> 
       localComposeView.apply { setContent(content) }
     },
     modifier = modifier,
+    update = { view -> view.setContent(content) },
   )
 }
 
