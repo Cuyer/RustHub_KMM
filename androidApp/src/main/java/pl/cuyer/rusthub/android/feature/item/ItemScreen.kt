@@ -89,7 +89,7 @@ import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
-import pl.cuyer.rusthub.android.ads.NativeAdCard
+import pl.cuyer.rusthub.android.ads.NativeAdListItem
 import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
 import pl.cuyer.rusthub.android.util.HandlePagingItems
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
@@ -290,19 +290,28 @@ fun ItemScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     )
                     {
-                        onPagingItemsIndexed(key = { it.id ?: it.slug ?: it.hashCode() }) { index, item ->
-                            if (showAds && (index + 1) % 7 == 0) {
+                        val adIndex = remember(pagedList.itemCount) {
+                            if (pagedList.itemCount > 0) {
+                                if (pagedList.itemCount >= 5) 4 else pagedList.itemCount - 1
+                            } else -1
+                        }
+                        onPagingItemsIndexed(
+                            key = { index, item ->
+                                if (showAds && index == adIndex) "ad" else item.id ?: item.slug ?: item.hashCode()
+                            },
+                            contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "item" }
+                        ) { index, item ->
+                            if (showAds && index == adIndex) {
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .animateItem()
                                 ) {
-                                    NativeAdCard(
+                                    NativeAdListItem(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(horizontal = spacing.xmedium),
-                                        adId = BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID,
-                                        mediaHeight = 180.dp
+                                        adId = BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID
                                     )
                                     Spacer(modifier = Modifier.height(spacing.medium))
                                 }

@@ -357,8 +357,18 @@ fun ServerScreen(
                     verticalArrangement = Arrangement.spacedBy(spacing.medium),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    onPagingItemsIndexed(key = { it.id ?: UUID.randomUUID() }) { index, item ->
-                        if (showAds && (index + 1) % 7 == 0) {
+                    val adIndex = remember(pagedList.itemCount) {
+                        if (pagedList.itemCount > 0) {
+                            if (pagedList.itemCount >= 5) 4 else pagedList.itemCount - 1
+                        } else -1
+                    }
+                    onPagingItemsIndexed(
+                        key = { index, item ->
+                            if (showAds && index == adIndex) "ad" else item.id ?: UUID.randomUUID()
+                        },
+                        contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "server" }
+                    ) { index, item ->
+                        if (showAds && index == adIndex) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()

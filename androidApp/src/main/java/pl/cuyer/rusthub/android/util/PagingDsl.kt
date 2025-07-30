@@ -9,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.itemKey
 
 @DslMarker
 annotation class PagingDSL
@@ -34,12 +33,18 @@ class PagingHandlerScope<T : Any>(
 
     @LazyScopeMarker
     fun LazyListScope.onPagingItemsIndexed(
-        key: ((T) -> Any)? = null,
+        key: ((Int, T) -> Any)? = null,
+        contentType: ((Int, T) -> Any)? = null,
         body: @Composable LazyItemScope.(Int, T) -> Unit
     ) {
         items(
             count = items.itemCount,
-            key = items.itemKey(key)
+            key = if (key != null) { index ->
+                items[index]?.let { item -> key(index, item) }
+            } else null,
+            contentType = if (contentType != null) { index ->
+                items[index]?.let { item -> contentType(index, item) }
+            } else null
         ) { index ->
             items[index]?.let { body(index, it) }
         }

@@ -17,18 +17,14 @@ class NativeAdRepositoryImpl(
     private val context: Context
 ) : NativeAdRepository {
 
-    private val cache = ConcurrentHashMap<String, ArrayDeque<NativeAd>>()
-    private val maxCacheSize = 3
+    private val adMap = ConcurrentHashMap<String, NativeAd>()
 
     @RequiresPermission(Manifest.permission.INTERNET)
     override fun preload(adId: String) {
-        if ((cache[adId]?.size ?: 0) >= maxCacheSize) return
+        if (adMap[adId] != null) return
         val loader = AdLoader.Builder(context, adId)
             .forNativeAd { ad ->
-                cache.getOrPut(adId) { ArrayDeque() }.addLast(ad)
-                if (cache[adId]!!.size < maxCacheSize) {
-                    preload(adId)
-                }
+                adMap[adId] = ad
             }
             .withAdListener(object : AdListener() {
                 override fun onAdFailedToLoad(error: LoadAdError) {
@@ -42,8 +38,8 @@ class NativeAdRepositoryImpl(
 
     @RequiresPermission(Manifest.permission.INTERNET)
     override fun get(adId: String): NativeAdWrapper? {
-        val ad = cache[adId]?.removeFirstOrNull()
-        if (cache[adId].isNullOrEmpty()) {
+        val ad = adMap.remove(adId)
+        if (ad == null) {
             preload(adId)
         }
         return ad
