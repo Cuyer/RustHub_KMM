@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -172,11 +171,6 @@ fun ServerScreen(
             }
         }
     }
-
-    val windowSizeClass = calculateWindowSizeClass(context as Activity)
-
-    val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
-
     val stringProvider = koinInject<StringProvider>()
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -217,9 +211,6 @@ fun ServerScreen(
                         },
                         modifier = Modifier
                             .padding(horizontal = spacing.xmedium)
-                            .then(
-                                if (isTabletMode) Modifier.displayCutoutPadding() else Modifier
-                            )
 
                     )
                     AnimatedVisibility(
