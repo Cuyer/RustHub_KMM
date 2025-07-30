@@ -1,6 +1,6 @@
 package pl.cuyer.rusthub.data.ads
-
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.annotation.RequiresPermission
 import com.google.android.gms.ads.AdListener
@@ -9,27 +9,27 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdOptions
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import pl.cuyer.rusthub.domain.model.ads.NativeAdWrapper
 import pl.cuyer.rusthub.domain.repository.ads.NativeAdRepository
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentMap
+import java.util.concurrent.ConcurrentLinkedDeque
 
+@SuppressLint("MissingPermission")
 class NativeAdRepositoryImpl(
     private val context: Context
 ) : NativeAdRepository {
 
-    private data class CachedAd(val ad: NativeAd, val loadedAt: Long)
+    private data class CachedAd(val ad: NativeAd, val loadedAt: Long) {
+        fun isExpired() = System.currentTimeMillis() - loadedAt >= EXPIRATION_TIME_MS
+    }
 
-    private val cache: ConcurrentMap<String, ArrayDeque<CachedAd>> = ConcurrentHashMap()
+    private val cache = ConcurrentHashMap<String, ConcurrentLinkedDeque<CachedAd>>()
+    private val mutexes = ConcurrentHashMap<String, Mutex>()
     private val preloadedIds = ConcurrentHashMap.newKeySet<String>()
-    private val scope = CoroutineScope(Dispatchers.Default + Job())
+    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     init {
         scope.launch {
@@ -41,22 +41,30 @@ class NativeAdRepositoryImpl(
         }
     }
 
-    @RequiresPermission(Manifest.permission.INTERNET)
-    override fun preload(adId: String) {
-        preloadedIds.add(adId)
-        val queue = cache.getOrPut(adId) { ArrayDeque() }
-        removeExpiredAds(queue)
-        val toLoad = MAX_CACHE_SIZE - queue.size
-        repeat(toLoad) { loadAd(adId) }
+    private suspend fun <T> withMutex(adId: String, block: suspend (ConcurrentLinkedDeque<CachedAd>) -> T): T {
+        val mutex = mutexes.getOrPut(adId) { Mutex() }
+        val queue = cache.getOrPut(adId) { ConcurrentLinkedDeque() }
+        return mutex.withLock {
+            block(queue)
+        }
     }
 
-    @RequiresPermission(Manifest.permission.INTERNET)
-    override fun get(adId: String): NativeAdWrapper? {
-        val queue = cache[adId]
+    override fun preload(adId: String) {
+        preloadedIds.add(adId)
+        scope.launch {
+            val toLoad = withMutex(adId) { queue ->
+                removeExpiredAds(queue)
+                MAX_CACHE_SIZE - queue.size
+            }
+            repeat(toLoad.coerceAtLeast(0)) { loadAd(adId) }
+        }
+    }
+
+    override suspend fun get(adId: String): NativeAdWrapper? {
         var ad: NativeAd? = null
-        queue?.let {
-            while (it.isNotEmpty() && ad == null) {
-                val cached = it.removeFirst()
+        withMutex(adId) { queue ->
+            while (queue.isNotEmpty() && ad == null) {
+                val cached = queue.pollFirst() ?: break
                 if (cached.isExpired()) {
                     cached.ad.destroy()
                 } else {
@@ -68,22 +76,30 @@ class NativeAdRepositoryImpl(
         return ad
     }
 
-    override fun clear() {
+    override suspend fun clear() {
         scope.cancel()
-        cache.forEach { (_, queue) ->
-            while (queue.isNotEmpty()) {
-                queue.removeFirst().ad.destroy()
+        cache.forEach { (id, queue) ->
+            withMutex(id) {
+                while (queue.isNotEmpty()) {
+                    queue.pollFirst()?.ad?.destroy()
+                }
             }
         }
         cache.clear()
+        mutexes.clear()
         preloadedIds.clear()
     }
 
     private fun loadAd(adId: String) {
+        val queue = cache.getOrPut(adId) { ConcurrentLinkedDeque() }
+        val mutex = mutexes.getOrPut(adId) { Mutex() }
         val loader = AdLoader.Builder(context, adId)
             .forNativeAd { ad ->
-                val queue = cache.getOrPut(adId) { ArrayDeque() }
-                queue.addLast(CachedAd(ad, System.currentTimeMillis()))
+                scope.launch {
+                    mutex.withLock {
+                        queue.addLast(CachedAd(ad, System.currentTimeMillis()))
+                    }
+                }
             }
             .withAdListener(object : AdListener() {
                 override fun onAdFailedToLoad(error: LoadAdError) {
@@ -96,12 +112,16 @@ class NativeAdRepositoryImpl(
     }
 
     private fun clearExpiredAds() {
-        cache.forEach { (_, queue) ->
-            removeExpiredAds(queue)
+        cache.forEach { (id, queue) ->
+            scope.launch {
+                withMutex(id) {
+                    removeExpiredAds(queue)
+                }
+            }
         }
     }
 
-    private fun removeExpiredAds(queue: ArrayDeque<CachedAd>) {
+    private fun removeExpiredAds(queue: ConcurrentLinkedDeque<CachedAd>) {
         val iterator = queue.iterator()
         while (iterator.hasNext()) {
             val cached = iterator.next()
@@ -111,9 +131,6 @@ class NativeAdRepositoryImpl(
             }
         }
     }
-
-    private fun CachedAd.isExpired(): Boolean =
-        System.currentTimeMillis() - loadedAt >= EXPIRATION_TIME_MS
 
     companion object {
         private const val MAX_CACHE_SIZE = 3

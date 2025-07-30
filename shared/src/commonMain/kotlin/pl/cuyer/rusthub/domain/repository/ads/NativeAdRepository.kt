@@ -4,7 +4,7 @@ import pl.cuyer.rusthub.domain.model.ads.NativeAdWrapper
 
 interface NativeAdRepository {
     fun preload(adId: String)
-    fun get(adId: String): NativeAdWrapper?
-    fun clear()
+    suspend fun get(adId: String): NativeAdWrapper?
+    suspend fun clear()
 }
 

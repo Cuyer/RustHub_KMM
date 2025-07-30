@@ -41,6 +41,8 @@ open class BaseNativeAdViewModel(
     }
 
     open fun clear() {
-        clearNativeAdsUseCase()
+        coroutineScope.launch {
+            clearNativeAdsUseCase()
+        }
     }
 }
