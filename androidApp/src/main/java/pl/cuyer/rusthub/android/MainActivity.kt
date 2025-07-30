@@ -18,11 +18,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.gms.ads.MobileAds
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import pl.cuyer.rusthub.android.feature.startup.StartupScreen
@@ -92,7 +95,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         super.onCreate(savedInstanceState)
-
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                MobileAds.initialize(this@MainActivity)
+            }
+        }
         updateLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
             inAppUpdateManager.onUpdateResult(result, this)
         }

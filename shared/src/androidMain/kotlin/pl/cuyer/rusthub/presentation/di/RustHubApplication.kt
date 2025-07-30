@@ -91,10 +91,6 @@ class RustHubApplication : Application(), Configuration.Provider {
             modules(appModule, platformModule)
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
-            MobileAds.initialize(this@RustHubApplication)
-        }
-
         NotificationPresenter(this).createDefaultChannels()
         WorkManager.initialize(this, workManagerConfiguration)
     }
