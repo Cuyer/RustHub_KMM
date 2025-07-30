@@ -41,12 +41,14 @@ open class BaseNativeAdViewModel(
 
     private fun loadAd(adId: String) {
         coroutineScope.launch {
-            val ad = getNativeAdUseCase(adId)
-            if (ad != null) {
-                _state.update { current -> current.copy(ads = current.ads + (adId to ad)) }
-            } else {
-                preloadNativeAdUseCase(adId)
-            }
+            getNativeAdUseCase(adId)
+                .collectLatest { ad ->
+                    if (ad != null) {
+                        _state.update { current -> current.copy(ads = current.ads + (adId to ad)) }
+                    } else {
+                        preloadNativeAdUseCase(adId)
+                    }
+                }
         }
     }
 

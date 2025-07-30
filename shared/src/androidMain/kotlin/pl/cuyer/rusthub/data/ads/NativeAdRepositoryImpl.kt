@@ -13,6 +13,9 @@ import io.github.aakira.napier.Napier
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.Flow
 import pl.cuyer.rusthub.domain.model.ads.NativeAdWrapper
 import pl.cuyer.rusthub.domain.repository.ads.NativeAdRepository
 import pl.cuyer.rusthub.util.ActivityProvider
@@ -31,6 +34,7 @@ class NativeAdRepositoryImpl(
     private val cache = ConcurrentHashMap<String, ConcurrentLinkedDeque<CachedAd>>()
     private val mutexes = ConcurrentHashMap<String, Mutex>()
     private val preloadedIds = ConcurrentHashMap.newKeySet<String>()
+    private val flows = ConcurrentHashMap<String, MutableStateFlow<NativeAdWrapper?>>()
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     init {
@@ -62,20 +66,27 @@ class NativeAdRepositoryImpl(
         }
     }
 
-    override suspend fun get(adId: String): NativeAdWrapper? {
-        var ad: NativeAd? = null
-        withMutex(adId) { queue ->
-            while (queue.isNotEmpty() && ad == null) {
-                val cached = queue.pollFirst() ?: break
-                if (cached.isExpired()) {
-                    cached.ad.destroy()
-                } else {
-                    ad = cached.ad
+    override fun get(adId: String): Flow<NativeAdWrapper?> {
+        val flow = flows.getOrPut(adId) { MutableStateFlow(null) }
+        scope.launch {
+            var ad: NativeAd? = null
+            withMutex(adId) { queue ->
+                while (queue.isNotEmpty() && ad == null) {
+                    val cached = queue.pollFirst() ?: break
+                    if (cached.isExpired()) {
+                        cached.ad.destroy()
+                    } else {
+                        ad = cached.ad
+                    }
                 }
             }
+            if (ad != null) {
+                flow.value = ad
+            } else {
+                preload(adId)
+            }
         }
-        preload(adId)
-        return ad
+        return flow.asStateFlow()
     }
 
     override suspend fun clear() {
@@ -90,6 +101,7 @@ class NativeAdRepositoryImpl(
         cache.clear()
         mutexes.clear()
         preloadedIds.clear()
+        flows.clear()
     }
 
     private fun loadAd(adId: String) {
@@ -99,12 +111,14 @@ class NativeAdRepositoryImpl(
         Napier.d(tag = "ads_state", message = "Activity is valid, loading ad: $adId")
         val queue = cache.getOrPut(adId) { ConcurrentLinkedDeque() }
         val mutex = mutexes.getOrPut(adId) { Mutex() }
+        val flow = flows.getOrPut(adId) { MutableStateFlow(null) }
         val loader = AdLoader.Builder(activity, adId)
             .forNativeAd { ad ->
                 scope.launch {
                     mutex.withLock {
                         queue.addLast(CachedAd(ad, System.currentTimeMillis()))
                     }
+                    flow.value = ad
                 }
             }
             .withAdListener(object : AdListener() {
