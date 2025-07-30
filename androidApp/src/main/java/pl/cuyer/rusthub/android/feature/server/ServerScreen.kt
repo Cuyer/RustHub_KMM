@@ -101,6 +101,7 @@ import pl.cuyer.rusthub.android.designsystem.ServerListItemShimmer
 import pl.cuyer.rusthub.android.model.Label
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.ads.NativeAdCard
+import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.HandlePagingItems
@@ -157,6 +158,7 @@ fun ServerScreen(
 
     val context: Context = LocalContext.current
     val adsConsentManager = koinInject<AdsConsentManager>()
+    val preloadAd: PreloadNativeAdUseCase = koinInject()
     val activity = LocalActivity.current as Activity
 
     LaunchedEffect(adsConsentManager, context) {
@@ -164,6 +166,7 @@ fun ServerScreen(
             if (adsConsentManager.canRequestAds) {
                 coroutineScope.launch {
                     withContext(Dispatchers.IO) { MobileAds.initialize(context) }
+                    preloadAd(BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID)
                 }
             }
         }

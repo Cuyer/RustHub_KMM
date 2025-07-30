@@ -105,6 +105,8 @@ import pl.cuyer.rusthub.data.network.purchase.PurchaseRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.purchase.PurchaseRepository
 import pl.cuyer.rusthub.data.local.purchase.PurchaseSyncDataSourceImpl
 import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
+import pl.cuyer.rusthub.domain.usecase.ads.GetNativeAdUseCase
+import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
 
 val appModule = module {
     single<SnackbarController> { SnackbarController }
@@ -185,6 +187,8 @@ val appModule = module {
     single { ConfirmPurchaseUseCase(get(), get(), get()) }
     single { GetActiveSubscriptionUseCase(get(), get()) }
     single { RefreshUserUseCase(get(), get(), get()) }
+    single { PreloadNativeAdUseCase(get()) }
+    single { GetNativeAdUseCase(get()) }
 }
 
 expect val platformModule: Module
