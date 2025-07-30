@@ -1,8 +1,6 @@
 package pl.cuyer.rusthub.android.feature.server
 
 import android.app.Activity
-import android.content.Context
-import android.util.Log
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -72,7 +70,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.LookaheadScope
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -91,7 +88,6 @@ import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent.inject
 import com.google.android.gms.ads.MobileAds
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.BuildConfig
 import pl.cuyer.rusthub.android.designsystem.FilterBottomSheet
@@ -119,7 +115,6 @@ import pl.cuyer.rusthub.presentation.model.createLabels
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.StringProvider
-import pl.cuyer.rusthub.util.AdsConsentManager
 import java.util.Locale
 import java.util.UUID
 
@@ -136,7 +131,8 @@ fun ServerScreen(
     uiEvent: Flow<UiEvent>,
     showAds: Boolean,
     adState: State<NativeAdState>,
-    onAdAction: (AdAction) -> Unit
+    onAdAction: (AdAction) -> Unit,
+    gatherConsent: (Any, () -> Unit) -> Unit
 ) {
     var showSheet by rememberSaveable { mutableStateOf(false) }
     val searchBarState = rememberSearchBarState()
@@ -159,16 +155,12 @@ fun ServerScreen(
         }
     }
 
-    val context: Context = LocalContext.current
-    val adsConsentManager = koinInject<AdsConsentManager>()
     val ads = adState
     val activity = LocalActivity.current as Activity
 
-    LaunchedEffect(adsConsentManager, context) {
-        adsConsentManager.gatherConsent(activity) { _ ->
-            if (adsConsentManager.canRequestAds) {
-                onAdAction(AdAction.LoadAd(BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID))
-            }
+    LaunchedEffect(Unit) {
+        gatherConsent(activity) {
+            onAdAction(AdAction.LoadAd(BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID))
         }
     }
     val stringProvider = koinInject<StringProvider>()
@@ -536,7 +528,8 @@ private fun ServerScreenPreview() {
                 pagedList = flowOf(PagingData.from(emptyList<ServerInfoUi>())).collectAsLazyPagingItems(),
                 showAds = true,
                 adState = remember { mutableStateOf(NativeAdState()) },
-                onAdAction = {}
+                onAdAction = {},
+                gatherConsent = { _, _ -> }
             )
         }
     }

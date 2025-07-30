@@ -210,6 +210,7 @@ class ServerViewModel(
 
             is ServerAction.OnChangeLoadMoreState -> updateLoadingMore(action.isLoadingMore)
             is ServerAction.OnFilterChange -> updateFilter(action.filter)
+            is ServerAction.GatherConsent -> gatherConsent(action.activity, action.onAdAvailable)
         }
     }
 
@@ -396,5 +397,15 @@ class ServerViewModel(
                 _state.update { it.copy(isConnected = connected) }
             }
             .launchIn(coroutineScope)
+    }
+
+    private fun gatherConsent(activity: Any, onAdAvailable: () -> Unit) {
+        adsConsentManager.gatherConsent(activity) { error ->
+            if (error != null) {
+                sendSnackbarEvent(stringProvider.get(SharedRes.strings.ads_consent_error))
+            } else if (adsConsentManager.canRequestAds) {
+                onAdAvailable()
+            }
+        }
     }
 }
