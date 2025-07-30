@@ -106,7 +106,6 @@ actual val platformModule: Module = module {
             adsConsentManager = get()
         )
     }
-    factory { NativeAdViewModel(get(), get()) }
     factory { (itemId: Long) ->
         ItemDetailsViewModel(
             getItemDetailsUseCase = get(),

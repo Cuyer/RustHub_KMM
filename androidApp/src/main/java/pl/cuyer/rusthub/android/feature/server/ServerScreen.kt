@@ -101,8 +101,7 @@ import pl.cuyer.rusthub.android.designsystem.ServerListItemShimmer
 import pl.cuyer.rusthub.android.model.Label
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.ads.NativeAdCard
-import pl.cuyer.rusthub.presentation.features.ads.NativeAdViewModel
-import org.koin.compose.viewmodel.koinViewModel
+import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.HandlePagingItems
@@ -159,7 +158,7 @@ fun ServerScreen(
 
     val context: Context = LocalContext.current
     val adsConsentManager = koinInject<AdsConsentManager>()
-    val adViewModel: NativeAdViewModel = koinViewModel()
+    val preloadAd: PreloadNativeAdUseCase = koinInject()
     val activity = LocalActivity.current as Activity
 
     LaunchedEffect(adsConsentManager, context) {
@@ -167,7 +166,7 @@ fun ServerScreen(
             if (adsConsentManager.canRequestAds) {
                 coroutineScope.launch {
                     withContext(Dispatchers.IO) { MobileAds.initialize(context) }
-                    adViewModel.preloadBatch(BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID)
+                    preloadAd(BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID)
                 }
             }
         }
@@ -358,13 +357,14 @@ fun ServerScreen(
                     verticalArrangement = Arrangement.spacedBy(spacing.medium),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    val keyProvider = pagedList.itemKey { it.id ?: UUID.randomUUID() }
-                    for (listIndex in 0 until pagedList.itemCount) {
-                        val server = pagedList[listIndex] ?: continue
-                        if (showAds && (listIndex + 1) % 7 == 0) {
-                            item(key = "ad_${(listIndex + 1) / 7}", contentType = "ad") {
+                    onPagingItemsIndexed(key = { it.id ?: UUID.randomUUID() }) { index, item ->
+                        if (showAds && (index + 1) % 7 == 0) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
+                            ) {
                                 NativeAdCard(
-                                    slot = (listIndex + 1) / 7,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = spacing.xmedium),
@@ -373,36 +373,34 @@ fun ServerScreen(
                                 Spacer(modifier = Modifier.height(spacing.medium))
                             }
                         }
-                        item(key = keyProvider(listIndex), contentType = "server") {
-                            val interactionSource = remember { MutableInteractionSource() }
-                            ServerListItem(
-                                modifier = Modifier
-                                    .animateItem()
-                                    .padding(horizontal = spacing.xmedium)
-                                    .combinedClickable(
-                                        interactionSource = interactionSource,
-                                        onLongClick = {
-                                            onAction(ServerAction.OnLongServerClick(server.serverIp))
-                                        },
-                                        onClick = {
-                                            onAction(
-                                                ServerAction.OnServerClick(
-                                                    server.id ?: Long.MAX_VALUE,
-                                                    server.name ?: ""
-                                                )
+                        val interactionSource = remember { MutableInteractionSource() }
+                        ServerListItem(
+                            modifier = Modifier
+                                .animateItem()
+                                .padding(horizontal = spacing.xmedium)
+                                .combinedClickable(
+                                    interactionSource = interactionSource,
+                                    onLongClick = {
+                                        onAction(ServerAction.OnLongServerClick(item.serverIp))
+                                    },
+                                    onClick = {
+                                        onAction(
+                                            ServerAction.OnServerClick(
+                                                item.id ?: Long.MAX_VALUE,
+                                                item.name ?: ""
                                             )
-                                        },
-                                        onClickLabel = stringResource(SharedRes.strings.view_details),
-                                    ),
-                                serverName = server.name.orEmpty(),
-                                flag = server.serverFlag,
-                                labels = { server.createLabels(stringProvider) },
-                                details = { server.createDetails(stringProvider) },
-                                isOnline = server.serverStatus == ServerStatus.ONLINE
-                            )
-                        }
+                                        )
+                                    },
+                                    onClickLabel = stringResource(SharedRes.strings.view_details)
+                                ),
+                            serverName = item.name.orEmpty(),
+                            flag = item.serverFlag,
+                            labels = { item.createLabels(stringProvider) },
+                            details = { item.createDetails(stringProvider) },
+                            isOnline = item.serverStatus == ServerStatus.ONLINE
+                        )
                     }
-onAppendItem {
+                    onAppendItem {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth(),

@@ -12,11 +12,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.LaunchedEffect
-import org.koin.compose.viewmodel.koinViewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -38,9 +38,11 @@ import com.google.android.gms.compose_util.NativeAdPriceView
 import com.google.android.gms.compose_util.NativeAdStarRatingView
 import com.google.android.gms.compose_util.NativeAdStoreView
 import com.google.android.gms.compose_util.NativeAdView
+import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.domain.model.ads.NativeAdWrapper
-import pl.cuyer.rusthub.presentation.features.ads.NativeAdViewModel
+import pl.cuyer.rusthub.domain.usecase.ads.GetNativeAdUseCase
+import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @Composable
@@ -155,14 +157,18 @@ private fun NativeAdLayout(
 
 @Composable
 fun NativeAdCard(
-    slot: Int,
     modifier: Modifier = Modifier,
     adId: String,
-    mediaHeight: Dp = 180.dp,
-    viewModel: NativeAdViewModel = koinViewModel()
+    mediaHeight: Dp = 180.dp
 ) {
-    val adState = remember { viewModel.observeAd(slot, adId) }
-    val nativeAd by adState.collectAsStateWithLifecycle(null)
-    DisposableEffect(slot) { onDispose { viewModel.releaseAd(slot) } }
+    val preload: PreloadNativeAdUseCase = koinInject()
+    val getAd: GetNativeAdUseCase = koinInject()
+    var nativeAd by remember { mutableStateOf<NativeAdWrapper?>(null) }
+    LaunchedEffect(adId) {
+        nativeAd = getAd(adId)
+        if (nativeAd == null) {
+            preload(adId)
+        }
+    }
     nativeAd?.let { NativeAdLayout(modifier, it, mediaHeight) }
 }
