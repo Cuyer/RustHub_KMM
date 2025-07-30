@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import kotlinx.io.IOException
 import kotlinx.serialization.json.Json
+import kotlinx.coroutines.CancellationException
 import pl.cuyer.rusthub.common.user.UserEvent
 import pl.cuyer.rusthub.data.network.auth.model.RefreshRequest
 import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
@@ -83,6 +84,7 @@ actual class HttpClientFactory actual constructor(
                                     }
                                 }
                             } catch (e: Exception) {
+                                if (e is CancellationException) throw e
                                 Napier.e(
                                     message = "Failed to delete anonymous user on 401",
                                     throwable = e
@@ -122,6 +124,7 @@ actual class HttpClientFactory actual constructor(
                                     }
                                 }
                             } catch (e: Exception) {
+                                if (e is CancellationException) throw e
                                 Napier.e(message = "Failed to delete user on token refresh failure", throwable = e)
                             }
                             null

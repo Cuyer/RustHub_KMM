@@ -10,6 +10,7 @@ import kotlinx.coroutines.withContext
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.common.user.UserEvent
 import pl.cuyer.rusthub.common.user.UserEventController
+import kotlinx.coroutines.CancellationException
 import kotlin.coroutines.coroutineContext
 
 class ForbiddenResponsePluginConfig {
@@ -30,6 +31,7 @@ val ForbiddenResponsePlugin = createClientPlugin("ForbiddenResponsePlugin", ::Fo
                     }
                 }
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 CrashReporter.recordException(e)
                 Napier.e(message = "Failed to delete user on token refresh failure", throwable = e)
             }

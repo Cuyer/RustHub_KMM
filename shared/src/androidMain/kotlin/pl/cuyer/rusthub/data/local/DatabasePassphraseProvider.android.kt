@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.CancellationException
 import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
@@ -85,7 +86,12 @@ actual class DatabasePassphraseProvider(private val context: Context) {
     )
 
     actual suspend fun getPassphrase(): String {
-        val stored = try { dataStore.data.first() } catch (_: Exception) { ByteArray(0) }
+        val stored = try {
+            dataStore.data.first()
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            ByteArray(0)
+        }
         if (stored.isNotEmpty()) {
             return Base64.encodeToString(stored, Base64.NO_WRAP)
         }

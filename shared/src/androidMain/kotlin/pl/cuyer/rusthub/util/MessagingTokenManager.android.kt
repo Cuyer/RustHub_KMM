@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.util
 
 import com.google.firebase.messaging.FirebaseMessaging
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
 import pl.cuyer.rusthub.domain.repository.notification.MessagingTokenRepository
 
@@ -26,6 +27,7 @@ actual class MessagingTokenManager actual constructor(
             scheduler.schedule()
             token
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             Napier.e("Failed to get FCM token", e)
             null
         }

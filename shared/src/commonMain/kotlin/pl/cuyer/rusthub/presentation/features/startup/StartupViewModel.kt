@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.CancellationException
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.util.CrashReporter
@@ -120,6 +121,7 @@ class StartupViewModel(
             }
             updateStartDestination(user)
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             CrashReporter.recordException(e)
             showErrorSnackbar(stringProvider.get(SharedRes.strings.fetch_user_error))
             updateStartDestination(null)

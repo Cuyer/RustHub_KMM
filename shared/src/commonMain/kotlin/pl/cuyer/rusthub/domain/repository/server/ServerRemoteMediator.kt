@@ -19,6 +19,7 @@ import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerCacheDataSource
 import kotlinx.datetime.Clock
 import pl.cuyer.rusthub.util.CrashReporter
+import kotlinx.coroutines.CancellationException
 
 @OptIn(ExperimentalPagingApi::class)
 class ServerRemoteMediator(
@@ -110,6 +111,7 @@ class ServerRemoteMediator(
 
             }
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             CrashReporter.recordException(e)
             if (e is ConnectivityException || e is ServiceUnavailableException) {
                 MediatorResult.Success(endOfPaginationReached = true)

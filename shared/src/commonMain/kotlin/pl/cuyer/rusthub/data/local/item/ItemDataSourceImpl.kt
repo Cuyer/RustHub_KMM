@@ -24,6 +24,7 @@ import app.cash.sqldelight.coroutines.mapToOneOrNull
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.CancellationException
 import pl.cuyer.rusthub.data.local.mapper.toRustItem
 import pl.cuyer.rusthub.domain.model.Language
 
@@ -64,6 +65,7 @@ class ItemDataSourceImpl(
                     }
                 }
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 CrashReporter.recordException(e)
                 Napier.e("Error upserting items: ${e.message}", e)
             }
