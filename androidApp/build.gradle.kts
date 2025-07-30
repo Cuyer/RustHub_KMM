@@ -22,8 +22,10 @@ android {
         applicationId = "pl.cuyer.rusthub.android"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 23
+        versionCode = 27
         versionName = project.property("VERSION_NAME") as String
+        buildConfigField("String", "SERVERS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/4096035325\"")
+        buildConfigField("String", "ITEMS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/1469871989\"")
     }
 
     androidResources {
@@ -97,7 +99,7 @@ android {
         }
 
         getByName("debug") {
-            signingConfig = signingConfigs.getByName("development")
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 }
@@ -149,6 +151,7 @@ dependencies {
     implementation(libs.google.play.app.update)
     implementation(libs.google.play.app.update.ktx)
     implementation(libs.androidx.appcompat)
+    implementation(libs.play.services.ads)
     coreLibraryDesugaring(libs.desugar.jdk.libs.v215)
     debugImplementation(libs.compose.ui.tooling)
 }

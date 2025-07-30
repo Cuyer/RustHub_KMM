@@ -35,11 +35,13 @@ import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
 import pl.cuyer.rusthub.util.UserSyncScheduler
+import pl.cuyer.rusthub.util.AdsConsentManager
 import pl.cuyer.rusthub.data.billing.BillingRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
 import pl.cuyer.rusthub.domain.usecase.ConfirmPurchaseUseCase
 import pl.cuyer.rusthub.domain.usecase.RefreshUserUseCase
 import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
+import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
@@ -48,6 +50,10 @@ import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
 import pl.cuyer.rusthub.presentation.features.item.ItemViewModel
 import pl.cuyer.rusthub.presentation.features.item.ItemDetailsViewModel
 import pl.cuyer.rusthub.common.user.UserEventController
+import pl.cuyer.rusthub.data.ads.NativeAdRepositoryImpl
+import pl.cuyer.rusthub.domain.repository.ads.NativeAdRepository
+import pl.cuyer.rusthub.domain.usecase.ads.GetNativeAdUseCase
+import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
@@ -71,6 +77,10 @@ actual val platformModule: Module = module {
     single { SystemDarkThemeObserver() }
     single { GoogleAuthClient() }
     single { StringProvider() }
+    single { AdsConsentManager() }
+    single<NativeAdRepository> { NativeAdRepositoryImpl() }
+    factory { PreloadNativeAdUseCase(get()) }
+    factory { GetNativeAdUseCase(get()) }
     factory {
         StartupViewModel(
             snackbarController = get(),
@@ -91,7 +101,9 @@ actual val platformModule: Module = module {
         ItemViewModel(
             getPagedItemsUseCase = get(),
             itemSyncDataSource = get(),
-            itemsScheduler = get()
+            itemsScheduler = get(),
+            getUserUseCase = get(),
+            adsConsentManager = get()
         )
     }
     factory { (itemId: Long) ->
@@ -153,7 +165,8 @@ actual val platformModule: Module = module {
             itemsScheduler = get(),
             billingRepository = get(),
             itemSyncDataSource = get(),
-            userEventController = get()
+            userEventController = get(),
+            setSubscribedUseCase = get()
         )
     }
     factory {
@@ -162,6 +175,7 @@ actual val platformModule: Module = module {
             snackbarController = get(),
             passwordValidator = get(),
             getUserUseCase = get(),
+            getActiveSubscriptionUseCase = get(),
             stringProvider = get(),
             userEventController = get()
         )
@@ -196,7 +210,7 @@ actual val platformModule: Module = module {
             stringProvider = get()
         )
     }
-    factory {
+    factory { (plan: SubscriptionPlan?) ->
         SubscriptionViewModel(
             billingRepository = get(),
             confirmPurchaseUseCase = get(),
@@ -204,7 +218,8 @@ actual val platformModule: Module = module {
             getUserUseCase = get(),
             getActiveSubscriptionUseCase = get(),
             snackbarController = get(),
-            stringProvider = get()
+            stringProvider = get(),
+            initialPlan = plan
         )
     }
 }

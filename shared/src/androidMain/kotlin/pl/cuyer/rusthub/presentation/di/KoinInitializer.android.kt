@@ -43,6 +43,11 @@ import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
+import pl.cuyer.rusthub.util.AdsConsentManager
+import pl.cuyer.rusthub.data.ads.NativeAdRepositoryImpl
+import pl.cuyer.rusthub.domain.repository.ads.NativeAdRepository
+import pl.cuyer.rusthub.domain.usecase.ads.GetNativeAdUseCase
+import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
 import pl.cuyer.rusthub.util.UserSyncScheduler
 import pl.cuyer.rusthub.domain.usecase.SetSubscribedUseCase
@@ -52,6 +57,7 @@ import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import pl.cuyer.rusthub.data.billing.BillingRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
 import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
+import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 
 actual val platformModule: Module = module {
     single { DatabasePassphraseProvider(androidContext()) }
@@ -67,6 +73,10 @@ actual val platformModule: Module = module {
     single { HttpClientFactory(get(), get(), get(), get(), get()).create() }
     single { ClipboardHandler(get()) }
     single { ShareHandler(get()) }
+    single { AdsConsentManager.getInstance(androidContext()) }
+    single<NativeAdRepository> { NativeAdRepositoryImpl(androidContext()) }
+    factory { PreloadNativeAdUseCase(get()) }
+    factory { GetNativeAdUseCase(get()) }
     single { SyncScheduler(get()) }
     single { SubscriptionSyncScheduler(get()) }
     single { MessagingTokenScheduler(get()) }
@@ -144,7 +154,9 @@ actual val platformModule: Module = module {
             deleteSearchQueriesUseCase = get(),
             clearServersAndKeysUseCase = get(),
             stringProvider = get(),
-            connectivityObserver = get()
+            connectivityObserver = get(),
+            getUserUseCase = get(),
+            adsConsentManager = get()
         )
     }
     viewModel {
@@ -157,6 +169,8 @@ actual val platformModule: Module = module {
             saveSearchQueryUseCase = get(),
             getSearchQueriesUseCase = get(),
             deleteSearchQueriesUseCase = get(),
+            getUserUseCase = get(),
+            adsConsentManager = get(),
         )
     }
     viewModel { (itemId: Long) ->
@@ -182,6 +196,7 @@ actual val platformModule: Module = module {
             itemSyncDataSource = get(),
             userEventController = get(),
             getActiveSubscriptionUseCase = get(),
+            setSubscribedUseCase = get(),
         )
     }
     viewModel {
@@ -190,6 +205,7 @@ actual val platformModule: Module = module {
             snackbarController = get(),
             passwordValidator = get(),
             getUserUseCase = get(),
+            getActiveSubscriptionUseCase = get(),
             stringProvider = get(),
             userEventController = get()
         )
@@ -252,7 +268,7 @@ actual val platformModule: Module = module {
             connectivityObserver = get()
         )
     }
-    viewModel {
+    viewModel { (plan: SubscriptionPlan?) ->
         SubscriptionViewModel(
             billingRepository = get(),
             confirmPurchaseUseCase = get(),
@@ -260,7 +276,8 @@ actual val platformModule: Module = module {
             getUserUseCase = get(),
             snackbarController = get(),
             stringProvider = get(),
-            getActiveSubscriptionUseCase = get()
+            getActiveSubscriptionUseCase = get(),
+            initialPlan = plan
         )
     }
 }

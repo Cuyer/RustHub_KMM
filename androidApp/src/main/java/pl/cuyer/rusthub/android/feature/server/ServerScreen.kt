@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.android.feature.server
 
 import android.app.Activity
 import android.content.Context
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateBounds
@@ -19,12 +20,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -55,6 +58,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -85,13 +89,19 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent.inject
+import com.google.android.gms.ads.MobileAds
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.BuildConfig
 import pl.cuyer.rusthub.android.designsystem.FilterBottomSheet
 import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.designsystem.ServerListItem
 import pl.cuyer.rusthub.android.designsystem.ServerListItemShimmer
 import pl.cuyer.rusthub.android.model.Label
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
+import pl.cuyer.rusthub.android.ads.NativeAdCard
+import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.HandlePagingItems
@@ -108,6 +118,7 @@ import pl.cuyer.rusthub.presentation.model.createLabels
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.AdsConsentManager
 import java.util.Locale
 import java.util.UUID
 
@@ -121,7 +132,8 @@ fun ServerScreen(
     state: State<ServerState>,
     onAction: (ServerAction) -> Unit,
     pagedList: LazyPagingItems<ServerInfoUi>,
-    uiEvent: Flow<UiEvent>
+    uiEvent: Flow<UiEvent>,
+    showAds: Boolean
 ) {
     var showSheet by rememberSaveable { mutableStateOf(false) }
     val searchBarState = rememberSearchBarState()
@@ -145,6 +157,20 @@ fun ServerScreen(
     }
 
     val context: Context = LocalContext.current
+    val adsConsentManager = koinInject<AdsConsentManager>()
+    val preloadAd: PreloadNativeAdUseCase = koinInject()
+    val activity = LocalActivity.current as Activity
+
+    LaunchedEffect(adsConsentManager, context) {
+        adsConsentManager.gatherConsent(activity) { _ ->
+            if (adsConsentManager.canRequestAds) {
+                coroutineScope.launch {
+                    withContext(Dispatchers.IO) { MobileAds.initialize(context) }
+                    preloadAd(BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID)
+                }
+            }
+        }
+    }
 
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
 
@@ -331,7 +357,22 @@ fun ServerScreen(
                     verticalArrangement = Arrangement.spacedBy(spacing.medium),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    onPagingItems(key = { it.id ?: UUID.randomUUID() }) { item ->
+                    onPagingItemsIndexed(key = { it.id ?: UUID.randomUUID() }) { index, item ->
+                        if (showAds && (index + 1) % 7 == 0) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
+                            ) {
+                                NativeAdCard(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = spacing.xmedium),
+                                    adId = BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID
+                                )
+                                Spacer(modifier = Modifier.height(spacing.medium))
+                            }
+                        }
                         val interactionSource = remember { MutableInteractionSource() }
                         ServerListItem(
                             modifier = Modifier
@@ -486,7 +527,8 @@ private fun ServerScreenPreview() {
                         )
                     )
                 ),
-                pagedList = flowOf(PagingData.from(emptyList<ServerInfoUi>())).collectAsLazyPagingItems()
+                pagedList = flowOf(PagingData.from(emptyList<ServerInfoUi>())).collectAsLazyPagingItems(),
+                showAds = true
             )
         }
     }

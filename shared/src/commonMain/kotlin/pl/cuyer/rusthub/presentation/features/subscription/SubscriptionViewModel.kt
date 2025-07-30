@@ -47,7 +47,6 @@ data class SubscriptionState(
 
 sealed interface SubscriptionAction {
     data class Subscribe(val plan: SubscriptionPlan, val activity: Any) : SubscriptionAction
-    data object OnResume : SubscriptionAction
 }
 
 class SubscriptionViewModel(
@@ -57,16 +56,17 @@ class SubscriptionViewModel(
     private val getUserUseCase: GetUserUseCase,
     private val getActiveSubscriptionUseCase: GetActiveSubscriptionUseCase,
     private val snackbarController: SnackbarController,
-    private val stringProvider: StringProvider
+    private val stringProvider: StringProvider,
+    private val initialPlan: SubscriptionPlan? = null
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    private val _state = MutableStateFlow(SubscriptionState())
+    private val _state = MutableStateFlow(SubscriptionState(currentPlan = initialPlan))
     val state = _state.stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000L),
-        initialValue = SubscriptionState()
+        initialValue = SubscriptionState(currentPlan = initialPlan)
     )
 
     private var subscriptionJob: Job? = null
@@ -80,7 +80,6 @@ class SubscriptionViewModel(
     fun onAction(action: SubscriptionAction) {
         when (action) {
             is SubscriptionAction.Subscribe -> subscribe(action.plan, action.activity)
-            SubscriptionAction.OnResume -> refreshSubscription()
         }
     }
 

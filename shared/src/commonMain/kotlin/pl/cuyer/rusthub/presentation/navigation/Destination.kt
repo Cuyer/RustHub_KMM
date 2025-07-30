@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 import pl.cuyer.rusthub.domain.model.AuthProvider
+import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 
 @Serializable
 data object Onboarding : NavKey
@@ -62,4 +63,5 @@ data class ResetPassword(val email: String) : NavKey
 data object Terms : NavKey
 
 @Serializable
-data object Subscription : NavKey
+@Immutable
+data class Subscription(val plan: SubscriptionPlan? = null) : NavKey

@@ -70,6 +70,7 @@
     <string name="delete_icon">Delete icon</string>
     <string name="delete_account">Delete account</string>
     <string name="delete_account_button">Delete account button</string>
+    <string name="delete_account_subscription_warning">Deleting your account will permanently remove access to your subscription and one time products. RustHub is not responsible for any consequences.</string>
     <string name="deleting_your_account_is_irreversible_all_your_data_will_be_removed">Deleting your account is irreversible. All your data will be removed.</string>
     <string name="demo_with_icon">Switch with icon</string>
     <string name="description">Description</string>
@@ -166,6 +167,7 @@
     <string name="premium" translatable="false" >Premium</string>
     <string name="privacy_policy">Privacy policy</string>
     <string name="privacy_policy_button">Privacy policy button</string>
+    <string name="onboarding_disclaimer">By creating an account you confirm that you have read and accept our privacy policy and terms &amp; conditions.</string>
     <string name="protect_your_account_by_providing_a_strong_password">Protect your account by providing a strong password.</string>
     <string name="provide_credentials_or_connect_google_account_to_upgrade">Enter your credentials or connect your Google account to upgrade.</string>
     <string name="quickly_copy_server_ip_addresses_to_send_them_to_your_friends">Copy server IP addresses and send to your friends.</string>
@@ -398,5 +400,9 @@
     <string name="time_to_raid">Time to Raid: %1$s</string>
     <string name="hp">HP</string>
     <string name="update_ready">Update ready to install</string>
+    <string name="error_image_emote">(×_×)</string>
     <string name="restart">Restart</string>
+    <string name="ads_consent_error">Unable to obtain ad consent</string>
+    <string name="ad_label">Ad</string>
+    <string name="rated">Rated %1$s</string>
 </resources>

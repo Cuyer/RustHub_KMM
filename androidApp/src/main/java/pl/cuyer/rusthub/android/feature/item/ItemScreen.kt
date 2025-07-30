@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -23,6 +24,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -50,6 +52,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.derivedStateOf
@@ -79,12 +82,15 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.BuildConfig
 import pl.cuyer.rusthub.android.designsystem.ItemListItem
 import pl.cuyer.rusthub.android.designsystem.ItemListItemShimmer
 import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
+import pl.cuyer.rusthub.android.ads.NativeAdCard
+import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
 import pl.cuyer.rusthub.android.util.HandlePagingItems
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.common.getImageByFileName
@@ -109,7 +115,8 @@ fun ItemScreen(
     state: State<ItemState>,
     onAction: (ItemAction) -> Unit,
     pagedList: LazyPagingItems<RustItem>,
-    uiEvent: Flow<UiEvent>
+    uiEvent: Flow<UiEvent>,
+    showAds: Boolean
 ) {
     val syncState = state.value.syncState
     val searchBarState = rememberSearchBarState()
@@ -124,15 +131,17 @@ fun ItemScreen(
                     lazyListState.firstVisibleItemScrollOffset == 0
         }
     }
+    val preloadAd: PreloadNativeAdUseCase = koinInject()
 
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
 
-    val context = LocalContext.current
-    val windowSizeClass = calculateWindowSizeClass(context as Activity)
-    val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
-
+    LaunchedEffect(showAds) {
+        if (showAds) {
+            preloadAd(BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID)
+        }
+    }
     Scaffold(
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onBackground,
@@ -281,7 +290,24 @@ fun ItemScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     )
                     {
-                        onPagingItems(key = { it.id ?: it.slug ?: it.hashCode() }) { item ->
+                        onPagingItemsIndexed(key = { it.id ?: it.slug ?: it.hashCode() }) { index, item ->
+                            if (showAds && (index + 1) % 7 == 0) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .animateItem()
+                                ) {
+                                    NativeAdCard(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = spacing.xmedium),
+                                        adId = BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID,
+                                        mediaHeight = 180.dp
+                                    )
+                                    Spacer(modifier = Modifier.height(spacing.medium))
+                                }
+                            }
+
                             ItemListItem(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -377,7 +403,8 @@ private fun ItemScreenPreview() {
             onAction = {},
             onNavigate = {},
             uiEvent = flowOf(UiEvent.Navigate(ItemList)),
-            pagedList = flowOf(PagingData.from(emptyList<RustItem>())).collectAsLazyPagingItems()
+            pagedList = flowOf(PagingData.from(emptyList<RustItem>())).collectAsLazyPagingItems(),
+            showAds = true
         )
     }
 }

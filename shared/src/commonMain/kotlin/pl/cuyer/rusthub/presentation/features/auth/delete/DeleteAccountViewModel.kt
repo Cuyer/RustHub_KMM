@@ -22,6 +22,7 @@ import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.usecase.DeleteAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
+import pl.cuyer.rusthub.domain.usecase.GetActiveSubscriptionUseCase
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
@@ -36,12 +37,16 @@ class DeleteAccountViewModel(
     private val snackbarController: SnackbarController,
     private val passwordValidator: PasswordValidator,
     private val getUserUseCase: GetUserUseCase,
+    private val getActiveSubscriptionUseCase: GetActiveSubscriptionUseCase,
     private val stringProvider: StringProvider,
     private val userEventController: UserEventController,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(DeleteAccountState())
     val state = _state
-        .onStart { observeUser() }
+        .onStart {
+            observeUser()
+            observeSubscription()
+        }
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),
@@ -52,7 +57,9 @@ class DeleteAccountViewModel(
 
     fun onAction(action: DeleteAccountAction) {
         when (action) {
-            DeleteAccountAction.OnDelete -> delete()
+            DeleteAccountAction.OnDelete -> onDeletePressed()
+            DeleteAccountAction.OnConfirmDelete -> delete()
+            DeleteAccountAction.OnDismissDialog -> _state.update { it.copy(showSubscriptionDialog = false) }
             is DeleteAccountAction.OnPasswordChange -> updatePassword(action.password)
         }
     }
@@ -61,10 +68,27 @@ class DeleteAccountViewModel(
         _state.update { it.copy(password = password, passwordError = null) }
     }
 
+    private fun onDeletePressed() {
+        if (_state.value.hasSubscription) {
+            _state.update { it.copy(showSubscriptionDialog = true) }
+        } else {
+            delete()
+        }
+    }
+
     private fun observeUser() {
         getUserUseCase()
             .distinctUntilChanged()
             .onEach { user -> _state.update { it.copy(provider = user?.provider) } }
+            .launchIn(coroutineScope)
+    }
+
+    private fun observeSubscription() {
+        getActiveSubscriptionUseCase()
+            .onEach { result ->
+                val hasSub = result is Result.Success && result.data != null
+                _state.update { it.copy(hasSubscription = hasSub) }
+            }
             .launchIn(coroutineScope)
     }
 
