@@ -1,6 +1,5 @@
 package pl.cuyer.rusthub.domain.usecase
 
-import app.cash.paging.ExperimentalPagingApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -16,7 +15,6 @@ class UpgradeWithGoogleUseCase(
     private val tokenManager: MessagingTokenManager,
     private val tokenRefresher: TokenRefresher,
 ) {
-    @OptIn(ExperimentalPagingApi::class)
     operator fun invoke(token: String): Flow<Result<Unit>> = channelFlow {
         repository.upgradeWithGoogle(token).collectLatest { result ->
             when (result) {

@@ -2,9 +2,9 @@ package pl.cuyer.rusthub.domain.usecase
 
 import androidx.paging.Pager
 import androidx.paging.map
-import app.cash.paging.ExperimentalPagingApi
-import app.cash.paging.PagingConfig
-import app.cash.paging.PagingData
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import pl.cuyer.rusthub.data.local.mapper.toServerInfo

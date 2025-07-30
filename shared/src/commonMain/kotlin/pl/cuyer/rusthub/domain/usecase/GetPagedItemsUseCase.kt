@@ -3,7 +3,7 @@ package pl.cuyer.rusthub.domain.usecase
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.map
-import app.cash.paging.PagingData
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import pl.cuyer.rusthub.data.local.mapper.toRustItem

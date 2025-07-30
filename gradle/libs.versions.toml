@@ -23,7 +23,7 @@ compose-material3 = "1.5.0-SNAPSHOT"
 compose-bom = "2025.07.00"
 moko-resources = "0.25.0"
 moko-permissions = "0.19.1"
-paging = "3.3.0-alpha02-0.5.1"
+paging = "3.2.1"
 material3-adaptive = "1.2.0-SNAPSHOT"
 work = "2.10.2"
 serialization = "1.8.1"
@@ -128,8 +128,8 @@ androidx-security-crypto = { module = "androidx.security:security-crypto", versi
 sqlcipher-android = { module = "net.zetetic:sqlcipher-android", version.ref = "sqlcipher" }
 
 #PAGING3
-paging = { group = "app.cash.paging", name = "paging-common", version.ref = "paging" }
-paging-compose = { group = "app.cash.paging", name = "paging-compose-common", version.ref = "paging" }
+paging = { module = "androidx.paging:paging-common", version.ref = "paging" }
+paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
 
 #COIL
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }

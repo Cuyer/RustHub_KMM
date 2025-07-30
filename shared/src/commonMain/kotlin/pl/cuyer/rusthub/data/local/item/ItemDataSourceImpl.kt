@@ -7,7 +7,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.data.local.Queries
-import app.cash.paging.PagingSource
+import androidx.paging.PagingSource
 import app.cash.sqldelight.paging3.QueryPagingSource
 import database.ItemEntity
 import pl.cuyer.rusthub.database.RustHubDatabase
