@@ -84,10 +84,6 @@ class ServerViewModel(
 
     private val queryFlow = MutableStateFlow("")
 
-    private val filterChangeFlow = _state
-        .map { it.filter }
-        .distinctUntilChanged()
-
     private val _state = MutableStateFlow(ServerState())
     val state = _state
         .onStart {
@@ -100,6 +96,10 @@ class ServerViewModel(
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = ServerState()
         )
+
+    private val filterChangeFlow = _state
+        .map { it.filter }
+        .distinctUntilChanged()
 
     val showAds = getUserUseCase()
         .map { user -> !(user?.subscribed ?: false) && adsConsentManager.canRequestAds }
