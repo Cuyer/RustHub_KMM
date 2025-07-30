@@ -202,6 +202,7 @@ actual val platformModule: Module = module {
             userEventController = get(),
             getActiveSubscriptionUseCase = get(),
             setSubscribedUseCase = get(),
+            connectivityObserver = get(),
         )
     }
     viewModel {
@@ -282,6 +283,7 @@ actual val platformModule: Module = module {
             snackbarController = get(),
             stringProvider = get(),
             getActiveSubscriptionUseCase = get(),
+            connectivityObserver = get(),
             initialPlan = plan
         )
     }

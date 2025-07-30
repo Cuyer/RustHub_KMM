@@ -342,6 +342,7 @@
     <string name="error_network">Netzwerkfehler. Bitte überprüfe deine Verbindung.</string>
     <string name="offline_cached_servers_info">Netzwerk nicht verfügbar. Zeige zwischengespeicherte Server.</string>
     <string name="offline">Keine Internetverbindung.</string>
+    <string name="connect_manage_subscription">Verbinde dich mit dem Internet, um das Abo zu verwalten.</string>
     <string name="no_servers_available_offline">Offline sind keine Server verfügbar.</string>
     <string name="no_servers_available">Keine Server verfügbar.</string>
     <string name="no_items_available">Keine Gegenstände verfügbar.</string>
@@ -374,6 +375,7 @@
     <string name="tools">Werkzeuge</string>
     <string name="construction">Bau</string>
     <string name="resources">Ressourcen</string>
+    <string name="world">Welt</string>
     <string name="misc">Verschiedenes</string>
     <string name="traps">Fallen</string>
     <string name="uncategorized">Nicht kategorisiert</string>

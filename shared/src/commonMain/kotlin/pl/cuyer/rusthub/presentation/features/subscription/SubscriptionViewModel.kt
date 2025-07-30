@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import pl.cuyer.rusthub.util.ConnectivityObserver
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Job
@@ -42,7 +43,8 @@ data class SubscriptionState(
     val isLoading: Boolean = false,
     val isProcessing: Boolean = false,
     val currentPlan: SubscriptionPlan? = null,
-    val hasError: Boolean = false
+    val hasError: Boolean = false,
+    val isConnected: Boolean = true
 )
 
 sealed interface SubscriptionAction {
@@ -57,6 +59,7 @@ class SubscriptionViewModel(
     private val getActiveSubscriptionUseCase: GetActiveSubscriptionUseCase,
     private val snackbarController: SnackbarController,
     private val stringProvider: StringProvider,
+    private val connectivityObserver: ConnectivityObserver,
     private val initialPlan: SubscriptionPlan? = null
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -70,11 +73,13 @@ class SubscriptionViewModel(
     )
 
     private var subscriptionJob: Job? = null
+    private var productsJob: Job? = null
 
     init {
-        observeProducts()
+        loadProducts()
         observePurchases()
         observeErrors()
+        observeConnectivity()
     }
 
     fun onAction(action: SubscriptionAction) {
@@ -83,8 +88,9 @@ class SubscriptionViewModel(
         }
     }
 
-    private fun observeProducts() {
-        billingRepository.queryProducts(
+    private fun loadProducts() {
+        productsJob?.cancel()
+        productsJob = billingRepository.queryProducts(
             SubscriptionPlan.entries.mapNotNull { plan ->
                 plan.basePlanId ?: plan.name.let { null }
             } + SubscriptionPlan.LIFETIME.productId
@@ -115,6 +121,7 @@ class SubscriptionViewModel(
                 )
             }
             .launchIn(coroutineScope)
+            .also { productsJob = it }
     }
 
     private fun observePurchases() {
@@ -133,6 +140,21 @@ class SubscriptionViewModel(
             .distinctUntilChanged()
             .onEach { code ->
                 showErrorSnackbar(code.toMessage(stringProvider))
+            }
+            .launchIn(coroutineScope)
+    }
+
+    private fun observeConnectivity() {
+        connectivityObserver.isConnected
+            .onEach { connected ->
+                val wasDisconnected = state.value.isConnected.not() && connected
+                _state.update { it.copy(isConnected = connected) }
+                if (wasDisconnected) {
+                    refreshSubscription()
+                    if (_state.value.products.isEmpty()) {
+                        loadProducts()
+                    }
+                }
             }
             .launchIn(coroutineScope)
     }

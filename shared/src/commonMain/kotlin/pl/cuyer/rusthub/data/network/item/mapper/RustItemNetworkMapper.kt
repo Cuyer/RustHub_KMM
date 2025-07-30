@@ -70,6 +70,7 @@ fun ItemCategoryDto.toDomain(): ItemCategory {
         ItemCategoryDto.TOOLS -> ItemCategory.TOOLS
         ItemCategoryDto.CONSTRUCTION -> ItemCategory.CONSTRUCTION
         ItemCategoryDto.RESOURCES -> ItemCategory.RESOURCES
+        ItemCategoryDto.WORLD -> ItemCategory.WORLD
         ItemCategoryDto.MISC -> ItemCategory.MISC
         ItemCategoryDto.TRAPS -> ItemCategory.TRAPS
         ItemCategoryDto.UNCATEGORIZED -> ItemCategory.UNCATEGORIZED

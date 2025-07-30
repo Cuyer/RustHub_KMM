@@ -344,6 +344,7 @@
     <string name="error_network">Network error. Please check your connection.</string>
     <string name="offline_cached_servers_info">Network unavailable. Showing cached servers.</string>
     <string name="offline">No internet connection.</string>
+    <string name="connect_manage_subscription">Connect to the internet to manage your subscription.</string>
     <string name="no_servers_available_offline">No servers available offline.</string>
     <string name="no_servers_available">No servers available.</string>
     <string name="no_items_available">No items available.</string>
@@ -376,6 +377,7 @@
     <string name="tools">Tools</string>
     <string name="construction">Construction</string>
     <string name="resources">Resources</string>
+    <string name="world">World</string>
     <string name="misc">Misc</string>
     <string name="traps">Traps</string>
     <string name="uncategorized">Uncategorized</string>

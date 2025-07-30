@@ -15,6 +15,7 @@ enum class ItemCategory {
     TOOLS,
     CONSTRUCTION,
     RESOURCES,
+    WORLD,
     MISC,
     TRAPS,
     UNCATEGORIZED

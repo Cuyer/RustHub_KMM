@@ -16,6 +16,7 @@ fun ItemCategory.displayName(stringProvider: StringProvider): String = when (thi
     ItemCategory.TOOLS -> stringProvider.get(SharedRes.strings.tools)
     ItemCategory.CONSTRUCTION -> stringProvider.get(SharedRes.strings.construction)
     ItemCategory.RESOURCES -> stringProvider.get(SharedRes.strings.resources)
+    ItemCategory.WORLD -> stringProvider.get(SharedRes.strings.world)
     ItemCategory.MISC -> stringProvider.get(SharedRes.strings.misc)
     ItemCategory.TRAPS -> stringProvider.get(SharedRes.strings.traps)
     ItemCategory.UNCATEGORIZED -> stringProvider.get(SharedRes.strings.uncategorized)
