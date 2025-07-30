@@ -38,12 +38,12 @@ actual class GoogleAuthClient(private val context: Context) {
                 manager.getCredential(context, signUpRequest)
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
-                Napier.e("Google sign in failed", e)
+                CrashReporter.recordException(e)
                 return null
             }
         } catch (e: Exception) {
             if (e is CancellationException) throw e
-            Napier.e("Google sign in failed", e)
+            CrashReporter.recordException(e)
             return null
         }
 
@@ -57,7 +57,7 @@ actual class GoogleAuthClient(private val context: Context) {
                             .createFrom(credential.data)
                         googleIdTokenCredential.idToken
                     } catch (e: GoogleIdTokenParsingException) {
-                        Napier.e("Google sign in failed", e)
+                        CrashReporter.recordException(e)
                         null
                     }
                 } else null
@@ -75,7 +75,7 @@ actual class GoogleAuthClient(private val context: Context) {
                 )
         } catch (e: Exception) {
             if (e is CancellationException) throw e
-            Napier.e("Google sign out failed", e)
+            CrashReporter.recordException(e)
         }
     }
 }

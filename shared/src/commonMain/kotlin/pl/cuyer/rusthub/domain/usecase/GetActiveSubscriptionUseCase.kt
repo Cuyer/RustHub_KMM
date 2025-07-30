@@ -15,17 +15,12 @@ class GetActiveSubscriptionUseCase(
     private val getUserUseCase: GetUserUseCase
 ) {
     operator fun invoke(): Flow<Result<ActiveSubscription?>> = channelFlow {
-        CrashReporter.log("Fetching active subscription")
-        Napier.d("Fetching active subscription", tag = "SubscriptionUseCase")
-
         val id = getUserUseCase().first()?.obfuscatedId
-        Napier.d("User id: $id", tag = "SubscriptionUseCase")
         if (id == null) {
             send(Result.Success(null))
             return@channelFlow
         }
         repository.getActiveSubscription(id).collectLatest { result ->
-            CrashReporter.log("Subscription result: $result")
             send(result)
         }
     }

@@ -33,7 +33,6 @@ val ForbiddenResponsePlugin = createClientPlugin("ForbiddenResponsePlugin", ::Fo
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
                 CrashReporter.recordException(e)
-                Napier.e(message = "Failed to delete user on token refresh failure", throwable = e)
             }
         }
     }

@@ -13,6 +13,7 @@ import pl.cuyer.rusthub.domain.exception.FavoriteLimitException
 import pl.cuyer.rusthub.domain.repository.favourite.FavouriteSyncDataSource
 import pl.cuyer.rusthub.domain.repository.favourite.network.FavouriteRepository
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
+import pl.cuyer.rusthub.util.CrashReporter
 import pl.cuyer.rusthub.common.Result as DomainResult
 
 class FavouriteSyncWorker(
@@ -64,11 +65,7 @@ class FavouriteSyncWorker(
         val results = tasks.awaitAll().filterNotNull()
         return@coroutineScope if (results.isNotEmpty()) {
             results.forEach { (operation, throwable) ->
-                Napier.e(
-                    "Failed to sync favourite ${if (operation.isAdd) "add" else "remove"} " +
-                        "for server ${operation.serverId}",
-                    throwable
-                )
+                CrashReporter.recordException(Exception(Exception(throwable)))
             }
             Result.retry()
         } else Result.success()

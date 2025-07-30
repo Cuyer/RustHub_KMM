@@ -39,6 +39,7 @@ import pl.cuyer.rusthub.util.AppCheckTokenProvider
 import pl.cuyer.rusthub.util.BuildType
 import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.data.network.CrashReportingPlugin
+import pl.cuyer.rusthub.util.CrashReporter
 import java.util.Locale
 
 private fun useCtLibrary(): Boolean {
@@ -92,10 +93,7 @@ actual class HttpClientFactory actual constructor(
                                 }
                             } catch (e: Exception) {
                                 if (e is CancellationException) throw e
-                                Napier.e(
-                                    message = "Failed to delete anonymous user on 401",
-                                    throwable = e
-                                )
+                                CrashReporter.recordException(e)
                             }
                             return@refreshTokens null
                         }
@@ -132,7 +130,7 @@ actual class HttpClientFactory actual constructor(
                                 }
                             } catch (e: Exception) {
                                 if (e is CancellationException) throw e
-                                Napier.e(message = "Failed to delete user on token refresh failure", throwable = e)
+                                CrashReporter.recordException(e)
                             }
                             null
                         }

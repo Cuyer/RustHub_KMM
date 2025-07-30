@@ -28,7 +28,7 @@ actual class MessagingTokenManager actual constructor(
             token
         } catch (e: Exception) {
             if (e is CancellationException) throw e
-            Napier.e("Failed to get FCM token", e)
+            CrashReporter.recordException(e)
             null
         }
     }

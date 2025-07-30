@@ -67,7 +67,6 @@ class ItemDataSourceImpl(
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
                 CrashReporter.recordException(e)
-                Napier.e("Error upserting items: ${e.message}", e)
             }
         }
     }

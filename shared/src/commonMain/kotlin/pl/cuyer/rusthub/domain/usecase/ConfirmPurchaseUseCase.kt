@@ -21,8 +21,6 @@ class ConfirmPurchaseUseCase(
 ) {
     operator fun invoke(token: String, productId: String? = null): Flow<Result<Unit>> = channelFlow {
         repository.confirmPurchase(token, productId).collectLatest { result ->
-            CrashReporter.log("Calling confirmPurchase $result")
-            CrashReporter.recordException(Exception("Calling confirmPurchase $result"))
             when (result) {
                 is Result.Success -> {
                     syncDataSource.deleteOperation(token)

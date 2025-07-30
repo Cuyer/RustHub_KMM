@@ -122,7 +122,6 @@ class ServerDataSourceImpl(
                 queries.updateFavourite(id = serverId, favourite = favourite)
             }.onFailure { e ->
                 CrashReporter.recordException(e)
-                Napier.e("Failed to update favourite", e)
             }
         }
     }
@@ -133,7 +132,6 @@ class ServerDataSourceImpl(
                 queries.updateSubscription(id = serverId, subscribed = subscribed)
             }.onFailure { e ->
                 CrashReporter.recordException(e)
-                Napier.e("Failed to update subscription", e)
             }
         }
     }

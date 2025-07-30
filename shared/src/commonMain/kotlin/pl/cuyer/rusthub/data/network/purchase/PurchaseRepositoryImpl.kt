@@ -47,17 +47,10 @@ class PurchaseRepositoryImpl(
         }.map { result ->
             when (result) {
                 is Result.Success -> {
-                    CrashReporter.log("Raw subscription data: ${result.data}")
-                    Napier.d(
-                        "Raw subscription data: ${result.data}",
-                        tag = "PurchaseRepository"
-                    )
                     val sub = result.data.firstNotNullOfOrNull { dto ->
                         val mapped = dto.toDomain()
-                        Napier.d("Mapped $dto to $mapped", tag = "PurchaseRepository")
                         mapped
                     }
-                    CrashReporter.log("Mapped subscription: $sub")
                     Result.Success(sub)
                 }
                 is Result.Error -> {

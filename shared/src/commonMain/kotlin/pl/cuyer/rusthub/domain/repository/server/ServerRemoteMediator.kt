@@ -91,10 +91,6 @@ class ServerRemoteMediator(
                         // Filter or query changed, purge cache and keys before inserting new data
                         cacheDataSource.clearServersAndKeys()
                     }
-                    Napier.d(
-                        "Fetched servers size: ${result.data.servers.size}",
-                        tag = "ServerRemoteMediator"
-                    )
                     dataSource.upsertServers(result.data.servers)
                     val end = page >= result.data.totalPages - 1
                     val nextPage = if (end) null else page + 1

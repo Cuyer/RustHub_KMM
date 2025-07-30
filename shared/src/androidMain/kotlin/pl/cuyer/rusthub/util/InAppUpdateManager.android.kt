@@ -64,7 +64,6 @@ actual class InAppUpdateManager(
 
     fun onUpdateResult(result: ActivityResult, activity: ComponentActivity) {
         if (result.resultCode != Activity.RESULT_OK) {
-            Napier.d("In-app update flow failed: ${result.resultCode}")
             if (immediateInProgress) {
                 activity.finishAffinity()
             }
