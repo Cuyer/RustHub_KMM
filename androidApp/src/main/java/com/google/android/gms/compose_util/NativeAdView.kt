@@ -50,34 +50,30 @@ internal val LocalNativeAdView = staticCompositionLocalOf<NativeAdView?> { null 
 @Composable
 fun NativeAdView(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
   val localContext = LocalContext.current
-  val nativeAdView = remember { NativeAdView(localContext).apply { id = View.generateViewId() } }
 
   AndroidView(
     factory = {
-      nativeAdView.apply {
-        layoutParams =
-          ViewGroup.LayoutParams(
+      val nativeAdView = NativeAdView(localContext).apply {
+        id = View.generateViewId()
+        layoutParams = ViewGroup.LayoutParams(
+          ViewGroup.LayoutParams.MATCH_PARENT,
+          ViewGroup.LayoutParams.MATCH_PARENT,
+        )
+      }
+      nativeAdView.addView(
+        ComposeView(nativeAdView.context).apply {
+          layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT,
           )
-        addView(
-          ComposeView(context).apply {
-            layoutParams =
-              ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-              )
-            setContent {
-              // Set `nativeAdView` as the current LocalNativeAdView so that
-              // `content` can access the `NativeAdView` via `LocalNativeAdView.current`.
-              // This would allow ad attributes (such as `NativeHeadline`) to attribute
-              // its contained View subclass via setter functions (e.g. nativeAdView.headlineView =
-              // view)
-              CompositionLocalProvider(LocalNativeAdView provides nativeAdView) { content.invoke() }
+          setContent {
+            CompositionLocalProvider(LocalNativeAdView provides nativeAdView) {
+              content()
             }
           }
-        )
-      }
+        }
+      )
+      nativeAdView
     },
     modifier = modifier,
   )

@@ -62,16 +62,6 @@ class MainActivity : AppCompatActivity() {
 
         inAppUpdateManager.check(this)
 
-        adsConsentManager.gatherConsent(this) { error ->
-            if (adsConsentManager.canRequestAds) {
-                lifecycleScope.launch {
-                    withContext(Dispatchers.IO) {
-                        MobileAds.initialize(this@MainActivity)
-                    }
-                }
-            }
-        }
-
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 combine(
@@ -100,6 +90,16 @@ class MainActivity : AppCompatActivity() {
                                     scrim = Color.TRANSPARENT,
                                     darkScrim = Color.TRANSPARENT
                                 )
+                            },
+                            statusBarStyle = if (darkTheme) {
+                                SystemBarStyle.dark(
+                                    scrim = Color.TRANSPARENT
+                                )
+                            } else {
+                                SystemBarStyle.light(
+                                    scrim = Color.TRANSPARENT,
+                                    darkScrim = Color.TRANSPARENT
+                                )
                             }
                         )
                     }
@@ -107,6 +107,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContent {
+            adsConsentManager.gatherConsent(this) { error ->
+                if (adsConsentManager.canRequestAds) {
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.IO) {
+                            MobileAds.initialize(this@MainActivity)
+                        }
+                    }
+                }
+            }
+
             RustHubTheme(
                 darkTheme = themeSettings.darkTheme,
                 dynamicColor = themeSettings.dynamicColor
