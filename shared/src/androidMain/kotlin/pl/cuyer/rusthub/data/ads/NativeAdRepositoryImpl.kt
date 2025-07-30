@@ -94,7 +94,9 @@ class NativeAdRepositoryImpl(
 
     private fun loadAd(adId: String) {
         val activity = activityProvider.currentActivity()
+        Napier.d(tag = "ads_state", message = "Current activity: $activity, adId: $adId")
         if (activity == null || activity.isFinishing || activity.isDestroyed) return
+        Napier.d(tag = "ads_state", message = "Activity is valid, loading ad: $adId")
         val queue = cache.getOrPut(adId) { ConcurrentLinkedDeque() }
         val mutex = mutexes.getOrPut(adId) { Mutex() }
         val loader = AdLoader.Builder(activity, adId)
