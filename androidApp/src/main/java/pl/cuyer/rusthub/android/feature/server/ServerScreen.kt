@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
@@ -53,8 +52,6 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -82,31 +79,23 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import org.koin.compose.koinInject
-import org.koin.java.KoinJavaComponent.inject
-import com.google.android.gms.ads.MobileAds
-import kotlinx.coroutines.Dispatchers
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.BuildConfig
+import pl.cuyer.rusthub.android.ads.NativeAdCard
 import pl.cuyer.rusthub.android.designsystem.FilterBottomSheet
 import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.designsystem.ServerListItem
 import pl.cuyer.rusthub.android.designsystem.ServerListItemShimmer
-import pl.cuyer.rusthub.android.model.Label
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
-import pl.cuyer.rusthub.android.ads.NativeAdCard
-import pl.cuyer.rusthub.presentation.features.ads.AdAction
-import pl.cuyer.rusthub.presentation.features.ads.NativeAdState
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.HandlePagingItems
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerStatus
-import pl.cuyer.rusthub.domain.model.WipeSchedule
-import pl.cuyer.rusthub.domain.model.WipeType
+import pl.cuyer.rusthub.presentation.features.ads.AdAction
+import pl.cuyer.rusthub.presentation.features.ads.NativeAdState
 import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.features.server.ServerState
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
@@ -115,7 +104,6 @@ import pl.cuyer.rusthub.presentation.model.createLabels
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.StringProvider
-import java.util.Locale
 import java.util.UUID
 
 @OptIn(
@@ -131,8 +119,7 @@ fun ServerScreen(
     uiEvent: Flow<UiEvent>,
     showAds: Boolean,
     adState: State<NativeAdState>,
-    onAdAction: (AdAction) -> Unit,
-    gatherConsent: (Any, () -> Unit) -> Unit
+    onAdAction: (AdAction) -> Unit
 ) {
     var showSheet by rememberSaveable { mutableStateOf(false) }
     val searchBarState = rememberSearchBarState()
@@ -159,10 +146,13 @@ fun ServerScreen(
     val activity = LocalActivity.current as Activity
 
     LaunchedEffect(Unit) {
-        gatherConsent(activity) {
+        onAction(ServerAction.GatherConsent(activity) {
             onAdAction(AdAction.LoadAd(BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID))
         }
+        )
     }
+
+
     val stringProvider = koinInject<StringProvider>()
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -208,10 +198,16 @@ fun ServerScreen(
                     AnimatedVisibility(
                         visible = !state.value.isConnected,
                         enter = slideInVertically(
-                            animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
+                            animationSpec = spring(
+                                stiffness = Spring.StiffnessLow,
+                                dampingRatio = Spring.DampingRatioLowBouncy
+                            )
                         ),
                         exit = slideOutVertically(
-                            animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
+                            animationSpec = spring(
+                                stiffness = Spring.StiffnessLow,
+                                dampingRatio = Spring.DampingRatioLowBouncy
+                            )
                         )
                     ) {
                         Text(
@@ -528,8 +524,7 @@ private fun ServerScreenPreview() {
                 pagedList = flowOf(PagingData.from(emptyList<ServerInfoUi>())).collectAsLazyPagingItems(),
                 showAds = true,
                 adState = remember { mutableStateOf(NativeAdState()) },
-                onAdAction = {},
-                gatherConsent = { _, _ -> }
+                onAdAction = {}
             )
         }
     }

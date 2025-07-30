@@ -288,8 +288,7 @@ private fun AppScaffold(
                             },
                             showAds = showAds,
                             adState = adState,
-                            onAdAction = adViewModel::onAction,
-                            gatherConsent = viewModel::gatherConsent
+                            onAdAction = adViewModel::onAction
                         )
                     }
                     entry<ServerDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
