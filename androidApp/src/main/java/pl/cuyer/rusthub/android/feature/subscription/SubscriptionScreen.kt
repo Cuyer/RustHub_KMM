@@ -50,6 +50,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import pl.cuyer.rusthub.android.designsystem.shimmer
@@ -294,10 +295,16 @@ fun SubscriptionScreen(
                     )
                 }
                 if (state.value.isProcessing) {
-                    SubscriptionShimmer(
-                        isTablet = isTabletMode,
-                        modifier = Modifier.matchParentSize()
-                    )
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .background(
+                                MaterialTheme.colorScheme.background.copy(alpha = 0.6f)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
             }
         }
