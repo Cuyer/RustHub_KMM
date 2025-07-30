@@ -282,7 +282,7 @@ fun ServerDetailsScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     state.value.details?.let {
-                        item {
+                        item(key = "general_info", contentType = "general_info") {
                             Text(
                                 modifier = Modifier.padding(spacing.medium),
                                 style = MaterialTheme.typography.titleLarge,
@@ -466,7 +466,7 @@ fun ServerDetailsScreen(
                             }
                         }
 
-                        item {
+                        item(key = "settings", contentType = "settings") {
                             HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
                             Text(
                                 modifier = Modifier.padding(spacing.medium),
@@ -526,7 +526,7 @@ fun ServerDetailsScreen(
                                 )
                             }
                         }
-                        item {
+                        item(key = "description", contentType = "description") {
                             HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
                             Text(
                                 modifier = Modifier.padding(spacing.medium),
@@ -538,7 +538,7 @@ fun ServerDetailsScreen(
                                 html = it.description ?: ""
                             )
                         }
-                        item {
+                        item(key = "map_info", contentType = "map_info") {
                             HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
                             Text(
                                 modifier = Modifier.padding(spacing.medium),

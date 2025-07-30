@@ -26,7 +26,11 @@ fun SearchHistoryShimmer(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(spacing.xxmedium)
     ) {
-        items(5) {
+        items(
+            count = 5,
+            key = { it },
+            contentType = { "shimmer" }
+        ) {
             ElevatedCard(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.elevatedCardColors().copy(
