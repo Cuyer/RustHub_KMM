@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.CancellationException
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
@@ -108,6 +109,7 @@ class SubscriptionViewModel(
                 }
             }
             .catch { e ->
+                if (e is CancellationException) throw e
                 _state.update { it.copy(isLoading = false) }
                 snackbarController.sendEvent(
                     SnackbarEvent(stringProvider.get(SharedRes.strings.unknown_error))

@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.CancellationException
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.domain.usecase.GetItemDetailsUseCase
 import pl.cuyer.rusthub.util.getCurrentAppLanguage
@@ -29,7 +30,10 @@ class ItemDetailsViewModel(
     private fun observeItem(id: Long) {
         getItemDetailsUseCase(id, getCurrentAppLanguage())
             .onStart { updateLoading(true) }
-            .catch { updateLoading(false) }
+            .catch { e ->
+                if (e is CancellationException) throw e
+                updateLoading(false)
+            }
             .onEach { item ->
                 _state.update { it.copy(item = item, isLoading = false, itemId = id) }
             }
