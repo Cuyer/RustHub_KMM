@@ -40,21 +40,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
-        super.onCreate(savedInstanceState)
-
         var themeSettings by mutableStateOf(
             ThemeSettings(
                 darkTheme = false,
                 dynamicColor = false
             )
         )
-
-        updateLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
-            inAppUpdateManager.onUpdateResult(result, this)
-        }
-        inAppUpdateManager.setLauncher(updateLauncher, this)
-
-        inAppUpdateManager.check(this)
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -99,6 +90,16 @@ class MainActivity : AppCompatActivity() {
                     }
             }
         }
+
+        super.onCreate(savedInstanceState)
+
+        updateLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+            inAppUpdateManager.onUpdateResult(result, this)
+        }
+        inAppUpdateManager.setLauncher(updateLauncher, this)
+
+        inAppUpdateManager.check(this)
+
 
         setContent {
             RustHubTheme(
