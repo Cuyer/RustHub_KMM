@@ -84,6 +84,10 @@ class ServerViewModel(
 
     private val queryFlow = MutableStateFlow("")
 
+    private val filterChangeFlow = _state
+        .map { it.filter }
+        .distinctUntilChanged()
+
     private val _state = MutableStateFlow(ServerState())
     val state = _state
         .onStart {
@@ -107,14 +111,15 @@ class ServerViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val paging: Flow<PagingData<ServerInfoUi>> =
-        queryFlow
+        combine(queryFlow, filterChangeFlow) { query, _ -> query }
             .flatMapLatest { query ->
                 getPagedServersUseCase(
                     searchQuery = query
                 ).map { pagingData ->
                     pagingData.map { it.toUiModel(stringProvider) }
                 }.flowOn(Dispatchers.Default)
-            }.cachedIn(coroutineScope)
+            }
+            .cachedIn(coroutineScope)
             .catchAndLog {
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_fetching_servers))
             }
