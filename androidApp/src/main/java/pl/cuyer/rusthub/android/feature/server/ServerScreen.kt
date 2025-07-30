@@ -87,6 +87,9 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent.inject
+import com.google.android.gms.ads.MobileAds
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.BuildConfig
 import pl.cuyer.rusthub.android.designsystem.FilterBottomSheet
@@ -112,6 +115,7 @@ import pl.cuyer.rusthub.presentation.model.createLabels
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.util.AdsConsentManager
 import java.util.Locale
 import java.util.UUID
 
@@ -150,6 +154,16 @@ fun ServerScreen(
     }
 
     val context: Context = LocalContext.current
+    val adsConsentManager = koinInject<AdsConsentManager>()
+
+    LaunchedEffect(adsConsentManager, context) {
+        val activity = context as? Activity ?: return@LaunchedEffect
+        adsConsentManager.gatherConsent(activity) { _ ->
+            if (adsConsentManager.canRequestAds) {
+                withContext(Dispatchers.IO) { MobileAds.initialize(context) }
+            }
+        }
+    }
 
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
 
