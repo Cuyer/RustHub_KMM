@@ -10,7 +10,14 @@ class NativeAdViewModel(
     getNativeAdUseCase,
     clearNativeAdsUseCase
 ) {
+    private fun disposeAds() {
+        state.value.ads.values.forEach { ad ->
+            ad?.destroy()
+        }
+    }
+
     override fun onCleared() {
+        disposeAds()
         clear()
         super.onCleared()
     }

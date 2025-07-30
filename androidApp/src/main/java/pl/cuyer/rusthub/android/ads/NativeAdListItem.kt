@@ -9,7 +9,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,7 +42,6 @@ private fun NativeAdListLayout(
     modifier: Modifier = Modifier,
     ad: NativeAdWrapper
 ) {
-    DisposableEffect(ad) { onDispose { ad.destroy() } }
     ElevatedCard(modifier = modifier.fillMaxWidth(), shape = MaterialTheme.shapes.extraSmall) {
         NativeAdView(modifier = Modifier.fillMaxWidth()) {
             Row(

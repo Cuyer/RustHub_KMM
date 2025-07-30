@@ -1,6 +1,5 @@
 package pl.cuyer.rusthub.android.ads
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +11,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,10 +55,6 @@ private fun NativeAdLayout(
     mediaHeight: Dp
 ) {
     val context = LocalContext.current
-    DisposableEffect(ad) {
-        Log.d("ads_state", "NativeAdLayout: ondispose")
-        onDispose { ad.destroy() }
-    }
     ElevatedCard(modifier = modifier.fillMaxWidth()) {
         NativeAdView(modifier = Modifier.fillMaxWidth()) {
             Column(
