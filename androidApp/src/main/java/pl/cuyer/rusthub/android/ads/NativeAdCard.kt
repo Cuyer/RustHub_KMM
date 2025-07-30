@@ -13,9 +13,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,16 +25,11 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdLoader
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.nativead.NativeAd
-import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.google.android.gms.compose_util.LocalNativeAdView
 import com.google.android.gms.compose_util.NativeAdAdvertiserView
 import com.google.android.gms.compose_util.NativeAdAttribution
 import com.google.android.gms.compose_util.NativeAdBodyView
+import com.google.android.gms.compose_util.NativeAdButton
 import com.google.android.gms.compose_util.NativeAdCallToActionView
 import com.google.android.gms.compose_util.NativeAdHeadlineView
 import com.google.android.gms.compose_util.NativeAdIconView
@@ -43,149 +38,137 @@ import com.google.android.gms.compose_util.NativeAdPriceView
 import com.google.android.gms.compose_util.NativeAdStarRatingView
 import com.google.android.gms.compose_util.NativeAdStoreView
 import com.google.android.gms.compose_util.NativeAdView
-import com.google.android.gms.compose_util.NativeAdButton
+import org.koin.androidx.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.domain.model.ads.NativeAdWrapper
+import pl.cuyer.rusthub.domain.usecase.ads.GetNativeAdUseCase
+import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
-import pl.cuyer.rusthub.android.BuildConfig
 
 @Composable
-fun ApplyNativeAd(ad: NativeAd) {
+private fun ApplyNativeAd(ad: NativeAdWrapper) {
     val nativeAdView = LocalNativeAdView.current
-    LaunchedEffect(nativeAdView, ad) {
-        nativeAdView?.setNativeAd(ad)
-    }
+    LaunchedEffect(nativeAdView, ad) { nativeAdView?.setNativeAd(ad) }
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun NativeAdLayout(
+    modifier: Modifier = Modifier,
+    ad: NativeAdWrapper,
+    mediaHeight: Dp
+) {
+    val context = LocalContext.current
+    DisposableEffect(ad) { onDispose { ad.destroy() } }
+    ElevatedCard(modifier = modifier.fillMaxWidth()) {
+        NativeAdView(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                NativeAdAttribution(text = stringResource(SharedRes.strings.ad_label))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    ad.icon?.let { icon ->
+                        NativeAdIconView(modifier = Modifier.padding(end = 8.dp)) {
+                            val data = icon.drawable ?: icon.uri
+                            data?.let { src ->
+                                SubcomposeAsyncImage(
+                                    model = ImageRequest.Builder(context)
+                                        .data(src)
+                                        .crossfade(true)
+                                        .build(),
+                                    contentDescription = ad.headline,
+                                    modifier = Modifier.height(40.dp)
+                                )
+                            }
+                        }
+                    }
+                    Column {
+                        ad.headline?.let {
+                            NativeAdHeadlineView {
+                                Text(
+                                    text = it,
+                                    style = MaterialTheme.typography.titleLargeEmphasized
+                                )
+                            }
+                        }
+                        ad.starRating?.let { rating ->
+                            NativeAdStarRatingView {
+                                Text(
+                                    text = stringResource(SharedRes.strings.rated, rating),
+                                    style = MaterialTheme.typography.labelMedium
+                                )
+                            }
+                        }
+                        ad.advertiser?.let { advertiser ->
+                            NativeAdAdvertiserView {
+                                Text(
+                                    text = advertiser,
+                                    style = MaterialTheme.typography.labelMedium
+                                )
+                            }
+                        }
+                    }
+                }
+                ad.body?.let {
+                    NativeAdBodyView(modifier = Modifier.padding(top = 4.dp)) {
+                        Text(it, style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
+                ad.mediaContent?.let {
+                    NativeAdMediaView(
+                        mediaContent = it,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(mediaHeight)
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(top = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ad.price?.let { price ->
+                        NativeAdPriceView(modifier = Modifier.padding(end = 8.dp)) {
+                            Text(text = price, style = MaterialTheme.typography.labelLarge)
+                        }
+                    }
+                    ad.store?.let { store ->
+                        NativeAdStoreView(modifier = Modifier.padding(end = 8.dp)) {
+                            Text(text = store, style = MaterialTheme.typography.labelLarge)
+                        }
+                    }
+                    ad.callToAction?.let { cta ->
+                        NativeAdCallToActionView {
+                            NativeAdButton(
+                                text = cta,
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            )
+                        }
+                    }
+                }
+                ApplyNativeAd(ad)
+            }
+        }
+    }
+}
+
 @Composable
 fun NativeAdCard(
     modifier: Modifier = Modifier,
     adId: String,
     mediaHeight: Dp = 180.dp
 ) {
-    var nativeAd by remember { mutableStateOf<NativeAd?>(null) }
-    val context = LocalContext.current
-    var isDisposed by remember { mutableStateOf(false) }
-    DisposableEffect(Unit) {
-        val loader = AdLoader.Builder(context, adId)
-            .forNativeAd { ad ->
-                if (!isDisposed) {
-                    nativeAd = ad
-                } else {
-                    ad.destroy()
-                }
-            }
-            .withAdListener(object : AdListener() {
-                override fun onAdFailedToLoad(error: LoadAdError) {
-                    nativeAd = null
-                }
-            })
-            .withNativeAdOptions(NativeAdOptions.Builder().build())
-            .build()
-        loader.loadAd(AdRequest.Builder().build())
-        onDispose {
-            isDisposed = true
-            nativeAd?.destroy()
-            nativeAd = null
+    val preload: PreloadNativeAdUseCase = koinInject()
+    val getAd: GetNativeAdUseCase = koinInject()
+    var nativeAd by remember { mutableStateOf<NativeAdWrapper?>(null) }
+    LaunchedEffect(adId) {
+        nativeAd = getAd(adId)
+        if (nativeAd == null) {
+            preload(adId)
         }
     }
-
-    nativeAd?.let { ad ->
-        ElevatedCard(modifier = modifier.fillMaxWidth()) {
-            NativeAdView(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    NativeAdAttribution(text = stringResource(SharedRes.strings.ad_label))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        ad.icon?.let { icon ->
-                            NativeAdIconView(modifier = Modifier.padding(end = 8.dp)) {
-                                val data = icon.drawable ?: icon.uri
-                                data?.let { src ->
-                                    SubcomposeAsyncImage(
-                                        model = ImageRequest.Builder(context)
-                                            .data(src)
-                                            .crossfade(true)
-                                            .build(),
-                                        contentDescription = ad.headline,
-                                        modifier = Modifier.height(40.dp)
-                                    )
-                                }
-                            }
-                        }
-                        Column {
-                            ad.headline?.let {
-                                NativeAdHeadlineView {
-                                    Text(
-                                        text = it,
-                                        style = MaterialTheme.typography.titleLargeEmphasized
-                                    )
-                                }
-                            }
-
-                            ad.starRating?.let { rating ->
-                                NativeAdStarRatingView {
-                                    Text(
-                                        text = stringResource(SharedRes.strings.rated, rating),
-                                        style = MaterialTheme.typography.labelMedium
-                                    )
-                                }
-                            }
-                            ad.advertiser?.let { advertiser ->
-                                NativeAdAdvertiserView {
-                                    Text(
-                                        text = advertiser,
-                                        style = MaterialTheme.typography.labelMedium
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    ad.body?.let {
-                        NativeAdBodyView(modifier = Modifier.padding(top = 4.dp)) {
-                            Text(it, style = MaterialTheme.typography.bodyMedium)
-                        }
-                    }
-                    ad.mediaContent?.let {
-                        NativeAdMediaView(
-                            mediaContent = it,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(mediaHeight)
-                        )
-                    }
-                    Row(
-                        modifier = Modifier
-                            .align(Alignment.End)
-                            .padding(top = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        ad.price?.let { price ->
-                            NativeAdPriceView(modifier = Modifier.padding(end = 8.dp)) {
-                                Text(text = price, style = MaterialTheme.typography.labelLarge)
-                            }
-                        }
-                        ad.store?.let { store ->
-                            NativeAdStoreView(modifier = Modifier.padding(end = 8.dp)) {
-                                Text(text = store, style = MaterialTheme.typography.labelLarge)
-                            }
-                        }
-                        ad.callToAction?.let { cta ->
-                            NativeAdCallToActionView {
-                                NativeAdButton(
-                                    text = cta,
-                                    modifier = Modifier.align(Alignment.CenterVertically)
-                                )
-                            }
-                        }
-                    }
-                    ApplyNativeAd(ad)
-                }
-            }
-        }
-    }
+    nativeAd?.let { NativeAdLayout(modifier, it, mediaHeight) }
 }
-
-
