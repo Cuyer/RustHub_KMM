@@ -78,7 +78,7 @@ actual val platformModule: Module = module {
     single { ClipboardHandler(get()) }
     single { ShareHandler(get()) }
     single { AdsConsentManager.getInstance(androidContext()) }
-    single { ActivityProvider(androidApplication()) }
+    single(createdAtStart = true) { ActivityProvider(androidApplication()) }
     single<NativeAdRepository> { NativeAdRepositoryImpl(get()) }
     factory { PreloadNativeAdUseCase(get()) }
     factory { GetNativeAdUseCase(get()) }
