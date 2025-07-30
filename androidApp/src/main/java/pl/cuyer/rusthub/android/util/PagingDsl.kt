@@ -20,9 +20,13 @@ class PagingHandlerScope<T : Any>(
     private val loadState: CombinedLoadStates
 ) {
     @LazyScopeMarker
-    fun LazyListScope.onAppendItem(body: @Composable LazyItemScope.() -> Unit) {
+    fun LazyListScope.onAppendItem(
+        key: Any = "append",
+        contentType: Any = "append",
+        body: @Composable LazyItemScope.() -> Unit
+    ) {
         if (loadState.append == LoadState.Loading) {
-            item { body(this) }
+            item(key = key, contentType = contentType) { body(this) }
         }
     }
 

@@ -271,7 +271,11 @@ fun ServerScreen(
                         ),
                         verticalArrangement = Arrangement.spacedBy(spacing.medium)
                     ) {
-                        items(6) {
+                        items(
+                            count = 6,
+                            key = { it },
+                            contentType = { "shimmer" }
+                        ) {
                             ServerListItemShimmer(
                                 modifier = Modifier
                                     .animateItem()
@@ -286,7 +290,7 @@ fun ServerScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        item {
+                        item(key = "empty", contentType = "empty") {
                             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                 Column(
                                     modifier = Modifier.fillMaxWidth(),
@@ -320,7 +324,7 @@ fun ServerScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        item {
+                        item(key = "error", contentType = "error") {
                             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                 Column(
                                     modifier = Modifier.fillMaxWidth(),

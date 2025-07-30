@@ -205,7 +205,11 @@ fun ItemScreen(
                     verticalArrangement = Arrangement.spacedBy(spacing.medium),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    items(8) {
+                    items(
+                        count = 8,
+                        key = { it },
+                        contentType = { "shimmer" }
+                    ) {
                         ItemListItemShimmer(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -223,7 +227,7 @@ fun ItemScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            item {
+                            item(key = "error", contentType = "error") {
                                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                     Column(
                                         modifier = Modifier.fillMaxWidth(),
@@ -253,7 +257,7 @@ fun ItemScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            item {
+                            item(key = "empty", contentType = "empty") {
                                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                     Column(
                                         modifier = Modifier.fillMaxWidth(),

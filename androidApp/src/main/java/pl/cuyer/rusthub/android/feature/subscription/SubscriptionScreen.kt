@@ -219,7 +219,7 @@ fun SubscriptionScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    item {
+                    item(key = "error", contentType = "error") {
                         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             Column(
                                 modifier = Modifier.fillMaxWidth(),

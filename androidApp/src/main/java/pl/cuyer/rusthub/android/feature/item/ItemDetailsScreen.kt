@@ -186,7 +186,11 @@ private fun DetailsContent(page: DetailsPage, content: Any?) {
                 contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
                 verticalArrangement = Arrangement.spacedBy(spacing.medium),
             ) {
-                items(looting, key = { it.from ?: it.hashCode().toString() }) { item ->
+                items(
+                    looting,
+                    key = { it.from ?: it.hashCode().toString() },
+                    contentType = { "looting" }
+                ) { item ->
                     LootingListItem(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -229,7 +233,7 @@ private fun CraftingContent(crafting: Crafting) {
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
         crafting.craftingRecipe?.let { recipe ->
-            item {
+            item(key = "recipe", contentType = "recipe") {
                 CraftingRecipeItemList(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -241,7 +245,7 @@ private fun CraftingContent(crafting: Crafting) {
         }
 
         crafting.researchTableCost?.let { cost ->
-            item {
+            item(key = "research_table_cost", contentType = "research_table_cost") {
                 ResearchTableCostItem(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -252,7 +256,7 @@ private fun CraftingContent(crafting: Crafting) {
             }
         }
         crafting.techTreeCost?.let { cost ->
-            item {
+            item(key = "tech_tree_cost", contentType = "tech_tree_cost") {
                 TechTreeCostItem(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -526,7 +530,7 @@ private fun RecyclingContent(recycling: Recycling) {
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
         recycling.safezoneRecycler?.let { recycler ->
-            item {
+            item(key = "safezone_recycler", contentType = "recycler") {
                 RecyclerItem(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -539,7 +543,7 @@ private fun RecyclingContent(recycling: Recycling) {
         }
 
         recycling.radtownRecycler?.let { recycler ->
-            item {
+            item(key = "radtown_recycler", contentType = "recycler") {
                 RecyclerItem(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -679,7 +683,7 @@ private fun RaidingContent(
         contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
-        item {
+        item(key = "slider", contentType = "slider") {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -700,7 +704,11 @@ private fun RaidingContent(
             }
         }
 
-        items(raiding) { raid ->
+        items(
+            raiding,
+            key = { it.hashCode() },
+            contentType = { "raiding" }
+        ) { raid ->
             RaidingItem(
                 modifier = Modifier
                     .fillMaxWidth()
