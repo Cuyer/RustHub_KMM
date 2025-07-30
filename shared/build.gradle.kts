@@ -76,6 +76,7 @@ kotlin {
             implementation(libs.play.review.ktx)
             implementation(libs.play.billing)
             implementation(libs.androidx.appcompat)
+            implementation(libs.play.services.ads)
             implementation(libs.user.messaging.platform)
         }
         commonMain.dependencies {

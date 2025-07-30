@@ -1,6 +1,8 @@
 package pl.cuyer.rusthub.data.ads
 
+import android.Manifest
 import android.content.Context
+import androidx.annotation.RequiresPermission
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
@@ -18,8 +20,9 @@ class NativeAdRepositoryImpl(
     private val cache = ConcurrentHashMap<String, ArrayDeque<NativeAd>>()
     private val maxCacheSize = 3
 
+    @RequiresPermission(Manifest.permission.INTERNET)
     override fun preload(adId: String) {
-        if (cache[adId]?.size ?: 0 >= maxCacheSize) return
+        if ((cache[adId]?.size ?: 0) >= maxCacheSize) return
         val loader = AdLoader.Builder(context, adId)
             .forNativeAd { ad ->
                 cache.getOrPut(adId) { ArrayDeque() }.addLast(ad)
@@ -37,6 +40,7 @@ class NativeAdRepositoryImpl(
         loader.loadAd(AdRequest.Builder().build())
     }
 
+    @RequiresPermission(Manifest.permission.INTERNET)
     override fun get(adId: String): NativeAdWrapper? {
         val ad = cache[adId]?.removeFirstOrNull()
         if (cache[adId].isNullOrEmpty()) {
