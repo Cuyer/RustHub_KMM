@@ -22,6 +22,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -329,10 +330,10 @@ fun NativeAdButton(text: String, modifier: Modifier = Modifier) {
   Box(
     modifier =
       modifier
-        .background(ButtonDefaults.buttonColors().containerColor)
-        .clip(ButtonDefaults.shape)
+        .background(ButtonDefaults.elevatedButtonColors().containerColor)
+        .clip(MaterialTheme.shapes.extraSmall)
         .padding(ButtonDefaults.ContentPadding)
   ) {
-    Text(color = ButtonDefaults.buttonColors().contentColor, text = text)
+    Text(color = ButtonDefaults.elevatedButtonColors().contentColor, text = text)
   }
 }
