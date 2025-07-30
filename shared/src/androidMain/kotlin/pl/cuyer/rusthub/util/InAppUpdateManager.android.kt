@@ -90,9 +90,10 @@ actual class InAppUpdateManager(
         appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
             when {
                 info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
-                        info.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE) -> {
-                    immediateInProgress = true
-                    val options = AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
+                        info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE) -> {
+                    immediateInProgress = false
+                    registerListener()
+                    val options = AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()
                     launcher?.let {
                         appUpdateManager.startUpdateFlowForResult(
                             info,
@@ -101,11 +102,11 @@ actual class InAppUpdateManager(
                         )
                     }
                 }
+
                 info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
-                        info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE) -> {
-                    immediateInProgress = false
-                    registerListener()
-                    val options = AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()
+                        info.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE) -> {
+                    immediateInProgress = true
+                    val options = AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
                     launcher?.let {
                         appUpdateManager.startUpdateFlowForResult(
                             info,
