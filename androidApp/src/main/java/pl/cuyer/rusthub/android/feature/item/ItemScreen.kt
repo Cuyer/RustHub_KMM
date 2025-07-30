@@ -284,7 +284,7 @@ fun ItemScreen(
                     )
                     {
                         onPagingItemsIndexed(key = { it.id ?: it.slug ?: it.hashCode() }) { index, item ->
-                            if (showAds && (index + 1) % 5 == 0) {
+                            if (showAds && (index + 1) % 7 == 0) {
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -295,7 +295,7 @@ fun ItemScreen(
                                             .fillMaxWidth()
                                             .padding(horizontal = spacing.xmedium),
                                         adId = BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID,
-                                        mediaHeight = 120.dp
+                                        mediaHeight = 180.dp
                                     )
                                     Spacer(modifier = Modifier.height(spacing.medium))
                                 }

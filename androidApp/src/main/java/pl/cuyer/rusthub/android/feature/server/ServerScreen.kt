@@ -337,7 +337,7 @@ fun ServerScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     onPagingItemsIndexed(key = { it.id ?: UUID.randomUUID() }) { index, item ->
-                        if (showAds && (index + 1) % 5 == 0) {
+                        if (showAds && (index + 1) % 7 == 0) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()

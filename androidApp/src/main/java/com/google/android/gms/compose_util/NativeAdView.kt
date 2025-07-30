@@ -337,10 +337,10 @@ fun NativeAdButton(text: String, modifier: Modifier = Modifier) {
   Box(
     modifier =
       modifier
-        .background(ButtonDefaults.elevatedButtonColors().containerColor)
+        .background(MaterialTheme.colorScheme.background)
         .clip(MaterialTheme.shapes.extraSmall)
         .padding(ButtonDefaults.ContentPadding)
   ) {
-    Text(color = ButtonDefaults.elevatedButtonColors().contentColor, text = text)
+    Text(color = MaterialTheme.colorScheme.onBackground, text = text)
   }
 }
