@@ -165,10 +165,10 @@ actual val platformModule: Module = module {
             stringProvider = get(),
             systemDarkThemeObserver = get(),
             itemsScheduler = get(),
-            billingRepository = get(),
             itemSyncDataSource = get(),
             userEventController = get(),
-            setSubscribedUseCase = get()
+            setSubscribedUseCase = get(),
+            connectivityObserver = get()
         )
     }
     factory {
@@ -221,6 +221,7 @@ actual val platformModule: Module = module {
             getActiveSubscriptionUseCase = get(),
             snackbarController = get(),
             stringProvider = get(),
+            connectivityObserver = get(),
             initialPlan = plan
         )
     }

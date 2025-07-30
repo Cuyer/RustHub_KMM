@@ -342,6 +342,7 @@
     <string name="error_network">Ошибка сети. Проверьте подключение.</string>
     <string name="offline_cached_servers_info">Нет сети. Отображаются кэшированные серверы.</string>
     <string name="offline">Нет подключения к интернету.</string>
+    <string name="connect_manage_subscription">Подключитесь к интернету, чтобы управлять подпиской.</string>
     <string name="no_servers_available_offline">Нет серверов в автономном режиме.</string>
     <string name="no_servers_available">Нет доступных серверов.</string>
     <string name="no_items_available">Нет доступных предметов.</string>

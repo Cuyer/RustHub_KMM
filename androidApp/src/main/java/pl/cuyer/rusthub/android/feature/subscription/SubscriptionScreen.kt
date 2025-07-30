@@ -7,6 +7,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateBounds
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -213,6 +215,26 @@ fun SubscriptionScreen(
                 .consumeWindowInsets(innerPadding)
                 .fillMaxSize()
         ) {
+            AnimatedVisibility(
+                visible = !state.value.isConnected,
+                enter = slideInVertically(
+                    animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
+                ),
+                exit = slideOutVertically(
+                    animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
+                )
+            ) {
+                Text(
+                    textAlign = TextAlign.Center,
+                    text = stringResource(SharedRes.strings.offline),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = spacing.xsmall)
+                        .background(MaterialTheme.colorScheme.secondary)
+                )
+            }
             if (state.value.hasError) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
