@@ -33,7 +33,6 @@ import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
-import pl.cuyer.rusthub.util.CrashReporter
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.catchAndLog
 import pl.cuyer.rusthub.util.toUserMessage
@@ -123,10 +122,9 @@ class SubscriptionViewModel(
             .purchaseFlow
             .distinctUntilChanged()
             .onEach { purchase ->
-                CrashReporter.log("Observing purchases flow $purchase")
-                CrashReporter.recordException(Exception("Observing purchases flow $purchase"))
                 confirmPurchase(purchase.productId, purchase.purchaseToken)
-            }.launchIn(coroutineScope)
+            }
+            .launchIn(coroutineScope)
     }
 
     private fun observeErrors() {
