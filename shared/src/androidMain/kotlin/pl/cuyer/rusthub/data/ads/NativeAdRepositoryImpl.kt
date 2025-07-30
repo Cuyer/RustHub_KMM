@@ -93,7 +93,8 @@ class NativeAdRepositoryImpl(
     }
 
     private fun loadAd(adId: String) {
-        val activity: Activity = activityProvider.currentActivity() ?: return
+        val activity = activityProvider.currentActivity()
+        if (activity == null || activity.isFinishing || activity.isDestroyed) return
         val queue = cache.getOrPut(adId) { ConcurrentLinkedDeque() }
         val mutex = mutexes.getOrPut(adId) { Mutex() }
         val loader = AdLoader.Builder(activity, adId)
