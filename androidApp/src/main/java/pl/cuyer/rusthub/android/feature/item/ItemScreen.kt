@@ -277,6 +277,11 @@ fun ItemScreen(
                         }
                     }
                 ) {
+                    val adIndex = remember(pagedList.itemCount) {
+                        if (pagedList.itemCount > 0) {
+                            if (pagedList.itemCount >= 5) 4 else pagedList.itemCount - 1
+                        } else -1
+                    }
                     LazyColumn(
                         contentPadding = PaddingValues(
                             top = 0.dp,
@@ -290,11 +295,6 @@ fun ItemScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     )
                     {
-                        val adIndex = remember(pagedList.itemCount) {
-                            if (pagedList.itemCount > 0) {
-                                if (pagedList.itemCount >= 5) 4 else pagedList.itemCount - 1
-                            } else -1
-                        }
                         onPagingItemsIndexed(
                             key = { index, item ->
                                 if (showAds && index == adIndex) "ad" else item.id ?: item.slug ?: item.hashCode()

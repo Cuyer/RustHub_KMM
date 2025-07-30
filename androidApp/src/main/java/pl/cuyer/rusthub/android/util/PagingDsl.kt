@@ -39,12 +39,14 @@ class PagingHandlerScope<T : Any>(
     ) {
         items(
             count = items.itemCount,
-            key = if (key != null) { index ->
-                items[index]?.let { item -> key(index, item) }
+            key = if (key != null) { index: Int ->
+                items[index]?.let { item -> key(index, item) } ?: index
             } else null,
-            contentType = if (contentType != null) { index ->
-                items[index]?.let { item -> contentType(index, item) }
-            } else null
+            contentType = {
+                if (contentType != null) { index: Int ->
+                    items[index]?.let { item -> contentType(index, item) } ?: Unit
+                } else null
+            }
         ) { index ->
             items[index]?.let { body(index, it) }
         }

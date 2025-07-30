@@ -345,6 +345,11 @@ fun ServerScreen(
                     onAction(ServerAction.OnError(error))
                 }
             ) {
+                val adIndex = remember(pagedList.itemCount) {
+                    if (pagedList.itemCount > 0) {
+                        if (pagedList.itemCount >= 5) 4 else pagedList.itemCount - 1
+                    } else -1
+                }
                 LazyColumn(
                     state = lazyListState,
                     contentPadding = PaddingValues(
@@ -357,11 +362,6 @@ fun ServerScreen(
                     verticalArrangement = Arrangement.spacedBy(spacing.medium),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    val adIndex = remember(pagedList.itemCount) {
-                        if (pagedList.itemCount > 0) {
-                            if (pagedList.itemCount >= 5) 4 else pagedList.itemCount - 1
-                        } else -1
-                    }
                     onPagingItemsIndexed(
                         key = { index, item ->
                             if (showAds && index == adIndex) "ad" else item.id ?: UUID.randomUUID()
