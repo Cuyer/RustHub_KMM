@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
@@ -47,6 +48,14 @@ import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.android.BuildConfig
 
+@Composable
+fun ApplyNativeAd(ad: NativeAd) {
+    val nativeAdView = LocalNativeAdView.current
+    LaunchedEffect(nativeAdView, ad) {
+        nativeAdView?.setNativeAd(ad)
+    }
+}
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun NativeAdCard(
@@ -57,7 +66,6 @@ fun NativeAdCard(
     var nativeAd by remember { mutableStateOf<NativeAd?>(null) }
     val context = LocalContext.current
     var isDisposed by remember { mutableStateOf(false) }
-
     DisposableEffect(Unit) {
         val loader = AdLoader.Builder(context, adId)
             .forNativeAd { ad ->
@@ -164,26 +172,20 @@ fun NativeAdCard(
                                 Text(text = store, style = MaterialTheme.typography.labelLarge)
                             }
                         }
-                    ad.callToAction?.let { cta ->
-                        NativeAdCallToActionView {
-                            NativeAdButton(
-                                text = cta,
-                                modifier = Modifier.align(Alignment.CenterVertically)
-                            )
+                        ad.callToAction?.let { cta ->
+                            NativeAdCallToActionView {
+                                NativeAdButton(
+                                    text = cta,
+                                    modifier = Modifier.align(Alignment.CenterVertically)
+                                )
+                            }
                         }
                     }
+                    ApplyNativeAd(ad)
                 }
-                ApplyNativeAd(ad)
             }
         }
     }
 }
 
-@Composable
-private fun ApplyNativeAd(ad: NativeAd) {
-    val nativeAdView = LocalNativeAdView.current
-    LaunchedEffect(nativeAdView, ad) {
-        nativeAdView?.setNativeAd(ad)
-    }
-}
 
