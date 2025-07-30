@@ -38,7 +38,7 @@ import com.google.android.gms.compose_util.NativeAdPriceView
 import com.google.android.gms.compose_util.NativeAdStarRatingView
 import com.google.android.gms.compose_util.NativeAdStoreView
 import com.google.android.gms.compose_util.NativeAdView
-import org.koin.androidx.compose.koinInject
+import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.domain.model.ads.NativeAdWrapper
 import pl.cuyer.rusthub.domain.usecase.ads.GetNativeAdUseCase

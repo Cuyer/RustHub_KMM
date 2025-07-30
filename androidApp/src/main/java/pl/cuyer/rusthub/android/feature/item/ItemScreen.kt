@@ -52,6 +52,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.derivedStateOf
@@ -136,7 +137,6 @@ fun ItemScreen(
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
 
-    val context = LocalContext.current
     LaunchedEffect(showAds) {
         if (showAds) {
             preloadAd(BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID)

@@ -1,4 +1,4 @@
 package pl.cuyer.rusthub.domain.model.ads
 
-actual class NativeAdWrapper
+actual abstract class NativeAdWrapper
 
