@@ -1,8 +1,8 @@
 package pl.cuyer.rusthub.presentation.features.server
 
-import app.cash.paging.PagingData
-import app.cash.paging.cachedIn
-import app.cash.paging.map
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
