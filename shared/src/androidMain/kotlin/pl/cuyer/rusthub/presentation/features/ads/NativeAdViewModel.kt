@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.presentation.features.ads
 
+import io.github.aakira.napier.Napier
 import pl.cuyer.rusthub.domain.usecase.ads.ClearNativeAdsUseCase
 import pl.cuyer.rusthub.domain.usecase.ads.GetNativeAdUseCase
 

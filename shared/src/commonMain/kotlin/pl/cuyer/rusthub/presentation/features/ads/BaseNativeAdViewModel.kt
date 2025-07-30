@@ -23,14 +23,6 @@ open class BaseNativeAdViewModel(
         initialValue = NativeAdState()
     )
 
-    init {
-        coroutineScope.launch {
-            state.collectLatest {
-                Napier.d(tag = "ads_state", message = "Current ads state: $it")
-            }
-        }
-    }
-
     fun onAction(action: AdAction) {
         when (action) {
             is AdAction.LoadAd -> loadAd(action.adId)
