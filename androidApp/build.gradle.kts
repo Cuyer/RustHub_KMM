@@ -61,9 +61,9 @@ android {
     signingConfigs {
         create("development") {
             storeFile = rootProject.file("androidApp/keystore-dev.jks")
-            storePassword = System.getenv("DEV_STORE_PASSWORD") ?: "2f032facZ@"
-            keyAlias = System.getenv("DEV_SIGNING_KEY_ALIAS") ?: "androiddev"
-            keyPassword = System.getenv("DEV_SIGNING_KEY_PASSWORD") ?: "2f032facZ@"
+            storePassword = System.getenv("DEV_STORE_PASSWORD")
+            keyAlias = System.getenv("DEV_SIGNING_KEY_ALIAS")
+            keyPassword = System.getenv("DEV_SIGNING_KEY_PASSWORD")
         }
         create("production") {
             storeFile = rootProject.file("androidApp/keystore-prod.jks")
