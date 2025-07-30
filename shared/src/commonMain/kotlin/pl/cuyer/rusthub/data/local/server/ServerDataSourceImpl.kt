@@ -1,6 +1,6 @@
 package pl.cuyer.rusthub.data.local.server
 
-import app.cash.paging.PagingSource
+import androidx.paging.PagingSource
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import app.cash.sqldelight.paging3.QueryPagingSource
