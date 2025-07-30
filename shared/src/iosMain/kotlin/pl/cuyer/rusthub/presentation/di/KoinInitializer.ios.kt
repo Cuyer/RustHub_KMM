@@ -53,7 +53,6 @@ import pl.cuyer.rusthub.common.user.UserEventController
 import pl.cuyer.rusthub.data.ads.NativeAdRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.ads.NativeAdRepository
 import pl.cuyer.rusthub.domain.usecase.ads.GetNativeAdUseCase
-import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
 import pl.cuyer.rusthub.domain.usecase.ads.ClearNativeAdsUseCase
 import pl.cuyer.rusthub.presentation.features.ads.NativeAdViewModel
 
@@ -81,10 +80,9 @@ actual val platformModule: Module = module {
     single { StringProvider() }
     single { AdsConsentManager() }
     single<NativeAdRepository> { NativeAdRepositoryImpl() }
-    factory { PreloadNativeAdUseCase(get()) }
     factory { GetNativeAdUseCase(get()) }
     factory { ClearNativeAdsUseCase(get()) }
-    factory { NativeAdViewModel(get(), get(), get()) }
+    factory { NativeAdViewModel(get(), get()) }
     factory {
         StartupViewModel(
             snackbarController = get(),

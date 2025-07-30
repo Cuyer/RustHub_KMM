@@ -10,10 +10,8 @@ import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.domain.usecase.ads.ClearNativeAdsUseCase
 import pl.cuyer.rusthub.domain.usecase.ads.GetNativeAdUseCase
-import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
 
 open class BaseNativeAdViewModel(
-    private val preloadNativeAdUseCase: PreloadNativeAdUseCase,
     private val getNativeAdUseCase: GetNativeAdUseCase,
     private val clearNativeAdsUseCase: ClearNativeAdsUseCase
 ) : BaseViewModel() {
@@ -43,11 +41,7 @@ open class BaseNativeAdViewModel(
         coroutineScope.launch {
             getNativeAdUseCase(adId)
                 .collectLatest { ad ->
-                    if (ad != null) {
-                        _state.update { current -> current.copy(ads = current.ads + (adId to ad)) }
-                    } else {
-                        preloadNativeAdUseCase(adId)
-                    }
+                    _state.update { current -> current.copy(ads = current.ads + (adId to ad)) }
                 }
         }
     }
