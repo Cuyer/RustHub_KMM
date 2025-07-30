@@ -9,6 +9,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdOptions
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -102,8 +103,13 @@ class NativeAdRepositoryImpl(
                 }
             }
             .withAdListener(object : AdListener() {
+                override fun onAdLoaded() {
+                    super.onAdLoaded()
+                    Napier.d(tag = "ads_state", message = "Ad loaded: $adId")
+                }
                 override fun onAdFailedToLoad(error: LoadAdError) {
-                    // Ignore errors and try again later
+                    super.onAdFailedToLoad(error)
+                    Napier.e(tag = "ads_state", message = "Ad failed to load: $adId, error: ${error.message}")
                 }
             })
             .withNativeAdOptions(NativeAdOptions.Builder().build())

@@ -1,7 +1,9 @@
 package pl.cuyer.rusthub.presentation.features.ads
 
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -22,6 +24,14 @@ open class BaseNativeAdViewModel(
         started = SharingStarted.WhileSubscribed(5_000L),
         initialValue = NativeAdState()
     )
+
+    init {
+        coroutineScope.launch {
+            state.collectLatest {
+                Napier.d(tag = "ads_state", message = "Current ads state: $it")
+            }
+        }
+    }
 
     fun onAction(action: AdAction) {
         when (action) {

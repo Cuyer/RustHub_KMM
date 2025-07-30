@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.android.feature.server
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
