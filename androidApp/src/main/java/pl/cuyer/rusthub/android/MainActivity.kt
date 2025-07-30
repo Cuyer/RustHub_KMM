@@ -107,15 +107,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContent {
-            adsConsentManager.gatherConsent(this) { error ->
-                if (adsConsentManager.canRequestAds) {
-                    lifecycleScope.launch {
-                        withContext(Dispatchers.IO) {
-                            MobileAds.initialize(this@MainActivity)
-                        }
-                    }
-                }
-            }
 
             RustHubTheme(
                 darkTheme = themeSettings.darkTheme,
