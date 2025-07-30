@@ -18,12 +18,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
-import androidx.core.graphics.drawable.toBitmap
 import coil3.request.crossfade
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
@@ -31,6 +29,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdOptions
+import com.google.android.gms.compose_util.LocalNativeAdView
 import com.google.android.gms.compose_util.NativeAdAdvertiserView
 import com.google.android.gms.compose_util.NativeAdAttribution
 import com.google.android.gms.compose_util.NativeAdBodyView
@@ -87,11 +86,12 @@ fun NativeAdCard(modifier: Modifier = Modifier, adId: String) {
                 ) {
                     NativeAdAttribution(text = stringResource(SharedRes.strings.ad_label))
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        ad.icon?.let {
+                        ad.icon?.let { icon ->
                             NativeAdIconView(modifier = Modifier.padding(end = 8.dp)) {
-                                it.drawable?.toBitmap()?.let { bmp ->
+                                val data = icon.drawable ?: icon.uri
+                                data?.let { src ->
                                     SubcomposeAsyncImage(
-                                        model = ImageRequest.Builder(context).data(bmp).crossfade(true)
+                                        model = ImageRequest.Builder(context).data(src).crossfade(true)
                                             .build(),
                                         contentDescription = ad.headline,
                                         modifier = Modifier.height(40.dp)
@@ -134,6 +134,7 @@ fun NativeAdCard(modifier: Modifier = Modifier, adId: String) {
                     }
                     ad.mediaContent?.let {
                         NativeAdMediaView(
+                            mediaContent = it,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(180.dp)
@@ -155,17 +156,25 @@ fun NativeAdCard(modifier: Modifier = Modifier, adId: String) {
                                 Text(text = store, style = MaterialTheme.typography.labelLarge)
                             }
                         }
-                        ad.callToAction?.let { cta ->
-                            NativeAdCallToActionView {
-                                Box(modifier = Modifier.align(Alignment.CenterVertically)) {
-                                    Text(text = cta, style = MaterialTheme.typography.labelLarge)
-                                }
+                    ad.callToAction?.let { cta ->
+                        NativeAdCallToActionView {
+                            Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+                                Text(text = cta, style = MaterialTheme.typography.labelLarge)
                             }
                         }
                     }
                 }
+                ApplyNativeAd(ad)
             }
         }
+    }
+}
+
+@Composable
+private fun ApplyNativeAd(ad: NativeAd) {
+    val nativeAdView = LocalNativeAdView.current
+    LaunchedEffect(nativeAdView, ad) {
+        nativeAdView?.setNativeAd(ad)
     }
 }
 

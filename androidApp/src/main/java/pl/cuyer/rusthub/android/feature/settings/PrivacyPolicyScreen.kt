@@ -61,10 +61,14 @@ fun PrivacyPolicyScreen(url: String, onNavigateUp: () -> Unit, title: String = s
             factory = { context ->
                 WebView(context).apply {
                     webViewClient = WebViewClient()
+                    settings.javaScriptEnabled = true
                     loadUrl(url)
                 }
             },
-            update = { it.loadUrl(url) }
+            update = {
+                it.settings.javaScriptEnabled = true
+                it.loadUrl(url)
+            }
         )
     }
 }

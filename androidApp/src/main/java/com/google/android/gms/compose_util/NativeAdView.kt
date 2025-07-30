@@ -35,6 +35,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.gms.ads.nativead.AdChoicesView
 import com.google.android.gms.ads.nativead.MediaView
 import com.google.android.gms.ads.nativead.NativeAdView
+import com.google.android.gms.ads.nativead.MediaContent
 
 /**
  * A CompositionLocal that can provide a `NativeAdView` to ad attributes such as `NativeHeadline`.
@@ -215,12 +216,19 @@ fun NativeAdIconView(modifier: Modifier = Modifier, content: @Composable () -> U
  * @param modifier modify the native ad view element.
  */
 @Composable
-fun NativeAdMediaView(modifier: Modifier = Modifier) {
+fun NativeAdMediaView(mediaContent: MediaContent?, modifier: Modifier = Modifier) {
   val nativeAdView = LocalNativeAdView.current ?: throw IllegalStateException("NativeAdView null")
   val localContext = LocalContext.current
   AndroidView(
-    factory = { MediaView(localContext) },
-    update = { view -> nativeAdView.mediaView = view },
+    factory = {
+      MediaView(localContext).apply {
+        nativeAdView.mediaView = this
+        mediaContent?.let { setMediaContent(it) }
+      }
+    },
+    update = { view ->
+      mediaContent?.let { view.setMediaContent(it) }
+    },
     modifier = modifier,
   )
 }
