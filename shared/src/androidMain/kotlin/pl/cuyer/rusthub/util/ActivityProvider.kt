@@ -17,17 +17,14 @@ class ActivityProvider(application: Application) : Application.ActivityLifecycle
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
         activityRef = WeakReference(activity)
-        Log.d("ActivityProvider", "onActivityCreated: ")
     }
 
     override fun onActivityStarted(activity: Activity) {
         activityRef = WeakReference(activity)
-        Log.d("ActivityProvider", "onActivityStarted: ${activity.localClassName}")
     }
 
     override fun onActivityResumed(activity: Activity) {
         activityRef = WeakReference(activity)
-        Log.d("ActivityProvider", "onActivityResumed: ${activity.localClassName}")
     }
 
     override fun onActivityPaused(activity: Activity) {}

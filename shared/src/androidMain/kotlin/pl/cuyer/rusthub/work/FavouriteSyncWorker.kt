@@ -65,7 +65,7 @@ class FavouriteSyncWorker(
         val results = tasks.awaitAll().filterNotNull()
         return@coroutineScope if (results.isNotEmpty()) {
             results.forEach { (operation, throwable) ->
-                CrashReporter.recordException(Exception(Exception(throwable)))
+                CrashReporter.recordException(Exception(throwable))
             }
             Result.retry()
         } else Result.success()
