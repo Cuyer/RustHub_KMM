@@ -54,6 +54,8 @@ import pl.cuyer.rusthub.data.ads.NativeAdRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.ads.NativeAdRepository
 import pl.cuyer.rusthub.domain.usecase.ads.GetNativeAdUseCase
 import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
+import pl.cuyer.rusthub.domain.usecase.ads.ClearNativeAdsUseCase
+import pl.cuyer.rusthub.presentation.features.ads.NativeAdViewModel
 
 actual val platformModule: Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
@@ -81,6 +83,8 @@ actual val platformModule: Module = module {
     single<NativeAdRepository> { NativeAdRepositoryImpl() }
     factory { PreloadNativeAdUseCase(get()) }
     factory { GetNativeAdUseCase(get()) }
+    factory { ClearNativeAdsUseCase(get()) }
+    factory { NativeAdViewModel(get(), get(), get()) }
     factory {
         StartupViewModel(
             snackbarController = get(),

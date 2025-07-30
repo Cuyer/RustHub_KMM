@@ -101,7 +101,8 @@ import pl.cuyer.rusthub.android.designsystem.ServerListItemShimmer
 import pl.cuyer.rusthub.android.model.Label
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.ads.NativeAdCard
-import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
+import pl.cuyer.rusthub.presentation.features.ads.AdAction
+import pl.cuyer.rusthub.presentation.features.ads.NativeAdState
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.HandlePagingItems
@@ -133,7 +134,9 @@ fun ServerScreen(
     onAction: (ServerAction) -> Unit,
     pagedList: LazyPagingItems<ServerInfoUi>,
     uiEvent: Flow<UiEvent>,
-    showAds: Boolean
+    showAds: Boolean,
+    adState: State<NativeAdState>,
+    onAdAction: (AdAction) -> Unit
 ) {
     var showSheet by rememberSaveable { mutableStateOf(false) }
     val searchBarState = rememberSearchBarState()
@@ -158,7 +161,7 @@ fun ServerScreen(
 
     val context: Context = LocalContext.current
     val adsConsentManager = koinInject<AdsConsentManager>()
-    val preloadAd: PreloadNativeAdUseCase = koinInject()
+    val ads = adState
     val activity = LocalActivity.current as Activity
 
     LaunchedEffect(adsConsentManager, context) {
@@ -166,7 +169,7 @@ fun ServerScreen(
             if (adsConsentManager.canRequestAds) {
                 coroutineScope.launch {
                     withContext(Dispatchers.IO) { MobileAds.initialize(context) }
-                    preloadAd(BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID)
+                    onAdAction(AdAction.LoadAd(BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID))
                 }
             }
         }
@@ -382,7 +385,7 @@ fun ServerScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = spacing.xmedium),
-                                    adId = BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID
+                                    ad = ads.value.ads[BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID]
                                 )
                                 Spacer(modifier = Modifier.height(spacing.medium))
                             }
@@ -542,7 +545,9 @@ private fun ServerScreenPreview() {
                     )
                 ),
                 pagedList = flowOf(PagingData.from(emptyList<ServerInfoUi>())).collectAsLazyPagingItems(),
-                showAds = true
+                showAds = true,
+                adState = remember { mutableStateOf(NativeAdState()) },
+                onAdAction = {}
             )
         }
     }
