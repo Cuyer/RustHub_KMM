@@ -1,7 +1,7 @@
 package pl.cuyer.rusthub.data.ads
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
+import android.app.Activity
 import androidx.annotation.RequiresPermission
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
@@ -15,12 +15,13 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import pl.cuyer.rusthub.domain.model.ads.NativeAdWrapper
 import pl.cuyer.rusthub.domain.repository.ads.NativeAdRepository
+import pl.cuyer.rusthub.util.ActivityProvider
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedDeque
 
 @SuppressLint("MissingPermission")
 class NativeAdRepositoryImpl(
-    private val context: Context
+    private val activityProvider: ActivityProvider
 ) : NativeAdRepository {
 
     private data class CachedAd(val ad: NativeAd, val loadedAt: Long) {
@@ -92,9 +93,10 @@ class NativeAdRepositoryImpl(
     }
 
     private fun loadAd(adId: String) {
+        val activity: Activity = activityProvider.currentActivity() ?: return
         val queue = cache.getOrPut(adId) { ConcurrentLinkedDeque() }
         val mutex = mutexes.getOrPut(adId) { Mutex() }
-        val loader = AdLoader.Builder(context, adId)
+        val loader = AdLoader.Builder(activity, adId)
             .forNativeAd { ad ->
                 scope.launch {
                     mutex.withLock {

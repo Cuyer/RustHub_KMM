@@ -50,6 +50,7 @@ import pl.cuyer.rusthub.domain.usecase.ads.GetNativeAdUseCase
 import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
 import pl.cuyer.rusthub.domain.usecase.ads.ClearNativeAdsUseCase
 import pl.cuyer.rusthub.presentation.features.ads.NativeAdViewModel
+import pl.cuyer.rusthub.util.ActivityProvider
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
 import pl.cuyer.rusthub.util.UserSyncScheduler
 import pl.cuyer.rusthub.domain.usecase.SetSubscribedUseCase
@@ -60,6 +61,7 @@ import pl.cuyer.rusthub.data.billing.BillingRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
 import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
+import org.koin.android.ext.koin.androidApplication
 
 actual val platformModule: Module = module {
     single { DatabasePassphraseProvider(androidContext()) }
@@ -76,7 +78,8 @@ actual val platformModule: Module = module {
     single { ClipboardHandler(get()) }
     single { ShareHandler(get()) }
     single { AdsConsentManager.getInstance(androidContext()) }
-    single<NativeAdRepository> { NativeAdRepositoryImpl(androidContext()) }
+    single { ActivityProvider(androidApplication()) }
+    single<NativeAdRepository> { NativeAdRepositoryImpl(get()) }
     factory { PreloadNativeAdUseCase(get()) }
     factory { GetNativeAdUseCase(get()) }
     factory { ClearNativeAdsUseCase(get()) }
