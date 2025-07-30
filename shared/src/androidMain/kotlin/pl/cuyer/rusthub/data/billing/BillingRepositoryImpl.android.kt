@@ -8,9 +8,7 @@ import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryProductDetailsParams
-import com.android.billingclient.api.QueryPurchasesParams
 import com.android.billingclient.api.queryProductDetails
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -26,7 +24,6 @@ import pl.cuyer.rusthub.domain.model.BillingProduct
 import pl.cuyer.rusthub.domain.model.PurchaseInfo
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
-import pl.cuyer.rusthub.util.CrashReporter
 
 class BillingRepositoryImpl(context: Context) : BillingRepository {
     private val _purchaseFlow = MutableSharedFlow<PurchaseInfo>(replay = 1)
@@ -43,18 +40,11 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
             PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
         )
         .setListener { billingResult, purchases ->
-            CrashReporter.log("Billing listener invoked: $billingResult with purchases: $purchases")
-            CrashReporter.recordException(Exception("Billing listener: $billingResult\n$purchases"))
-
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                CrashReporter.log("Handling purchase: before purchase check")
-                CrashReporter.recordException(Exception("Billing listener: before purchase check"))
                 purchases?.forEach {
-                    CrashReporter.log("Handling purchase: $it")
                     handlePurchase(it)
                 }
             } else {
-                CrashReporter.log("Billing error in listener: ${billingResult.responseCode}")
                 _errorFlow.tryEmit(billingResult.responseCode.toErrorCode())
             }
         }
@@ -78,7 +68,6 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
             val subsParams = QueryProductDetailsParams.newBuilder().setProductList(subsProducts).build()
 
             val subsResult = withContext(Dispatchers.IO) { billingClient.queryProductDetails(subsParams) }
-            CrashReporter.log("Subscription query result: ${subsResult.billingResult}, products: ${subsResult.productDetailsList?.size}")
 
             val subsList = mutableListOf<BillingProduct>()
             if (subsResult.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
@@ -92,8 +81,6 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
                     }
                 }
             } else {
-                CrashReporter.log("Subscription query error: ${subsResult.billingResult}")
-                CrashReporter.recordException(Exception("Failed to fetch SUBS product details: ${subsResult.billingResult}"))
                 _errorFlow.tryEmit(subsResult.billingResult.responseCode.toErrorCode())
             }
             result.addAll(subsList)
@@ -109,7 +96,6 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
             val inappParams = QueryProductDetailsParams.newBuilder().setProductList(inappProducts).build()
 
             val inappResult = withContext(Dispatchers.IO) { billingClient.queryProductDetails(inappParams) }
-            CrashReporter.log("INAPP query result: ${inappResult.billingResult}, products: ${inappResult.productDetailsList?.size}")
 
             val inappList = mutableListOf<BillingProduct>()
             if (inappResult.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
@@ -121,8 +107,6 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
                     }
                 }
             } else {
-                CrashReporter.log("In-app query error: ${inappResult.billingResult}")
-                CrashReporter.recordException(Exception("Failed to fetch INAPP product details: ${inappResult.billingResult}"))
                 _errorFlow.tryEmit(inappResult.billingResult.responseCode.toErrorCode())
             }
             result.addAll(inappList)
@@ -137,7 +121,6 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
         val act = activity as? Activity ?: return
         val data = productMap[productId] ?: return
 
-        CrashReporter.log("Launching billing flow for $productId")
 
         val params = BillingFlowParams.newBuilder()
             .setProductDetailsParamsList(
@@ -153,17 +136,14 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
 
         val result = billingClient.launchBillingFlow(act, params)
         if (result.responseCode != BillingClient.BillingResponseCode.OK) {
-            CrashReporter.log("Billing flow failed: ${result.responseCode}")
             _errorFlow.tryEmit(result.responseCode.toErrorCode())
         }
     }
 
 
     private fun handlePurchase(purchase: Purchase) {
-        CrashReporter.log("handlePurchase called with: $purchase")
         val product = purchase.products.firstOrNull()
         if (product == null) {
-            CrashReporter.log("handlePurchase: product list is empty")
             return
         }
         _purchaseFlow.tryEmit(PurchaseInfo(product, purchase.purchaseToken))
