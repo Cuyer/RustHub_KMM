@@ -2,7 +2,6 @@ package pl.cuyer.rusthub.android
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -19,14 +18,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.google.android.gms.ads.MobileAds
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import pl.cuyer.rusthub.android.feature.startup.StartupScreen
@@ -34,13 +30,11 @@ import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.util.composeUtil.isSystemInDarkTheme
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
-import pl.cuyer.rusthub.util.AdsConsentManager
 import pl.cuyer.rusthub.util.InAppUpdateManager
 
 class MainActivity : AppCompatActivity() {
     private val startupViewModel: StartupViewModel by viewModel()
     private val inAppUpdateManager: InAppUpdateManager by inject()
-    private val adsConsentManager: AdsConsentManager by inject()
 
     private lateinit var updateLauncher: ActivityResultLauncher<IntentSenderRequest>
 
@@ -107,7 +101,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContent {
-
             RustHubTheme(
                 darkTheme = themeSettings.darkTheme,
                 dynamicColor = themeSettings.dynamicColor

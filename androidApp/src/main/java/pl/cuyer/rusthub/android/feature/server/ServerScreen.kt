@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.android.feature.server
 
 import android.app.Activity
 import android.content.Context
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateBounds
@@ -57,6 +58,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -155,12 +157,14 @@ fun ServerScreen(
 
     val context: Context = LocalContext.current
     val adsConsentManager = koinInject<AdsConsentManager>()
+    val activity = LocalActivity.current as Activity
 
     LaunchedEffect(adsConsentManager, context) {
-        val activity = context as? Activity ?: return@LaunchedEffect
         adsConsentManager.gatherConsent(activity) { _ ->
             if (adsConsentManager.canRequestAds) {
-                withContext(Dispatchers.IO) { MobileAds.initialize(context) }
+                coroutineScope.launch {
+                    withContext(Dispatchers.IO) { MobileAds.initialize(context) }
+                }
             }
         }
     }
