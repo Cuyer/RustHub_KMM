@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
@@ -47,7 +48,11 @@ import pl.cuyer.rusthub.android.BuildConfig
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun NativeAdCard(modifier: Modifier = Modifier, adId: String) {
+fun NativeAdCard(
+    modifier: Modifier = Modifier,
+    adId: String,
+    mediaHeight: Dp = 180.dp
+) {
     var nativeAd by remember { mutableStateOf<NativeAd?>(null) }
     val context = LocalContext.current
     var isDisposed by remember { mutableStateOf(false) }
@@ -91,7 +96,9 @@ fun NativeAdCard(modifier: Modifier = Modifier, adId: String) {
                                 val data = icon.drawable ?: icon.uri
                                 data?.let { src ->
                                     SubcomposeAsyncImage(
-                                        model = ImageRequest.Builder(context).data(src).crossfade(true)
+                                        model = ImageRequest.Builder(context)
+                                            .data(src)
+                                            .crossfade(true)
                                             .build(),
                                         contentDescription = ad.headline,
                                         modifier = Modifier.height(40.dp)
@@ -137,7 +144,7 @@ fun NativeAdCard(modifier: Modifier = Modifier, adId: String) {
                             mediaContent = it,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(180.dp)
+                                .height(mediaHeight)
                         )
                     }
                     Row(

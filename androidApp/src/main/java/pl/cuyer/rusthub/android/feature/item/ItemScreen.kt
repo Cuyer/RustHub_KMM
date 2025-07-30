@@ -294,7 +294,8 @@ fun ItemScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(horizontal = spacing.xmedium),
-                                        adId = BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID
+                                        adId = BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID,
+                                        mediaHeight = 120.dp
                                     )
                                     Spacer(modifier = Modifier.height(spacing.medium))
                                 }
