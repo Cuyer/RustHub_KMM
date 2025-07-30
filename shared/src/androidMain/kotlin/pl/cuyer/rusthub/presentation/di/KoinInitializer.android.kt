@@ -173,6 +173,7 @@ actual val platformModule: Module = module {
             adsConsentManager = get(),
         )
     }
+    viewModel { NativeAdViewModel(get(), get()) }
     viewModel { (itemId: Long) ->
         ItemDetailsViewModel(
             getItemDetailsUseCase = get(),

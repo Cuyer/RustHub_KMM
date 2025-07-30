@@ -90,7 +90,8 @@ import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.ads.NativeAdCard
-import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
+import pl.cuyer.rusthub.presentation.features.ads.NativeAdViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import pl.cuyer.rusthub.android.util.HandlePagingItems
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.common.getImageByFileName
@@ -131,7 +132,7 @@ fun ItemScreen(
                     lazyListState.firstVisibleItemScrollOffset == 0
         }
     }
-    val preloadAd: PreloadNativeAdUseCase = koinInject()
+    val adViewModel: NativeAdViewModel = koinViewModel()
 
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
@@ -139,7 +140,7 @@ fun ItemScreen(
 
     LaunchedEffect(showAds) {
         if (showAds) {
-            preloadAd(BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID)
+            adViewModel.preloadBatch(BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID)
         }
     }
     Scaffold(
@@ -290,14 +291,13 @@ fun ItemScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     )
                     {
-                        onPagingItemsIndexed(key = { it.id ?: it.slug ?: it.hashCode() }) { index, item ->
-                            if (showAds && (index + 1) % 7 == 0) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                ) {
+                        val keyProvider = pagedList.itemKey { it.id ?: it.slug ?: it.hashCode() }
+                        for (listIndex in 0 until pagedList.itemCount) {
+                            val item = pagedList[listIndex] ?: continue
+                            if (showAds && (listIndex + 1) % 7 == 0) {
+                                item(key = "ad_${(listIndex + 1) / 7}", contentType = "ad") {
                                     NativeAdCard(
+                                        slot = (listIndex + 1) / 7,
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(horizontal = spacing.xmedium),
@@ -308,16 +308,18 @@ fun ItemScreen(
                                 }
                             }
 
-                            ItemListItem(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .animateItem()
-                                    .padding(horizontal = spacing.xmedium),
-                                item = item,
-                                onClick = { id ->
-                                    onAction(ItemAction.OnItemClick(id))
-                                }
-                            )
+                            item(key = keyProvider(listIndex), contentType = "item") {
+                                ItemListItem(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .animateItem()
+                                        .padding(horizontal = spacing.xmedium),
+                                    item = item,
+                                    onClick = { id ->
+                                        onAction(ItemAction.OnItemClick(id))
+                                    }
+                                )
+                            }
                         }
                     }
                 }
