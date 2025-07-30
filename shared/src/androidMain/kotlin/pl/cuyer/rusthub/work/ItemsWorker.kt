@@ -23,7 +23,7 @@ class ItemsWorker(
         repository.getItems().collectLatest { result ->
             when (result) {
                 is DomainResult.Success -> {
-                    dataSource.upsertItems(result.data.filter { item -> item.id != null })
+                    dataSource.upsertItems(result.data)
                     syncDataSource.setState(ItemSyncState.DONE)
                     workResult = Result.success()
                 }
