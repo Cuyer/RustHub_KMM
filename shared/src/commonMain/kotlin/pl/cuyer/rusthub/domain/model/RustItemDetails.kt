@@ -18,6 +18,24 @@ data class Looting(
 
 @Serializable
 @Immutable
+data class LootContent(
+    val spawn: String? = null,
+    val image: String? = null,
+    val stack: LootAmount? = null,
+    val chance: Double? = null,
+    val amount: LootAmount? = null,
+)
+
+@Serializable
+@Immutable
+data class WhereToFind(
+    val place: String? = null,
+    val image: String? = null,
+    val amount: LootAmount? = null,
+)
+
+@Serializable
+@Immutable
 data class CraftingIngredient(
     val image: String? = null,
     val name: String? = null,

@@ -8,6 +8,8 @@ import pl.cuyer.rusthub.data.network.item.model.LootingDto
 import pl.cuyer.rusthub.data.network.item.model.CraftingDto
 import pl.cuyer.rusthub.data.network.item.model.RecyclingDto
 import pl.cuyer.rusthub.data.network.item.model.RaidingDto
+import pl.cuyer.rusthub.data.network.item.model.LootContentDto
+import pl.cuyer.rusthub.data.network.item.model.WhereToFindDto
 
 @Serializable
 data class RustItemDto(
@@ -20,6 +22,8 @@ data class RustItemDto(
     val health: Int? = null,
     val categories: List<ItemCategoryDto>? = null,
     val looting: List<LootingDto>? = null,
+    @SerialName("loot_contents") val lootContents: List<LootContentDto>? = null,
+    @SerialName("where_to_find") val whereToFind: List<WhereToFindDto>? = null,
     val crafting: CraftingDto? = null,
     val recycling: RecyclingDto? = null,
     val raiding: List<RaidingDto>? = null,

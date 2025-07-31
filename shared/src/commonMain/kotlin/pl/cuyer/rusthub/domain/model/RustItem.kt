@@ -8,6 +8,8 @@ import pl.cuyer.rusthub.domain.model.Looting
 import pl.cuyer.rusthub.domain.model.Crafting
 import pl.cuyer.rusthub.domain.model.Recycling
 import pl.cuyer.rusthub.domain.model.Raiding
+import pl.cuyer.rusthub.domain.model.LootContent
+import pl.cuyer.rusthub.domain.model.WhereToFind
 
 @Serializable
 
@@ -22,6 +24,8 @@ data class RustItem(
     val health: Int? = null,
     val categories: List<ItemCategory>? = null,
     val looting: List<Looting>? = null,
+    val lootContents: List<LootContent>? = null,
+    val whereToFind: List<WhereToFind>? = null,
     val crafting: Crafting? = null,
     val recycling: Recycling? = null,
     val raiding: List<Raiding>? = null,

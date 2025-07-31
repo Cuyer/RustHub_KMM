@@ -17,6 +17,8 @@ import pl.cuyer.rusthub.data.network.item.model.RaidingDto
 import pl.cuyer.rusthub.data.network.item.model.StartingItemDto
 import pl.cuyer.rusthub.data.network.item.model.RaidItemDto
 import pl.cuyer.rusthub.data.network.item.model.RaidResourceDto
+import pl.cuyer.rusthub.data.network.item.model.LootContentDto
+import pl.cuyer.rusthub.data.network.item.model.WhereToFindDto
 import pl.cuyer.rusthub.domain.model.ItemCategory
 import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.RustItem
@@ -34,6 +36,8 @@ import pl.cuyer.rusthub.domain.model.Raiding
 import pl.cuyer.rusthub.domain.model.StartingItem
 import pl.cuyer.rusthub.domain.model.RaidItem
 import pl.cuyer.rusthub.domain.model.RaidResource
+import pl.cuyer.rusthub.domain.model.LootContent
+import pl.cuyer.rusthub.domain.model.WhereToFind
 
 fun RustItemDto.toDomain(): RustItem {
     return RustItem(
@@ -46,6 +50,8 @@ fun RustItemDto.toDomain(): RustItem {
         health = health,
         categories = categories?.map { it.toDomain() },
         looting = looting?.map { it.toDomain() },
+        lootContents = lootContents?.map { it.toDomain() },
+        whereToFind = whereToFind?.map { it.toDomain() },
         crafting = crafting?.toDomain(),
         recycling = recycling?.toDomain(),
         raiding = raiding?.map { it.toDomain() },
@@ -187,4 +193,18 @@ fun RaidResourceDto.toDomain(): RaidResource = RaidResource(
     name = name,
     amount = amount,
     mixingTableAmount = mixingTableAmount
+)
+
+fun LootContentDto.toDomain(): LootContent = LootContent(
+    spawn = spawn,
+    image = image,
+    stack = stack?.let { LootAmount(it.min, it.max) },
+    chance = chance,
+    amount = amount?.let { LootAmount(it.min, it.max) }
+)
+
+fun WhereToFindDto.toDomain(): WhereToFind = WhereToFind(
+    place = place,
+    image = image,
+    amount = amount?.let { LootAmount(it.min, it.max) }
 )
