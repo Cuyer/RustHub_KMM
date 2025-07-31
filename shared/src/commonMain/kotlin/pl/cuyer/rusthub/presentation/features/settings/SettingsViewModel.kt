@@ -221,8 +221,8 @@ class SettingsViewModel(
         logoutJob?.cancel()
         logoutJob = coroutineScope.launch {
             logoutUserUseCase()
-                .onStart { updateLoading(true) }
-                .onCompletion { updateLoading(false) }
+                .onStart { updateLoggingOut(true) }
+                .onCompletion { updateLoggingOut(false) }
                 .catchAndLog { e ->
                     showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
@@ -240,6 +240,10 @@ class SettingsViewModel(
                     }
                 }
         }
+    }
+
+    private fun updateLoggingOut(loading: Boolean) {
+        _state.update { it.copy(isLoggingOut = loading) }
     }
 
     private fun updateLoading(isLoading: Boolean) {
