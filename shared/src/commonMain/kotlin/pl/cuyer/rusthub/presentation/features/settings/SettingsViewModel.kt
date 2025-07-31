@@ -183,23 +183,26 @@ class SettingsViewModel(
     private fun updateUser(user: User?, subscription: ActiveSubscription?) {
         emailConfirmed = user?.emailConfirmed == true
         val subscribed = hasValidSubscription(subscription)
-        _state.update {
-            it.copy(
+        _state.update { current ->
+            val anonymousExpiration = user?.let { u ->
+                if (u.provider == AuthProvider.ANONYMOUS) {
+                    anonymousAccountExpiresIn(u.accessToken)?.let { formatExpiration(it, stringProvider) }
+                } else {
+                    null
+                }
+            }
+            val planExpiration = subscription?.expiration?.let {
+                formatLocalDateTime(it.toLocalDateTime(TimeZone.currentSystemDefault()))
+            }
+            current.copy(
                 username = if (user?.provider == AuthProvider.GOOGLE) user.username.substringBefore("-") else user?.username,
                 provider = user?.provider,
                 subscribed = subscribed,
                 currentPlan = subscription?.plan,
-                subscriptionExpiration = subscription?.expiration?.let {
-                    formatLocalDateTime(it.toLocalDateTime(TimeZone.currentSystemDefault()))
-                },
+                subscriptionExpiration = planExpiration,
                 subscriptionStatus = subscription?.state?.displayName(stringProvider),
-                anonymousExpiration = user?.let { u ->
-                    if (u.provider == AuthProvider.ANONYMOUS) {
-                        anonymousAccountExpiresIn(u.accessToken)?.let { formatExpiration(it, stringProvider) }
-                    } else {
-                        null
-                    }
-                },
+                anonymousExpiration = anonymousExpiration,
+                isLoading = current.isLoading,
                 currentSubscription = subscription,
                 currentUser = user
             )
