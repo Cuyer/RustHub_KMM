@@ -63,6 +63,7 @@ import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.android.designsystem.LootingListItem
 import pl.cuyer.rusthub.android.designsystem.LootContentListItem
+import pl.cuyer.rusthub.android.designsystem.WhereToFindListItem
 import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.android.designsystem.ItemTooltipImage
@@ -77,6 +78,7 @@ import pl.cuyer.rusthub.domain.model.LootContent
 import pl.cuyer.rusthub.domain.model.RaidItem
 import pl.cuyer.rusthub.domain.model.RaidResource
 import pl.cuyer.rusthub.domain.model.Raiding
+import pl.cuyer.rusthub.domain.model.WhereToFind
 
 import pl.cuyer.rusthub.domain.model.Recycling
 import pl.cuyer.rusthub.domain.model.Recycler
@@ -88,6 +90,7 @@ import kotlin.math.roundToInt
 @Immutable
 private enum class DetailsPage(val title: StringResource) {
     LOOTING(SharedRes.strings.looting),
+    WHERE_TO_FIND(SharedRes.strings.where_to_find),
     CONTENTS(SharedRes.strings.contents),
     CRAFTING(SharedRes.strings.crafting),
     RECYCLING(SharedRes.strings.recycling),
@@ -106,6 +109,8 @@ fun ItemDetailsScreen(
             buildList {
                 item.looting?.takeIf { it.isNotEmpty() }
                     ?.let { add(DetailsPage.LOOTING to it) }
+                item.whereToFind?.takeIf { it.isNotEmpty() }
+                    ?.let { add(DetailsPage.WHERE_TO_FIND to it) }
                 item.lootContents?.takeIf { it.isNotEmpty() }
                     ?.let { add(DetailsPage.CONTENTS to it) }
                 item.crafting?.takeIf { it.hasContent() }
@@ -202,6 +207,29 @@ private fun DetailsContent(page: DetailsPage, content: Any?) {
                             .animateItem()
                             .padding(horizontal = spacing.xmedium),
                         looting = item
+                    )
+                }
+            }
+        }
+
+        DetailsPage.WHERE_TO_FIND -> {
+            val places = content as? List<WhereToFind> ?: emptyList()
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
+                verticalArrangement = Arrangement.spacedBy(spacing.medium)
+            ) {
+                items(
+                    places,
+                    key = { it.place ?: it.hashCode().toString() },
+                    contentType = { "where_to_find" }
+                ) { item ->
+                    WhereToFindListItem(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .animateItem()
+                            .padding(horizontal = spacing.xmedium),
+                        item = item
                     )
                 }
             }
