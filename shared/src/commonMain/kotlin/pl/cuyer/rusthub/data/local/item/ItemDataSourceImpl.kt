@@ -38,7 +38,7 @@ class ItemDataSourceImpl(
             try {
                 queries.transaction {
                     items.forEach { item ->
-                        item.slug?.let {
+                        item.id?.let {
                             queries.upsertItem(
                                 id = item.id,
                                 slug = item.slug,
@@ -61,7 +61,7 @@ class ItemDataSourceImpl(
                                     json.encodeToString(ListSerializer(Raiding.serializer()), it)
                                 }
                             )
-                        } ?: throw IllegalArgumentException("Slug cannot be null")
+                        } ?: throw IllegalArgumentException("ID cannot be null")
                     }
                 }
             } catch (e: Exception) {

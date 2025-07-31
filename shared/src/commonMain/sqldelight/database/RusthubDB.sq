@@ -624,7 +624,7 @@ updateSubscribed:
 UPDATE userEntity SET subscribed = CASE WHEN :subscribed THEN 1 ELSE 0 END WHERE id = :id;
 
 CREATE TABLE itemEntity (
-    id INTEGER,
+    id INTEGER NOT NULL ,
     slug TEXT,
     url TEXT,
     name TEXT,
@@ -640,7 +640,7 @@ CREATE TABLE itemEntity (
     crafting TEXT,
     recycling TEXT,
     raiding TEXT,
-    PRIMARY KEY(slug, language)
+    PRIMARY KEY(id, language)
 );
 
 upsertItem:
@@ -678,7 +678,7 @@ INSERT INTO itemEntity (
     :crafting,
     :recycling,
     :raiding
-) ON CONFLICT(slug, language) DO UPDATE SET
+) ON CONFLICT(id, language) DO UPDATE SET
     slug = excluded.slug,
     url = excluded.url,
     name = excluded.name,
