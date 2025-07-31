@@ -26,11 +26,10 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.io.IOException
 import kotlinx.serialization.json.Json
 import kotlinx.coroutines.CancellationException
+import pl.cuyer.rusthub.data.network.MutexSharedDeferred
 import pl.cuyer.rusthub.common.user.UserEvent
 import pl.cuyer.rusthub.data.network.auth.model.RefreshRequest
 import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
@@ -63,8 +62,8 @@ actual class HttpClientFactory actual constructor(
     private val tokenRefresher: TokenRefresher,
     private val userEventController: UserEventController
 ) {
-    private val refreshMutex = Mutex()
-    private val deleteMutex = Mutex()
+    private val refreshRunner = MutexSharedDeferred<BearerTokens?>()
+    private val deleteRunner = MutexSharedDeferred<Unit>()
     actual fun create(): HttpClient {
         return HttpClient(Darwin) {
             install(ContentNegotiation) {
@@ -78,12 +77,12 @@ actual class HttpClientFactory actual constructor(
                         }
                     }
                     refreshTokens {
-                        refreshMutex.withLock {
+                        refreshRunner.run {
                             val user = authDataSource.getUserOnce()
                             val oldRefresh = oldTokens?.refreshToken
                             if (user?.provider == AuthProvider.ANONYMOUS || oldRefresh.isNullOrBlank()) {
                                 logoutOnce()
-                                return@withLock null
+                                return@run null
                             }
 
                             val response = client.post("${NetworkConstants.BASE_URL}auth/refresh") {
@@ -153,7 +152,7 @@ actual class HttpClientFactory actual constructor(
 
     private suspend fun logoutOnce() {
         try {
-            deleteMutex.withLock {
+            deleteRunner.run {
                 if (authDataSource.getUserOnce() != null) {
                     authDataSource.deleteUser()
                     withContext(Dispatchers.Main.immediate) {

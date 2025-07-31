@@ -5,8 +5,7 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import pl.cuyer.rusthub.data.network.MutexSharedDeferred
 import pl.cuyer.rusthub.common.user.UserEvent
 import pl.cuyer.rusthub.common.user.UserEventController
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
@@ -20,11 +19,11 @@ class ForbiddenResponsePluginConfig {
 val ForbiddenResponsePlugin = createClientPlugin("ForbiddenResponsePlugin", ::ForbiddenResponsePluginConfig) {
     val dataSource = pluginConfig.authDataSource
     val userEventController = pluginConfig.userEventController
-    val deleteMutex = Mutex()
+    val deleteRunner = MutexSharedDeferred<Unit>()
     onResponse { response ->
         if (response.status == HttpStatusCode.Forbidden) {
             try {
-                deleteMutex.withLock {
+                deleteRunner.run {
                     if (dataSource.getUserOnce() != null) {
                         dataSource.deleteUser()
                         withContext(Dispatchers.Main.immediate) {
