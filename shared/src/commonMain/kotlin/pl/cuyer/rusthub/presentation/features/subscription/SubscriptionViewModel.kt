@@ -175,6 +175,7 @@ class SubscriptionViewModel(
 
     private fun confirmPurchase(productId: String, token: String) {
         coroutineScope.launch {
+            billingRepository.clearPurchaseCache()
             val plan = SubscriptionPlan.entries.firstOrNull { it.basePlanId == productId || it.productId == productId }
             val id = plan?.takeIf { it.basePlanId == null }?.productId
             confirmPurchaseUseCase(token, id)

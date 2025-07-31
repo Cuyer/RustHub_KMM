@@ -266,9 +266,10 @@ class SettingsViewModel(
                 updateUser(user, null)
                 return@launch
             }
+            val shouldShowLoading = state.value.currentSubscription == null
             getActiveSubscriptionUseCase()
-                .onStart { if (state.value.currentSubscription == null) updateLoading(true) }
-                .onCompletion { if (state.value.currentSubscription == null) updateLoading(false) }
+                .onStart { if (shouldShowLoading) updateLoading(true) }
+                .onCompletion { if (shouldShowLoading) updateLoading(false) }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> updateUser(user, result.data)
