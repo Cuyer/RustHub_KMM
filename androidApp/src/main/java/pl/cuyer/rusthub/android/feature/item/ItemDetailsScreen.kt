@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
@@ -196,11 +197,13 @@ private fun DetailsContent(page: DetailsPage, content: Any?) {
                 contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
                 verticalArrangement = Arrangement.spacedBy(spacing.medium),
             ) {
-                items(
+                itemsIndexed(
                     looting,
-                    key = { it.from ?: it.hashCode().toString() },
-                    contentType = { "looting" }
-                ) { item ->
+                    key = { index, item ->
+                        item.from?.let { "$index-$it" } ?: "$index-${item.hashCode()}"
+                    },
+                    contentType = { _, _ -> "looting" }
+                ) { _, item ->
                     LootingListItem(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -219,11 +222,13 @@ private fun DetailsContent(page: DetailsPage, content: Any?) {
                 contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
                 verticalArrangement = Arrangement.spacedBy(spacing.medium)
             ) {
-                items(
+                itemsIndexed(
                     places,
-                    key = { it.place ?: it.hashCode().toString() },
-                    contentType = { "where_to_find" }
-                ) { item ->
+                    key = { index, item ->
+                        item.place?.let { "$index-$it" } ?: "$index-${item.hashCode()}"
+                    },
+                    contentType = { _, _ -> "where_to_find" }
+                ) { _, item ->
                     WhereToFindListItem(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -242,11 +247,13 @@ private fun DetailsContent(page: DetailsPage, content: Any?) {
                 contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
                 verticalArrangement = Arrangement.spacedBy(spacing.medium)
             ) {
-                items(
+                itemsIndexed(
                     contents,
-                    key = { it.spawn ?: it.hashCode().toString() },
-                    contentType = { "contents" }
-                ) { item ->
+                    key = { index, item ->
+                        item.spawn?.let { "$index-$it" } ?: "$index-${item.hashCode()}"
+                    },
+                    contentType = { _, _ -> "contents" }
+                ) { _, item ->
                     LootContentListItem(
                         modifier = Modifier
                             .fillMaxWidth()
