@@ -383,7 +383,7 @@
     <string name="skip">Пропустить</string>
     <string name="fetching_in_background">Загрузка будет продолжена в фоновом режиме.</string>
     <string name="looting">Добывается из</string>
-    <string name="contents">Contents</string>
+    <string name="contents">Содержимое</string>
     <string name="where_to_find">Где найти</string>
     <string name="chance">Шанс</string>
     <string name="amount">Количество</string>
