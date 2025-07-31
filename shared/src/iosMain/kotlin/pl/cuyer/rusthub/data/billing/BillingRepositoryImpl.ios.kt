@@ -14,4 +14,5 @@ class BillingRepositoryImpl : BillingRepository {
     override val errorFlow: Flow<BillingErrorCode> = emptyFlow()
     override fun queryProducts(ids: List<String>): Flow<List<BillingProduct>> = flowOf(emptyList())
     override fun launchBillingFlow(activity: Any, productId: String, obfuscatedId: String?) {}
+    override fun clearPurchaseCache() {}
 }

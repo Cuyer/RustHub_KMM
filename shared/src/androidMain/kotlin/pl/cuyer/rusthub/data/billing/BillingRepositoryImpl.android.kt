@@ -140,6 +140,10 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
         }
     }
 
+    override fun clearPurchaseCache() {
+        _purchaseFlow.resetReplayCache()
+    }
+
 
     private fun handlePurchase(purchase: Purchase) {
         val product = purchase.products.firstOrNull()
