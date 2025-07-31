@@ -383,6 +383,7 @@
     <string name="skip">Ignorer</string>
     <string name="fetching_in_background">Nous continuerons le téléchargement en arrière-plan.</string>
     <string name="looting">Obtenu sur</string>
+    <string name="contents">Contents</string>
     <string name="chance">Chance</string>
     <string name="amount">Quantité</string>
     <string name="crafting">Fabrication</string>
