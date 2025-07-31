@@ -553,14 +553,19 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
 
 @Composable
 private fun GreetingSection(username: String?) {
-    if (username != null) {
-        Text(
-            text = stringResource(SharedRes.strings.hello_username, username),
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(bottom = spacing.medium)
-        )
+    AnimatedContent(
+        targetState = username != null,
+        transitionSpec = { defaultFadeTransition() }
+    ) { exist ->
+        if (exist) {
+            Text(
+                text = stringResource(SharedRes.strings.hello_username, username!!),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(bottom = spacing.medium)
+            )
+        }
     }
 }
 
