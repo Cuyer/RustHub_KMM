@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.android.designsystem
 
 
 import android.app.Activity
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Spring
@@ -69,6 +70,7 @@ import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.android.designsystem.SearchHistoryShimmer
+import pl.cuyer.rusthub.android.designsystem.defaultFadeTransition
 import pl.cuyer.rusthub.presentation.model.SearchQueryUi
 import dev.icerock.moko.resources.StringResource
 
@@ -231,13 +233,17 @@ private fun SearchHistorySuggestions(
     onSearchTriggered: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    if (isLoadingSearchHistory()) {
-        SearchHistoryShimmer(modifier = Modifier.fillMaxWidth())
-    } else {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(spacing.xxmedium)
-        ) {
+    AnimatedContent(
+        targetState = isLoadingSearchHistory(),
+        transitionSpec = { defaultFadeTransition() }
+    ) { loading ->
+        if (loading) {
+            SearchHistoryShimmer(modifier = Modifier.fillMaxWidth())
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(spacing.xxmedium)
+            ) {
             item(key = "label", contentType = "label") {
                 AnimatedVisibility(
                     visible = searchQueryUi().isNotEmpty(),

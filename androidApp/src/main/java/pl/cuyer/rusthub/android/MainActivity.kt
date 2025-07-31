@@ -9,6 +9,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +32,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import pl.cuyer.rusthub.android.feature.startup.StartupScreen
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.util.composeUtil.isSystemInDarkTheme
+import pl.cuyer.rusthub.android.designsystem.defaultFadeTransition
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.util.InAppUpdateManager
@@ -115,13 +117,18 @@ class MainActivity : AppCompatActivity() {
             ) {
                 val state = startupViewModel.state.collectAsStateWithLifecycle()
                 RustHubBackground {
-                    if (state.value.isLoading) {
-                        StartupScreen(
-                            showSkip = { state.value.showSkip },
-                            onSkip = { startupViewModel.skipFetching() }
-                        )
-                    } else {
-                        NavigationRoot(startDestination = state.value.startDestination)
+                    AnimatedContent(
+                        targetState = state.value.isLoading,
+                        transitionSpec = { defaultFadeTransition() }
+                    ) { isLoading ->
+                        if (isLoading) {
+                            StartupScreen(
+                                showSkip = { state.value.showSkip },
+                                onSkip = { startupViewModel.skipFetching() }
+                            )
+                        } else {
+                            NavigationRoot(startDestination = state.value.startDestination)
+                        }
                     }
                 }
             }
