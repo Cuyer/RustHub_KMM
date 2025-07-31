@@ -383,6 +383,8 @@
     <string name="skip">Pomiń</string>
     <string name="fetching_in_background">Pobieranie będzie kontynuowane w tle.</string>
     <string name="looting">Pozyskiwane z</string>
+    <string name="contents">Zawartość</string>
+    <string name="where_to_find">Gdzie znaleźć</string>
     <string name="chance">Szansa</string>
     <string name="amount">Ilość</string>
     <string name="crafting">Craftowanie</string>

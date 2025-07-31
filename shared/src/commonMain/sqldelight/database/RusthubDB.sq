@@ -637,6 +637,8 @@ CREATE TABLE itemEntity (
     icon_url TEXT,
     language TEXT NOT NULL,
     looting TEXT,
+    loot_contents TEXT,
+    where_to_find TEXT,
     crafting TEXT,
     recycling TEXT,
     raiding TEXT,
@@ -658,6 +660,8 @@ INSERT INTO itemEntity (
     icon_url,
     language,
     looting,
+    loot_contents,
+    where_to_find,
     crafting,
     recycling,
     raiding
@@ -675,6 +679,8 @@ INSERT INTO itemEntity (
     :iconUrl,
     :language,
     :looting,
+    :lootContents,
+    :whereToFind,
     :crafting,
     :recycling,
     :raiding
@@ -691,6 +697,8 @@ INSERT INTO itemEntity (
     icon_url = excluded.icon_url,
     language = excluded.language,
     looting = excluded.looting,
+    loot_contents = excluded.loot_contents,
+    where_to_find = excluded.where_to_find,
     crafting = excluded.crafting,
     recycling = excluded.recycling,
     raiding = excluded.raiding;

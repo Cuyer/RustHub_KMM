@@ -15,6 +15,8 @@ import pl.cuyer.rusthub.domain.model.ItemCategory
 import pl.cuyer.rusthub.domain.model.RustItem
 import pl.cuyer.rusthub.util.CrashReporter
 import pl.cuyer.rusthub.domain.model.Looting
+import pl.cuyer.rusthub.domain.model.LootContent
+import pl.cuyer.rusthub.domain.model.WhereToFind
 import pl.cuyer.rusthub.domain.model.Raiding
 import pl.cuyer.rusthub.domain.model.Crafting
 import pl.cuyer.rusthub.domain.model.Recycling
@@ -54,6 +56,12 @@ class ItemDataSourceImpl(
                                 language = item.language?.name ?: Language.ENGLISH.name,
                                 looting = item.looting?.let {
                                     json.encodeToString(ListSerializer(Looting.serializer()), it)
+                                },
+                                lootContents = item.lootContents?.let {
+                                    json.encodeToString(ListSerializer(LootContent.serializer()), it)
+                                },
+                                whereToFind = item.whereToFind?.let {
+                                    json.encodeToString(ListSerializer(WhereToFind.serializer()), it)
                                 },
                                 crafting = item.crafting?.let { json.encodeToString(it) },
                                 recycling = item.recycling?.let { json.encodeToString(it) },

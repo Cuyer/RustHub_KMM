@@ -44,6 +44,8 @@ import pl.cuyer.rusthub.domain.model.WipeType
 import pl.cuyer.rusthub.domain.model.ItemCategory
 import pl.cuyer.rusthub.domain.model.RustItem
 import pl.cuyer.rusthub.domain.model.Looting
+import pl.cuyer.rusthub.domain.model.LootContent
+import pl.cuyer.rusthub.domain.model.WhereToFind
 import pl.cuyer.rusthub.domain.model.Crafting
 import pl.cuyer.rusthub.domain.model.Recycling
 import pl.cuyer.rusthub.domain.model.Raiding
@@ -224,6 +226,12 @@ fun ItemEntity.toRustItem(json: Json): RustItem {
         language = language?.let { Language.valueOf(it) },
         looting = looting?.let {
             json.decodeFromString(ListSerializer(Looting.serializer()), it)
+        },
+        lootContents = loot_contents?.let {
+            json.decodeFromString(ListSerializer(LootContent.serializer()), it)
+        },
+        whereToFind = where_to_find?.let {
+            json.decodeFromString(ListSerializer(WhereToFind.serializer()), it)
         },
         crafting = crafting?.let { json.decodeFromString(Crafting.serializer(), it) },
         recycling = recycling?.let { json.decodeFromString(Recycling.serializer(), it) },

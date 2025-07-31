@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.android.designsystem
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ fun ItemTooltipImage(
     text: String? = null,
     tooltipText: String? = null,
     addBlueprint: Boolean = false,
+    overlayText: String? = null,
     size: Int = 48
 ) {
     Column(
@@ -93,6 +95,19 @@ fun ItemTooltipImage(
                         success = false
                     }
                 )
+
+                overlayText?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .background(
+                                MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+                            )
+                            .padding(horizontal = 2.dp)
+                    )
+                }
             }
         }
 
