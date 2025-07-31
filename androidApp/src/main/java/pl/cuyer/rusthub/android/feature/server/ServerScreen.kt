@@ -35,6 +35,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
@@ -401,7 +402,7 @@ fun ServerScreen(
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            CircularProgressIndicator(
+                            CircularWavyProgressIndicator(
                                 Modifier
                                     .animateItem()
                                     .padding(6.dp)

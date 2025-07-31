@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,6 +29,7 @@ import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.Theme
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SignProviderButton(
     modifier: Modifier = Modifier,
@@ -51,10 +54,9 @@ fun SignProviderButton(
             disabledContentColor = contentColor
         ),
         loadingIndicator = {
-            CircularProgressIndicator(
+            CircularWavyProgressIndicator(
                 color = contentColor,
-                modifier = Modifier.size(16.dp),
-                strokeWidth = 2.dp
+                modifier = Modifier.size(16.dp)
             )
         }
     ) {

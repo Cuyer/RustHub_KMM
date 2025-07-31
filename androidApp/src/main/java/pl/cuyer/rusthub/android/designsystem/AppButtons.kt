@@ -17,7 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -32,6 +34,7 @@ import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AppButton(
     modifier: Modifier = Modifier,
@@ -40,9 +43,8 @@ fun AppButton(
     colors: ButtonColors = ButtonDefaults.elevatedButtonColors(),
     isLoading: Boolean = false,
     loadingIndicator: @Composable () -> Unit = {
-        CircularProgressIndicator(
-            modifier = Modifier.size(16.dp),
-            strokeWidth = 2.dp
+        CircularWavyProgressIndicator(
+            modifier = Modifier.size(16.dp)
         )
     },
     content: @Composable () -> Unit
@@ -77,6 +79,7 @@ fun AppButton(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AppOutlinedButton(
     modifier: Modifier = Modifier,
@@ -107,9 +110,8 @@ fun AppOutlinedButton(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (loading) {
-                    CircularProgressIndicator(
+                    CircularWavyProgressIndicator(
                         modifier = Modifier.size(16.dp),
-                        strokeWidth = 2.dp
                     )
                 } else {
                     content()
@@ -119,6 +121,7 @@ fun AppOutlinedButton(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AppTextButton(
     modifier: Modifier = Modifier,
@@ -143,9 +146,8 @@ fun AppTextButton(
             )
         ) { loading ->
             if (loading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(16.dp),
-                    strokeWidth = 2.dp
+                CircularWavyProgressIndicator(
+                    modifier = Modifier.size(16.dp)
                 )
             } else {
                 content()
