@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AppBarWithSearch
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -164,8 +165,8 @@ fun RustSearchBarTopAppBar(
                             animationSpec = tween(durationMillis = 150)
                         ),
                         visible = showFiltersIcon &&
-                            searchBarState.currentValue == SearchBarValue.Collapsed &&
-                            textFieldState.text.isEmpty()
+                                searchBarState.currentValue == SearchBarValue.Collapsed &&
+                                textFieldState.text.isEmpty()
                     ) {
                         IconButton(
                             onClick = onOpenFilters,
@@ -183,11 +184,11 @@ fun RustSearchBarTopAppBar(
         )
     }
 
-    TopSearchBar(
+    AppBarWithSearch(
         modifier = Modifier.fillMaxWidth(),
         state = searchBarState,
-        scrollBehavior = null,
-        inputField = inputField
+        inputField = inputField,
+        scrollBehavior = null
     )
 
     if (!isTabletMode) {
@@ -225,7 +226,7 @@ fun RustSearchBarTopAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchHistorySuggestions(
-    searchQueryUi:() -> List<SearchQueryUi>,
+    searchQueryUi: () -> List<SearchQueryUi>,
     isLoadingSearchHistory: () -> Boolean,
     textFieldState: TextFieldState,
     searchBarState: SearchBarState,
@@ -244,91 +245,102 @@ private fun SearchHistorySuggestions(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(spacing.xxmedium)
             ) {
-            item(key = "label", contentType = "label") {
-                AnimatedVisibility(
-                    visible = searchQueryUi().isNotEmpty(),
-                    enter = fadeIn(animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy,)),
-                    exit = fadeOut(animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy,))
-                ) {
-                    Row {
-                        Text(
-                            modifier = Modifier
-                                .animateItem()
-                                .padding(spacing.medium),
-                            text = stringResource(SharedRes.strings.recent_searches)
+                item(key = "label", contentType = "label") {
+                    AnimatedVisibility(
+                        visible = searchQueryUi().isNotEmpty(),
+                        enter = fadeIn(
+                            animationSpec = spring(
+                                stiffness = Spring.StiffnessLow,
+                                dampingRatio = Spring.DampingRatioLowBouncy,
+                            )
+                        ),
+                        exit = fadeOut(
+                            animationSpec = spring(
+                                stiffness = Spring.StiffnessLow,
+                                dampingRatio = Spring.DampingRatioLowBouncy,
+                            )
                         )
-                    }
-                }
-            }
-            items(
-                searchQueryUi(),
-                key = { it.query },
-                contentType = { "history" }
-            ) { item ->
-                val swipeState = rememberSwipeToDismissBoxState()
-                SwipeToDismissBox(
-                    state = swipeState,
-                    backgroundContent = {
-                        Box(
-                            Modifier
-                                .fillMaxSize()
-                                .background(MaterialTheme.colorScheme.error)
-                                .padding(end = spacing.medium),
-                            contentAlignment = Alignment.CenterEnd
-                        ) {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = stringResource(SharedRes.strings.delete),
-                                tint = MaterialTheme.colorScheme.onError
+                    ) {
+                        Row {
+                            Text(
+                                modifier = Modifier
+                                    .animateItem()
+                                    .padding(spacing.medium),
+                                text = stringResource(SharedRes.strings.recent_searches)
                             )
                         }
-                    },
-                    onDismiss = { if (it == SwipeToDismissBoxValue.EndToStart) onDelete(item.query) },
-                    enableDismissFromStartToEnd = false
-                ) {
-                    ElevatedCard(
-                        onClick = {
-                            textFieldState.setTextAndPlaceCursorAtEnd(item.query)
-                            onSearchTriggered()
-                            coroutineScope.launch { searchBarState.animateToCollapsed() }
-                        },
-                        modifier = Modifier
-                            .animateItem()
-                            .fillMaxWidth(),
-                        shape = RectangleShape,
-                        colors = CardDefaults.elevatedCardColors().copy(
-                            containerColor = MaterialTheme.colorScheme.background,
-                            contentColor = MaterialTheme.colorScheme.onBackground
-                        )
-                    ) {
-                        Text(
-                            text = item.query,
-                            modifier = Modifier.padding(spacing.medium)
-                        )
                     }
                 }
-            }
-            if (searchQueryUi().isNotEmpty()) {
-                item(key = "clear", contentType = "clear") {
-                    Row(
-                        modifier = Modifier
-                            .animateItem()
-                            .fillMaxWidth()
-                            .padding(spacing.medium),
-                        horizontalArrangement = Arrangement.Center
+                items(
+                    searchQueryUi(),
+                    key = { it.query },
+                    contentType = { "history" }
+                ) { item ->
+                    val swipeState = rememberSwipeToDismissBoxState()
+                    SwipeToDismissBox(
+                        state = swipeState,
+                        backgroundContent = {
+                            Box(
+                                Modifier
+                                    .fillMaxSize()
+                                    .background(MaterialTheme.colorScheme.error)
+                                    .padding(end = spacing.medium),
+                                contentAlignment = Alignment.CenterEnd
+                            ) {
+                                Icon(
+                                    Icons.Default.Delete,
+                                    contentDescription = stringResource(SharedRes.strings.delete),
+                                    tint = MaterialTheme.colorScheme.onError
+                                )
+                            }
+                        },
+                        onDismiss = { if (it == SwipeToDismissBoxValue.EndToStart) onDelete(item.query) },
+                        enableDismissFromStartToEnd = false
                     ) {
-                        AppButton(
+                        ElevatedCard(
                             onClick = {
-                                onDelete("")
-                                textFieldState.setTextAndPlaceCursorAtEnd("")
+                                textFieldState.setTextAndPlaceCursorAtEnd(item.query)
+                                onSearchTriggered()
                                 coroutineScope.launch { searchBarState.animateToCollapsed() }
                             },
-                            colors = ButtonDefaults.elevatedButtonColors(
+                            modifier = Modifier
+                                .animateItem()
+                                .fillMaxWidth(),
+                            shape = RectangleShape,
+                            colors = CardDefaults.elevatedCardColors().copy(
                                 containerColor = MaterialTheme.colorScheme.background,
                                 contentColor = MaterialTheme.colorScheme.onBackground
-                            ),
+                            )
                         ) {
-                            Text(stringResource(SharedRes.strings.clear_search_history))
+                            Text(
+                                text = item.query,
+                                modifier = Modifier.padding(spacing.medium)
+                            )
+                        }
+                    }
+                }
+                if (searchQueryUi().isNotEmpty()) {
+                    item(key = "clear", contentType = "clear") {
+                        Row(
+                            modifier = Modifier
+                                .animateItem()
+                                .fillMaxWidth()
+                                .padding(spacing.medium),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            AppButton(
+                                onClick = {
+                                    onDelete("")
+                                    textFieldState.setTextAndPlaceCursorAtEnd("")
+                                    coroutineScope.launch { searchBarState.animateToCollapsed() }
+                                },
+                                colors = ButtonDefaults.elevatedButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.background,
+                                    contentColor = MaterialTheme.colorScheme.onBackground
+                                ),
+                            ) {
+                                Text(stringResource(SharedRes.strings.clear_search_history))
+                            }
                         }
                     }
                 }
