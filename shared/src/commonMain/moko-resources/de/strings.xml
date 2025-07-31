@@ -384,6 +384,7 @@
     <string name="fetching_in_background">Wir setzen das Herunterladen im Hintergrund fort.</string>
     <string name="looting">Geplündert aus</string>
     <string name="contents">Contents</string>
+    <string name="where_to_find">Wo zu finden</string>
     <string name="chance">Chance</string>
     <string name="amount">Menge</string>
     <string name="crafting">Herstellung</string>

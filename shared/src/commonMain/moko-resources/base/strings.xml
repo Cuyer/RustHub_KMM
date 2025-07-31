@@ -386,6 +386,7 @@
     <string name="fetching_in_background">We'll continue fetching in the background.</string>
     <string name="looting">Looted from</string>
     <string name="contents">Contents</string>
+    <string name="where_to_find">Where to find</string>
     <string name="chance">Chance</string>
     <string name="amount">Amount</string>
     <string name="crafting">Crafting</string>
