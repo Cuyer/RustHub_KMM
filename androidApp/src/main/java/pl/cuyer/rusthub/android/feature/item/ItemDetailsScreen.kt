@@ -62,6 +62,7 @@ import pl.cuyer.rusthub.presentation.features.item.ItemDetailsState
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.android.designsystem.LootingListItem
+import pl.cuyer.rusthub.android.designsystem.LootContentListItem
 import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.android.designsystem.ItemTooltipImage
@@ -72,6 +73,7 @@ import pl.cuyer.rusthub.domain.model.CraftingRecipe
 import pl.cuyer.rusthub.domain.model.ResearchTableCost
 import pl.cuyer.rusthub.domain.model.TechTreeCost
 import pl.cuyer.rusthub.domain.model.Looting
+import pl.cuyer.rusthub.domain.model.LootContent
 import pl.cuyer.rusthub.domain.model.RaidItem
 import pl.cuyer.rusthub.domain.model.RaidResource
 import pl.cuyer.rusthub.domain.model.Raiding
@@ -86,6 +88,7 @@ import kotlin.math.roundToInt
 @Immutable
 private enum class DetailsPage(val title: StringResource) {
     LOOTING(SharedRes.strings.looting),
+    CONTENTS(SharedRes.strings.contents),
     CRAFTING(SharedRes.strings.crafting),
     RECYCLING(SharedRes.strings.recycling),
     RAIDING(SharedRes.strings.raiding)
@@ -103,6 +106,8 @@ fun ItemDetailsScreen(
             buildList {
                 item.looting?.takeIf { it.isNotEmpty() }
                     ?.let { add(DetailsPage.LOOTING to it) }
+                item.lootContents?.takeIf { it.isNotEmpty() }
+                    ?.let { add(DetailsPage.CONTENTS to it) }
                 item.crafting?.takeIf { it.hasContent() }
                     ?.let { add(DetailsPage.CRAFTING to it) }
                 item.recycling?.takeIf { it.hasContent() }
@@ -197,6 +202,29 @@ private fun DetailsContent(page: DetailsPage, content: Any?) {
                             .animateItem()
                             .padding(horizontal = spacing.xmedium),
                         looting = item
+                    )
+                }
+            }
+        }
+
+        DetailsPage.CONTENTS -> {
+            val contents = content as? List<LootContent> ?: emptyList()
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
+                verticalArrangement = Arrangement.spacedBy(spacing.medium),
+            ) {
+                items(
+                    contents,
+                    key = { it.spawn ?: it.hashCode().toString() },
+                    contentType = { "contents" }
+                ) { item ->
+                    LootContentListItem(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .animateItem()
+                            .padding(horizontal = spacing.xmedium),
+                        content = item
                     )
                 }
             }
