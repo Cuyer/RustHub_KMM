@@ -3,10 +3,11 @@ package pl.cuyer.rusthub.util
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.core.net.toUri
 
 actual class StoreNavigator(private val context: Context) {
     actual fun openStore() {
-        val uri = Uri.parse("market://details?id=${context.packageName}")
+        val uri = "market://details?id=${context.packageName}".toUri()
         val intent = Intent(Intent.ACTION_VIEW, uri).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
@@ -15,16 +16,15 @@ actual class StoreNavigator(private val context: Context) {
         } catch (_: Exception) {
             val webIntent = Intent(
                 Intent.ACTION_VIEW,
-                Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}")
+                "https://play.google.com/store/apps/details?id=${context.packageName}".toUri()
             ).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
             context.startActivity(webIntent)
         }
     }
 
     actual fun openSubscriptionManagement(productId: String) {
-        val uri = Uri.parse(
-            "https://play.google.com/store/account/subscriptions?sku=$productId&package=${context.packageName}"
-        )
+        val uri =
+            "https://play.google.com/store/account/subscriptions?sku=$productId&package=${context.packageName}".toUri()
         val intent = Intent(Intent.ACTION_VIEW, uri).apply {
             setPackage("com.android.vending")
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

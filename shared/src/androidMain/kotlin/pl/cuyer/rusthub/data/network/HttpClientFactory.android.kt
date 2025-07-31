@@ -27,6 +27,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import kotlinx.coroutines.CancellationException
 import pl.cuyer.rusthub.common.user.UserEvent
 import pl.cuyer.rusthub.data.network.auth.model.RefreshRequest
 import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
@@ -38,6 +39,7 @@ import pl.cuyer.rusthub.util.AppCheckTokenProvider
 import pl.cuyer.rusthub.util.BuildType
 import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.data.network.CrashReportingPlugin
+import pl.cuyer.rusthub.util.CrashReporter
 import java.util.Locale
 
 private fun useCtLibrary(): Boolean {
@@ -90,10 +92,8 @@ actual class HttpClientFactory actual constructor(
                                     }
                                 }
                             } catch (e: Exception) {
-                                Napier.e(
-                                    message = "Failed to delete anonymous user on 401",
-                                    throwable = e
-                                )
+                                if (e is CancellationException) throw e
+                                CrashReporter.recordException(e)
                             }
                             return@refreshTokens null
                         }
@@ -129,7 +129,8 @@ actual class HttpClientFactory actual constructor(
                                     }
                                 }
                             } catch (e: Exception) {
-                                Napier.e(message = "Failed to delete user on token refresh failure", throwable = e)
+                                if (e is CancellationException) throw e
+                                CrashReporter.recordException(e)
                             }
                             null
                         }

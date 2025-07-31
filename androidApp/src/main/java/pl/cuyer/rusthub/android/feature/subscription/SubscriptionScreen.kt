@@ -7,6 +7,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateBounds
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -48,6 +50,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import pl.cuyer.rusthub.android.designsystem.shimmer
@@ -213,13 +216,33 @@ fun SubscriptionScreen(
                 .consumeWindowInsets(innerPadding)
                 .fillMaxSize()
         ) {
+            AnimatedVisibility(
+                visible = !state.value.isConnected,
+                enter = slideInVertically(
+                    animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
+                ),
+                exit = slideOutVertically(
+                    animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
+                )
+            ) {
+                Text(
+                    textAlign = TextAlign.Center,
+                    text = stringResource(SharedRes.strings.offline),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = spacing.xsmall)
+                        .background(MaterialTheme.colorScheme.secondary)
+                )
+            }
             if (state.value.hasError) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    item {
+                    item(key = "error", contentType = "error") {
                         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             Column(
                                 modifier = Modifier.fillMaxWidth(),
@@ -272,10 +295,16 @@ fun SubscriptionScreen(
                     )
                 }
                 if (state.value.isProcessing) {
-                    SubscriptionShimmer(
-                        isTablet = isTabletMode,
-                        modifier = Modifier.matchParentSize()
-                    )
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .background(
+                                MaterialTheme.colorScheme.background.copy(alpha = 0.6f)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
             }
         }

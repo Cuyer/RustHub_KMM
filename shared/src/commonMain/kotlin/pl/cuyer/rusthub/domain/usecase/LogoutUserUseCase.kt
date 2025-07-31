@@ -8,6 +8,7 @@ import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.repository.auth.AuthRepository
 import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.CrashReporter
+import kotlinx.coroutines.CancellationException
 
 class LogoutUserUseCase(
     private val repository: AuthRepository,
@@ -21,6 +22,7 @@ class LogoutUserUseCase(
                         dataSource.deleteUser()
                         send(Result.Success(Unit))
                     } catch (e: Exception) {
+                        if (e is CancellationException) throw e
                         CrashReporter.recordException(e)
                         send(Result.Error(e))
                     }

@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.presentation.di
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
+import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.protobuf.ProtoBuf
 import pl.cuyer.rusthub.UserPreferencesProto
@@ -16,6 +17,7 @@ class UserPreferencesSerializer : Serializer<UserPreferencesProto> {
         try {
             ProtoBuf.decodeFromByteArray(UserPreferencesProto.serializer(), input.readBytes())
         } catch (exception: Exception) {
+            if (exception is CancellationException) throw exception
             throw CorruptionException("Cannot read proto.", exception)
         }
 

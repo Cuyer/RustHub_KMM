@@ -10,6 +10,7 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.CancellationException
 
 actual class GoogleAuthClient(private val context: Context) {
     actual suspend fun getIdToken(clientId: String): String? {
@@ -36,11 +37,13 @@ actual class GoogleAuthClient(private val context: Context) {
                     .build()
                 manager.getCredential(context, signUpRequest)
             } catch (e: Exception) {
-                Napier.e("Google sign in failed", e)
+                if (e is CancellationException) throw e
+                CrashReporter.recordException(e)
                 return null
             }
         } catch (e: Exception) {
-            Napier.e("Google sign in failed", e)
+            if (e is CancellationException) throw e
+            CrashReporter.recordException(e)
             return null
         }
 
@@ -54,7 +57,7 @@ actual class GoogleAuthClient(private val context: Context) {
                             .createFrom(credential.data)
                         googleIdTokenCredential.idToken
                     } catch (e: GoogleIdTokenParsingException) {
-                        Napier.e("Google sign in failed", e)
+                        CrashReporter.recordException(e)
                         null
                     }
                 } else null
@@ -71,7 +74,8 @@ actual class GoogleAuthClient(private val context: Context) {
                     ClearCredentialStateRequest()
                 )
         } catch (e: Exception) {
-            Napier.e("Google sign out failed", e)
+            if (e is CancellationException) throw e
+            CrashReporter.recordException(e)
         }
     }
 }

@@ -342,6 +342,7 @@
     <string name="error_network">Erreur réseau. Veuillez vérifier votre connexion.</string>
     <string name="offline_cached_servers_info">Réseau indisponible. Affichage des serveurs en cache.</string>
     <string name="offline">Pas de connexion Internet.</string>
+    <string name="connect_manage_subscription">Connectez-vous à Internet pour gérer votre abonnement.</string>
     <string name="no_servers_available_offline">Aucun serveur disponible hors ligne.</string>
     <string name="no_servers_available">Aucun serveur disponible.</string>
     <string name="no_items_available">Aucun objet disponible.</string>
@@ -374,6 +375,7 @@
     <string name="tools">Outils</string>
     <string name="construction">Construction</string>
     <string name="resources">Ressources</string>
+    <string name="world">Monde</string>
     <string name="misc">Divers</string>
     <string name="traps">Pièges</string>
     <string name="uncategorized">Non catégorisé</string>

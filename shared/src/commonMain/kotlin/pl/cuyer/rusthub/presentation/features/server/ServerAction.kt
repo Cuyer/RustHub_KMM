@@ -30,4 +30,6 @@ sealed interface ServerAction {
     data class OnChangeLoadMoreState(val isLoadingMore: Boolean): ServerAction
     @Immutable
     data class OnFilterChange(val filter: ServerFilter): ServerAction
+    @Immutable
+    data class GatherConsent(val activity: Any, val onAdAvailable: () -> Unit) : ServerAction
 }

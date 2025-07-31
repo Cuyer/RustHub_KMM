@@ -1,7 +1,6 @@
 package pl.cuyer.rusthub.android.feature.server
 
 import android.app.Activity
-import android.content.Context
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -24,11 +23,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
@@ -55,8 +52,6 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -72,44 +67,35 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.LookaheadScope
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavKey
-import app.cash.paging.PagingData
-import app.cash.paging.compose.LazyPagingItems
-import app.cash.paging.compose.collectAsLazyPagingItems
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import org.koin.compose.koinInject
-import org.koin.java.KoinJavaComponent.inject
-import com.google.android.gms.ads.MobileAds
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.BuildConfig
+import pl.cuyer.rusthub.android.ads.NativeAdCard
 import pl.cuyer.rusthub.android.designsystem.FilterBottomSheet
 import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.designsystem.ServerListItem
 import pl.cuyer.rusthub.android.designsystem.ServerListItemShimmer
-import pl.cuyer.rusthub.android.model.Label
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
-import pl.cuyer.rusthub.android.ads.NativeAdCard
-import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.HandlePagingItems
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerStatus
-import pl.cuyer.rusthub.domain.model.WipeSchedule
-import pl.cuyer.rusthub.domain.model.WipeType
+import pl.cuyer.rusthub.presentation.features.ads.AdAction
+import pl.cuyer.rusthub.presentation.features.ads.NativeAdState
 import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.features.server.ServerState
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
@@ -118,8 +104,6 @@ import pl.cuyer.rusthub.presentation.model.createLabels
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.StringProvider
-import pl.cuyer.rusthub.util.AdsConsentManager
-import java.util.Locale
 import java.util.UUID
 
 @OptIn(
@@ -133,7 +117,9 @@ fun ServerScreen(
     onAction: (ServerAction) -> Unit,
     pagedList: LazyPagingItems<ServerInfoUi>,
     uiEvent: Flow<UiEvent>,
-    showAds: Boolean
+    showAds: Boolean,
+    adState: State<NativeAdState>,
+    onAdAction: (AdAction) -> Unit
 ) {
     var showSheet by rememberSaveable { mutableStateOf(false) }
     val searchBarState = rememberSearchBarState()
@@ -156,25 +142,16 @@ fun ServerScreen(
         }
     }
 
-    val context: Context = LocalContext.current
-    val adsConsentManager = koinInject<AdsConsentManager>()
-    val preloadAd: PreloadNativeAdUseCase = koinInject()
+    val ads = adState
     val activity = LocalActivity.current as Activity
 
-    LaunchedEffect(adsConsentManager, context) {
-        adsConsentManager.gatherConsent(activity) { _ ->
-            if (adsConsentManager.canRequestAds) {
-                coroutineScope.launch {
-                    withContext(Dispatchers.IO) { MobileAds.initialize(context) }
-                    preloadAd(BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID)
-                }
-            }
+    LaunchedEffect(Unit) {
+        onAction(ServerAction.GatherConsent(activity) {
+            onAdAction(AdAction.LoadAd(BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID))
         }
+        )
     }
 
-    val windowSizeClass = calculateWindowSizeClass(context as Activity)
-
-    val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
 
     val stringProvider = koinInject<StringProvider>()
 
@@ -216,18 +193,21 @@ fun ServerScreen(
                         },
                         modifier = Modifier
                             .padding(horizontal = spacing.xmedium)
-                            .then(
-                                if (isTabletMode) Modifier.displayCutoutPadding() else Modifier
-                            )
 
                     )
                     AnimatedVisibility(
                         visible = !state.value.isConnected,
                         enter = slideInVertically(
-                            animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
+                            animationSpec = spring(
+                                stiffness = Spring.StiffnessLow,
+                                dampingRatio = Spring.DampingRatioLowBouncy
+                            )
                         ),
                         exit = slideOutVertically(
-                            animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)
+                            animationSpec = spring(
+                                stiffness = Spring.StiffnessLow,
+                                dampingRatio = Spring.DampingRatioLowBouncy
+                            )
                         )
                     ) {
                         Text(
@@ -271,7 +251,11 @@ fun ServerScreen(
                         ),
                         verticalArrangement = Arrangement.spacedBy(spacing.medium)
                     ) {
-                        items(6) {
+                        items(
+                            count = 6,
+                            key = { it },
+                            contentType = { "shimmer" }
+                        ) {
                             ServerListItemShimmer(
                                 modifier = Modifier
                                     .animateItem()
@@ -286,7 +270,7 @@ fun ServerScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        item {
+                        item(key = "empty", contentType = "empty") {
                             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                 Column(
                                     modifier = Modifier.fillMaxWidth(),
@@ -320,7 +304,7 @@ fun ServerScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        item {
+                        item(key = "error", contentType = "error") {
                             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                 Column(
                                     modifier = Modifier.fillMaxWidth(),
@@ -345,6 +329,11 @@ fun ServerScreen(
                     onAction(ServerAction.OnError(error))
                 }
             ) {
+                val adIndex = remember(pagedList.itemCount) {
+                    if (pagedList.itemCount > 0) {
+                        if (pagedList.itemCount >= 5) 4 else pagedList.itemCount - 1
+                    } else -1
+                }
                 LazyColumn(
                     state = lazyListState,
                     contentPadding = PaddingValues(
@@ -357,8 +346,13 @@ fun ServerScreen(
                     verticalArrangement = Arrangement.spacedBy(spacing.medium),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    onPagingItemsIndexed(key = { it.id ?: UUID.randomUUID() }) { index, item ->
-                        if (showAds && (index + 1) % 7 == 0) {
+                    onPagingItemsIndexed(
+                        key = { index, item ->
+                            if (showAds && index == adIndex) "ad" else item.id ?: UUID.randomUUID()
+                        },
+                        contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "server" }
+                    ) { index, item ->
+                        if (showAds && index == adIndex) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -368,7 +362,7 @@ fun ServerScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = spacing.xmedium),
-                                    adId = BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID
+                                    ad = ads.value.ads[BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID]
                                 )
                                 Spacer(modifier = Modifier.height(spacing.medium))
                             }
@@ -528,7 +522,9 @@ private fun ServerScreenPreview() {
                     )
                 ),
                 pagedList = flowOf(PagingData.from(emptyList<ServerInfoUi>())).collectAsLazyPagingItems(),
-                showAds = true
+                showAds = true,
+                adState = remember { mutableStateOf(NativeAdState()) },
+                onAdAction = {}
             )
         }
     }

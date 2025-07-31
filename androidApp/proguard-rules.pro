@@ -30,3 +30,5 @@
 -keep class dev.icerock.moko.resources.desc.** { *; }
 
 -keep class pl.cuyer.rusthub.SharedRes$images { *; }
+
+-dontwarn okhttp3.internal.Util

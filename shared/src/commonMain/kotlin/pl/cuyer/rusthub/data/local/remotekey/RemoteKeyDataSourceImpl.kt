@@ -26,15 +26,12 @@ class RemoteKeyDataSourceImpl(
                 next_page = key.nextPage,
                 last_updated = key.lastUpdated
             )
-            val debug = queries.getRemoteKey(key.id).executeAsOneOrNull()
-            Napier.d("After upsert: $debug", tag = "KEYSDB")
         }
     }
 
     override suspend fun clearKeys() {
         withContext(Dispatchers.IO) {
             queries.clearRemoteKeys()
-            Napier.d("Clearing keys", tag = "KEYSDB")
         }
     }
 }

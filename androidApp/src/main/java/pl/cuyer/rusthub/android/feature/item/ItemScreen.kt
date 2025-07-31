@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.fillMaxSize
@@ -73,9 +72,9 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavKey
-import app.cash.paging.PagingData
-import app.cash.paging.compose.LazyPagingItems
-import app.cash.paging.compose.collectAsLazyPagingItems
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -89,8 +88,9 @@ import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
-import pl.cuyer.rusthub.android.ads.NativeAdCard
-import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
+import pl.cuyer.rusthub.android.ads.NativeAdListItem
+import pl.cuyer.rusthub.presentation.features.ads.AdAction
+import pl.cuyer.rusthub.presentation.features.ads.NativeAdState
 import pl.cuyer.rusthub.android.util.HandlePagingItems
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.common.getImageByFileName
@@ -116,7 +116,9 @@ fun ItemScreen(
     onAction: (ItemAction) -> Unit,
     pagedList: LazyPagingItems<RustItem>,
     uiEvent: Flow<UiEvent>,
-    showAds: Boolean
+    showAds: Boolean,
+    adState: State<NativeAdState>,
+    onAdAction: (AdAction) -> Unit
 ) {
     val syncState = state.value.syncState
     val searchBarState = rememberSearchBarState()
@@ -131,7 +133,7 @@ fun ItemScreen(
                     lazyListState.firstVisibleItemScrollOffset == 0
         }
     }
-    val preloadAd: PreloadNativeAdUseCase = koinInject()
+    val ads = adState
 
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
@@ -139,7 +141,7 @@ fun ItemScreen(
 
     LaunchedEffect(showAds) {
         if (showAds) {
-            preloadAd(BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID)
+            onAdAction(AdAction.LoadAd(BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID))
         }
     }
     Scaffold(
@@ -205,7 +207,11 @@ fun ItemScreen(
                     verticalArrangement = Arrangement.spacedBy(spacing.medium),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    items(8) {
+                    items(
+                        count = 8,
+                        key = { it },
+                        contentType = { "shimmer" }
+                    ) {
                         ItemListItemShimmer(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -223,7 +229,7 @@ fun ItemScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            item {
+                            item(key = "error", contentType = "error") {
                                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                     Column(
                                         modifier = Modifier.fillMaxWidth(),
@@ -253,7 +259,7 @@ fun ItemScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            item {
+                            item(key = "empty", contentType = "empty") {
                                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                     Column(
                                         modifier = Modifier.fillMaxWidth(),
@@ -277,6 +283,11 @@ fun ItemScreen(
                         }
                     }
                 ) {
+                    val adIndex = remember(pagedList.itemCount) {
+                        if (pagedList.itemCount > 0) {
+                            if (pagedList.itemCount >= 5) 4 else pagedList.itemCount - 1
+                        } else -1
+                    }
                     LazyColumn(
                         contentPadding = PaddingValues(
                             top = 0.dp,
@@ -290,19 +301,23 @@ fun ItemScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     )
                     {
-                        onPagingItemsIndexed(key = { it.id ?: it.slug ?: it.hashCode() }) { index, item ->
-                            if (showAds && (index + 1) % 7 == 0) {
+                        onPagingItemsIndexed(
+                            key = { index, item ->
+                                if (showAds && index == adIndex) "ad" else item.id ?: item.slug ?: item.hashCode()
+                            },
+                            contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "item" }
+                        ) { index, item ->
+                            if (showAds && index == adIndex) {
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .animateItem()
                                 ) {
-                                    NativeAdCard(
+                                    NativeAdListItem(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(horizontal = spacing.xmedium),
-                                        adId = BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID,
-                                        mediaHeight = 180.dp
+                                        ad = ads.value.ads[BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID]
                                     )
                                     Spacer(modifier = Modifier.height(spacing.medium))
                                 }
@@ -404,7 +419,9 @@ private fun ItemScreenPreview() {
             onNavigate = {},
             uiEvent = flowOf(UiEvent.Navigate(ItemList)),
             pagedList = flowOf(PagingData.from(emptyList<RustItem>())).collectAsLazyPagingItems(),
-            showAds = true
+            showAds = true,
+            adState = remember { mutableStateOf(NativeAdState()) },
+            onAdAction = {}
         )
     }
 }

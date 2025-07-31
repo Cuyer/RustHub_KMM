@@ -1,8 +1,8 @@
 package pl.cuyer.rusthub.presentation.features.server
 
-import app.cash.paging.PagingData
-import app.cash.paging.cachedIn
-import app.cash.paging.map
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -97,6 +97,10 @@ class ServerViewModel(
             initialValue = ServerState()
         )
 
+    private val filterChangeFlow = _state
+        .map { it.filter }
+        .distinctUntilChanged()
+
     val showAds = getUserUseCase()
         .map { user -> !(user?.subscribed ?: false) && adsConsentManager.canRequestAds }
         .stateIn(
@@ -107,14 +111,15 @@ class ServerViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val paging: Flow<PagingData<ServerInfoUi>> =
-        queryFlow
+        combine(queryFlow, filterChangeFlow) { query, _ -> query }
             .flatMapLatest { query ->
                 getPagedServersUseCase(
                     searchQuery = query
                 ).map { pagingData ->
                     pagingData.map { it.toUiModel(stringProvider) }
                 }.flowOn(Dispatchers.Default)
-            }.cachedIn(coroutineScope)
+            }
+            .cachedIn(coroutineScope)
             .catchAndLog {
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_fetching_servers))
             }
@@ -205,6 +210,7 @@ class ServerViewModel(
 
             is ServerAction.OnChangeLoadMoreState -> updateLoadingMore(action.isLoadingMore)
             is ServerAction.OnFilterChange -> updateFilter(action.filter)
+            is ServerAction.GatherConsent -> gatherConsent(action.activity, action.onAdAvailable)
         }
     }
 
@@ -391,5 +397,15 @@ class ServerViewModel(
                 _state.update { it.copy(isConnected = connected) }
             }
             .launchIn(coroutineScope)
+    }
+
+    private fun gatherConsent(activity: Any, onAdAvailable: () -> Unit) {
+        adsConsentManager.gatherConsent(activity) { error ->
+            if (error != null) {
+                sendSnackbarEvent(stringProvider.get(SharedRes.strings.ads_consent_error))
+            } else if (adsConsentManager.canRequestAds) {
+                onAdAvailable()
+            }
+        }
     }
 }

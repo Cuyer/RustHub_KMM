@@ -14,9 +14,11 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import pl.cuyer.rusthub.util.ConnectivityObserver
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.CancellationException
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
@@ -32,7 +34,6 @@ import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
-import pl.cuyer.rusthub.util.CrashReporter
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.catchAndLog
 import pl.cuyer.rusthub.util.toUserMessage
@@ -42,7 +43,8 @@ data class SubscriptionState(
     val isLoading: Boolean = false,
     val isProcessing: Boolean = false,
     val currentPlan: SubscriptionPlan? = null,
-    val hasError: Boolean = false
+    val hasError: Boolean = false,
+    val isConnected: Boolean = true
 )
 
 sealed interface SubscriptionAction {
@@ -57,6 +59,7 @@ class SubscriptionViewModel(
     private val getActiveSubscriptionUseCase: GetActiveSubscriptionUseCase,
     private val snackbarController: SnackbarController,
     private val stringProvider: StringProvider,
+    private val connectivityObserver: ConnectivityObserver,
     private val initialPlan: SubscriptionPlan? = null
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -70,11 +73,13 @@ class SubscriptionViewModel(
     )
 
     private var subscriptionJob: Job? = null
+    private var productsJob: Job? = null
 
     init {
-        observeProducts()
+        loadProducts()
         observePurchases()
         observeErrors()
+        observeConnectivity()
     }
 
     fun onAction(action: SubscriptionAction) {
@@ -83,8 +88,9 @@ class SubscriptionViewModel(
         }
     }
 
-    private fun observeProducts() {
-        billingRepository.queryProducts(
+    private fun loadProducts() {
+        productsJob?.cancel()
+        productsJob = billingRepository.queryProducts(
             SubscriptionPlan.entries.mapNotNull { plan ->
                 plan.basePlanId ?: plan.name.let { null }
             } + SubscriptionPlan.LIFETIME.productId
@@ -108,12 +114,14 @@ class SubscriptionViewModel(
                 }
             }
             .catch { e ->
+                if (e is CancellationException) throw e
                 _state.update { it.copy(isLoading = false) }
                 snackbarController.sendEvent(
                     SnackbarEvent(stringProvider.get(SharedRes.strings.unknown_error))
                 )
             }
             .launchIn(coroutineScope)
+            .also { productsJob = it }
     }
 
     private fun observePurchases() {
@@ -121,10 +129,9 @@ class SubscriptionViewModel(
             .purchaseFlow
             .distinctUntilChanged()
             .onEach { purchase ->
-                CrashReporter.log("Observing purchases flow $purchase")
-                CrashReporter.recordException(Exception("Observing purchases flow $purchase"))
                 confirmPurchase(purchase.productId, purchase.purchaseToken)
-            }.launchIn(coroutineScope)
+            }
+            .launchIn(coroutineScope)
     }
 
     private fun observeErrors() {
@@ -133,6 +140,21 @@ class SubscriptionViewModel(
             .distinctUntilChanged()
             .onEach { code ->
                 showErrorSnackbar(code.toMessage(stringProvider))
+            }
+            .launchIn(coroutineScope)
+    }
+
+    private fun observeConnectivity() {
+        connectivityObserver.isConnected
+            .onEach { connected ->
+                val wasDisconnected = state.value.isConnected.not() && connected
+                _state.update { it.copy(isConnected = connected) }
+                if (wasDisconnected) {
+                    refreshSubscription()
+                    if (_state.value.products.isEmpty()) {
+                        loadProducts()
+                    }
+                }
             }
             .launchIn(coroutineScope)
     }
@@ -153,6 +175,7 @@ class SubscriptionViewModel(
 
     private fun confirmPurchase(productId: String, token: String) {
         coroutineScope.launch {
+            billingRepository.clearPurchaseCache()
             val plan = SubscriptionPlan.entries.firstOrNull { it.basePlanId == productId || it.productId == productId }
             val id = plan?.takeIf { it.basePlanId == null }?.productId
             confirmPurchaseUseCase(token, id)

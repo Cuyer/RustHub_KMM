@@ -11,7 +11,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,11 +37,8 @@ import com.google.android.gms.compose_util.NativeAdPriceView
 import com.google.android.gms.compose_util.NativeAdStarRatingView
 import com.google.android.gms.compose_util.NativeAdStoreView
 import com.google.android.gms.compose_util.NativeAdView
-import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.domain.model.ads.NativeAdWrapper
-import pl.cuyer.rusthub.domain.usecase.ads.GetNativeAdUseCase
-import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @Composable
@@ -59,7 +55,6 @@ private fun NativeAdLayout(
     mediaHeight: Dp
 ) {
     val context = LocalContext.current
-    DisposableEffect(ad) { onDispose { ad.destroy() } }
     ElevatedCard(modifier = modifier.fillMaxWidth()) {
         NativeAdView(modifier = Modifier.fillMaxWidth()) {
             Column(
@@ -158,17 +153,8 @@ private fun NativeAdLayout(
 @Composable
 fun NativeAdCard(
     modifier: Modifier = Modifier,
-    adId: String,
+    ad: NativeAdWrapper?,
     mediaHeight: Dp = 180.dp
 ) {
-    val preload: PreloadNativeAdUseCase = koinInject()
-    val getAd: GetNativeAdUseCase = koinInject()
-    var nativeAd by remember { mutableStateOf<NativeAdWrapper?>(null) }
-    LaunchedEffect(adId) {
-        nativeAd = getAd(adId)
-        if (nativeAd == null) {
-            preload(adId)
-        }
-    }
-    nativeAd?.let { NativeAdLayout(modifier, it, mediaHeight) }
+    ad?.let { NativeAdLayout(modifier, it, mediaHeight) }
 }

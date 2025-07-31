@@ -624,7 +624,7 @@ updateSubscribed:
 UPDATE userEntity SET subscribed = CASE WHEN :subscribed THEN 1 ELSE 0 END WHERE id = :id;
 
 CREATE TABLE itemEntity (
-    id INTEGER NOT NULL,
+    id INTEGER NOT NULL ,
     slug TEXT,
     url TEXT,
     name TEXT,

@@ -47,7 +47,9 @@ import pl.cuyer.rusthub.util.AdsConsentManager
 import pl.cuyer.rusthub.data.ads.NativeAdRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.ads.NativeAdRepository
 import pl.cuyer.rusthub.domain.usecase.ads.GetNativeAdUseCase
-import pl.cuyer.rusthub.domain.usecase.ads.PreloadNativeAdUseCase
+import pl.cuyer.rusthub.domain.usecase.ads.ClearNativeAdsUseCase
+import pl.cuyer.rusthub.presentation.features.ads.NativeAdViewModel
+import pl.cuyer.rusthub.util.ActivityProvider
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
 import pl.cuyer.rusthub.util.UserSyncScheduler
 import pl.cuyer.rusthub.domain.usecase.SetSubscribedUseCase
@@ -58,6 +60,7 @@ import pl.cuyer.rusthub.data.billing.BillingRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
 import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
+import org.koin.android.ext.koin.androidApplication
 
 actual val platformModule: Module = module {
     single { DatabasePassphraseProvider(androidContext()) }
@@ -74,9 +77,11 @@ actual val platformModule: Module = module {
     single { ClipboardHandler(get()) }
     single { ShareHandler(get()) }
     single { AdsConsentManager.getInstance(androidContext()) }
-    single<NativeAdRepository> { NativeAdRepositoryImpl(androidContext()) }
-    factory { PreloadNativeAdUseCase(get()) }
+    single(createdAtStart = true) { ActivityProvider(androidApplication()) }
+    single<NativeAdRepository> { NativeAdRepositoryImpl(get()) }
     factory { GetNativeAdUseCase(get()) }
+    factory { ClearNativeAdsUseCase(get()) }
+    viewModel { NativeAdViewModel(get(), get()) }
     single { SyncScheduler(get()) }
     single { SubscriptionSyncScheduler(get()) }
     single { MessagingTokenScheduler(get()) }
@@ -197,6 +202,7 @@ actual val platformModule: Module = module {
             userEventController = get(),
             getActiveSubscriptionUseCase = get(),
             setSubscribedUseCase = get(),
+            connectivityObserver = get(),
         )
     }
     viewModel {
@@ -277,6 +283,7 @@ actual val platformModule: Module = module {
             snackbarController = get(),
             stringProvider = get(),
             getActiveSubscriptionUseCase = get(),
+            connectivityObserver = get(),
             initialPlan = plan
         )
     }

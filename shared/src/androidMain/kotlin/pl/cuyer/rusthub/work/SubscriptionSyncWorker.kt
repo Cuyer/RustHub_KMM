@@ -13,6 +13,7 @@ import pl.cuyer.rusthub.domain.exception.SubscriptionLimitException
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
+import pl.cuyer.rusthub.util.CrashReporter
 import pl.cuyer.rusthub.common.Result as DomainResult
 
 class SubscriptionSyncWorker(
@@ -62,11 +63,7 @@ class SubscriptionSyncWorker(
         val results = tasks.awaitAll().filterNotNull()
         return@coroutineScope if (results.isNotEmpty()) {
             results.forEach { (operation, throwable) ->
-                Napier.e(
-                    "Failed to sync subscription ${if (operation.isAdd) "add" else "remove"} " +
-                        "for server ${operation.serverId}",
-                    throwable
-                )
+                CrashReporter.recordException(Exception(throwable))
             }
             Result.retry()
         } else Result.success()

@@ -1,52 +1,57 @@
 package pl.cuyer.rusthub.data.ads
 
-import android.Manifest
-import android.content.Context
-import androidx.annotation.RequiresPermission
+import android.annotation.SuppressLint
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdOptions
+import io.github.aakira.napier.Napier
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.suspendCancellableCoroutine
 import pl.cuyer.rusthub.domain.model.ads.NativeAdWrapper
 import pl.cuyer.rusthub.domain.repository.ads.NativeAdRepository
-import java.util.concurrent.ConcurrentHashMap
+import pl.cuyer.rusthub.util.ActivityProvider
+import kotlin.coroutines.resume
 
+@SuppressLint("MissingPermission")
 class NativeAdRepositoryImpl(
-    private val context: Context
+    private val activityProvider: ActivityProvider
 ) : NativeAdRepository {
 
-    private val cache = ConcurrentHashMap<String, ArrayDeque<NativeAd>>()
-    private val maxCacheSize = 3
+    override fun get(adId: String): Flow<NativeAdWrapper?> = flow {
+        emit(loadAd(adId))
+    }
 
-    @RequiresPermission(Manifest.permission.INTERNET)
-    override fun preload(adId: String) {
-        if ((cache[adId]?.size ?: 0) >= maxCacheSize) return
-        val loader = AdLoader.Builder(context, adId)
+    override suspend fun clear() {
+        // no-op
+    }
+
+    private suspend fun loadAd(adId: String): NativeAd? = suspendCancellableCoroutine { cont ->
+        val activity = activityProvider.currentActivity()
+        if (activity == null || activity.isFinishing || activity.isDestroyed) {
+            cont.resume(null)
+            return@suspendCancellableCoroutine
+        }
+
+        val loader = AdLoader.Builder(activity, adId)
             .forNativeAd { ad ->
-                cache.getOrPut(adId) { ArrayDeque() }.addLast(ad)
-                if (cache[adId]!!.size < maxCacheSize) {
-                    preload(adId)
-                }
+                if (!cont.isCompleted) cont.resume(ad)
             }
             .withAdListener(object : AdListener() {
                 override fun onAdFailedToLoad(error: LoadAdError) {
-                    // Ignore errors and try again later
+                    Napier.w(tag = "ads_state", message = "Failed to load ad: ${error.message}")
+                    if (!cont.isCompleted) cont.resume(null)
                 }
             })
             .withNativeAdOptions(NativeAdOptions.Builder().build())
             .build()
-        loader.loadAd(AdRequest.Builder().build())
-    }
 
-    @RequiresPermission(Manifest.permission.INTERNET)
-    override fun get(adId: String): NativeAdWrapper? {
-        val ad = cache[adId]?.removeFirstOrNull()
-        if (cache[adId].isNullOrEmpty()) {
-            preload(adId)
+        loader.loadAd(AdRequest.Builder().build())
+        cont.invokeOnCancellation {
+            // no-op
         }
-        return ad
     }
 }
-

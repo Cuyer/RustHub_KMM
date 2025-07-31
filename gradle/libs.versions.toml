@@ -7,7 +7,7 @@ androidx-appcompat = "1.7.1"
 desugar_jdk_libs = "2.1.5"
 kotlin = "2.2.10-RC"
 koin = "4.1.0"
-ktor = "3.2.2"
+ktor = "3.2.3"
 sql-delight-version = "2.1.0"
 coroutines-core = "1.10.2"
 datetime = "0.6.2"
@@ -23,7 +23,7 @@ compose-material3 = "1.5.0-SNAPSHOT"
 compose-bom = "2025.07.00"
 moko-resources = "0.25.0"
 moko-permissions = "0.19.1"
-paging = "3.3.0-alpha02-0.5.1"
+paging = "3.4.0-alpha02"
 material3-adaptive = "1.2.0-SNAPSHOT"
 work = "2.10.2"
 serialization = "1.8.1"
@@ -33,9 +33,9 @@ buildkonfig = "0.17.1"
 google-auth = "21.4.0"
 credential = "1.6.0-alpha04"
 identity = "1.1.1"
-certificate-transparency = "2.7.6"
+certificate-transparency = "2.7.7"
 datastore = "1.2.0-alpha02"
-security-crypto = "1.1.0-beta01"
+security-crypto = "1.1.0"
 sqlcipher = "4.9.0"
 playcore = "2.1.0"
 play-services-ads = "24.5.0"
@@ -128,8 +128,8 @@ androidx-security-crypto = { module = "androidx.security:security-crypto", versi
 sqlcipher-android = { module = "net.zetetic:sqlcipher-android", version.ref = "sqlcipher" }
 
 #PAGING3
-paging = { group = "app.cash.paging", name = "paging-common", version.ref = "paging" }
-paging-compose = { group = "app.cash.paging", name = "paging-compose-common", version.ref = "paging" }
+paging = { module = "androidx.paging:paging-common", version.ref = "paging" }
+paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
 
 #COIL
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }

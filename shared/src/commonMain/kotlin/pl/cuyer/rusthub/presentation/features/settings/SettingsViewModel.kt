@@ -53,6 +53,7 @@ import pl.cuyer.rusthub.util.anonymousAccountExpiresIn
 import pl.cuyer.rusthub.util.formatExpiration
 import pl.cuyer.rusthub.util.formatLocalDateTime
 import pl.cuyer.rusthub.util.ItemsScheduler
+import pl.cuyer.rusthub.util.ConnectivityObserver
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import pl.cuyer.rusthub.domain.model.ActiveSubscription
@@ -79,7 +80,8 @@ class SettingsViewModel(
     private val getActiveSubscriptionUseCase: GetActiveSubscriptionUseCase,
     private val itemSyncDataSource: ItemSyncDataSource,
     private val userEventController: UserEventController,
-    private val setSubscribedUseCase: SetSubscribedUseCase
+    private val setSubscribedUseCase: SetSubscribedUseCase,
+    private val connectivityObserver: ConnectivityObserver
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -93,6 +95,7 @@ class SettingsViewModel(
         .onStart {
             observeUser()
             observePreferences()
+            observeConnectivity()
         }
         .stateIn(
             scope = coroutineScope,
@@ -108,6 +111,8 @@ class SettingsViewModel(
             SettingsAction.OnSubscriptionClick -> {
                 if (!emailConfirmed) {
                     showUnconfirmedSnackbar()
+                } else if (!state.value.isConnected) {
+                    showErrorSnackbar(stringProvider.get(SharedRes.strings.connect_manage_subscription))
                 } else {
                     navigateSubscription()
                 }
@@ -156,6 +161,16 @@ class SettingsViewModel(
             .launchIn(coroutineScope)
     }
 
+    private fun observeConnectivity() {
+        connectivityObserver.isConnected
+            .onEach { connected ->
+                val wasDisconnected = state.value.isConnected.not() && connected
+                _state.update { it.copy(isConnected = connected) }
+                if (wasDisconnected) refreshSubscription()
+            }
+            .launchIn(coroutineScope)
+    }
+
     private fun observeUser() {
         getUserUseCase()
             .onEach { user ->
@@ -172,7 +187,7 @@ class SettingsViewModel(
             it.copy(
                 username = if (user?.provider == AuthProvider.GOOGLE) user.username.substringBefore("-") else user?.username,
                 provider = user?.provider,
-                subscribed = subscribed == true,
+                subscribed = subscribed,
                 currentPlan = subscription?.plan,
                 subscriptionExpiration = subscription?.expiration?.let {
                     formatLocalDateTime(it.toLocalDateTime(TimeZone.currentSystemDefault()))
@@ -189,18 +204,15 @@ class SettingsViewModel(
                 currentUser = user
             )
         }
-        subscribed?.let {
-            coroutineScope.launch { setSubscribedUseCase(it) }
-        }
+        coroutineScope.launch { setSubscribedUseCase(subscribed) }
     }
 
-    private fun hasValidSubscription(subscription: ActiveSubscription?): Boolean? {
+    private fun hasValidSubscription(subscription: ActiveSubscription?): Boolean {
         return when (subscription?.state) {
             SubscriptionState.ACTIVE,
             SubscriptionState.IN_GRACE_PERIOD,
             SubscriptionState.PAUSED,
             SubscriptionState.CANCELED -> true
-            null -> null
             else -> false
         }
     }
@@ -254,9 +266,10 @@ class SettingsViewModel(
                 updateUser(user, null)
                 return@launch
             }
+            val shouldShowLoading = state.value.currentSubscription == null
             getActiveSubscriptionUseCase()
-                .onStart { updateLoading(true) }
-                .onCompletion { updateLoading(false) }
+                .onStart { if (shouldShowLoading) updateLoading(true) }
+                .onCompletion { if (shouldShowLoading) updateLoading(false) }
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> updateUser(user, result.data)

@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.data.local.user
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.okio.OkioSerializer
+import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.protobuf.ProtoBuf
 import okio.BufferedSink
@@ -19,6 +20,7 @@ class UserPreferencesSerializer : OkioSerializer<UserPreferencesProto> {
                 source.readByteArray()
             )
         } catch (exception: Exception) {
+            if (exception is CancellationException) throw exception
             throw CorruptionException("Cannot read proto.", exception)
         }
 

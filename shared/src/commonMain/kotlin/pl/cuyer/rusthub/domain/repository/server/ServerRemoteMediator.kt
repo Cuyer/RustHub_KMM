@@ -19,6 +19,7 @@ import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerCacheDataSource
 import kotlinx.datetime.Clock
 import pl.cuyer.rusthub.util.CrashReporter
+import kotlinx.coroutines.CancellationException
 
 @OptIn(ExperimentalPagingApi::class)
 class ServerRemoteMediator(
@@ -90,10 +91,6 @@ class ServerRemoteMediator(
                         // Filter or query changed, purge cache and keys before inserting new data
                         cacheDataSource.clearServersAndKeys()
                     }
-                    Napier.d(
-                        "Fetched servers size: ${result.data.servers.size}",
-                        tag = "ServerRemoteMediator"
-                    )
                     dataSource.upsertServers(result.data.servers)
                     val end = page >= result.data.totalPages - 1
                     val nextPage = if (end) null else page + 1
@@ -110,6 +107,7 @@ class ServerRemoteMediator(
 
             }
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             CrashReporter.recordException(e)
             if (e is ConnectivityException || e is ServiceUnavailableException) {
                 MediatorResult.Success(endOfPaginationReached = true)

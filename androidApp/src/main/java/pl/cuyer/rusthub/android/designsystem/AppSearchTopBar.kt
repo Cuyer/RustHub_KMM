@@ -238,7 +238,7 @@ private fun SearchHistorySuggestions(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(spacing.xxmedium)
         ) {
-            item {
+            item(key = "label", contentType = "label") {
                 AnimatedVisibility(
                     visible = searchQueryUi().isNotEmpty(),
                     enter = fadeIn(animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy,)),
@@ -254,7 +254,11 @@ private fun SearchHistorySuggestions(
                     }
                 }
             }
-            items(searchQueryUi(), key = { it.query }) { item ->
+            items(
+                searchQueryUi(),
+                key = { it.query },
+                contentType = { "history" }
+            ) { item ->
                 val swipeState = rememberSwipeToDismissBoxState()
                 SwipeToDismissBox(
                     state = swipeState,
@@ -299,7 +303,7 @@ private fun SearchHistorySuggestions(
                 }
             }
             if (searchQueryUi().isNotEmpty()) {
-                item {
+                item(key = "clear", contentType = "clear") {
                     Row(
                         modifier = Modifier
                             .animateItem()

@@ -22,7 +22,7 @@ android {
         applicationId = "pl.cuyer.rusthub.android"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 27
+        versionCode = 33
         versionName = project.property("VERSION_NAME") as String
         buildConfigField("String", "SERVERS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/4096035325\"")
         buildConfigField("String", "ITEMS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/1469871989\"")
@@ -61,9 +61,9 @@ android {
     signingConfigs {
         create("development") {
             storeFile = rootProject.file("androidApp/keystore-dev.jks")
-            storePassword = System.getenv("DEV_STORE_PASSWORD") ?: "2f032facZ@"
-            keyAlias = System.getenv("DEV_SIGNING_KEY_ALIAS") ?: "androiddev"
-            keyPassword = System.getenv("DEV_SIGNING_KEY_PASSWORD") ?: "2f032facZ@"
+            storePassword = System.getenv("DEV_STORE_PASSWORD")
+            keyAlias = System.getenv("DEV_SIGNING_KEY_ALIAS")
+            keyPassword = System.getenv("DEV_SIGNING_KEY_PASSWORD")
         }
         create("production") {
             storeFile = rootProject.file("androidApp/keystore-prod.jks")
@@ -99,7 +99,7 @@ android {
         }
 
         getByName("debug") {
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("development")
         }
     }
 }

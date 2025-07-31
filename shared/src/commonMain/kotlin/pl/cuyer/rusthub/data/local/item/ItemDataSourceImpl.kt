@@ -7,7 +7,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.data.local.Queries
-import app.cash.paging.PagingSource
+import androidx.paging.PagingSource
 import app.cash.sqldelight.paging3.QueryPagingSource
 import database.ItemEntity
 import pl.cuyer.rusthub.database.RustHubDatabase
@@ -24,6 +24,7 @@ import app.cash.sqldelight.coroutines.mapToOneOrNull
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.CancellationException
 import pl.cuyer.rusthub.data.local.mapper.toRustItem
 import pl.cuyer.rusthub.domain.model.Language
 
@@ -60,12 +61,12 @@ class ItemDataSourceImpl(
                                     json.encodeToString(ListSerializer(Raiding.serializer()), it)
                                 }
                             )
-                        } ?: throw IllegalArgumentException("Item ID cannot be null")
+                        } ?: throw IllegalArgumentException("ID cannot be null")
                     }
                 }
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 CrashReporter.recordException(e)
-                Napier.e("Error upserting items: ${e.message}", e)
             }
         }
     }

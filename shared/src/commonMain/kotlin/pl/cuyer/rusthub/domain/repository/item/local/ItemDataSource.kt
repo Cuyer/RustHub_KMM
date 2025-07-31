@@ -1,6 +1,6 @@
 package pl.cuyer.rusthub.domain.repository.item.local
 
-import app.cash.paging.PagingSource
+import androidx.paging.PagingSource
 import database.ItemEntity
 import kotlinx.coroutines.flow.Flow
 import pl.cuyer.rusthub.domain.model.ItemCategory

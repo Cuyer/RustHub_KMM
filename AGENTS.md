@@ -34,5 +34,15 @@ This repository hosts a Kotlin Multiplatform Mobile (KMM) project. The Android a
 - Handle errors with `.catch { e -> ... }` and collect using `collectLatest` when appropriate.
 - Follow MVI and Clean Architecture patterns
 - Be creative, oftentimes libraries are new or have new functionalities, so you won't have solutions online
+- Write code following Clean Architecture principles (separate data, domain, presentation layers).
+- Use Jetpack Compose and Material 3 for UI/Material3 Expressive.
+- Inject dependencies using Koin (dependency injection).
+- Integrate with backend via Ktor Client and map DTOs to domain models.
+- Ensure type safety, null safety, error handling, and code readability.
+- Use StateFlow/Flow for state management in ViewModels.
+- Apply repository and use case patterns in the domain layer.
+- Optimize recompositions in Compose – use remember, rememberUpdatedState, and avoid unnecessary recomposables.
+- Pass only necessary parameters to composables, maintain code clarity and modularity.
+- Generate production-ready code for Android/KMM projects.
 
 Keep these conventions in mind when modifying or adding code.
