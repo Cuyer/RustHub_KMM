@@ -173,6 +173,22 @@
     <string name="ranking">Classement</string>
     <string name="rate_application">Noter l'application</string>
     <string name="rate_application_button">Bouton de notation de l’application</string>
+    <string name="about">About</string>
+    <string name="about_button">About button</string>
+    <string name="app_info">App info</string>
+    <string name="developer_info">Developer info</string>
+    <string name="website">Website</string>
+    <string name="contact_email">Contact email</string>
+    <string name="open_source_licenses">Open source licenses</string>
+    <string name="open_source_licenses_button">Open source licenses button</string>
+    <string name="report_bug">Report a bug</string>
+    <string name="report_bug_button">Report bug button</string>
+    <string name="suggest_feature">Suggest a feature</string>
+    <string name="suggest_feature_button">Suggest feature button</string>
+    <string name="app_version_build">App version: %1$s (%2$d)</string>
+    <string name="facepunch" translatable="false">Facepunch</string>
+    <string name="disclaimer_facepunch">RustHub n'est ni affilié ni approuvé par %1$s.</string>
+    <string name="licenses">Licenses</string>
     <string name="rates">Tarifs</string>
     <string name="receive_notifications_about_map_and_full_wipes">Recevez des notifications pour les wipes de carte et les wipes complets.</string>
     <string name="recent_searches">Recherches récentes</string>

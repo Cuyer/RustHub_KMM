@@ -173,6 +173,22 @@
     <string name="ranking">Рейтинг</string>
     <string name="rate_application">Оценить приложение</string>
     <string name="rate_application_button">Кнопка оценки приложения</string>
+    <string name="about">About</string>
+    <string name="about_button">About button</string>
+    <string name="app_info">App info</string>
+    <string name="developer_info">Developer info</string>
+    <string name="website">Website</string>
+    <string name="contact_email">Contact email</string>
+    <string name="open_source_licenses">Open source licenses</string>
+    <string name="open_source_licenses_button">Open source licenses button</string>
+    <string name="report_bug">Report a bug</string>
+    <string name="report_bug_button">Report bug button</string>
+    <string name="suggest_feature">Suggest a feature</string>
+    <string name="suggest_feature_button">Suggest feature button</string>
+    <string name="app_version_build">App version: %1$s (%2$d)</string>
+    <string name="facepunch" translatable="false">Facepunch</string>
+    <string name="disclaimer_facepunch">RustHub не связан и не одобрен компанией %1$s.</string>
+    <string name="licenses">Licenses</string>
     <string name="rates">Ставки</string>
     <string name="receive_notifications_about_map_and_full_wipes">Получайте уведомления о вайпах карты и полных вайпах.</string>
     <string name="recent_searches">Недавние поиски</string>

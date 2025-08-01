@@ -63,5 +63,8 @@ data class ResetPassword(val email: String) : NavKey
 data object Terms : NavKey
 
 @Serializable
+data object About : NavKey
+
+@Serializable
 @Immutable
 data class Subscription(val plan: SubscriptionPlan? = null) : NavKey

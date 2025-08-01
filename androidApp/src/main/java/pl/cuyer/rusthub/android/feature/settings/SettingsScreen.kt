@@ -71,7 +71,6 @@ import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
-import pl.cuyer.rusthub.util.AppInfo
 import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.android.util.composeUtil.OnLifecycleEvent
 import androidx.lifecycle.Lifecycle
@@ -559,13 +558,22 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
         }
     }
 
-    val versionName = remember { AppInfo.versionName }
-    Text(
-        modifier = Modifier.fillMaxWidth(),
-        style = MaterialTheme.typography.bodySmall,
-        text = stringResource(SharedRes.strings.app_version, versionName),
-        textAlign = TextAlign.Center
-    )
+    AppTextButton(
+        onClick = { onAction(SettingsAction.OnAbout) }
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(SharedRes.strings.about))
+            Icon(
+                imageVector = Icons.AutoMirrored.Default.ArrowRight,
+                contentDescription = stringResource(SharedRes.strings.about_button)
+            )
+        }
+    }
+
 }
 
 @Composable

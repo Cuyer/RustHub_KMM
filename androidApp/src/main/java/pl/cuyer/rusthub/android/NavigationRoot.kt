@@ -72,6 +72,7 @@ import pl.cuyer.rusthub.presentation.features.item.ItemDetailsViewModel
 import pl.cuyer.rusthub.android.feature.settings.ChangePasswordScreen
 import pl.cuyer.rusthub.android.feature.settings.DeleteAccountScreen
 import pl.cuyer.rusthub.android.feature.settings.PrivacyPolicyScreen
+import pl.cuyer.rusthub.android.feature.about.AboutScreen
 import pl.cuyer.rusthub.android.feature.settings.SettingsScreen
 import pl.cuyer.rusthub.android.feature.subscription.SubscriptionScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
@@ -107,6 +108,7 @@ import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.Settings
 import pl.cuyer.rusthub.presentation.navigation.Subscription
 import pl.cuyer.rusthub.presentation.navigation.Terms
+import pl.cuyer.rusthub.presentation.navigation.About
 import pl.cuyer.rusthub.presentation.navigation.UpgradeAccount
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
@@ -413,6 +415,11 @@ private fun AppScaffold(
                         PrivacyPolicyScreen(
                             url = Urls.TERMS_URL,
                             title = stringResource(SharedRes.strings.terms_conditions),
+                            onNavigateUp = { backStack.removeLastOrNull() }
+                        )
+                    }
+                    entry<About> {
+                        AboutScreen(
                             onNavigateUp = { backStack.removeLastOrNull() }
                         )
                     }

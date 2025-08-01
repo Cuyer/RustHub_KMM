@@ -94,6 +94,8 @@ actual val platformModule: Module = module {
     single { InAppUpdateManager(androidContext(), get(), get()) }
     single { ReviewRequester(androidContext()) }
     single { StoreNavigator(androidContext()) }
+    single { UrlOpener(androidContext()) }
+    single { EmailSender(androidContext()) }
     single { SystemDarkThemeObserver(androidContext()) }
     single { ConnectivityObserver(androidContext()) }
     single { GoogleAuthClient(androidContext()) }
