@@ -1,3 +1,10 @@
 <resources>
     <color name="splash_background">#071105</color>
+    <!-- Dark theme colors for the open source licenses activity -->
+    <color name="oss_primary">#B5F95E</color>
+    <color name="oss_on_primary">#395D00</color>
+    <color name="oss_secondary">#C6C4DD</color>
+    <color name="oss_on_secondary">#3F3E52</color>
+    <color name="oss_background">#071105</color>
+    <color name="oss_on_background">#D3EDC6</color>
 </resources>
