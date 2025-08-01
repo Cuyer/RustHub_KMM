@@ -526,6 +526,23 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
     }
 
     AppTextButton(
+        onClick = { onAction(SettingsAction.OnTerms) }
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(SharedRes.strings.terms_conditions))
+            Icon(
+                imageVector = Icons.AutoMirrored.Default.ArrowRight,
+                contentDescription = stringResource(SharedRes.strings.terms_conditions_button)
+            )
+        }
+    }
+
+    AppTextButton(
         onClick = { storeNavigator.openStore() }
     ) {
         Row(

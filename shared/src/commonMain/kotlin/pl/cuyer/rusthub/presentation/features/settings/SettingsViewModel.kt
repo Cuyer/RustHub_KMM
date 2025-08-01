@@ -36,6 +36,7 @@ import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
+import pl.cuyer.rusthub.presentation.navigation.Terms
 import pl.cuyer.rusthub.presentation.navigation.Subscription
 import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
@@ -120,6 +121,7 @@ class SettingsViewModel(
             SettingsAction.OnDismissSubscriptionDialog -> Unit
             SettingsAction.OnSubscribe -> Unit
             SettingsAction.OnPrivacyPolicy -> openPrivacyPolicy()
+            SettingsAction.OnTerms -> openTerms()
             SettingsAction.OnDeleteAccount -> navigateDeleteAccount()
             SettingsAction.OnUpgradeAccount -> navigateUpgrade()
             SettingsAction.OnResume -> refreshSubscription()
@@ -334,6 +336,12 @@ class SettingsViewModel(
     private fun openPrivacyPolicy() {
         coroutineScope.launch {
             _uiEvent.send(UiEvent.Navigate(PrivacyPolicy))
+        }
+    }
+
+    private fun openTerms() {
+        coroutineScope.launch {
+            _uiEvent.send(UiEvent.Navigate(Terms))
         }
     }
 }

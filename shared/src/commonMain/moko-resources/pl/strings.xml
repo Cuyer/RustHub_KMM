@@ -243,6 +243,7 @@
     <string name="no_ads_desc">Korzystaj z aplikacji bez reklam.</string>
     <string name="no_ads_icon_desc">Ikona brak reklam</string>
     <string name="terms_conditions">Regulamin</string>
+    <string name="terms_conditions_button">Przycisk regulaminu</string>
     <string name="faq_lifetime_answer">Plan RustHub Pro Lifetime to jednorazowy zakup. Uzyskujesz dostęp do RustHub Pro na zawsze. Jeśli masz już aktywną subskrypcję miesięczną lub roczną i chcesz przejść na plan Lifetime, po jego zakupie pamiętaj o anulowaniu dotychczasowej subskrypcji, aby uniknąć dalszych opłat cyklicznych.</string>
     <string name="faq_renew_answer">Plany RustHub Pro miesięczny i roczny to subskrypcje, które odnawiają się automatycznie po zakończeniu okresu subskrypcji, aby uniknąć przerw w działaniu usługi. Jeśli anulujesz subskrypcję, będziesz mieć dostęp do RustHub Pro aż do wygaśnięcia obecnej subskrypcji. Plan RustHub Pro Lifetime to jednorazowy zakup.</string>
     <string name="theme">Motyw</string>
