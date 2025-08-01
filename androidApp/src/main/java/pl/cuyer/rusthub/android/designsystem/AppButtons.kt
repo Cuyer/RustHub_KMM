@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -51,7 +52,8 @@ fun AppButton(
 ) {
     ElevatedButton(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier
+            .heightIn(min = 48.dp),
         enabled = enabled && !isLoading,
         shape = MaterialTheme.shapes.extraSmall,
         colors = colors
@@ -91,7 +93,8 @@ fun AppOutlinedButton(
 ) {
     OutlinedButton(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier
+            .heightIn(min = 48.dp),
         enabled = enabled && !isLoading,
         shape = MaterialTheme.shapes.extraSmall,
         colors = colors
@@ -134,7 +137,8 @@ fun AppTextButton(
 ) {
     TextButton(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier
+            .heightIn(min = 48.dp),
         enabled = enabled && !isLoading,
         shape = MaterialTheme.shapes.extraSmall,
         colors = colors
