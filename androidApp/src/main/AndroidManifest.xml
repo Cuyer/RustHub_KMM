@@ -73,5 +73,10 @@
             android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
             android:exported="false"
             android:theme="@style/Theme.RustHub.Oss" />
+
+        <activity
+            android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
+            android:exported="false"
+            android:theme="@style/Theme.RustHub.Oss" />
     </application>
 </manifest>

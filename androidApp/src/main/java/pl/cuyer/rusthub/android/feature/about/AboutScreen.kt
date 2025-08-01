@@ -94,12 +94,6 @@ fun AboutScreen(onNavigateUp: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(spacing.medium)
         ) {
-            Text(
-                text = stringResource(SharedRes.strings.app_info),
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Start
-            )
             Image(
                 painter = painterResource(id = getImageByFileName("rusthub_logo").drawableResId),
                 contentDescription = stringResource(SharedRes.strings.application_logo),
@@ -110,16 +104,6 @@ fun AboutScreen(onNavigateUp: () -> Unit) {
                 text = stringResource(SharedRes.strings.app_version_build, versionName, versionCode),
                 style = MaterialTheme.typography.bodyMedium
             )
-            Text(
-                text = stringResource(SharedRes.strings.developer_info),
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = spacing.medium),
-                textAlign = TextAlign.Start
-            )
-            Text(stringResource(SharedRes.strings.website) + ": rusthub.me")
-            Text(stringResource(SharedRes.strings.contact_email) + ": rusthubapplication@gmail.com")
             AppTextButton(onClick = { urlOpener.openUrl("https://rusthub.me") }) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),

@@ -21,13 +21,13 @@
     </style>
 
     <!-- Theme used for the open source licenses screen -->
-    <style name="Theme.RustHub.Oss" parent="Theme.RustHub">
-        <item name="colorPrimary">@color/oss_primary</item>
-        <item name="colorOnPrimary">@color/oss_on_primary</item>
-        <item name="colorSecondary">@color/oss_secondary</item>
-        <item name="colorOnSecondary">@color/oss_on_secondary</item>
-        <item name="android:colorBackground">@color/oss_background</item>
+    <style name="Theme.RustHub.Oss" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:colorPrimary">@color/oss_primary</item>
         <item name="android:textColorPrimary">@color/oss_on_background</item>
+        <item name="android:colorSecondary">@color/oss_secondary</item>
+        <item name="android:textColorSecondary">@color/oss_on_secondary</item>
+        <item name="android:windowBackground">@color/oss_background</item>
+        <item name="android:fontFamily">@font/kanit_medium</item>
     </style>
 
 </resources>
