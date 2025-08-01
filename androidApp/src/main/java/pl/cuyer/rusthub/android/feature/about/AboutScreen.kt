@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.android.feature.about
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -56,7 +57,14 @@ fun AboutScreen(onNavigateUp: () -> Unit) {
     val emailSender = koinInject<EmailSender>()
     val context = LocalContext.current
     val versionName = remember { AppInfo.versionName }
-    val versionCode = BuildConfig.VERSION_CODE
+    val versionCode = remember {
+        try {
+            val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            pInfo.longVersionCode
+        } catch (e: PackageManager.NameNotFoundException) {
+            0L
+        }
+    }
     Scaffold(
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onBackground,
@@ -155,8 +163,9 @@ fun AboutScreen(onNavigateUp: () -> Unit) {
                     )
                 }
             }
+            val licensesTitle = stringResource(SharedRes.strings.licenses)
             AppTextButton(onClick = {
-                OssLicensesMenuActivity.setActivityTitle(stringResource(SharedRes.strings.licenses))
+                OssLicensesMenuActivity.setActivityTitle(licensesTitle)
                 context.startActivity(Intent(context, OssLicensesMenuActivity::class.java))
             }) {
                 Row(
