@@ -426,4 +426,6 @@
     <string name="ads_consent_error">Fehler beim Abrufen der Anzeigenzustimmung</string>
     <string name="ad_label">Anzeige</string>
     <string name="rated">Bewertet %1$s</string>
+    <string name="error_fetching_subscription_plans">Abonnementpläne konnten nicht geladen werden.</string>
+    <string name="refresh">Aktualisieren</string>
 </resources>

@@ -280,6 +280,7 @@ fun SubscriptionScreen(
                         onTerms = onTerms,
                         products = state.value.products,
                         isLoading = state.value.isLoading,
+                        hasProductsError = state.value.hasProductsError,
                         currentPlan = state.value.currentPlan,
                         onAction = onAction
                     )
@@ -294,6 +295,7 @@ fun SubscriptionScreen(
                         onTerms = onTerms,
                         products = state.value.products,
                         isLoading = state.value.isLoading,
+                        hasProductsError = state.value.hasProductsError,
                         currentPlan = state.value.currentPlan,
                         onAction = onAction
                     )
@@ -326,6 +328,7 @@ private fun SubscriptionScreenCompact(
     onTerms: () -> Unit,
     products: Map<SubscriptionPlan, BillingProduct>,
     isLoading: Boolean,
+    hasProductsError: Boolean,
     currentPlan: SubscriptionPlan?,
     onAction: (SubscriptionAction) -> Unit
 ) {
@@ -338,19 +341,21 @@ private fun SubscriptionScreenCompact(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         BenefitCarousel(pagerState = pagerState)
-        AnimatedContent(
-            targetState = isLoading,
-            transitionSpec = { defaultFadeTransition() }
-        ) { loading ->
-            if (loading) {
-                PlanSelectorShimmer(Modifier.fillMaxWidth())
-            } else {
-                PlanSelector(
-                    selectedPlan = selectedPlan,
-                    onPlanSelect = onPlanSelect,
-                    products = products,
-                    currentPlan = currentPlan
-                )
+        if (!hasProductsError) {
+            AnimatedContent(
+                targetState = isLoading,
+                transitionSpec = { defaultFadeTransition() }
+            ) { loading ->
+                if (loading) {
+                    PlanSelectorShimmer(Modifier.fillMaxWidth())
+                } else {
+                    PlanSelector(
+                        selectedPlan = selectedPlan,
+                        onPlanSelect = onPlanSelect,
+                        products = products,
+                        currentPlan = currentPlan
+                    )
+                }
             }
         }
         SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms, currentPlan, isLoading) {
@@ -374,6 +379,7 @@ private fun SubscriptionScreenExpanded(
     onTerms: () -> Unit,
     products: Map<SubscriptionPlan, BillingProduct>,
     isLoading: Boolean,
+    hasProductsError: Boolean,
     currentPlan: SubscriptionPlan?,
     onAction: (SubscriptionAction) -> Unit
 ) {
@@ -390,19 +396,21 @@ private fun SubscriptionScreenExpanded(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             BenefitCarousel(pagerState = pagerState)
-            AnimatedContent(
-                targetState = isLoading,
-                transitionSpec = { defaultFadeTransition() }
-            ) { loading ->
-                if (loading) {
-                    PlanSelectorShimmer(Modifier.fillMaxWidth())
-                } else {
-                    PlanSelector(
-                        selectedPlan = selectedPlan,
-                        onPlanSelect = onPlanSelect,
-                        products = products,
-                        currentPlan = currentPlan
-                    )
+            if (!hasProductsError) {
+                AnimatedContent(
+                    targetState = isLoading,
+                    transitionSpec = { defaultFadeTransition() }
+                ) { loading ->
+                    if (loading) {
+                        PlanSelectorShimmer(Modifier.fillMaxWidth())
+                    } else {
+                        PlanSelector(
+                            selectedPlan = selectedPlan,
+                            onPlanSelect = onPlanSelect,
+                            products = products,
+                            currentPlan = currentPlan
+                        )
+                    }
                 }
             }
             SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms, currentPlan, isLoading) {

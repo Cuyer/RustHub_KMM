@@ -422,4 +422,6 @@
     <string name="ads_consent_error">Nie można uzyskać zgody na reklamy</string>
     <string name="ad_label">Reklama</string>
     <string name="rated">Ocena %1$s</string>
+    <string name="error_fetching_subscription_plans">Nie udało się załadować planów subskrypcji.</string>
+    <string name="refresh">Odśwież</string>
 </resources>

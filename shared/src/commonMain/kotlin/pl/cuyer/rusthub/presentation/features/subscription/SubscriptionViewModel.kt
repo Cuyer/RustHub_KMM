@@ -32,6 +32,7 @@ import pl.cuyer.rusthub.domain.usecase.RefreshUserUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.StringProvider
@@ -44,6 +45,7 @@ data class SubscriptionState(
     val isProcessing: Boolean = false,
     val currentPlan: SubscriptionPlan? = null,
     val hasError: Boolean = false,
+    val hasProductsError: Boolean = false,
     val isConnected: Boolean = true
 )
 
@@ -95,7 +97,9 @@ class SubscriptionViewModel(
                 plan.basePlanId ?: plan.name.let { null }
             } + SubscriptionPlan.LIFETIME.productId
         )
-            .onStart { _state.update { it.copy(isLoading = true) } }
+            .onStart {
+                _state.update { it.copy(isLoading = true, hasProductsError = false) }
+            }
             .onEach { list ->
                 val map = list.associateBy { it.id }
                 _state.update { item ->
@@ -109,15 +113,25 @@ class SubscriptionViewModel(
                                 }
                             }
                             .filterValues { it != null } as Map<SubscriptionPlan, BillingProduct>,
-                        isLoading = false
+                        isLoading = false,
+                        hasProductsError = false
                     )
                 }
             }
             .catch { e ->
                 if (e is CancellationException) throw e
-                _state.update { it.copy(isLoading = false) }
+                _state.update { it.copy(isLoading = false, hasProductsError = true) }
                 snackbarController.sendEvent(
-                    SnackbarEvent(stringProvider.get(SharedRes.strings.unknown_error))
+                    SnackbarEvent(
+                        message = stringProvider.get(
+                            SharedRes.strings.error_fetching_subscription_plans
+                        ),
+                        action = SnackbarAction(
+                            stringProvider.get(SharedRes.strings.refresh)
+                        ) {
+                            loadProducts()
+                        }
+                    )
                 )
             }
             .launchIn(coroutineScope)
