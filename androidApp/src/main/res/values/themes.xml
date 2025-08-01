@@ -20,4 +20,14 @@
         <item name="postSplashScreenTheme">@style/Theme.RustHub</item>
     </style>
 
+    <!-- Theme used for the open source licenses screen -->
+    <style name="Theme.RustHub.Oss" parent="Theme.RustHub">
+        <item name="colorPrimary">@color/oss_primary</item>
+        <item name="colorOnPrimary">@color/oss_on_primary</item>
+        <item name="colorSecondary">@color/oss_secondary</item>
+        <item name="colorOnSecondary">@color/oss_on_secondary</item>
+        <item name="android:colorBackground">@color/oss_background</item>
+        <item name="android:textColorPrimary">@color/oss_on_background</item>
+    </style>
+
 </resources>
