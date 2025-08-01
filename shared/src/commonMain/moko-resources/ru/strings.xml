@@ -143,6 +143,7 @@
     <string name="new_password">Новый пароль</string>
     <string name="next_map_wipe">Следующий вайп карты</string>
     <string name="next_wipe">Следующий вайп</string>
+    <string name="closest_wipe">Следующий вайп</string>
     <string name="no">Нет</string>
     <string name="no_filters_available">Нет фильтров</string>
     <string name="no_kits">Нет наборов</string>
@@ -351,6 +352,7 @@
     <string name="error_remove_favourite">Ошибка при удалении из избранного</string>
     <string name="error_subscribe_notifications">Ошибка при подписке на уведомления</string>
     <string name="error_unsubscribe_notifications">Ошибка при отмене уведомлений</string>
+    <string name="no_wipe_for_subscription">Невозможно подписаться - нет даты вайпа</string>
     <string name="email_not_confirmed">E-mail не подтверждён</string>
     <string name="resend">Отправить ещё раз</string>
     <string name="error_fetching_server_data">Ошибка при получении данных о сервере.</string>

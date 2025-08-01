@@ -310,6 +310,13 @@ class ServerDetailsViewModel(
                 showUnconfirmedSnackbar()
                 return@launch
             }
+            val details = state.value.details
+            if (details?.nextWipe == null && details?.nextMapWipe == null) {
+                snackbarController.sendEvent(
+                    SnackbarEvent(stringProvider.get(SharedRes.strings.no_wipe_for_subscription))
+                )
+                return@launch
+            }
             try {
                 permissionsController.providePermission(Permission.REMOTE_NOTIFICATION)
                 toggleSubscription()

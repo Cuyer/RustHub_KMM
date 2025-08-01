@@ -144,6 +144,7 @@
     <string name="new_password">New password</string>
     <string name="next_map_wipe">Next map wipe</string>
     <string name="next_wipe">Next wipe</string>
+    <string name="closest_wipe">Closest wipe</string>
     <string name="no">No</string>
     <string name="no_filters_available">No filters available</string>
     <string name="no_kits">No kits</string>
@@ -353,6 +354,7 @@
     <string name="error_remove_favourite">An error occurred when trying to remove server from favourites</string>
     <string name="error_subscribe_notifications">An error occurred when trying to subscribe to notifications</string>
     <string name="error_unsubscribe_notifications">An error occurred when trying to unsubscribe from notifications</string>
+    <string name="no_wipe_for_subscription">Cannot subscribe - server has no wipe schedule</string>
     <string name="email_not_confirmed">Email not confirmed</string>
     <string name="resend">Resend</string>
     <string name="error_fetching_server_data">An error occurred while fetching data about the server.</string>

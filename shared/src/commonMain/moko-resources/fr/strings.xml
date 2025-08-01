@@ -143,6 +143,7 @@
     <string name="new_password">Nouveau mot de passe</string>
     <string name="next_map_wipe">Prochain wipe de carte</string>
     <string name="next_wipe">Prochain wipe</string>
+    <string name="closest_wipe">Prochain wipe</string>
     <string name="no">Non</string>
     <string name="no_filters_available">Aucun filtre disponible</string>
     <string name="no_kits">Aucun kit</string>
@@ -351,6 +352,7 @@
     <string name="error_remove_favourite">Erreur lors de la suppression des favoris</string>
     <string name="error_subscribe_notifications">Erreur lors de l’abonnement aux notifications</string>
     <string name="error_unsubscribe_notifications">Erreur lors de la désactivation des notifications</string>
+    <string name="no_wipe_for_subscription">Impossible de s’abonner - aucune date de wipe</string>
     <string name="email_not_confirmed">E-mail non confirmé</string>
     <string name="resend">Renvoyer</string>
     <string name="error_fetching_server_data">Erreur lors de la récupération des données du serveur.</string>
