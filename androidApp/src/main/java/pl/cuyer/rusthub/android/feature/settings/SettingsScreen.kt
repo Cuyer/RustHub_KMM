@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,12 +16,16 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import pl.cuyer.rusthub.android.designsystem.shimmer
+import androidx.compose.animation.AnimatedContent
+import pl.cuyer.rusthub.android.designsystem.defaultFadeTransition
 import androidx.compose.ui.draw.clip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -60,9 +65,9 @@ import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.rememberCurrentLanguage
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
-import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.presentation.features.settings.SettingsAction
 import pl.cuyer.rusthub.presentation.features.settings.SettingsState
+import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
@@ -184,6 +189,18 @@ fun SettingsScreen(
                     },
                     onDismiss = { showLanguageSheet = false }
                 )
+            }
+            if (state.value.isLoggingOut) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .background(
+                            MaterialTheme.colorScheme.background.copy(alpha = 0.6f)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularWavyProgressIndicator()
+                }
             }
         }
     }
@@ -372,42 +389,50 @@ private fun AccountSection(
 
     val storeNavigator = koinInject<StoreNavigator>()
 
-    if (loading) {
-        AccountSectionShimmer()
-    } else if (subscribed) {
-        Text(
-            text = stringResource(
-                SharedRes.strings.you_are_subscribed,
-                stringResource(plan?.label ?: SharedRes.strings.pro)
-            ),
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(bottom = spacing.xsmall)
-        )
-        planExpiration?.let {
-            Text(
-                text = stringResource(SharedRes.strings.subscription_expiration, it),
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(bottom = spacing.xsmall)
-            )
-        }
-        status?.let {
-            Text(
-                text = stringResource(SharedRes.strings.status) + ": " + it,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(bottom = spacing.xsmall)
-            )
-        }
-        AppTextButton(onClick = { storeNavigator.openSubscriptionManagement(SubscriptionPlan.SUBSCRIPTION_ID) }) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(stringResource(SharedRes.strings.manage_subscription))
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                    contentDescription = stringResource(SharedRes.strings.manage_subscription)
+    AnimatedContent(
+        targetState = loading,
+        transitionSpec = { defaultFadeTransition() }
+    ) { isLoading ->
+        if (isLoading) {
+            AccountSectionShimmer()
+        } else if (subscribed) {
+            Column(verticalArrangement = Arrangement.spacedBy(spacing.xsmall)) {
+                Text(
+                    text = stringResource(
+                        SharedRes.strings.you_are_subscribed,
+                        stringResource(plan?.label ?: SharedRes.strings.pro)
+                    ),
+                    style = MaterialTheme.typography.bodyMedium
                 )
+                planExpiration?.let {
+                    Text(
+                        text = stringResource(SharedRes.strings.subscription_expiration, it),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                status?.let {
+                    Text(
+                        text = stringResource(SharedRes.strings.status) + ": " + it,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                AppTextButton(
+                    onClick = {
+                        storeNavigator.openSubscriptionManagement(SubscriptionPlan.SUBSCRIPTION_ID)
+                    }
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(stringResource(SharedRes.strings.manage_subscription))
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Default.ArrowRight,
+                            contentDescription = stringResource(SharedRes.strings.manage_subscription)
+                        )
+                    }
+                }
             }
         }
     }
@@ -528,14 +553,19 @@ private fun OtherSection(onAction: (SettingsAction) -> Unit) {
 
 @Composable
 private fun GreetingSection(username: String?) {
-    if (username != null) {
-        Text(
-            text = stringResource(SharedRes.strings.hello_username, username),
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(bottom = spacing.medium)
-        )
+    AnimatedContent(
+        targetState = username,
+        transitionSpec = { defaultFadeTransition() }
+    ) { name ->
+        if (name != null) {
+            Text(
+                text = stringResource(SharedRes.strings.hello_username, name),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(bottom = spacing.medium)
+            )
+        }
     }
 }
 

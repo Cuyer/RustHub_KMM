@@ -61,7 +61,7 @@ fun WhereToFindListItem(
                 },
                 error = {
                     Image(
-                        painter = painterResource(getImageByFileName("ic_error").drawableResId),
+                        painter = painterResource(getImageByFileName("ic_fallback").drawableResId),
                         contentDescription = item.place,
                         modifier = Modifier.matchParentSize()
                     )

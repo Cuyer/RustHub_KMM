@@ -80,7 +80,7 @@ fun ItemTooltipImage(
                     },
                     error = {
                         Image(
-                            painter = painterResource(getImageByFileName("ic_error").drawableResId),
+                            painter = painterResource(getImageByFileName("ic_fallback").drawableResId),
                             contentDescription = null,
                             modifier = Modifier.matchParentSize()
                         )

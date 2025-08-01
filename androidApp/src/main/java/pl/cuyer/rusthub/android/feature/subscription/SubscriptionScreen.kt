@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.android.feature.subscription
 import android.app.Activity
 import androidx.activity.compose.LocalActivity
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -51,6 +52,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import pl.cuyer.rusthub.android.designsystem.shimmer
@@ -104,6 +106,7 @@ import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import pl.cuyer.rusthub.android.designsystem.PlanSelectorShimmer
+import pl.cuyer.rusthub.android.designsystem.defaultFadeTransition
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
@@ -303,7 +306,7 @@ fun SubscriptionScreen(
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        CircularWavyProgressIndicator()
                     }
                 }
             }
@@ -334,15 +337,20 @@ private fun SubscriptionScreenCompact(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         BenefitCarousel(pagerState = pagerState)
-        if (isLoading) {
-            PlanSelectorShimmer(Modifier.fillMaxWidth())
-        } else {
-            PlanSelector(
-                selectedPlan = selectedPlan,
-                onPlanSelect = onPlanSelect,
-                products = products,
-                currentPlan = currentPlan
-            )
+        AnimatedContent(
+            targetState = isLoading,
+            transitionSpec = { defaultFadeTransition() }
+        ) { loading ->
+            if (loading) {
+                PlanSelectorShimmer(Modifier.fillMaxWidth())
+            } else {
+                PlanSelector(
+                    selectedPlan = selectedPlan,
+                    onPlanSelect = onPlanSelect,
+                    products = products,
+                    currentPlan = currentPlan
+                )
+            }
         }
         SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms, currentPlan, isLoading) {
             onAction(SubscriptionAction.Subscribe(selectedPlan(), activity))
@@ -381,15 +389,20 @@ private fun SubscriptionScreenExpanded(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             BenefitCarousel(pagerState = pagerState)
-            if (isLoading) {
-                PlanSelectorShimmer(Modifier.fillMaxWidth())
-            } else {
-                PlanSelector(
-                    selectedPlan = selectedPlan,
-                    onPlanSelect = onPlanSelect,
-                    products = products,
-                    currentPlan = currentPlan
-                )
+            AnimatedContent(
+                targetState = isLoading,
+                transitionSpec = { defaultFadeTransition() }
+            ) { loading ->
+                if (loading) {
+                    PlanSelectorShimmer(Modifier.fillMaxWidth())
+                } else {
+                    PlanSelector(
+                        selectedPlan = selectedPlan,
+                        onPlanSelect = onPlanSelect,
+                        products = products,
+                        currentPlan = currentPlan
+                    )
+                }
             }
             SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms, currentPlan, isLoading) {
                 onAction(SubscriptionAction.Subscribe(selectedPlan(), activity))
@@ -547,24 +560,30 @@ private fun SubscribeActions(
         sameProduct -> stringResource(SharedRes.strings.change_plan)
         else -> stringResource(SharedRes.strings.subscribe_to_plan, stringResource(plan.label))
     }
-    if (isLoading) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-                .clip(MaterialTheme.shapes.extraSmall)
-                .shimmer()
-        )
-    } else {
-        AppButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = onSubscribe,
-            colors = ButtonDefaults.elevatedButtonColors(
-                containerColor = MaterialTheme.colorScheme.background,
-                contentColor = MaterialTheme.colorScheme.onBackground
-            ),
-            enabled = !samePlan && !lifetimeOwned
-        ) { Text(text) }
+
+    AnimatedContent(
+        targetState = isLoading,
+        transitionSpec = { defaultFadeTransition() }
+    ) { loading ->
+        if (loading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .clip(MaterialTheme.shapes.extraSmall)
+                    .shimmer()
+            )
+        } else {
+            AppButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onSubscribe,
+                colors = ButtonDefaults.elevatedButtonColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                ),
+                enabled = !samePlan && !lifetimeOwned
+            ) { Text(text) }
+        }
     }
     AppTextButton(onClick = onNavigateUp) {
         Text(stringResource(SharedRes.strings.not_now))

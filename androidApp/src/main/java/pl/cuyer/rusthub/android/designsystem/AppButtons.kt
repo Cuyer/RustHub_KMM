@@ -13,11 +13,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -32,6 +34,7 @@ import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AppButton(
     modifier: Modifier = Modifier,
@@ -49,7 +52,8 @@ fun AppButton(
 ) {
     ElevatedButton(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier
+            .heightIn(min = 48.dp),
         enabled = enabled && !isLoading,
         shape = MaterialTheme.shapes.extraSmall,
         colors = colors
@@ -77,6 +81,7 @@ fun AppButton(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AppOutlinedButton(
     modifier: Modifier = Modifier,
@@ -88,7 +93,8 @@ fun AppOutlinedButton(
 ) {
     OutlinedButton(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier
+            .heightIn(min = 48.dp),
         enabled = enabled && !isLoading,
         shape = MaterialTheme.shapes.extraSmall,
         colors = colors
@@ -119,6 +125,7 @@ fun AppOutlinedButton(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AppTextButton(
     modifier: Modifier = Modifier,
@@ -130,7 +137,8 @@ fun AppTextButton(
 ) {
     TextButton(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier
+            .heightIn(min = 48.dp),
         enabled = enabled && !isLoading,
         shape = MaterialTheme.shapes.extraSmall,
         colors = colors

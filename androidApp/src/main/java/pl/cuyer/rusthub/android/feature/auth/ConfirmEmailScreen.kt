@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.android.feature.auth
 
 import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateBounds
 import androidx.compose.foundation.Image
@@ -59,6 +60,7 @@ import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import pl.cuyer.rusthub.android.designsystem.shimmer
+import pl.cuyer.rusthub.android.designsystem.defaultFadeTransition
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
@@ -132,25 +134,30 @@ fun ConfirmEmailScreen(
                 .clickable(interactionSource, null) { focusManager.clearFocus() },
             contentAlignment = Alignment.Center
         ) {
-            if (state.value.resendLoading) {
-                if (isTabletMode) {
-                    ConfirmEmailShimmerExpanded()
+            AnimatedContent(
+                targetState = state.value.resendLoading,
+                transitionSpec = { defaultFadeTransition() }
+            ) { loading ->
+                if (loading) {
+                    if (isTabletMode) {
+                        ConfirmEmailShimmerExpanded()
+                    } else {
+                        ConfirmEmailShimmerCompact()
+                    }
                 } else {
-                    ConfirmEmailShimmerCompact()
-                }
-            } else {
-                if (isTabletMode) {
-                    ConfirmEmailScreenExpanded(
-                        email = { state.value.email },
-                        isLoading = { state.value.isLoading },
-                        onAction = onAction
-                    )
-                } else {
-                    ConfirmEmailScreenCompact(
-                        email = { state.value.email },
-                        isLoading = { state.value.isLoading },
-                        onAction = onAction
-                    )
+                    if (isTabletMode) {
+                        ConfirmEmailScreenExpanded(
+                            email = { state.value.email },
+                            isLoading = { state.value.isLoading },
+                            onAction = onAction
+                        )
+                    } else {
+                        ConfirmEmailScreenCompact(
+                            email = { state.value.email },
+                            isLoading = { state.value.isLoading },
+                            onAction = onAction
+                        )
+                    }
                 }
             }
         }
