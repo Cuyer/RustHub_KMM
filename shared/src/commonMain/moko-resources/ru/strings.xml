@@ -424,4 +424,6 @@
     <string name="ads_consent_error">Не удалось получить согласие на рекламу</string>
     <string name="ad_label">Реклама</string>
     <string name="rated">Оценка %1$s</string>
+    <string name="error_fetching_subscription_plans">Не удалось загрузить тарифы подписки.</string>
+    <string name="refresh">Обновить</string>
 </resources>
