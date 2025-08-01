@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
@@ -43,7 +42,7 @@ fun AppButton(
     colors: ButtonColors = ButtonDefaults.elevatedButtonColors(),
     isLoading: Boolean = false,
     loadingIndicator: @Composable () -> Unit = {
-        CircularWavyProgressIndicator(
+        CircularProgressIndicator(
             modifier = Modifier.size(16.dp)
         )
     },
@@ -110,7 +109,7 @@ fun AppOutlinedButton(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (loading) {
-                    CircularWavyProgressIndicator(
+                    CircularProgressIndicator(
                         modifier = Modifier.size(16.dp),
                     )
                 } else {
@@ -146,7 +145,7 @@ fun AppTextButton(
             )
         ) { loading ->
             if (loading) {
-                CircularWavyProgressIndicator(
+                CircularProgressIndicator(
                     modifier = Modifier.size(16.dp)
                 )
             } else {
