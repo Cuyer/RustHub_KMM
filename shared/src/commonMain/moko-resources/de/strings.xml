@@ -143,6 +143,7 @@
     <string name="new_password">Neues Passwort</string>
     <string name="next_map_wipe">Nächster Karten-Wipe</string>
     <string name="next_wipe">Nächster Wipe</string>
+    <string name="closest_wipe">Nächster Wipe</string>
     <string name="no">Nein</string>
     <string name="no_filters_available">Keine Filter verfügbar</string>
     <string name="no_kits">Keine Kits</string>
@@ -351,6 +352,7 @@
     <string name="error_remove_favourite">Beim Entfernen aus den Favoriten ist ein Fehler aufgetreten</string>
     <string name="error_subscribe_notifications">Beim Abonnieren der Benachrichtigungen ist ein Fehler aufgetreten</string>
     <string name="error_unsubscribe_notifications">Beim Abbestellen der Benachrichtigungen ist ein Fehler aufgetreten</string>
+    <string name="no_wipe_for_subscription">Abonnieren nicht möglich - kein Wipe-Plan</string>
     <string name="email_not_confirmed">E-Mail nicht bestätigt</string>
     <string name="resend">Erneut senden</string>
     <string name="error_fetching_server_data">Beim Laden der Serverdaten ist ein Fehler aufgetreten.</string>

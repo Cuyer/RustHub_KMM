@@ -143,6 +143,7 @@
     <string name="new_password">Nowe hasło</string>
     <string name="next_map_wipe">Następny wipe mapy</string>
     <string name="next_wipe">Następny wipe</string>
+    <string name="closest_wipe">Najbliższy wipe</string>
     <string name="no">Nie</string>
     <string name="no_filters_available">Brak filtrów</string>
     <string name="no_kits">Brak zestawów</string>
@@ -351,6 +352,7 @@
     <string name="error_remove_favourite">Błąd usuwania z ulubionych</string>
     <string name="error_subscribe_notifications">Błąd subskrybowania powiadomień</string>
     <string name="error_unsubscribe_notifications">Błąd wyłączania powiadomień</string>
+    <string name="no_wipe_for_subscription">Nie można subskrybować - brak daty wipe</string>
     <string name="email_not_confirmed">E-mail niepotwierdzony</string>
     <string name="resend">Wyślij ponownie</string>
     <string name="error_fetching_server_data">Błąd pobierania danych o serwerze.</string>
