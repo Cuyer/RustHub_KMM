@@ -61,7 +61,7 @@ fun LootingListItem(
                 },
                 error = {
                     Image(
-                        painter = painterResource(getImageByFileName("ic_error").drawableResId),
+                        painter = painterResource(getImageByFileName("ic_fallback").drawableResId),
                         contentDescription = looting.from,
                         modifier = Modifier.matchParentSize()
                     )
