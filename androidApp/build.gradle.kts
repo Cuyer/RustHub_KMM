@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.googleServices)
     alias(libs.plugins.crashlytics)
     alias(libs.plugins.performance)
+    alias(libs.plugins.ossLicenses)
 }
 
 composeCompiler {
@@ -152,6 +153,7 @@ dependencies {
     implementation(libs.google.play.app.update.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.play.services.ads)
+    implementation(libs.play.services.oss.licenses)
     coreLibraryDesugaring(libs.desugar.jdk.libs.v215)
     debugImplementation(libs.compose.ui.tooling)
 }

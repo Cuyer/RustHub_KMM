@@ -143,6 +143,7 @@
     <string name="new_password">Новый пароль</string>
     <string name="next_map_wipe">Следующий вайп карты</string>
     <string name="next_wipe">Следующий вайп</string>
+    <string name="closest_wipe">Следующий вайп</string>
     <string name="no">Нет</string>
     <string name="no_filters_available">Нет фильтров</string>
     <string name="no_kits">Нет наборов</string>
@@ -173,6 +174,22 @@
     <string name="ranking">Рейтинг</string>
     <string name="rate_application">Оценить приложение</string>
     <string name="rate_application_button">Кнопка оценки приложения</string>
+    <string name="about">About</string>
+    <string name="about_button">About button</string>
+    <string name="app_info">App info</string>
+    <string name="developer_info">Developer info</string>
+    <string name="website">Website</string>
+    <string name="contact_email">Contact email</string>
+    <string name="open_source_licenses">Open source licenses</string>
+    <string name="open_source_licenses_button">Open source licenses button</string>
+    <string name="report_bug">Report a bug</string>
+    <string name="report_bug_button">Report bug button</string>
+    <string name="suggest_feature">Suggest a feature</string>
+    <string name="suggest_feature_button">Suggest feature button</string>
+    <string name="app_version_build">App version: %1$s (%2$d)</string>
+    <string name="facepunch" translatable="false">Facepunch</string>
+    <string name="disclaimer_facepunch">RustHub не связан и не одобрен компанией %1$s.</string>
+    <string name="licenses">Licenses</string>
     <string name="rates">Ставки</string>
     <string name="receive_notifications_about_map_and_full_wipes">Получайте уведомления о вайпах карты и полных вайпах.</string>
     <string name="recent_searches">Недавние поиски</string>
@@ -243,6 +260,7 @@
     <string name="no_ads_desc">Наслаждайтесь без рекламы.</string>
     <string name="no_ads_icon_desc">Иконка без рекламы</string>
     <string name="terms_conditions">Условия использования</string>
+    <string name="terms_conditions_button">Кнопка условий использования</string>
     <string name="faq_lifetime_answer">План RustHub Pro Lifetime — единоразовая покупка. Доступ к RustHub Pro навсегда. Если у вас уже есть месячная или годовая подписка и вы хотите перейти на Lifetime, не забудьте отменить предыдущую подписку, чтобы избежать двойных списаний.</string>
     <string name="faq_renew_answer">Месячные и годовые планы RustHub Pro — это подписки с автопродлением. После отмены подписки вы пользуетесь сервисом до конца оплаченного периода. Lifetime — это разовая покупка.</string>
     <string name="theme">Тема</string>
@@ -334,6 +352,7 @@
     <string name="error_remove_favourite">Ошибка при удалении из избранного</string>
     <string name="error_subscribe_notifications">Ошибка при подписке на уведомления</string>
     <string name="error_unsubscribe_notifications">Ошибка при отмене уведомлений</string>
+    <string name="no_wipe_for_subscription">Невозможно подписаться - нет даты вайпа</string>
     <string name="email_not_confirmed">E-mail не подтверждён</string>
     <string name="resend">Отправить ещё раз</string>
     <string name="error_fetching_server_data">Ошибка при получении данных о сервере.</string>
@@ -405,4 +424,6 @@
     <string name="ads_consent_error">Не удалось получить согласие на рекламу</string>
     <string name="ad_label">Реклама</string>
     <string name="rated">Оценка %1$s</string>
+    <string name="error_fetching_subscription_plans">Не удалось загрузить тарифы подписки.</string>
+    <string name="refresh">Обновить</string>
 </resources>

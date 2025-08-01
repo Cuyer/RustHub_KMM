@@ -61,6 +61,8 @@ import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
 import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import org.koin.android.ext.koin.androidApplication
+import pl.cuyer.rusthub.util.EmailSender
+import pl.cuyer.rusthub.util.UrlOpener
 
 actual val platformModule: Module = module {
     single { DatabasePassphraseProvider(androidContext()) }
@@ -94,6 +96,8 @@ actual val platformModule: Module = module {
     single { InAppUpdateManager(androidContext(), get(), get()) }
     single { ReviewRequester(androidContext()) }
     single { StoreNavigator(androidContext()) }
+    single { UrlOpener(androidContext()) }
+    single { EmailSender(androidContext()) }
     single { SystemDarkThemeObserver(androidContext()) }
     single { ConnectivityObserver(androidContext()) }
     single { GoogleAuthClient(androidContext()) }

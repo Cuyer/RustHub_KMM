@@ -8,7 +8,8 @@ import androidx.compose.runtime.Immutable
 enum class Order {
     WIPE,
     RANK,
-    PLAYER_COUNT;
+    PLAYER_COUNT,
+    NEXT_WIPE;
 
     companion object {
         fun fromDisplayName(displayName: String, stringProvider: StringProvider): Order? {
@@ -22,4 +23,5 @@ fun Order.displayName(stringProvider: StringProvider): String =
         Order.WIPE -> stringProvider.get(SharedRes.strings.last_wipe)
         Order.RANK -> stringProvider.get(SharedRes.strings.ranking)
         Order.PLAYER_COUNT -> stringProvider.get(SharedRes.strings.player_count)
+        Order.NEXT_WIPE -> stringProvider.get(SharedRes.strings.closest_wipe)
     }

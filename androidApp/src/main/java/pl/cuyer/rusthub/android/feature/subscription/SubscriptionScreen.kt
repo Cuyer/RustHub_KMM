@@ -5,6 +5,7 @@ import androidx.activity.compose.LocalActivity
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateBounds
@@ -279,6 +280,7 @@ fun SubscriptionScreen(
                         onTerms = onTerms,
                         products = state.value.products,
                         isLoading = state.value.isLoading,
+                        hasProductsError = state.value.hasProductsError,
                         currentPlan = state.value.currentPlan,
                         onAction = onAction
                     )
@@ -293,6 +295,7 @@ fun SubscriptionScreen(
                         onTerms = onTerms,
                         products = state.value.products,
                         isLoading = state.value.isLoading,
+                        hasProductsError = state.value.hasProductsError,
                         currentPlan = state.value.currentPlan,
                         onAction = onAction
                     )
@@ -325,6 +328,7 @@ private fun SubscriptionScreenCompact(
     onTerms: () -> Unit,
     products: Map<SubscriptionPlan, BillingProduct>,
     isLoading: Boolean,
+    hasProductsError: Boolean,
     currentPlan: SubscriptionPlan?,
     onAction: (SubscriptionAction) -> Unit
 ) {
@@ -337,19 +341,21 @@ private fun SubscriptionScreenCompact(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         BenefitCarousel(pagerState = pagerState)
-        AnimatedContent(
-            targetState = isLoading,
-            transitionSpec = { defaultFadeTransition() }
-        ) { loading ->
-            if (loading) {
-                PlanSelectorShimmer(Modifier.fillMaxWidth())
-            } else {
-                PlanSelector(
-                    selectedPlan = selectedPlan,
-                    onPlanSelect = onPlanSelect,
-                    products = products,
-                    currentPlan = currentPlan
-                )
+        if (!hasProductsError) {
+            AnimatedContent(
+                targetState = isLoading,
+                transitionSpec = { defaultFadeTransition() }
+            ) { loading ->
+                if (loading) {
+                    PlanSelectorShimmer(Modifier.fillMaxWidth())
+                } else {
+                    PlanSelector(
+                        selectedPlan = selectedPlan,
+                        onPlanSelect = onPlanSelect,
+                        products = products,
+                        currentPlan = currentPlan
+                    )
+                }
             }
         }
         SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms, currentPlan, isLoading) {
@@ -373,6 +379,7 @@ private fun SubscriptionScreenExpanded(
     onTerms: () -> Unit,
     products: Map<SubscriptionPlan, BillingProduct>,
     isLoading: Boolean,
+    hasProductsError: Boolean,
     currentPlan: SubscriptionPlan?,
     onAction: (SubscriptionAction) -> Unit
 ) {
@@ -389,19 +396,21 @@ private fun SubscriptionScreenExpanded(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             BenefitCarousel(pagerState = pagerState)
-            AnimatedContent(
-                targetState = isLoading,
-                transitionSpec = { defaultFadeTransition() }
-            ) { loading ->
-                if (loading) {
-                    PlanSelectorShimmer(Modifier.fillMaxWidth())
-                } else {
-                    PlanSelector(
-                        selectedPlan = selectedPlan,
-                        onPlanSelect = onPlanSelect,
-                        products = products,
-                        currentPlan = currentPlan
-                    )
+            if (!hasProductsError) {
+                AnimatedContent(
+                    targetState = isLoading,
+                    transitionSpec = { defaultFadeTransition() }
+                ) { loading ->
+                    if (loading) {
+                        PlanSelectorShimmer(Modifier.fillMaxWidth())
+                    } else {
+                        PlanSelector(
+                            selectedPlan = selectedPlan,
+                            onPlanSelect = onPlanSelect,
+                            products = products,
+                            currentPlan = currentPlan
+                        )
+                    }
                 }
             }
             SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms, currentPlan, isLoading) {
@@ -582,7 +591,11 @@ private fun SubscribeActions(
                     contentColor = MaterialTheme.colorScheme.onBackground
                 ),
                 enabled = !samePlan && !lifetimeOwned
-            ) { Text(text) }
+            ) {
+                Crossfade(targetState = text) { value ->
+                    Text(value)
+                }
+            }
         }
     }
     AppTextButton(onClick = onNavigateUp) {

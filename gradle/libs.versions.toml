@@ -1,5 +1,5 @@
 [versions]
-agp = "8.13.0-alpha02"
+agp = "8.13.0-alpha03"
 android-compileSdk = "36"
 android-minSdk = "30"
 android-targetSdk = "36"
@@ -45,6 +45,8 @@ protobufPlugin = "0.9.5"
 protobuf = "4.31.1"
 runtime = "1.9.0-rc01"
 userMessagingPlatform = "3.2.0"
+oss-licenses = "17.2.1"
+oss-license-plugin = "0.10.6"
 
 [libraries]
 
@@ -145,6 +147,7 @@ moko-permissions-notifications = { module = "dev.icerock.moko:permissions-notifi
 google-identity = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "identity" }
 google-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "google-auth" }
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "play-services-ads" }
+play-services-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version.ref = "oss-licenses" }
 play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "play-review" }
 play-billing = { module = "com.android.billingclient:billing-ktx", version.ref = "play-billing" }
 certificate-transparency = { module = "com.appmattus.certificatetransparency:certificatetransparency-android", version.ref = "certificate-transparency" }
@@ -170,3 +173,4 @@ sqlDelightGradlePlugin = { id = "app.cash.sqldelight", version.ref = "sql-deligh
 mokoMultiplatformResources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko-resources" }
 buildKonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
+ossLicenses = { id = "com.google.android.gms.oss-licenses-plugin", version.ref = "oss-license-plugin" }

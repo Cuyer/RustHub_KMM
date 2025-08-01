@@ -1,3 +1,10 @@
 <resources>
     <color name="splash_background">#EDFFE1</color>
+    <!-- Colors used to style the open source licenses activity -->
+    <color name="oss_primary">#416A00</color>
+    <color name="oss_on_primary">#EFFFD4</color>
+    <color name="oss_secondary">#5C5C7E</color>
+    <color name="oss_on_secondary">#FBF7FF</color>
+    <color name="oss_background">#EDFFE1</color>
+    <color name="oss_on_background">#1D3916</color>
 </resources>

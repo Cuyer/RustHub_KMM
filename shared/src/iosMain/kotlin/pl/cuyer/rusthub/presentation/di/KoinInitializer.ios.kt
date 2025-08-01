@@ -75,6 +75,8 @@ actual val platformModule: Module = module {
     single { InAppUpdateManager() }
     single { ReviewRequester() }
     single { StoreNavigator() }
+    single { UrlOpener() }
+    single { EmailSender() }
     single { SystemDarkThemeObserver() }
     single { GoogleAuthClient() }
     single { StringProvider() }

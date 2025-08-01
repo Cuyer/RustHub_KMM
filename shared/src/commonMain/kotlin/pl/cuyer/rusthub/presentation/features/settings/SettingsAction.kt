@@ -21,11 +21,15 @@ sealed interface SettingsAction {
     @Immutable
     data object OnPrivacyPolicy : SettingsAction
     @Immutable
+    data object OnTerms : SettingsAction
+    @Immutable
     data object OnDeleteAccount : SettingsAction
     @Immutable
     data object OnUpgradeAccount : SettingsAction
     @Immutable
     data object OnResume : SettingsAction
+    @Immutable
+    data object OnAbout : SettingsAction
     @Immutable
     data class OnThemeChange(val theme: Theme) : SettingsAction
     @Immutable

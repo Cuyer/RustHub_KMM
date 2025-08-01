@@ -143,6 +143,7 @@
     <string name="new_password">Nouveau mot de passe</string>
     <string name="next_map_wipe">Prochain wipe de carte</string>
     <string name="next_wipe">Prochain wipe</string>
+    <string name="closest_wipe">Prochain wipe</string>
     <string name="no">Non</string>
     <string name="no_filters_available">Aucun filtre disponible</string>
     <string name="no_kits">Aucun kit</string>
@@ -173,6 +174,22 @@
     <string name="ranking">Classement</string>
     <string name="rate_application">Noter l'application</string>
     <string name="rate_application_button">Bouton de notation de l’application</string>
+    <string name="about">About</string>
+    <string name="about_button">About button</string>
+    <string name="app_info">App info</string>
+    <string name="developer_info">Developer info</string>
+    <string name="website">Website</string>
+    <string name="contact_email">Contact email</string>
+    <string name="open_source_licenses">Open source licenses</string>
+    <string name="open_source_licenses_button">Open source licenses button</string>
+    <string name="report_bug">Report a bug</string>
+    <string name="report_bug_button">Report bug button</string>
+    <string name="suggest_feature">Suggest a feature</string>
+    <string name="suggest_feature_button">Suggest feature button</string>
+    <string name="app_version_build">App version: %1$s (%2$d)</string>
+    <string name="facepunch" translatable="false">Facepunch</string>
+    <string name="disclaimer_facepunch">RustHub n'est ni affilié ni approuvé par %1$s.</string>
+    <string name="licenses">Licenses</string>
     <string name="rates">Tarifs</string>
     <string name="receive_notifications_about_map_and_full_wipes">Recevez des notifications pour les wipes de carte et les wipes complets.</string>
     <string name="recent_searches">Recherches récentes</string>
@@ -243,6 +260,7 @@
     <string name="no_ads_desc">Profitez sans publicité.</string>
     <string name="no_ads_icon_desc">Icône sans pub</string>
     <string name="terms_conditions">Conditions générales</string>
+    <string name="terms_conditions_button">Bouton conditions générales</string>
     <string name="faq_lifetime_answer">Le plan RustHub Pro Lifetime est un achat unique. Vous aurez un accès à vie à RustHub Pro.\n\nSi vous avez déjà un abonnement mensuel ou annuel et que vous souhaitez passer au Lifetime, pensez à annuler votre ancien abonnement pour éviter toute facturation récurrente.</string>
     <string name="faq_renew_answer">Les formules mensuelles et annuelles de RustHub Pro sont des abonnements qui se renouvellent automatiquement. Après annulation, vous gardez l'accès à RustHub Pro jusqu'à la fin de la période en cours. La formule Lifetime est un achat unique.</string>
     <string name="theme">Thème</string>
@@ -334,6 +352,7 @@
     <string name="error_remove_favourite">Erreur lors de la suppression des favoris</string>
     <string name="error_subscribe_notifications">Erreur lors de l’abonnement aux notifications</string>
     <string name="error_unsubscribe_notifications">Erreur lors de la désactivation des notifications</string>
+    <string name="no_wipe_for_subscription">Impossible de s’abonner - aucune date de wipe</string>
     <string name="email_not_confirmed">E-mail non confirmé</string>
     <string name="resend">Renvoyer</string>
     <string name="error_fetching_server_data">Erreur lors de la récupération des données du serveur.</string>
@@ -405,4 +424,6 @@
     <string name="ads_consent_error">Impossible d'obtenir le consentement pour les publicités</string>
     <string name="ad_label">Annonce</string>
     <string name="rated">Noté %1$s</string>
+    <string name="error_fetching_subscription_plans">Échec du chargement des offres d'abonnement.</string>
+    <string name="refresh">Rafraîchir</string>
 </resources>
