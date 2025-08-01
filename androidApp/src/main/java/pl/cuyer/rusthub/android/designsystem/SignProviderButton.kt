@@ -54,9 +54,10 @@ fun SignProviderButton(
             disabledContentColor = contentColor
         ),
         loadingIndicator = {
-            CircularWavyProgressIndicator(
+            CircularProgressIndicator(
                 color = contentColor,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(16.dp),
+                strokeWidth = 2.dp
             )
         }
     ) {

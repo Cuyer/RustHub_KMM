@@ -43,7 +43,8 @@ fun AppButton(
     isLoading: Boolean = false,
     loadingIndicator: @Composable () -> Unit = {
         CircularProgressIndicator(
-            modifier = Modifier.size(16.dp)
+            modifier = Modifier.size(16.dp),
+            strokeWidth = 2.dp
         )
     },
     content: @Composable () -> Unit
@@ -111,6 +112,7 @@ fun AppOutlinedButton(
                 if (loading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(16.dp),
+                        strokeWidth = 2.dp
                     )
                 } else {
                     content()
@@ -146,7 +148,8 @@ fun AppTextButton(
         ) { loading ->
             if (loading) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(16.dp),
+                    strokeWidth = 2.dp
                 )
             } else {
                 content()
