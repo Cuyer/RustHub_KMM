@@ -243,6 +243,7 @@
     <string name="no_ads_desc">Наслаждайтесь без рекламы.</string>
     <string name="no_ads_icon_desc">Иконка без рекламы</string>
     <string name="terms_conditions">Условия использования</string>
+    <string name="terms_conditions_button">Кнопка условий использования</string>
     <string name="faq_lifetime_answer">План RustHub Pro Lifetime — единоразовая покупка. Доступ к RustHub Pro навсегда. Если у вас уже есть месячная или годовая подписка и вы хотите перейти на Lifetime, не забудьте отменить предыдущую подписку, чтобы избежать двойных списаний.</string>
     <string name="faq_renew_answer">Месячные и годовые планы RustHub Pro — это подписки с автопродлением. После отмены подписки вы пользуетесь сервисом до конца оплаченного периода. Lifetime — это разовая покупка.</string>
     <string name="theme">Тема</string>

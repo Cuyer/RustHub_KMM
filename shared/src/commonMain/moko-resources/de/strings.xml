@@ -243,6 +243,7 @@
     <string name="no_ads_desc">Genieße eine werbefreie Nutzung.</string>
     <string name="no_ads_icon_desc">Keine Werbung Symbol</string>
     <string name="terms_conditions">AGB</string>
+    <string name="terms_conditions_button">AGB-Button</string>
     <string name="faq_lifetime_answer">Der RustHub Pro Lifetime-Plan ist ein einmaliger Kauf. Du hast dauerhaft Zugriff auf RustHub Pro. Wenn du bereits ein monatliches oder jährliches Abo hast und auf Lifetime wechseln willst, kündige das alte Abo nach dem Kauf des Lifetime-Plans, um doppelte Zahlungen zu vermeiden.</string>
     <string name="faq_renew_answer">Die monatlichen und jährlichen RustHub Pro-Pläne sind Abos, die sich automatisch verlängern. Nach einer Kündigung bleibt der Zugriff bis zum Ende des Abos erhalten. Lifetime ist ein einmaliger Kauf.</string>
     <string name="theme">Thema</string>

@@ -21,6 +21,8 @@ sealed interface SettingsAction {
     @Immutable
     data object OnPrivacyPolicy : SettingsAction
     @Immutable
+    data object OnTerms : SettingsAction
+    @Immutable
     data object OnDeleteAccount : SettingsAction
     @Immutable
     data object OnUpgradeAccount : SettingsAction

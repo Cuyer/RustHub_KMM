@@ -243,6 +243,7 @@
     <string name="no_ads_desc">Profitez sans publicité.</string>
     <string name="no_ads_icon_desc">Icône sans pub</string>
     <string name="terms_conditions">Conditions générales</string>
+    <string name="terms_conditions_button">Bouton conditions générales</string>
     <string name="faq_lifetime_answer">Le plan RustHub Pro Lifetime est un achat unique. Vous aurez un accès à vie à RustHub Pro.\n\nSi vous avez déjà un abonnement mensuel ou annuel et que vous souhaitez passer au Lifetime, pensez à annuler votre ancien abonnement pour éviter toute facturation récurrente.</string>
     <string name="faq_renew_answer">Les formules mensuelles et annuelles de RustHub Pro sont des abonnements qui se renouvellent automatiquement. Après annulation, vous gardez l'accès à RustHub Pro jusqu'à la fin de la période en cours. La formule Lifetime est un achat unique.</string>
     <string name="theme">Thème</string>

@@ -244,6 +244,7 @@
     <string name="no_ads_desc">Enjoy an ad-free experience.</string>
     <string name="no_ads_icon_desc">No ads icon</string>
     <string name="terms_conditions">Terms &amp; conditions</string>
+    <string name="terms_conditions_button">Terms &amp; conditions button</string>
     <string name="faq_lifetime_answer">The RustHub Pro Lifetime plan is a one time purchase. You will have access to RustHub Pro forever.\n\nIf you are already subscribed to a monthly or yearly plan and want to switch to a lifetime plan, make sure to cancel your monthly or yearly subscription after you purchase the lifetime plan to avoid any recurring charges.</string>
     <string name="faq_renew_answer">The RustHub Pro monthly and yearly plans are subscriptions that renew automatically at the end of your subscription term to avoid any interruption to your service. If you cancel your subscription, you will continue to have access to RustHub Pro until your subscription expires. The RustHub Pro Lifetime plan is a one time purchase.</string>
     <string name="theme">Theme</string>
