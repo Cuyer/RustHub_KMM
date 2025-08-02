@@ -36,6 +36,7 @@ enum class SubscriptionStateDto {
 }
 
 @Serializable
+@OptIn(ExperimentalSerializationApi::class)
 enum class AcknowledgementStateDto {
     @SerialName("ACKNOWLEDGEMENT_STATE_UNSPECIFIED")
     @JsonNames("UNSPECIFIED")
@@ -49,6 +50,7 @@ enum class AcknowledgementStateDto {
 }
 
 @Serializable
+@OptIn(ExperimentalSerializationApi::class)
 enum class PurchaseStateDto {
     @SerialName("PURCHASE_STATE_UNSPECIFIED")
     @JsonNames("UNSPECIFIED")
