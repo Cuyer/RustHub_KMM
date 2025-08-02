@@ -3,7 +3,6 @@ package pl.cuyer.rusthub.data.network
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import com.appmattus.certificatetransparency.certificateTransparencyInterceptor
-import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
@@ -11,6 +10,7 @@ import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
+import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
@@ -21,28 +21,24 @@ import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
-import io.ktor.client.plugins.compression.ContentEncoding
-import io.ktor.client.plugins.compression.gzip
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.CancellationException
-import pl.cuyer.rusthub.data.network.MutexSharedDeferred
 import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.common.user.UserEvent
+import pl.cuyer.rusthub.common.user.UserEventController
 import pl.cuyer.rusthub.data.network.auth.model.RefreshRequest
 import pl.cuyer.rusthub.data.network.auth.model.TokenPairDto
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
-import pl.cuyer.rusthub.common.user.UserEventController
 import pl.cuyer.rusthub.util.AppCheckTokenProvider
 import pl.cuyer.rusthub.util.BuildType
-import pl.cuyer.rusthub.util.TokenRefresher
-import pl.cuyer.rusthub.data.network.CrashReportingPlugin
 import pl.cuyer.rusthub.util.CrashReporter
+import pl.cuyer.rusthub.util.TokenRefresher
 import java.util.Locale
 
 private fun useCtLibrary(): Boolean {
