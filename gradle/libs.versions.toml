@@ -18,6 +18,7 @@ firebase-bom = "34.0.0"
 crashlytics-gradle = "3.0.5"
 lifecycle = "2.9.1"
 navigation3 = "1.0.0-SNAPSHOT"
+navigation3-viewmodel = "1.0.0-alpha04"
 activity-compose = "1.12.0-alpha05"
 compose-material3 = "1.5.0-SNAPSHOT"
 compose-bom = "2025.07.00"
@@ -116,7 +117,7 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-navigation = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
 androidx-navigation-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
-androidx-navigation-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "navigation3" }
+androidx-navigation-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "navigation3-viewmodel" }
 lifecycle-runtime = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycle" }
