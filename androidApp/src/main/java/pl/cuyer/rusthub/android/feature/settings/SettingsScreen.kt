@@ -415,21 +415,23 @@ private fun AccountSection(
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
-                AppTextButton(
-                    onClick = {
-                        storeNavigator.openSubscriptionManagement(SubscriptionPlan.SUBSCRIPTION_ID)
-                    }
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                if (plan != SubscriptionPlan.LIFETIME) {
+                    AppTextButton(
+                        onClick = {
+                            storeNavigator.openSubscriptionManagement(SubscriptionPlan.SUBSCRIPTION_ID)
+                        }
                     ) {
-                        Text(stringResource(SharedRes.strings.manage_subscription))
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                            contentDescription = stringResource(SharedRes.strings.manage_subscription)
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(stringResource(SharedRes.strings.manage_subscription))
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.ArrowRight,
+                                contentDescription = stringResource(SharedRes.strings.manage_subscription)
+                            )
+                        }
                     }
                 }
             }
