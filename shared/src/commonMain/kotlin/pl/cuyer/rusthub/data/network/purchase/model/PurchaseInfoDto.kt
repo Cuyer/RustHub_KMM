@@ -1,11 +1,13 @@
 package pl.cuyer.rusthub.data.network.purchase.model
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.json.JsonNames
 
 @Serializable
+@OptIn(ExperimentalSerializationApi::class)
 enum class SubscriptionStateDto {
     @SerialName("SUBSCRIPTION_STATE_UNSPECIFIED")
     @JsonNames("UNSPECIFIED")

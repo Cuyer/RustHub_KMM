@@ -105,14 +105,15 @@ class SubscriptionViewModel(
                 _state.update { item ->
                     item.copy(
                         products = SubscriptionPlan.entries
-                            .associateWith { plan ->
-                                if (plan.basePlanId != null) {
+                            .mapNotNull { plan ->
+                                val product = if (plan.basePlanId != null) {
                                     map[plan.basePlanId]
                                 } else {
                                     map[plan.productId]
                                 }
+                                product?.let { plan to it }
                             }
-                            .filterValues { it != null } as Map<SubscriptionPlan, BillingProduct>,
+                            .toMap(),
                         isLoading = false,
                         hasProductsError = false
                     )

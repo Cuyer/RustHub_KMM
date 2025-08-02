@@ -10,6 +10,7 @@ import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.queryProductDetails
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -140,6 +141,7 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun clearPurchaseCache() {
         _purchaseFlow.resetReplayCache()
     }
@@ -177,7 +179,6 @@ private fun Int.toErrorCode(): BillingErrorCode {
         BillingClient.BillingResponseCode.NETWORK_ERROR -> BillingErrorCode.NETWORK_ERROR
         BillingClient.BillingResponseCode.SERVICE_DISCONNECTED -> BillingErrorCode.SERVICE_DISCONNECTED
         BillingClient.BillingResponseCode.FEATURE_NOT_SUPPORTED -> BillingErrorCode.FEATURE_NOT_SUPPORTED
-        BillingClient.BillingResponseCode.SERVICE_TIMEOUT -> BillingErrorCode.SERVICE_TIMEOUT
         else -> BillingErrorCode.UNKNOWN
     }
 }

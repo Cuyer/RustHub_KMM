@@ -17,7 +17,6 @@ enum class BillingErrorCode {
     FEATURE_NOT_SUPPORTED,
     NETWORK_ERROR,
     SERVICE_DISCONNECTED,
-    SERVICE_TIMEOUT,
     UNKNOWN
 }
 
@@ -33,7 +32,6 @@ fun BillingErrorCode.toMessage(stringProvider: StringProvider): String {
         BillingErrorCode.ITEM_NOT_OWNED -> stringProvider.get(SharedRes.strings.error_item_not_owned)
         BillingErrorCode.FEATURE_NOT_SUPPORTED -> stringProvider.get(SharedRes.strings.error_feature_not_supported)
         BillingErrorCode.NETWORK_ERROR -> stringProvider.get(SharedRes.strings.error_network)
-        BillingErrorCode.SERVICE_TIMEOUT -> stringProvider.get(SharedRes.strings.error_timeout)
         BillingErrorCode.UNKNOWN -> stringProvider.get(SharedRes.strings.error_unknown)
     }
 }
