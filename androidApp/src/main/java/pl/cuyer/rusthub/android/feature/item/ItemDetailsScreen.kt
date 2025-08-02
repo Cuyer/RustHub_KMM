@@ -1,12 +1,10 @@
 package pl.cuyer.rusthub.android.feature.item
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.animateBounds
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -25,17 +23,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -48,45 +44,38 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import pl.cuyer.rusthub.presentation.features.item.ItemDetailsState
-import pl.cuyer.rusthub.SharedRes
-import pl.cuyer.rusthub.android.util.composeUtil.stringResource
-import pl.cuyer.rusthub.android.designsystem.LootingListItem
-import pl.cuyer.rusthub.android.designsystem.LootContentListItem
-import pl.cuyer.rusthub.android.designsystem.WhereToFindListItem
 import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.launch
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.ItemTooltipImage
+import pl.cuyer.rusthub.android.designsystem.LootContentListItem
+import pl.cuyer.rusthub.android.designsystem.LootingListItem
+import pl.cuyer.rusthub.android.designsystem.WhereToFindListItem
 import pl.cuyer.rusthub.android.theme.spacing
-import pl.cuyer.rusthub.domain.model.Crafting as CraftingModel
-import pl.cuyer.rusthub.domain.model.CraftingIngredient
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.CraftingRecipe
-import pl.cuyer.rusthub.domain.model.ResearchTableCost
-import pl.cuyer.rusthub.domain.model.TechTreeCost
-import pl.cuyer.rusthub.domain.model.Looting as LootingModel
 import pl.cuyer.rusthub.domain.model.LootContent
 import pl.cuyer.rusthub.domain.model.RaidItem
 import pl.cuyer.rusthub.domain.model.RaidResource
-import pl.cuyer.rusthub.domain.model.Raiding as RaidingModel
-import pl.cuyer.rusthub.domain.model.WhereToFind as WhereToFindModel
-
-import pl.cuyer.rusthub.domain.model.Recycling as RecyclingModel
 import pl.cuyer.rusthub.domain.model.Recycler
 import pl.cuyer.rusthub.domain.model.RecyclerOutput
+import pl.cuyer.rusthub.domain.model.ResearchTableCost
 import pl.cuyer.rusthub.domain.model.RustItem
+import pl.cuyer.rusthub.domain.model.TechTreeCost
 import pl.cuyer.rusthub.domain.model.hasContent
+import pl.cuyer.rusthub.presentation.features.item.ItemDetailsState
 import kotlin.math.roundToInt
+import pl.cuyer.rusthub.domain.model.Crafting as CraftingModel
+import pl.cuyer.rusthub.domain.model.Looting as LootingModel
+import pl.cuyer.rusthub.domain.model.Raiding as RaidingModel
+import pl.cuyer.rusthub.domain.model.Recycling as RecyclingModel
+import pl.cuyer.rusthub.domain.model.WhereToFind as WhereToFindModel
 
 @Immutable
 private enum class DetailsPage(val title: StringResource) {
@@ -288,7 +277,7 @@ private fun DetailsContent(data: PageData) {
 }
 
 @Composable
-private fun CraftingContent(crafting: Crafting) {
+private fun CraftingContent(crafting: CraftingModel) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
@@ -585,7 +574,7 @@ private fun TechTreeCostRow(
 }
 
 @Composable
-private fun RecyclingContent(recycling: Recycling) {
+private fun RecyclingContent(recycling: RecyclingModel) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
@@ -734,7 +723,7 @@ private fun RecyclerOutputRow(
 private fun RaidingContent(
     iconUrl: String?,
     health: Int?,
-    raiding: List<Raiding>
+    raiding: List<RaidingModel>
 ) {
     val maxHealth by remember { mutableFloatStateOf(health?.toFloat() ?: 0f) }
     val sliderState =
@@ -789,7 +778,7 @@ private fun RaidingContent(
 @Composable
 private fun RaidingItem(
     modifier: Modifier = Modifier,
-    raiding: Raiding,
+    raiding: RaidingModel,
     fraction: () -> Float
 ) {
     ElevatedCard(shape = MaterialTheme.shapes.extraSmall, modifier = modifier) {
