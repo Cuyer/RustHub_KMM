@@ -1,12 +1,12 @@
 package pl.cuyer.rusthub.data.local
 
 import android.content.Context
+import android.database.sqlite.SQLiteException
 import android.util.Base64
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import database.FiltersEntity
 import database.ServerEntity
-import net.zetetic.database.sqlcipher.SQLiteException
 import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.BuildConfig
