@@ -12,6 +12,8 @@ import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.compression.ContentEncoding
+import io.ktor.client.plugins.compression.gzip
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
@@ -75,6 +77,9 @@ actual class HttpClientFactory actual constructor(
             }
             install(ContentNegotiation) {
                 json(json)
+            }
+            install(ContentEncoding) {
+                gzip()
             }
             install(Auth) {
                 bearer {
