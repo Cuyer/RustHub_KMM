@@ -69,19 +69,19 @@ import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.android.designsystem.ItemTooltipImage
 import pl.cuyer.rusthub.android.theme.spacing
-import pl.cuyer.rusthub.domain.model.Crafting
+import pl.cuyer.rusthub.domain.model.Crafting as CraftingModel
 import pl.cuyer.rusthub.domain.model.CraftingIngredient
 import pl.cuyer.rusthub.domain.model.CraftingRecipe
 import pl.cuyer.rusthub.domain.model.ResearchTableCost
 import pl.cuyer.rusthub.domain.model.TechTreeCost
-import pl.cuyer.rusthub.domain.model.Looting
+import pl.cuyer.rusthub.domain.model.Looting as LootingModel
 import pl.cuyer.rusthub.domain.model.LootContent
 import pl.cuyer.rusthub.domain.model.RaidItem
 import pl.cuyer.rusthub.domain.model.RaidResource
-import pl.cuyer.rusthub.domain.model.Raiding
-import pl.cuyer.rusthub.domain.model.WhereToFind
+import pl.cuyer.rusthub.domain.model.Raiding as RaidingModel
+import pl.cuyer.rusthub.domain.model.WhereToFind as WhereToFindModel
 
-import pl.cuyer.rusthub.domain.model.Recycling
+import pl.cuyer.rusthub.domain.model.Recycling as RecyclingModel
 import pl.cuyer.rusthub.domain.model.Recycler
 import pl.cuyer.rusthub.domain.model.RecyclerOutput
 import pl.cuyer.rusthub.domain.model.RustItem
@@ -100,12 +100,14 @@ private enum class DetailsPage(val title: StringResource) {
 
 @Immutable
 private sealed class PageData(val page: DetailsPage) {
-    data class Looting(val looting: List<Looting>) : PageData(DetailsPage.LOOTING)
-    data class WhereToFind(val places: List<WhereToFind>) : PageData(DetailsPage.WHERE_TO_FIND)
-    data class Contents(val contents: List<LootContent>) : PageData(DetailsPage.CONTENTS)
-    data class Crafting(val crafting: Crafting) : PageData(DetailsPage.CRAFTING)
-    data class Recycling(val recycling: Recycling) : PageData(DetailsPage.RECYCLING)
-    data class Raiding(val raiding: List<Raiding>, val item: RustItem) :
+    data class Looting(val looting: List<LootingModel>) : PageData(DetailsPage.LOOTING)
+    data class WhereToFind(val places: List<WhereToFindModel>) :
+        PageData(DetailsPage.WHERE_TO_FIND)
+    data class Contents(val contents: List<LootContent>) :
+        PageData(DetailsPage.CONTENTS)
+    data class Crafting(val crafting: CraftingModel) : PageData(DetailsPage.CRAFTING)
+    data class Recycling(val recycling: RecyclingModel) : PageData(DetailsPage.RECYCLING)
+    data class Raiding(val raiding: List<RaidingModel>, val item: RustItem) :
         PageData(DetailsPage.RAIDING)
 }
 
