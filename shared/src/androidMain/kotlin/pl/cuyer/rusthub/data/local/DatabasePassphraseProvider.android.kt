@@ -94,6 +94,7 @@ actual class DatabasePassphraseProvider(private val context: Context) {
             }
         } catch (_: Exception) {
         }
+        context.getDatabasePath("RustHubDatabase.db").delete()
         passphraseFile.delete()
     }
 
