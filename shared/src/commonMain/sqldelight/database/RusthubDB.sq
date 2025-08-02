@@ -73,12 +73,29 @@ WHERE
   AND (fe.is_official IS NULL OR se.is_official = fe.is_official)
   AND (fe.filter != 'FAVOURITES' OR se.favourite = 1)
   AND (fe.filter != 'SUBSCRIBED' OR se.subscribed = 1)
+  AND (
+    fe.sort_order != 'NEXT_WIPE' OR (
+        CASE
+            WHEN se.rust_next_map_wipe > CURRENT_TIMESTAMP
+                 AND (se.rust_next_wipe IS NULL OR se.rust_next_map_wipe <= se.rust_next_wipe)
+                THEN se.rust_next_map_wipe
+            WHEN se.rust_next_wipe > CURRENT_TIMESTAMP THEN se.rust_next_wipe
+        END
+    ) IS NOT NULL
+  )
   AND (se.name LIKE '%' || :name || '%' COLLATE NOCASE)
 ORDER BY
     CASE WHEN fe.sort_order = 'WIPE' THEN se.wipe END DESC,
     CASE WHEN fe.sort_order = 'PLAYER_COUNT' THEN se.player_count END DESC,
     CASE WHEN fe.sort_order = 'RANK' THEN se.ranking END ASC,
-    CASE WHEN fe.sort_order = 'NEXT_WIPE' THEN min(se.rust_next_map_wipe, se.rust_next_wipe) END ASC
+    CASE WHEN fe.sort_order = 'NEXT_WIPE' THEN
+        CASE
+            WHEN se.rust_next_map_wipe > CURRENT_TIMESTAMP
+                 AND (se.rust_next_wipe IS NULL OR se.rust_next_map_wipe <= se.rust_next_wipe)
+                THEN se.rust_next_map_wipe
+            WHEN se.rust_next_wipe > CURRENT_TIMESTAMP THEN se.rust_next_wipe
+        END
+    END ASC
 LIMIT :limit OFFSET :offset;
 
 countPagedServersFiltered:
@@ -99,6 +116,16 @@ WHERE
   AND (fe.is_official IS NULL OR se.is_official = fe.is_official)
   AND (fe.filter != 'FAVOURITES' OR se.favourite = 1)
   AND (fe.filter != 'SUBSCRIBED' OR se.subscribed = 1)
+  AND (
+    fe.sort_order != 'NEXT_WIPE' OR (
+        CASE
+            WHEN se.rust_next_map_wipe > CURRENT_TIMESTAMP
+                 AND (se.rust_next_wipe IS NULL OR se.rust_next_map_wipe <= se.rust_next_wipe)
+                THEN se.rust_next_map_wipe
+            WHEN se.rust_next_wipe > CURRENT_TIMESTAMP THEN se.rust_next_wipe
+        END
+    ) IS NOT NULL
+  )
   AND (se.name LIKE '%' || :name || '%' COLLATE NOCASE);
 
 -- =============================================================================
