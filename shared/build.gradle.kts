@@ -88,6 +88,7 @@ kotlin {
             implementation(libs.ktor.serialization.json)
             implementation(libs.ktor.logging)
             implementation(libs.ktor.auth)
+            implementation(libs.ktor.client.encoding)
             implementation(libs.androidx.datastore.preferences)
             implementation(libs.androidx.datastore)
             implementation(libs.kotlin.serialization.protobuf)
