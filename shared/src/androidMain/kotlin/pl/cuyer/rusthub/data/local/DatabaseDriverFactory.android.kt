@@ -6,6 +6,7 @@ import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import database.FiltersEntity
 import database.ServerEntity
+import net.zetetic.database.sqlcipher.SQLiteException
 import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.BuildConfig
@@ -15,23 +16,11 @@ actual class DatabaseDriverFactory(
     private val passphrase: String? = null
 ) {
     actual fun create(): RustHubDatabase {
-        val driver = if (BuildConfig.USE_ENCRYPTED_DB) {
-            System.loadLibrary("sqlcipher")
-            val factory = SupportOpenHelperFactory(
-                Base64.decode(requireNotNull(passphrase), Base64.NO_WRAP)
-            )
-            AndroidSqliteDriver(
-                schema = RustHubDatabase.Schema,
-                context = context,
-                name = "RustHubDatabase.db",
-                factory = factory
-            )
-        } else {
-            AndroidSqliteDriver(
-                schema = RustHubDatabase.Schema,
-                context = context,
-                name = "RustHubDatabase.db"
-            )
+        val driver = try {
+            createDriver()
+        } catch (e: SQLiteException) {
+            context.deleteDatabase(DATABASE_NAME)
+            createDriver()
         }
 
         return RustHubDatabase.Companion(
@@ -55,5 +44,30 @@ actual class DatabaseDriverFactory(
                 filterAdapter = EnumColumnAdapter()
             ),
         )
+    }
+
+    private fun createDriver(): AndroidSqliteDriver {
+        return if (BuildConfig.USE_ENCRYPTED_DB) {
+            System.loadLibrary("sqlcipher")
+            val factory = SupportOpenHelperFactory(
+                Base64.decode(requireNotNull(passphrase), Base64.NO_WRAP)
+            )
+            AndroidSqliteDriver(
+                schema = RustHubDatabase.Schema,
+                context = context,
+                name = DATABASE_NAME,
+                factory = factory
+            )
+        } else {
+            AndroidSqliteDriver(
+                schema = RustHubDatabase.Schema,
+                context = context,
+                name = DATABASE_NAME
+            )
+        }
+    }
+
+    private companion object {
+        private const val DATABASE_NAME = "RustHubDatabase.db"
     }
 }
