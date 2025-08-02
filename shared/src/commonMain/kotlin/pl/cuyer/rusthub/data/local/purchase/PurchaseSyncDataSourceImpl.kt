@@ -14,33 +14,37 @@ class PurchaseSyncDataSourceImpl(
 ) : PurchaseSyncDataSource, Queries(db) {
     override suspend fun upsertOperation(operation: PurchaseSyncOperation) {
         withContext(Dispatchers.IO) {
-            queries.upsertPurchaseSync(
-                token = operation.token,
-                product_id = operation.productId,
-                sync_state = operation.syncState.name
-            )
+            safeExecute {
+                queries.upsertPurchaseSync(
+                    token = operation.token,
+                    product_id = operation.productId,
+                    sync_state = operation.syncState.name
+                )
+            }
         }
     }
 
     override suspend fun deleteOperation(token: String) {
-        withContext(Dispatchers.IO) { queries.deletePurchaseSync(token = token) }
+        withContext(Dispatchers.IO) { safeExecute { queries.deletePurchaseSync(token = token) } }
     }
 
     override suspend fun getPendingOperations(): List<PurchaseSyncOperation> {
         return withContext(Dispatchers.IO) {
-            queries.getPendingPurchaseSync()
-                .executeAsList()
-                .map {
-                    PurchaseSyncOperation(
-                        token = it.token,
-                        productId = it.product_id,
-                        syncState = SyncState.valueOf(it.sync_state)
-                    )
-                }
+            safeQuery(emptyList()) {
+                queries.getPendingPurchaseSync()
+                    .executeAsList()
+                    .map {
+                        PurchaseSyncOperation(
+                            token = it.token,
+                            productId = it.product_id,
+                            syncState = SyncState.valueOf(it.sync_state)
+                        )
+                    }
+            }
         }
     }
 
     override suspend fun clearOperations() {
-        withContext(Dispatchers.IO) { queries.clearPurchaseSync() }
+        withContext(Dispatchers.IO) { safeExecute { queries.clearPurchaseSync() } }
     }
 }

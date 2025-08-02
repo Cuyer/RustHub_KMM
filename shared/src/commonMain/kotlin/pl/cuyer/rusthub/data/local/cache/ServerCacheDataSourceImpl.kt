@@ -12,9 +12,11 @@ class ServerCacheDataSourceImpl(
 ) : Queries(db), ServerCacheDataSource {
     override suspend fun clearServersAndKeys() {
         withContext(Dispatchers.IO) {
-            queries.transaction {
-                queries.clearServers()
-                queries.clearRemoteKeys()
+            safeExecute {
+                queries.transaction {
+                    queries.clearServers()
+                    queries.clearRemoteKeys()
+                }
             }
         }
     }

@@ -5,6 +5,7 @@ import app.cash.sqldelight.coroutines.mapToList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import pl.cuyer.rusthub.data.local.Queries
@@ -12,6 +13,7 @@ import pl.cuyer.rusthub.data.local.mapper.toDomain
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.SearchQuery
 import pl.cuyer.rusthub.domain.repository.search.ItemSearchQueryDataSource
+import pl.cuyer.rusthub.util.CrashReporter
 
 class ItemSearchQueryDataSourceImpl(
     db: RustHubDatabase
@@ -24,22 +26,28 @@ class ItemSearchQueryDataSourceImpl(
             .map { list ->
                 list.map { it.toDomain() }
             }
+            .catch { e ->
+                CrashReporter.recordException(e)
+                throw e
+            }
     }
 
     override suspend fun upsertQuery(query: SearchQuery) {
         withContext(Dispatchers.IO) {
-            queries.upsertItemSearchQuery(
-                query = query.query,
-                timestamp = query.timestamp.toString()
-            )
+            safeExecute {
+                queries.upsertItemSearchQuery(
+                    query = query.query,
+                    timestamp = query.timestamp.toString()
+                )
+            }
         }
     }
 
     override suspend fun clearQueries() {
-        withContext(Dispatchers.IO) { queries.clearItemSearchQueries() }
+        withContext(Dispatchers.IO) { safeExecute { queries.clearItemSearchQueries() } }
     }
 
     override suspend fun deleteByQuery(query: String) {
-        withContext(Dispatchers.IO) { queries.deleteItemSearchQueryByQuery(query) }
+        withContext(Dispatchers.IO) { safeExecute { queries.deleteItemSearchQueryByQuery(query) } }
     }
 }
