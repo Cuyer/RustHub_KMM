@@ -186,7 +186,7 @@
     <string name="report_bug_button">Report bug button</string>
     <string name="suggest_feature">Suggest a feature</string>
     <string name="suggest_feature_button">Suggest feature button</string>
-    <string name="app_version_build">App version: %1$s (%2$d)</string>
+    <string name="app_version_build">Версия приложения: %1$s (%2$d)</string>
     <string name="facepunch" translatable="false">Facepunch</string>
     <string name="disclaimer_facepunch">RustHub не связан и не одобрен компанией %1$s.</string>
     <string name="licenses">Licenses</string>
