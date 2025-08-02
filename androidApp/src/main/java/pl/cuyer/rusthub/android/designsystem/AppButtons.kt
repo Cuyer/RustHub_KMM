@@ -40,7 +40,10 @@ fun AppButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     enabled: Boolean = true,
-    colors: ButtonColors = ButtonDefaults.elevatedButtonColors(),
+    colors: ButtonColors = ButtonDefaults.elevatedButtonColors().copy(
+        containerColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onBackground
+    ),
     isLoading: Boolean = false,
     loadingIndicator: @Composable () -> Unit = {
         CircularProgressIndicator(

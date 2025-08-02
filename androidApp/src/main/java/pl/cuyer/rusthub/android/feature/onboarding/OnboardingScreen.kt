@@ -517,7 +517,8 @@ private fun OtherOptionsToggle(
 
     Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(spacing.xsmall)
     ) {
         AppTextButton(
             onClick = {

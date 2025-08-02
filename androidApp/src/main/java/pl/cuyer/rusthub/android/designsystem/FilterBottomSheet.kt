@@ -322,14 +322,12 @@ fun ButtonsSection(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = spacing.large, vertical = spacing.small)
+            .padding(horizontal = spacing.large, vertical = spacing.small),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
         val stringProvider = koinInject<StringProvider>()
         AppButton(
-            colors = ButtonDefaults.elevatedButtonColors(
-                containerColor = MaterialTheme.colorScheme.background,
-                contentColor = MaterialTheme.colorScheme.onBackground
-            ),
             onClick = {
                 onAction(ServerAction.OnSaveFilters(filters = filters().toDomain(stringProvider)))
                 onDismissAndRefresh()
