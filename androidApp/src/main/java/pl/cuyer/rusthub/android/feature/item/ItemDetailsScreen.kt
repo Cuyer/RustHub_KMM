@@ -98,6 +98,17 @@ private enum class DetailsPage(val title: StringResource) {
     RAIDING(SharedRes.strings.raiding)
 }
 
+@Immutable
+private sealed class PageData(val page: DetailsPage) {
+    data class Looting(val looting: List<Looting>) : PageData(DetailsPage.LOOTING)
+    data class WhereToFind(val places: List<WhereToFind>) : PageData(DetailsPage.WHERE_TO_FIND)
+    data class Contents(val contents: List<LootContent>) : PageData(DetailsPage.CONTENTS)
+    data class Crafting(val crafting: Crafting) : PageData(DetailsPage.CRAFTING)
+    data class Recycling(val recycling: Recycling) : PageData(DetailsPage.RECYCLING)
+    data class Raiding(val raiding: List<Raiding>, val item: RustItem) :
+        PageData(DetailsPage.RAIDING)
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun ItemDetailsScreen(
@@ -108,18 +119,17 @@ fun ItemDetailsScreen(
     val availablePages = remember(state.value.item) {
         state.value.item?.let { item ->
             buildList {
-                item.looting?.takeIf { it.isNotEmpty() }
-                    ?.let { add(DetailsPage.LOOTING to it) }
+                item.looting?.takeIf { it.isNotEmpty() }?.let { add(PageData.Looting(it)) }
                 item.whereToFind?.takeIf { it.isNotEmpty() }
-                    ?.let { add(DetailsPage.WHERE_TO_FIND to it) }
+                    ?.let { add(PageData.WhereToFind(it)) }
                 item.lootContents?.takeIf { it.isNotEmpty() }
-                    ?.let { add(DetailsPage.CONTENTS to it) }
+                    ?.let { add(PageData.Contents(it)) }
                 item.crafting?.takeIf { it.hasContent() }
-                    ?.let { add(DetailsPage.CRAFTING to it) }
+                    ?.let { add(PageData.Crafting(it)) }
                 item.recycling?.takeIf { it.hasContent() }
-                    ?.let { add(DetailsPage.RECYCLING to it) }
+                    ?.let { add(PageData.Recycling(it)) }
                 item.raiding?.takeIf { it.isNotEmpty() }
-                    ?.let { add(DetailsPage.RAIDING to (it to item)) }
+                    ?.let { add(PageData.Raiding(it, item)) }
             }
         } ?: emptyList()
     }
@@ -157,10 +167,8 @@ fun ItemDetailsScreen(
                 PrimaryScrollableTabRow(
                     selectedTabIndex = pagerState.currentPage
                 ) {
-                    availablePages.forEachIndexed { index, (page, _) ->
-                        key(
-                            page.title
-                        ) {
+                    availablePages.forEachIndexed { index, data ->
+                        key(data.page.title) {
                             Tab(
                                 selected = pagerState.currentPage == index,
                                 onClick = {
@@ -168,7 +176,7 @@ fun ItemDetailsScreen(
                                         pagerState.animateScrollToPage(index)
                                     }
                                 },
-                                text = { Text(stringResource(page.title)) }
+                                text = { Text(stringResource(data.page.title)) }
                             )
                         }
                     }
@@ -176,22 +184,20 @@ fun ItemDetailsScreen(
             }
 
             HorizontalPager(
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 state = pagerState
             ) { page ->
-                val (detailsPage, data) = availablePages[page]
-                DetailsContent(detailsPage, data)
+                DetailsContent(availablePages[page])
             }
         }
     }
 }
 
 @Composable
-private fun DetailsContent(page: DetailsPage, content: Any?) {
-    when (page) {
-        DetailsPage.LOOTING -> {
-            val looting = content as? List<Looting> ?: emptyList()
+private fun DetailsContent(data: PageData) {
+    when (data) {
+        is PageData.Looting -> {
+            val looting = data.looting
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
@@ -215,8 +221,8 @@ private fun DetailsContent(page: DetailsPage, content: Any?) {
             }
         }
 
-        DetailsPage.WHERE_TO_FIND -> {
-            val places = content as? List<WhereToFind> ?: emptyList()
+        is PageData.WhereToFind -> {
+            val places = data.places
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
@@ -240,8 +246,8 @@ private fun DetailsContent(page: DetailsPage, content: Any?) {
             }
         }
 
-        DetailsPage.CONTENTS -> {
-            val contents = content as? List<LootContent> ?: emptyList()
+        is PageData.Contents -> {
+            val contents = data.contents
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
@@ -265,25 +271,16 @@ private fun DetailsContent(page: DetailsPage, content: Any?) {
             }
         }
 
-        DetailsPage.CRAFTING -> {
-            val crafting = content as? Crafting
-            crafting?.let { CraftingContent(it) }
-        }
+        is PageData.Crafting -> CraftingContent(data.crafting)
 
-        DetailsPage.RECYCLING -> {
-            val recycling = content as? Recycling
-            recycling?.let { RecyclingContent(it) }
-        }
+        is PageData.Recycling -> RecyclingContent(data.recycling)
 
-        DetailsPage.RAIDING -> {
-            val raidingPair = content as? Pair<List<Raiding>, RustItem>
-            raidingPair?.let { (raiding, item) ->
-                RaidingContent(
-                    iconUrl = item.iconUrl ?: item.image,
-                    health = item.health,
-                    raiding = raiding
-                )
-            }
+        is PageData.Raiding -> {
+            RaidingContent(
+                iconUrl = data.item.iconUrl ?: data.item.image,
+                health = data.item.health,
+                raiding = data.raiding
+            )
         }
     }
 }
