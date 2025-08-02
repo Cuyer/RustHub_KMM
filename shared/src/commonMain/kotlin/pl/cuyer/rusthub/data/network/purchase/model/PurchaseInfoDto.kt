@@ -1,10 +1,13 @@
 package pl.cuyer.rusthub.data.network.purchase.model
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlinx.serialization.json.JsonNames
 
 @Serializable
+@OptIn(ExperimentalSerializationApi::class)
 enum class SubscriptionStateDto {
     @SerialName("SUBSCRIPTION_STATE_UNSPECIFIED")
     @JsonNames("UNSPECIFIED")
@@ -33,6 +36,7 @@ enum class SubscriptionStateDto {
 }
 
 @Serializable
+@OptIn(ExperimentalSerializationApi::class)
 enum class AcknowledgementStateDto {
     @SerialName("ACKNOWLEDGEMENT_STATE_UNSPECIFIED")
     @JsonNames("UNSPECIFIED")
@@ -46,43 +50,76 @@ enum class AcknowledgementStateDto {
 }
 
 @Serializable
-data class LineItemDto(
-    val productId: String,
-    val expiryTime: String? = null,
-    val cancellationTime: String? = null,
-    @SerialName("offerDetails")
-    val offerDetails: OfferDetails? = null
+@OptIn(ExperimentalSerializationApi::class)
+enum class PurchaseStateDto {
+    @SerialName("PURCHASE_STATE_UNSPECIFIED")
+    @JsonNames("UNSPECIFIED")
+    UNSPECIFIED,
+    @SerialName("PURCHASED")
+    PURCHASED,
+    @SerialName("PENDING")
+    PENDING,
+    @SerialName("CANCELED")
+    CANCELED
+}
+
+@Serializable
+data class PurchaseStateContextDto(
+    val purchaseState: PurchaseStateDto? = null
 )
 
 @Serializable
-data class OfferDetails(
-    @SerialName("basePlanId")
-    val basePlanId: String? = null,
-    @SerialName("offerId")
-    val offerId: String? = null
+data class SubscriptionLineItemDto(
+    @SerialName("productId") val productId: String,
+    @SerialName("expiryTime") val expiryTime: String? = null,
+    @SerialName("cancellationTime") val cancellationTime: String? = null,
+    @SerialName("offerDetails") val offerDetails: OfferDetailsDto? = null
+)
+
+@Serializable
+data class ProductLineItemDto(
+    @SerialName("productId") val productId: String? = null
+)
+
+@Serializable
+data class OfferDetailsDto(
+    @SerialName("basePlanId") val basePlanId: String? = null,
+    @SerialName("offerId") val offerId: String? = null
+)
+
+@Serializable
+data class TestPurchaseContextDto(
+    @SerialName("fopType") val fopType: String? = null
 )
 
 @Serializable
 data class ExternalAccountIdentifiersDto(
-    val obfuscatedAccountId: String? = null
+    @SerialName("obfuscatedExternalAccountId") val obfuscatedAccountId: String? = null
 )
 
 @Serializable
-data class SubscriptionInfoDto(
+data class SubscriptionPurchaseInfoDto(
     val subscriptionState: SubscriptionStateDto? = null,
     val acknowledgementState: AcknowledgementStateDto? = null,
     val linkedPurchaseToken: String? = null,
-    val lineItems: List<LineItemDto> = emptyList(),
+    val lineItems: List<SubscriptionLineItemDto> = emptyList(),
     val externalAccountIdentifiers: ExternalAccountIdentifiersDto? = null
 )
 
 @Serializable
-data class ProductInfoDto(
-    val productId: String,
-    val acknowledgementState: Int? = null,
-    val purchaseState: Int? = null,
-    val obfuscatedAccountId: String? = null
-)
+data class ProductPurchaseInfoDto(
+    val acknowledgementState: AcknowledgementStateDto? = null,
+    @SerialName("obfuscatedExternalAccountId") val obfuscatedAccountId: String? = null,
+    @SerialName("productLineItem") val productLineItems: List<ProductLineItemDto> = emptyList(),
+    val purchaseStateContext: PurchaseStateContextDto? = null,
+    val testPurchaseContext: TestPurchaseContextDto? = null
+) {
+    @Transient
+    val productId: String? = productLineItems.firstOrNull()?.productId
+
+    @Transient
+    val purchaseState: PurchaseStateDto? = purchaseStateContext?.purchaseState
+}
 
 @Serializable
 data class PurchaseInfoDto(
@@ -91,7 +128,7 @@ data class PurchaseInfoDto(
     val subscriptionState: SubscriptionStateDto? = null,
     val acknowledgementState: AcknowledgementStateDto? = null,
     val expiryTime: String? = null,
-    val subscriptionInfo: SubscriptionInfoDto? = null,
-    val productInfo: ProductInfoDto? = null,
+    val subscriptionInfo: SubscriptionPurchaseInfoDto? = null,
+    val productInfo: ProductPurchaseInfoDto? = null,
     val createdAt: String? = null
 )

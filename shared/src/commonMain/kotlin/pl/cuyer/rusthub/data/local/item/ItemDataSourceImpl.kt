@@ -1,34 +1,33 @@
 package pl.cuyer.rusthub.data.local.item
 
+import androidx.paging.PagingSource
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToOneOrNull
+import app.cash.sqldelight.paging3.QueryPagingSource
+import database.ItemEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.data.local.Queries
-import androidx.paging.PagingSource
-import app.cash.sqldelight.paging3.QueryPagingSource
-import database.ItemEntity
-import pl.cuyer.rusthub.database.RustHubDatabase
-import pl.cuyer.rusthub.domain.model.ItemCategory
-import pl.cuyer.rusthub.domain.model.RustItem
-import pl.cuyer.rusthub.util.CrashReporter
-import pl.cuyer.rusthub.domain.model.Looting
-import pl.cuyer.rusthub.domain.model.LootContent
-import pl.cuyer.rusthub.domain.model.WhereToFind
-import pl.cuyer.rusthub.domain.model.Raiding
-import pl.cuyer.rusthub.domain.model.Crafting
-import pl.cuyer.rusthub.domain.model.Recycling
-import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
-import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToOneOrNull
-import io.github.aakira.napier.Napier
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.CancellationException
 import pl.cuyer.rusthub.data.local.mapper.toRustItem
+import pl.cuyer.rusthub.database.RustHubDatabase
+import pl.cuyer.rusthub.domain.model.Crafting
+import pl.cuyer.rusthub.domain.model.ItemCategory
 import pl.cuyer.rusthub.domain.model.Language
+import pl.cuyer.rusthub.domain.model.LootContent
+import pl.cuyer.rusthub.domain.model.Looting
+import pl.cuyer.rusthub.domain.model.Raiding
+import pl.cuyer.rusthub.domain.model.Recycling
+import pl.cuyer.rusthub.domain.model.RustItem
+import pl.cuyer.rusthub.domain.model.WhereToFind
+import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
+import pl.cuyer.rusthub.util.CrashReporter
 
 class ItemDataSourceImpl(
     db: RustHubDatabase,
@@ -37,7 +36,7 @@ class ItemDataSourceImpl(
 
     override suspend fun upsertItems(items: List<RustItem>) {
         withContext(Dispatchers.IO) {
-            try {
+            safeExecute {
                 queries.transaction {
                     items.forEach { item ->
                         item.id?.let {
@@ -72,9 +71,6 @@ class ItemDataSourceImpl(
                         } ?: throw IllegalArgumentException("ID cannot be null")
                     }
                 }
-            } catch (e: Exception) {
-                if (e is CancellationException) throw e
-                CrashReporter.recordException(e)
             }
         }
     }
@@ -92,12 +88,14 @@ class ItemDataSourceImpl(
      */
     override suspend fun isEmpty(language: Language): Boolean {
         return withContext(Dispatchers.IO) {
-            val updatedLanguage = if (language == Language.POLISH) {
-                Language.ENGLISH
-            } else {
-                language
+            safeQuery(true) {
+                val updatedLanguage = if (language == Language.POLISH) {
+                    Language.ENGLISH
+                } else {
+                    language
+                }
+                queries.countItems(language = updatedLanguage.name).executeAsOne() == 0L
             }
-            queries.countItems(language = updatedLanguage.name).executeAsOne() == 0L
         }
     }
 
@@ -131,5 +129,9 @@ class ItemDataSourceImpl(
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
             .map { it?.toRustItem(json) }
+            .catch { e ->
+                CrashReporter.recordException(e)
+                throw e
+            }
     }
 }

@@ -27,6 +27,7 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -419,6 +420,9 @@ private fun SubmitButton(
     AppButton(
         onClick = onSubmit,
         isLoading = isLoading,
+        colors = ButtonDefaults.elevatedButtonColors().copy(
+
+        ),
         enabled = buttonEnabled,
         modifier = Modifier
             .fillMaxWidth(),

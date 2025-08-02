@@ -29,9 +29,11 @@ actual class DatabasePassphraseProvider(private val context: Context) {
         private const val ANDROID_KEYSTORE = "AndroidKeyStore"
         private const val AES_MODE = "AES/GCM/NoPadding"
         private const val IV_SIZE = 12
+        private const val PASSPHRASE_FILE = "db_passphrase"
     }
 
     private val keyStore: KeyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
+    private val passphraseFile = File(context.filesDir, PASSPHRASE_FILE)
 
     private fun getOrCreateKey(): SecretKey {
         val existing = keyStore.getKey(KEY_ALIAS, null) as? SecretKey
@@ -82,14 +84,26 @@ actual class DatabasePassphraseProvider(private val context: Context) {
     private val dataStore: DataStore<ByteArray> = DataStoreFactory.create(
         serializer = PassphraseSerializer(),
         scope = scope,
-        produceFile = { File(context.filesDir, "db_passphrase") }
+        produceFile = { passphraseFile }
     )
+
+    private fun resetStorage() {
+        try {
+            if (keyStore.containsAlias(KEY_ALIAS)) {
+                keyStore.deleteEntry(KEY_ALIAS)
+            }
+        } catch (_: Exception) {
+        }
+        context.getDatabasePath("RustHubDatabase.db").delete()
+        passphraseFile.delete()
+    }
 
     actual suspend fun getPassphrase(): String {
         val stored = try {
             dataStore.data.first()
         } catch (e: Exception) {
             if (e is CancellationException) throw e
+            resetStorage()
             ByteArray(0)
         }
         if (stored.isNotEmpty()) {
