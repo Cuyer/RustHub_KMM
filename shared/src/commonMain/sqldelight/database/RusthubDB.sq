@@ -75,9 +75,10 @@ WHERE
   AND (fe.filter != 'SUBSCRIBED' OR se.subscribed = 1)
   AND (se.name LIKE '%' || :name || '%' COLLATE NOCASE)
 ORDER BY
-  CASE WHEN fe.sort_order = 'WIPE' THEN se.wipe END DESC,
-  CASE WHEN fe.sort_order = 'PLAYER_COUNT' THEN se.player_count END DESC,
-  CASE WHEN fe.sort_order = 'RANK' THEN se.ranking END ASC
+    CASE WHEN fe.sort_order = 'WIPE' THEN se.wipe END DESC,
+    CASE WHEN fe.sort_order = 'PLAYER_COUNT' THEN se.player_count END DESC,
+    CASE WHEN fe.sort_order = 'RANK' THEN se.ranking END ASC,
+    CASE WHEN fe.sort_order = 'NEXT_WIPE' THEN min(se.rust_next_map_wipe, se.rust_next_wipe) END ASC
 LIMIT :limit OFFSET :offset;
 
 countPagedServersFiltered:
