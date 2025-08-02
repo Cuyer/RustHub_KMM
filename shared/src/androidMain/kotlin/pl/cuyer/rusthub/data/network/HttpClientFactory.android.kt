@@ -21,7 +21,8 @@ import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders.ContentEncoding
+import io.ktor.client.plugins.compression.ContentEncoding
+import io.ktor.client.plugins.compression.gzip
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
