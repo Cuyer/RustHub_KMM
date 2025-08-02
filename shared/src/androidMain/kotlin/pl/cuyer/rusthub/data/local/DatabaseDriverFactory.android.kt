@@ -6,6 +6,7 @@ import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import database.FiltersEntity
 import database.ServerEntity
+import net.zetetic.database.sqlcipher.SQLiteNotADatabaseException
 import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.BuildConfig
@@ -15,7 +16,7 @@ actual class DatabaseDriverFactory(
     private val passphrase: String? = null
 ) {
     actual fun create(): RustHubDatabase {
-        val driver = if (BuildConfig.USE_ENCRYPTED_DB) {
+        fun buildDriver() = if (BuildConfig.USE_ENCRYPTED_DB) {
             System.loadLibrary("sqlcipher")
             val factory = SupportOpenHelperFactory(
                 Base64.decode(requireNotNull(passphrase), Base64.NO_WRAP)
@@ -34,7 +35,7 @@ actual class DatabaseDriverFactory(
             )
         }
 
-        return RustHubDatabase.Companion(
+        fun buildDatabase(driver: AndroidSqliteDriver) = RustHubDatabase.Companion(
             driver = driver,
             serverEntityAdapter = ServerEntity.Adapter(
                 map_nameAdapter = EnumColumnAdapter(),
@@ -55,5 +56,14 @@ actual class DatabaseDriverFactory(
                 filterAdapter = EnumColumnAdapter()
             ),
         )
+
+        var driver = buildDriver()
+        return try {
+            buildDatabase(driver)
+        } catch (e: SQLiteNotADatabaseException) {
+            context.deleteDatabase("RustHubDatabase.db")
+            driver = buildDriver()
+            buildDatabase(driver)
+        }
     }
 }
