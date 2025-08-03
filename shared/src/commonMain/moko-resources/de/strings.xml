@@ -180,12 +180,12 @@
     <string name="developer_info">Developer info</string>
     <string name="website">Website</string>
     <string name="contact_email">Contact email</string>
-    <string name="open_source_licenses">Open source licenses</string>
-    <string name="open_source_licenses_button">Open source licenses button</string>
-    <string name="report_bug">Report a bug</string>
-    <string name="report_bug_button">Report bug button</string>
-    <string name="suggest_feature">Suggest a feature</string>
-    <string name="suggest_feature_button">Suggest feature button</string>
+    <string name="open_source_licenses">Open-Source-Lizenzen</string>
+    <string name="open_source_licenses_button">Schaltfläche für Open-Source-Lizenzen</string>
+    <string name="report_bug">Fehler melden</string>
+    <string name="report_bug_button">Schaltfläche Fehler melden</string>
+    <string name="suggest_feature">Funktion vorschlagen</string>
+    <string name="suggest_feature_button">Schaltfläche Funktion vorschlagen</string>
     <string name="app_version_build">App-Version: %1$s (%2$d)</string>
     <string name="facepunch" translatable="false">Facepunch</string>
     <string name="disclaimer_facepunch">RustHub steht in keiner Verbindung zu %1$s und wird nicht von ihnen unterstützt.</string>
