@@ -74,9 +74,6 @@ actual class HttpClientFactory actual constructor(
             install(ContentNegotiation) {
                 json(json)
             }
-            install(ContentEncoding) {
-                deflate()
-            }
             install(Auth) {
                 bearer {
                     loadTokens {
