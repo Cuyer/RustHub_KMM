@@ -10,9 +10,9 @@ plugins {
 }
 
 composeCompiler {
-    reportsDestination = layout.buildDirectory.dir("composeReports")
+/*    reportsDestination = layout.buildDirectory.dir("composeReports")
     metricsDestination = layout.buildDirectory.dir("composeMetrics")
-    includeSourceInformation.set(true)
+    includeSourceInformation.set(true)*/
     stabilityConfigurationFiles.add(rootProject.layout.projectDirectory.file("stability_config.conf"))
 }
 
@@ -23,7 +23,7 @@ android {
         applicationId = "pl.cuyer.rusthub.android"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 46
+        versionCode = 47
         versionName = project.property("VERSION_NAME") as String
         buildConfigField("String", "SERVERS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/4096035325\"")
         buildConfigField("String", "ITEMS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/1469871989\"")
