@@ -118,7 +118,7 @@ fun AboutScreen(onNavigateUp: () -> Unit) {
                 }
             }
             AppTextButton(onClick = {
-                emailSender.sendEmail("rusthubapplication@gmail.com", "RustHub - bug report")
+                emailSender.sendEmail("rusthubapp@gmail.com", "RustHub - bug report")
             }) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -133,7 +133,7 @@ fun AboutScreen(onNavigateUp: () -> Unit) {
                 }
             }
             AppTextButton(onClick = {
-                emailSender.sendEmail("rusthubapplication@gmail.com", "RustHub - feature suggestion")
+                emailSender.sendEmail("rusthubapp@gmail.com", "RustHub - feature suggestion")
             }) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
