@@ -75,7 +75,7 @@ actual class HttpClientFactory actual constructor(
                 json(json)
             }
             install(ContentEncoding) {
-                gzip()
+                deflate()
             }
             install(Auth) {
                 bearer {
