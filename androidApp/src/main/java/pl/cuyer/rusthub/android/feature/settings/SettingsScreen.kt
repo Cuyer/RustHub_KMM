@@ -133,10 +133,12 @@ fun SettingsScreen(
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding)
                 .fillMaxSize()
-                .padding(spacing.medium)
         ) {
             if (isTabletMode) {
                 SettingsScreenExpanded(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(spacing.medium),
                     username = state.value.username,
                     provider = state.value.provider,
                     subscribed = state.value.subscribed,
@@ -152,7 +154,9 @@ fun SettingsScreen(
             } else {
                 SettingsScreenCompact(
                     modifier = Modifier
-                        .verticalScroll(rememberScrollState()),
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(spacing.medium),
                     username = state.value.username,
                     provider = state.value.provider,
                     subscribed = state.value.subscribed,
