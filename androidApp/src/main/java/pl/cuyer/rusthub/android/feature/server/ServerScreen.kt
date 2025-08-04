@@ -128,7 +128,11 @@ fun ServerScreen(
     val scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
 
     ObserveAsEvents(uiEvent) { event ->
-        if (event is UiEvent.Navigate) onNavigate(event.destination)
+        when (event) {
+            is UiEvent.Navigate -> onNavigate(event.destination)
+            UiEvent.RefreshServers -> pagedList.refresh()
+            else -> Unit
+        }
     }
 
     val lazyListState = rememberLazyListState()
@@ -196,7 +200,6 @@ fun ServerScreen(
                         selected = state.value.filter,
                         onSelectedChange = {
                             onAction(ServerAction.OnFilterChange(it))
-                            pagedList.refresh()
                         },
                         modifier = Modifier
                             .padding(horizontal = spacing.xmedium)
@@ -464,7 +467,6 @@ fun ServerScreen(
                     },
                     onDismissAndRefresh = {
                         showSheet = false
-                        pagedList.refresh()
                     },
                     onAction = onAction
                 )
