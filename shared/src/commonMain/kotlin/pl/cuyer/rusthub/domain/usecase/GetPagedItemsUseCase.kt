@@ -49,8 +49,8 @@ class GetPagedItemsUseCase(
         }
         return Pager(
             config = PagingConfig(
-                pageSize = 40,
-                enablePlaceholders = true
+                pageSize = 30,
+                enablePlaceholders = false
             ),
             pagingSourceFactory = {
                 dataSource.getItemsPagingSource(query, category, updatedLanguage)

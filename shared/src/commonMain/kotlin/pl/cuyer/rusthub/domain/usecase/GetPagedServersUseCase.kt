@@ -30,8 +30,8 @@ class GetPagedServersUseCase(
     ): Flow<PagingData<ServerInfo>> {
         return Pager(
             config = PagingConfig(
-                pageSize = 40,
-                enablePlaceholders = true
+                pageSize = 20,
+                enablePlaceholders = false
             ),
             remoteMediator = ServerRemoteMediator(
                 dataSource,
