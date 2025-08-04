@@ -138,7 +138,7 @@ fun ServerScreen(
     val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
 
-    LaunchedEffect(state.value.filter, pagedList.loadState) {
+    LaunchedEffect(state.value.filter) {
         coroutineScope.launch {
             lazyListState.scrollToItem(0)
             scrollBehavior.scrollOffset = 1f
