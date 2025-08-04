@@ -10,13 +10,10 @@ import pl.cuyer.rusthub.domain.repository.server.ServerCacheDataSource
 class ServerCacheDataSourceImpl(
     db: RustHubDatabase
 ) : Queries(db), ServerCacheDataSource {
-    override suspend fun clearServersAndKeys() {
+    override suspend fun clearServers() {
         withContext(Dispatchers.IO) {
             safeExecute {
-                queries.transaction {
-                    queries.clearServers()
-                    queries.clearRemoteKeys()
-                }
+                queries.clearServers()
             }
         }
     }

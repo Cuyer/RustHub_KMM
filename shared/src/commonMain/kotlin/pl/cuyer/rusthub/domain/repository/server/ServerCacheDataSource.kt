@@ -2,7 +2,7 @@ package pl.cuyer.rusthub.domain.repository.server
 
 interface ServerCacheDataSource {
     /**
-     * Clears cached servers and remote keys in a single transaction.
+     * Clears cached servers.
      */
-    suspend fun clearServersAndKeys()
+    suspend fun clearServers()
 }
