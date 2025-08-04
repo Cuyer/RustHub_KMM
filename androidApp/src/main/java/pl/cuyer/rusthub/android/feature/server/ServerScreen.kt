@@ -398,20 +398,6 @@ fun ServerScreen(
                             isOnline = item.serverStatus == ServerStatus.ONLINE
                         )
                     }
-                    onAppendItem {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            CircularWavyProgressIndicator(
-                                Modifier
-                                    .animateItem()
-                                    .padding(6.dp)
-                            )
-                        }
-                    }
                 }
             }
             AnimatedVisibility(
