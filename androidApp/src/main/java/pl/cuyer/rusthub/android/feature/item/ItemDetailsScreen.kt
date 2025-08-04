@@ -701,10 +701,18 @@ private fun RecyclerOutputRow(
         ) {
             outputs.forEach { output ->
                 output.image?.let { image ->
-                    val outputString = if (extraChance) {
-                        "${output.amount?.times(100)}%"
-                    } else {
-                        "x${output.amount?.toInt()}"
+                    val outputString = remember(output.amount, extraChance) {
+                        if (extraChance) {
+                            stringResource(
+                                SharedRes.strings.percentage_format,
+                                output.amount?.times(100)?.roundToInt() ?: 0
+                            )
+                        } else {
+                            stringResource(
+                                SharedRes.strings.multiplier_format,
+                                output.amount?.toInt() ?: 0
+                            )
+                        }
                     }
 
                     ItemTooltipImage(

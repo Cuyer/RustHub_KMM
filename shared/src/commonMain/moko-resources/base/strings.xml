@@ -418,6 +418,8 @@
     <string name="radtown_recycler">Radtown Recycler</string>
     <string name="guaranteed_output">Guaranteed Output</string>
     <string name="extra_chance_output">Extra Chance Output</string>
+    <string name="multiplier_format">x%1$d</string>
+    <string name="percentage_format">%1$d%%</string>
     <string name="raw_material_cost">Raw Material Cost</string>
     <string name="using_mixing_table">Using mixing table x%1$d</string>
     <string name="time_to_raid">Time to Raid: %1$s</string>
