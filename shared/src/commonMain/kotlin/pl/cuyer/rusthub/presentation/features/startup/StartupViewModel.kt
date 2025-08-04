@@ -1,7 +1,6 @@
 package pl.cuyer.rusthub.presentation.features.startup
 
 import io.github.aakira.napier.Napier
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -10,7 +9,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.CancellationException
@@ -40,8 +38,6 @@ import pl.cuyer.rusthub.domain.model.ItemSyncState
 import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
 
-private const val SKIP_DELAY = 10_000L
-
 class StartupViewModel(
     private val snackbarController: SnackbarController,
     private val getUserUseCase: GetUserUseCase,
@@ -57,7 +53,6 @@ class StartupViewModel(
     private val purchaseSyncScheduler: PurchaseSyncScheduler,
 ) : BaseViewModel() {
 
-    private var startupJob: Job? = null
     private val initializationJob = coroutineScope.launch(start = CoroutineStart.LAZY) {
         initialize()
     }
@@ -77,13 +72,10 @@ class StartupViewModel(
 
     init {
         observePreferences()
-        startupJob = coroutineScope.launch {
+        coroutineScope.launch {
             if (itemDataSource.isEmpty(getCurrentAppLanguage())) {
-                updateLoadingState(true)
                 itemSyncDataSource.setState(ItemSyncState.PENDING)
                 itemsScheduler.startNow()
-                startSkipTimer()
-                itemSyncDataSource.observeState().first { it == ItemSyncState.DONE }
             } else {
                 itemsScheduler.schedule()
             }
@@ -132,18 +124,6 @@ class StartupViewModel(
 
     private fun updateLoadingState(loading: Boolean) {
         _state.update { it.copy(isLoading = loading) }
-    }
-
-    private fun startSkipTimer() {
-        coroutineScope.launch {
-            delay(SKIP_DELAY)
-            _state.update { it.copy(showSkip = true) }
-        }
-    }
-
-    fun skipFetching() {
-        startupJob?.cancel()
-        initializationJob.start()
     }
 
     private fun updateStartDestination(user: User?) {

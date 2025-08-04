@@ -122,10 +122,7 @@ class MainActivity : AppCompatActivity() {
                         transitionSpec = { defaultFadeTransition() }
                     ) { isLoading ->
                         if (isLoading) {
-                            StartupScreen(
-                                showSkip = { state.value.showSkip },
-                                onSkip = { startupViewModel.skipFetching() }
-                            )
+                            StartupScreen()
                         } else {
                             NavigationRoot(startDestination = state.value.startDestination)
                         }
