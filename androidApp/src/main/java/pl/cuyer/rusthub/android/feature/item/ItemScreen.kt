@@ -139,6 +139,13 @@ fun ItemScreen(
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
 
+    LaunchedEffect(state.value.selectedCategory) {
+        coroutineScope.launch {
+            lazyListState.scrollToItem(0)
+            scrollBehavior.scrollOffset = 1f
+        }
+    }
+
     LaunchedEffect(showAds) {
         if (showAds) {
             onAdAction(AdAction.LoadAd(BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID))
