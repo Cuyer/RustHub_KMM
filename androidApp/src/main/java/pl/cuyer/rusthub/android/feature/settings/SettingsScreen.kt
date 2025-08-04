@@ -128,6 +128,18 @@ fun SettingsScreen(
             )
         }
     ) { innerPadding ->
+        if (state.value.isLoggingOut) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        MaterialTheme.colorScheme.background.copy(alpha = 0.2f)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularWavyProgressIndicator()
+            }
+        }
         Box(
             modifier = Modifier
                 .padding(innerPadding)
@@ -192,18 +204,6 @@ fun SettingsScreen(
                     },
                     onDismiss = { showLanguageSheet = false }
                 )
-            }
-            if (state.value.isLoggingOut) {
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .background(
-                            MaterialTheme.colorScheme.background.copy(alpha = 0.6f)
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularWavyProgressIndicator()
-                }
             }
         }
     }
