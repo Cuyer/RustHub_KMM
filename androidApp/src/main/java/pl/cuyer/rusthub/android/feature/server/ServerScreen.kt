@@ -61,7 +61,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -74,14 +73,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavKey
-import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -143,11 +139,10 @@ fun ServerScreen(
     val lazyListState = rememberLazyListState()
 
     LaunchedEffect(state.value.filter) {
-        snapshotFlow { pagedList.loadState.refresh }
-            .filter { it is LoadState.NotLoading && pagedList.itemCount > 0 }
-            .first()
-        lazyListState.scrollToItem(0)
-        scrollBehavior.scrollOffset = 1f
+        coroutineScope.launch {
+            lazyListState.scrollToItem(0)
+            scrollBehavior.scrollOffset = 1f
+        }
     }
 
     val pullToRefreshState = rememberPullToRefreshState()
