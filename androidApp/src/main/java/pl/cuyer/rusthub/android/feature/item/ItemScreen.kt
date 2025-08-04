@@ -135,6 +135,11 @@ fun ItemScreen(
     }
     val ads = adState
 
+    LaunchedEffect(state.value.selectedCategory) {
+        lazyListState.scrollToItem(0)
+        scrollBehavior.scrollOffset = 1f
+    }
+
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }

@@ -146,10 +146,16 @@ fun ServerScreen(
     val ads = adState
     val activity = LocalActivity.current as Activity
 
+    LaunchedEffect(state.value.filter) {
+        lazyListState.scrollToItem(0)
+        scrollBehavior.scrollOffset = 1f
+    }
+
     LaunchedEffect(Unit) {
-        onAction(ServerAction.GatherConsent(activity) {
-            onAdAction(AdAction.LoadAd(BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID))
-        }
+        onAction(
+            ServerAction.GatherConsent(activity) {
+                onAdAction(AdAction.LoadAd(BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID))
+            }
         )
     }
 
