@@ -10,7 +10,8 @@ actual class AppCheckTokenProvider actual constructor() {
 
     actual suspend fun currentToken(): String? {
         return try {
-            val token = FirebaseAppCheck.getInstance().getToken(false).await().token
+            val token = FirebaseAppCheck.getInstance()
+                .getAppCheckToken(false).await().token
             token
         } catch (e: Exception) {
             if (e is CancellationException) throw e

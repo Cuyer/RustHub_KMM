@@ -1,12 +1,10 @@
 package pl.cuyer.rusthub.android.feature.item
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.animateBounds
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -25,17 +23,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -48,45 +44,38 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import pl.cuyer.rusthub.presentation.features.item.ItemDetailsState
-import pl.cuyer.rusthub.SharedRes
-import pl.cuyer.rusthub.android.util.composeUtil.stringResource
-import pl.cuyer.rusthub.android.designsystem.LootingListItem
-import pl.cuyer.rusthub.android.designsystem.LootContentListItem
-import pl.cuyer.rusthub.android.designsystem.WhereToFindListItem
 import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.launch
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.ItemTooltipImage
+import pl.cuyer.rusthub.android.designsystem.LootContentListItem
+import pl.cuyer.rusthub.android.designsystem.LootingListItem
+import pl.cuyer.rusthub.android.designsystem.WhereToFindListItem
 import pl.cuyer.rusthub.android.theme.spacing
-import pl.cuyer.rusthub.domain.model.Crafting
-import pl.cuyer.rusthub.domain.model.CraftingIngredient
+import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.CraftingRecipe
-import pl.cuyer.rusthub.domain.model.ResearchTableCost
-import pl.cuyer.rusthub.domain.model.TechTreeCost
-import pl.cuyer.rusthub.domain.model.Looting
 import pl.cuyer.rusthub.domain.model.LootContent
 import pl.cuyer.rusthub.domain.model.RaidItem
 import pl.cuyer.rusthub.domain.model.RaidResource
-import pl.cuyer.rusthub.domain.model.Raiding
-import pl.cuyer.rusthub.domain.model.WhereToFind
-
-import pl.cuyer.rusthub.domain.model.Recycling
 import pl.cuyer.rusthub.domain.model.Recycler
 import pl.cuyer.rusthub.domain.model.RecyclerOutput
+import pl.cuyer.rusthub.domain.model.ResearchTableCost
 import pl.cuyer.rusthub.domain.model.RustItem
+import pl.cuyer.rusthub.domain.model.TechTreeCost
 import pl.cuyer.rusthub.domain.model.hasContent
+import pl.cuyer.rusthub.presentation.features.item.ItemDetailsState
 import kotlin.math.roundToInt
+import pl.cuyer.rusthub.domain.model.Crafting as CraftingModel
+import pl.cuyer.rusthub.domain.model.Looting as LootingModel
+import pl.cuyer.rusthub.domain.model.Raiding as RaidingModel
+import pl.cuyer.rusthub.domain.model.Recycling as RecyclingModel
+import pl.cuyer.rusthub.domain.model.WhereToFind as WhereToFindModel
 
 @Immutable
 private enum class DetailsPage(val title: StringResource) {
@@ -96,6 +85,19 @@ private enum class DetailsPage(val title: StringResource) {
     CRAFTING(SharedRes.strings.crafting),
     RECYCLING(SharedRes.strings.recycling),
     RAIDING(SharedRes.strings.raiding)
+}
+
+@Immutable
+private sealed class PageData(val page: DetailsPage) {
+    data class Looting(val looting: List<LootingModel>) : PageData(DetailsPage.LOOTING)
+    data class WhereToFind(val places: List<WhereToFindModel>) :
+        PageData(DetailsPage.WHERE_TO_FIND)
+    data class Contents(val contents: List<LootContent>) :
+        PageData(DetailsPage.CONTENTS)
+    data class Crafting(val crafting: CraftingModel) : PageData(DetailsPage.CRAFTING)
+    data class Recycling(val recycling: RecyclingModel) : PageData(DetailsPage.RECYCLING)
+    data class Raiding(val raiding: List<RaidingModel>, val item: RustItem) :
+        PageData(DetailsPage.RAIDING)
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
@@ -108,18 +110,17 @@ fun ItemDetailsScreen(
     val availablePages = remember(state.value.item) {
         state.value.item?.let { item ->
             buildList {
-                item.looting?.takeIf { it.isNotEmpty() }
-                    ?.let { add(DetailsPage.LOOTING to it) }
+                item.looting?.takeIf { it.isNotEmpty() }?.let { add(PageData.Looting(it)) }
                 item.whereToFind?.takeIf { it.isNotEmpty() }
-                    ?.let { add(DetailsPage.WHERE_TO_FIND to it) }
+                    ?.let { add(PageData.WhereToFind(it)) }
                 item.lootContents?.takeIf { it.isNotEmpty() }
-                    ?.let { add(DetailsPage.CONTENTS to it) }
+                    ?.let { add(PageData.Contents(it)) }
                 item.crafting?.takeIf { it.hasContent() }
-                    ?.let { add(DetailsPage.CRAFTING to it) }
+                    ?.let { add(PageData.Crafting(it)) }
                 item.recycling?.takeIf { it.hasContent() }
-                    ?.let { add(DetailsPage.RECYCLING to it) }
+                    ?.let { add(PageData.Recycling(it)) }
                 item.raiding?.takeIf { it.isNotEmpty() }
-                    ?.let { add(DetailsPage.RAIDING to (it to item)) }
+                    ?.let { add(PageData.Raiding(it, item)) }
             }
         } ?: emptyList()
     }
@@ -157,10 +158,8 @@ fun ItemDetailsScreen(
                 PrimaryScrollableTabRow(
                     selectedTabIndex = pagerState.currentPage
                 ) {
-                    availablePages.forEachIndexed { index, (page, _) ->
-                        key(
-                            page.title
-                        ) {
+                    availablePages.forEachIndexed { index, data ->
+                        key(data.page.title) {
                             Tab(
                                 selected = pagerState.currentPage == index,
                                 onClick = {
@@ -168,7 +167,7 @@ fun ItemDetailsScreen(
                                         pagerState.animateScrollToPage(index)
                                     }
                                 },
-                                text = { Text(stringResource(page.title)) }
+                                text = { Text(stringResource(data.page.title)) }
                             )
                         }
                     }
@@ -176,22 +175,20 @@ fun ItemDetailsScreen(
             }
 
             HorizontalPager(
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 state = pagerState
             ) { page ->
-                val (detailsPage, data) = availablePages[page]
-                DetailsContent(detailsPage, data)
+                DetailsContent(availablePages[page])
             }
         }
     }
 }
 
 @Composable
-private fun DetailsContent(page: DetailsPage, content: Any?) {
-    when (page) {
-        DetailsPage.LOOTING -> {
-            val looting = content as? List<Looting> ?: emptyList()
+private fun DetailsContent(data: PageData) {
+    when (data) {
+        is PageData.Looting -> {
+            val looting = data.looting
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
@@ -215,8 +212,8 @@ private fun DetailsContent(page: DetailsPage, content: Any?) {
             }
         }
 
-        DetailsPage.WHERE_TO_FIND -> {
-            val places = content as? List<WhereToFind> ?: emptyList()
+        is PageData.WhereToFind -> {
+            val places = data.places
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
@@ -240,8 +237,8 @@ private fun DetailsContent(page: DetailsPage, content: Any?) {
             }
         }
 
-        DetailsPage.CONTENTS -> {
-            val contents = content as? List<LootContent> ?: emptyList()
+        is PageData.Contents -> {
+            val contents = data.contents
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
@@ -265,31 +262,22 @@ private fun DetailsContent(page: DetailsPage, content: Any?) {
             }
         }
 
-        DetailsPage.CRAFTING -> {
-            val crafting = content as? Crafting
-            crafting?.let { CraftingContent(it) }
-        }
+        is PageData.Crafting -> CraftingContent(data.crafting)
 
-        DetailsPage.RECYCLING -> {
-            val recycling = content as? Recycling
-            recycling?.let { RecyclingContent(it) }
-        }
+        is PageData.Recycling -> RecyclingContent(data.recycling)
 
-        DetailsPage.RAIDING -> {
-            val raidingPair = content as? Pair<List<Raiding>, RustItem>
-            raidingPair?.let { (raiding, item) ->
-                RaidingContent(
-                    iconUrl = item.iconUrl ?: item.image,
-                    health = item.health,
-                    raiding = raiding
-                )
-            }
+        is PageData.Raiding -> {
+            RaidingContent(
+                iconUrl = data.item.iconUrl ?: data.item.image,
+                health = data.item.health,
+                raiding = data.raiding
+            )
         }
     }
 }
 
 @Composable
-private fun CraftingContent(crafting: Crafting) {
+private fun CraftingContent(crafting: CraftingModel) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
@@ -586,7 +574,7 @@ private fun TechTreeCostRow(
 }
 
 @Composable
-private fun RecyclingContent(recycling: Recycling) {
+private fun RecyclingContent(recycling: RecyclingModel) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
@@ -735,7 +723,7 @@ private fun RecyclerOutputRow(
 private fun RaidingContent(
     iconUrl: String?,
     health: Int?,
-    raiding: List<Raiding>
+    raiding: List<RaidingModel>
 ) {
     val maxHealth by remember { mutableFloatStateOf(health?.toFloat() ?: 0f) }
     val sliderState =
@@ -790,7 +778,7 @@ private fun RaidingContent(
 @Composable
 private fun RaidingItem(
     modifier: Modifier = Modifier,
-    raiding: Raiding,
+    raiding: RaidingModel,
     fraction: () -> Float
 ) {
     ElevatedCard(shape = MaterialTheme.shapes.extraSmall, modifier = modifier) {

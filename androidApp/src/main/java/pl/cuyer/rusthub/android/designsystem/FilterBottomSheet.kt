@@ -67,12 +67,12 @@ import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.presentation.features.server.ServerAction
-import pl.cuyer.rusthub.presentation.features.server.ServerState
 import pl.cuyer.rusthub.presentation.model.FilterCheckboxOption
 import pl.cuyer.rusthub.presentation.model.FilterDropdownOption
 import pl.cuyer.rusthub.presentation.model.FilterRangeOption
 import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.presentation.model.toDomain
+import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.util.StringProvider
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -171,7 +171,14 @@ fun FilterBottomSheet(
                             modifier = Modifier.fillMaxWidth(),
                             onAction = onAction,
                             onDismissAndRefresh = onDismissAndRefresh,
-                            filters = { FilterUi(localLists, localCheckboxes, localRanges) }
+                            filters = {
+                                FilterUi(
+                                    localLists,
+                                    localCheckboxes,
+                                    localRanges,
+                                    filters?.filter ?: ServerFilter.ALL
+                                )
+                            }
                         )
                     }
                 }
