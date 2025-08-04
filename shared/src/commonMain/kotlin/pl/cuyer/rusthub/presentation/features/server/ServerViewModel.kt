@@ -375,7 +375,6 @@ class ServerViewModel(
 
     private fun updateFilter(filter: ServerFilter) {
         coroutineScope.launch {
-            _state.update { it.copy(filter = filter) }
             runCatching {
                 val current = state.value.filters
                     ?.copy(filter = filter)
@@ -384,6 +383,8 @@ class ServerViewModel(
                     ?: ServerQuery(filter = filter)
                 saveFiltersUseCase(current)
                 clearServersAndKeys()
+            }.onSuccess {
+                _state.update { it.copy(filter = filter) }
             }.onFailure {
                 CrashReporter.recordException(it)
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_filters))
