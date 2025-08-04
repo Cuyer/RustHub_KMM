@@ -416,6 +416,8 @@
     <string name="safezone_recycler">Safezone-Recycler</string>
     <string name="guaranteed_output">Garantierte Ausgabe</string>
     <string name="extra_chance_output">Zusätzliche Chance Ausgabe</string>
+    <string name="multiplier_format">x%1$d</string>
+    <string name="percentage_format">%1$d%%</string>
     <string name="raw_material_cost">Rohmaterialkosten</string>
     <string name="using_mixing_table">Mit Mischtisch x%1$d</string>
     <string name="time_to_raid">Raidzeit: %1$s</string>
