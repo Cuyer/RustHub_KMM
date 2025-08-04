@@ -19,6 +19,18 @@ class PagingHandlerScope<T : Any>(
     val items: LazyPagingItems<T>,
     private val loadState: CombinedLoadStates
 ) {
+
+    @LazyScopeMarker
+    fun LazyListScope.onAppendItem(
+        key: Any = "append",
+        contentType: Any = "append",
+        body: @Composable LazyItemScope.() -> Unit
+    ) {
+        if (loadState.append == LoadState.Loading) {
+            item(key = key, contentType = contentType) { body(this) }
+        }
+    }
+
     @LazyScopeMarker
     fun LazyListScope.onLastItem(body: @Composable LazyItemScope.() -> Unit) {
         if (loadState.append.endOfPaginationReached) item { body(this) }
@@ -62,7 +74,7 @@ fun <T : Any> HandlePagingItems(
     val loadState = pagingItems.loadState
 
     when {
-        !loadState.isIdle -> onRefresh()
+        loadState.refresh is LoadState.Loading -> onRefresh()
         loadState.refresh is LoadState.Error ->
             onError((loadState.refresh as LoadState.Error).error)
         pagingItems.itemCount == 0 &&
