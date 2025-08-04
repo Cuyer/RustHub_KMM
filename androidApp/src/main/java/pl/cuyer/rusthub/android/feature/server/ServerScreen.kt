@@ -131,11 +131,17 @@ fun ServerScreen(
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
 
+    val lazyListState = rememberLazyListState()
+
+    LaunchedEffect(state.value.filter) {
+        lazyListState.scrollToItem(0)
+        scrollBehavior.scrollOffset = 1f
+    }
+
     val coroutineScope = rememberCoroutineScope()
 
     val pullToRefreshState = rememberPullToRefreshState()
 
-    val lazyListState = rememberLazyListState()
 
     val isAtTop by remember {
         derivedStateOf {
