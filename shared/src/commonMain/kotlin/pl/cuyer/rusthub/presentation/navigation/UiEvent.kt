@@ -10,5 +10,5 @@ sealed interface UiEvent {
     @Immutable
     data object NavigateUp: UiEvent
     @Immutable
-    data object RefreshServers : UiEvent
+    data object RefreshList : UiEvent
 }

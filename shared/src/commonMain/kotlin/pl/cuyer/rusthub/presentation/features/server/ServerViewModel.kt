@@ -304,7 +304,7 @@ class ServerViewModel(
                 CrashReporter.recordException(it)
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_filters))
             }.onSuccess {
-                _uiEvent.send(UiEvent.RefreshServers)
+                _uiEvent.send(UiEvent.RefreshList)
             }
         }
     }
@@ -319,7 +319,7 @@ class ServerViewModel(
                 CrashReporter.recordException(it)
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_clearing_filters))
             }.onSuccess {
-                _uiEvent.send(UiEvent.RefreshServers)
+                _uiEvent.send(UiEvent.RefreshList)
             }
         }
     }
@@ -389,7 +389,7 @@ class ServerViewModel(
                 clearServersAndKeys()
             }.onSuccess {
                 _state.update { it.copy(filter = filter) }
-                _uiEvent.send(UiEvent.RefreshServers)
+                _uiEvent.send(UiEvent.RefreshList)
             }.onFailure {
                 CrashReporter.recordException(it)
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_filters))

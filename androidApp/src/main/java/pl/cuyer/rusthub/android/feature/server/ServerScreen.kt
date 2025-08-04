@@ -130,19 +130,20 @@ fun ServerScreen(
     ObserveAsEvents(uiEvent) { event ->
         when (event) {
             is UiEvent.Navigate -> onNavigate(event.destination)
-            UiEvent.RefreshServers -> pagedList.refresh()
+            UiEvent.RefreshList -> pagedList.refresh()
             else -> Unit
         }
     }
 
+    val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
 
-    LaunchedEffect(state.value.filter) {
-        lazyListState.scrollToItem(0)
-        scrollBehavior.scrollOffset = 1f
+    LaunchedEffect(state.value.filter, pagedList.loadState) {
+        coroutineScope.launch {
+            lazyListState.scrollToItem(0)
+            scrollBehavior.scrollOffset = 1f
+        }
     }
-
-    val coroutineScope = rememberCoroutineScope()
 
     val pullToRefreshState = rememberPullToRefreshState()
 
