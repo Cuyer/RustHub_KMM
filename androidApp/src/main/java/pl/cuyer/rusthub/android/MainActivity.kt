@@ -9,7 +9,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,10 +28,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import pl.cuyer.rusthub.android.feature.startup.StartupScreen
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.util.composeUtil.isSystemInDarkTheme
-import pl.cuyer.rusthub.android.designsystem.defaultFadeTransition
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.util.InAppUpdateManager
@@ -44,7 +41,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var updateLauncher: ActivityResultLauncher<IntentSenderRequest>
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
         var themeSettings by mutableStateOf(
             ThemeSettings(
                 darkTheme = false,
@@ -97,6 +94,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         super.onCreate(savedInstanceState)
+        splashScreen.setKeepOnScreenCondition {
+            startupViewModel.state.value.isLoading
+        }
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 MobileAds.initialize(this@MainActivity)
@@ -116,16 +116,9 @@ class MainActivity : AppCompatActivity() {
                 dynamicColor = themeSettings.dynamicColor
             ) {
                 val state = startupViewModel.state.collectAsStateWithLifecycle()
-                RustHubBackground {
-                    AnimatedContent(
-                        targetState = state.value.isLoading,
-                        transitionSpec = { defaultFadeTransition() }
-                    ) { isLoading ->
-                        if (isLoading) {
-                            StartupScreen()
-                        } else {
-                            NavigationRoot(startDestination = state.value.startDestination)
-                        }
+                if (!state.value.isLoading) {
+                    RustHubBackground {
+                        NavigationRoot(startDestination = state.value.startDestination)
                     }
                 }
             }
