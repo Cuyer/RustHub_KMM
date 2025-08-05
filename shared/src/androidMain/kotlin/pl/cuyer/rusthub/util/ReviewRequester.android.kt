@@ -1,12 +1,10 @@
 package pl.cuyer.rusthub.util
 
-import android.app.Activity
-import android.content.Context
 import com.google.android.play.core.review.ReviewManagerFactory
 
-actual class ReviewRequester(private val context: Context) {
+actual class ReviewRequester(private val activityProvider: ActivityProvider) {
     actual fun requestReview() {
-        val activity = context as? Activity ?: return
+        val activity = activityProvider.currentActivity() ?: return
         val manager = ReviewManagerFactory.create(activity)
         val request = manager.requestReviewFlow()
         request.addOnCompleteListener { task ->
