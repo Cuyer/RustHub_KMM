@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.android.designsystem
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -17,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,6 +48,9 @@ fun AppExposedDropdownMenu(
     val textFieldState = rememberTextFieldState(options.getOrElse(selectedValue ?: -1) { "" })
     val focusManager = LocalFocusManager.current
 
+    val flagsByOption = remember(options) {
+        options.associateWith { Flag.fromDisplayName(it) }
+    }
     LaunchedEffect(selectedValue) {
         textFieldState.setTextAndPlaceCursorAtEnd(options.getOrElse(selectedValue ?: -1) { "" })
     }
@@ -84,30 +89,31 @@ fun AppExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {
-            options.forEach { option ->
-                DropdownMenuItem(
-                    text = { Text(option, style = MaterialTheme.typography.bodyLarge) },
-                    onClick = {
-                        textFieldState.setTextAndPlaceCursorAtEnd(option)
-                        expanded = false
-                        onSelectionChanged(options.indexOf(option))
-                    },
-                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                    trailingIcon = {
-                        Flag.fromDisplayName(option)?.let { flag ->
-                            if (label != stringResource(SharedRes.strings.region)) {
-                                // Flag icon is decorative when label is not region
-                                Image(
-                                    painter = painterResource(flag.toDrawable()),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .clearAndSetSemantics {}
-                                )
+            options.forEachIndexed { index, option ->
+                key(option) {
+                    DropdownMenuItem(
+                        text = { Text(option, style = MaterialTheme.typography.bodyLarge) },
+                        onClick = {
+                            textFieldState.setTextAndPlaceCursorAtEnd(option)
+                            expanded = false
+                            onSelectionChanged(index)
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                        trailingIcon = {
+                            flagsByOption[option]?.let { flag ->
+                                if (label != stringResource(SharedRes.strings.region)) {
+                                    Image(
+                                        painter = painterResource(flag.toDrawable()),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .clearAndSetSemantics {}
+                                    )
+                                }
                             }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     }
