@@ -2,10 +2,7 @@ package pl.cuyer.rusthub.android.designsystem
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -29,8 +26,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import kotlin.math.min
 import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
 import pl.cuyer.rusthub.SharedRes
@@ -58,10 +55,6 @@ fun AppExposedDropdownMenu(
             focusManager.clearFocus()
         }
     }
-
-    val itemHeight = 48.dp
-    val maxVisible = 8
-    val flags = remember(options) { options.associateWith { Flag.fromDisplayName(it) } }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -91,35 +84,30 @@ fun AppExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {
-            LazyColumn(
-                modifier = Modifier.heightIn(max = itemHeight * min(options.size, maxVisible)),
-            ) {
-                items(options.size) { index ->
-                    val option = options[index]
-                    DropdownMenuItem(
-                        text = { Text(option, style = MaterialTheme.typography.bodyLarge) },
-                        onClick = {
-                            textFieldState.setTextAndPlaceCursorAtEnd(option)
-                            expanded = false
-                            onSelectionChanged(options.indexOf(option))
-                        },
-                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                        trailingIcon = {
-                            flags[option]?.let { flag ->
-                                if (label != stringResource(SharedRes.strings.region)) {
-                                    // Flag icon is decorative when label is not region
-                                    Image(
-                                        painter = painterResource(flag.toDrawable()),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .size(24.dp)
-                                            .clearAndSetSemantics {}
-                                    )
-                                }
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option, style = MaterialTheme.typography.bodyLarge) },
+                    onClick = {
+                        textFieldState.setTextAndPlaceCursorAtEnd(option)
+                        expanded = false
+                        onSelectionChanged(options.indexOf(option))
+                    },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                    trailingIcon = {
+                        Flag.fromDisplayName(option)?.let { flag ->
+                            if (label != stringResource(SharedRes.strings.region)) {
+                                // Flag icon is decorative when label is not region
+                                Image(
+                                    painter = painterResource(flag.toDrawable()),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clearAndSetSemantics {}
+                                )
                             }
                         }
-                    )
-                }
+                    }
+                )
             }
         }
     }
