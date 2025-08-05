@@ -36,6 +36,7 @@ import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.domain.model.ItemSyncState
 import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
+import pl.cuyer.rusthub.util.InAppUpdateManager
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
 
 class StartupViewModel(
@@ -50,7 +51,7 @@ class StartupViewModel(
     private val itemDataSource: ItemDataSource,
     private val itemSyncDataSource: ItemSyncDataSource,
     private val purchaseSyncDataSource: PurchaseSyncDataSource,
-    private val purchaseSyncScheduler: PurchaseSyncScheduler,
+    private val purchaseSyncScheduler: PurchaseSyncScheduler
 ) : BaseViewModel() {
 
     private val initializationJob = coroutineScope.launch(start = CoroutineStart.LAZY) {

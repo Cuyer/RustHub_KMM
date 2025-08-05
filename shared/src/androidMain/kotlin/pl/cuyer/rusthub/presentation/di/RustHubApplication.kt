@@ -2,37 +2,27 @@ package pl.cuyer.rusthub.presentation.di
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.os.Build
+import android.os.StrictMode
 import androidx.work.Configuration
 import androidx.work.WorkManager
-import org.koin.android.ext.android.inject
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
-import pl.cuyer.rusthub.domain.repository.favourite.FavouriteSyncDataSource
-import pl.cuyer.rusthub.domain.repository.favourite.network.FavouriteRepository
-import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
-import pl.cuyer.rusthub.domain.repository.item.ItemRepository
-import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
-import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
-import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
-import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
-import pl.cuyer.rusthub.domain.repository.purchase.PurchaseRepository
-import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
-import pl.cuyer.rusthub.util.MessagingTokenManager
-import pl.cuyer.rusthub.util.NotificationPresenter
-import pl.cuyer.rusthub.work.CustomWorkerFactory
+import com.appmattus.certificatetransparency.BasicAndroidCTLogger
+import com.appmattus.certificatetransparency.installCertificateTransparencyProvider
 import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
-import pl.cuyer.rusthub.BuildConfig
-import android.os.Build
-import android.os.StrictMode
-import com.appmattus.certificatetransparency.installCertificateTransparencyProvider
-import com.appmattus.certificatetransparency.BasicAndroidCTLogger
-import pl.cuyer.rusthub.data.local.DatabasePassphraseProvider
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.get
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import pl.cuyer.rusthub.BuildConfig
+import pl.cuyer.rusthub.data.local.DatabasePassphraseProvider
+import pl.cuyer.rusthub.util.NotificationPresenter
+import pl.cuyer.rusthub.work.CustomWorkerFactory
 
 private fun needCtProvider(): Boolean {
     return Build.VERSION.SDK_INT < 36
@@ -40,21 +30,9 @@ private fun needCtProvider(): Boolean {
 
 class RustHubApplication : Application(), Configuration.Provider {
 
-    val repository by inject<FavouriteRepository>()
-    val syncDataSource by inject<FavouriteSyncDataSource>()
-    val subscriptionRepository by inject<SubscriptionRepository>()
-    val subscriptionSyncDataSource by inject<SubscriptionSyncDataSource>()
-    val serverDataSource by inject<ServerDataSource>()
-    val tokenManager by inject<MessagingTokenManager>()
-    val itemRepository by inject<ItemRepository>()
-    val itemDataSource by inject<ItemDataSource>()
-    val itemSyncDataSource by inject<ItemSyncDataSource>()
-    val purchaseRepository by inject<PurchaseRepository>()
-    val purchaseSyncDataSource by inject<PurchaseSyncDataSource>()
-    val userRepository by inject<pl.cuyer.rusthub.domain.repository.user.UserRepository>()
-    val authDataSource by inject<pl.cuyer.rusthub.domain.repository.auth.AuthDataSource>()
-
+    val koinReady = CompletableDeferred<Unit>()
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private lateinit var workConfig: Configuration
 
     @SuppressLint("MissingPermission")
     override fun onCreate() {
@@ -64,13 +42,13 @@ class RustHubApplication : Application(), Configuration.Provider {
                 StrictMode.ThreadPolicy.Builder()
                     .detectAll()
                     .penaltyLog()
-                    .build()
+                    .build(),
             )
             StrictMode.setVmPolicy(
                 StrictMode.VmPolicy.Builder()
                     .detectAll()
                     .penaltyLog()
-                    .build()
+                    .build(),
             )
         }
         if (needCtProvider()) {
@@ -94,30 +72,36 @@ class RustHubApplication : Application(), Configuration.Provider {
                 }
             }
 
+            workConfig = Configuration.Builder()
+                .setWorkerFactory(
+                    CustomWorkerFactory(
+                        favouriteRepository = get(),
+                        favouriteSyncDataSource = get(),
+                        subscriptionRepository = get(),
+                        subscriptionSyncDataSource = get(),
+                        serverDataSource = get(),
+                        tokenManager = get(),
+                        itemRepository = get(),
+                        itemDataSource = get(),
+                        itemSyncDataSource = get(),
+                        purchaseRepository = get(),
+                        purchaseSyncDataSource = get(),
+                        userRepository = get(),
+                        authDataSource = get(),
+                    ),
+                )
+                .build()
+
             NotificationPresenter(this@RustHubApplication).createDefaultChannels()
             WorkManager.initialize(this@RustHubApplication, workManagerConfiguration)
+            koinReady.complete(Unit)
         }
     }
 
     override val workManagerConfiguration: Configuration
-        get() = Configuration.Builder()
-            .setWorkerFactory(
-                CustomWorkerFactory(
-                    favouriteRepository = repository,
-                    favouriteSyncDataSource = syncDataSource,
-                    subscriptionRepository = subscriptionRepository,
-                    subscriptionSyncDataSource = subscriptionSyncDataSource,
-                    serverDataSource = serverDataSource,
-                    tokenManager = tokenManager,
-                    itemRepository = itemRepository,
-                    itemDataSource = itemDataSource,
-                    itemSyncDataSource = itemSyncDataSource,
-                    purchaseRepository = purchaseRepository,
-                    purchaseSyncDataSource = purchaseSyncDataSource,
-                    userRepository = userRepository,
-                    authDataSource = authDataSource
-                )
-            )
-            .build()
+        get() = if (::workConfig.isInitialized) {
+            workConfig
+        } else {
+            Configuration.Builder().build()
+        }
 }
-
