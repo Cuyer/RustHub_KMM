@@ -4,6 +4,7 @@ package pl.cuyer.rusthub.android.designsystem
 import android.app.Activity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -179,12 +180,16 @@ fun RustSearchBarTopAppBar(
                         ) {
                             BadgedBox(
                                 badge = {
-                                    Badge(
-                                        modifier = Modifier.offset(y = (-3).dp)
-                                    ) {
-                                        Text(
-                                            text = filtersCount().toString()
-                                        )
+                                    Crossfade(filtersCount()) { count ->
+                                        if (count > 0) {
+                                            Badge(
+                                                modifier = Modifier.offset(y = (-3).dp)
+                                            ) {
+                                                Text(
+                                                    text = filtersCount().toString()
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             ) {
