@@ -55,9 +55,9 @@ fun FilterUi.toDomain(stringProvider: StringProvider): ServerQuery {
     )
 }
 
-fun FilterUi.hasActiveFilters(): Boolean {
-    val hasDropdownSelection = lists.any { it.selectedIndex != null }
-    val hasCheckedCheckbox = checkboxes.any { it.isChecked }
-    val hasRangeValue = ranges.any { it.value != null }
-    return hasDropdownSelection || hasCheckedCheckbox || hasRangeValue
+fun FilterUi.activeFiltersCount(): Int {
+    val dropdownCount = lists.count { it.selectedIndex != null  && it.selectedIndex != -1}
+    val checkboxCount = checkboxes.count { it.isChecked }
+    val rangeCount = ranges.count { it.value != null }
+    return dropdownCount + checkboxCount + rangeCount
 }

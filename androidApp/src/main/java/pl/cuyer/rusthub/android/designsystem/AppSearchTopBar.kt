@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -67,6 +68,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.theme.RustHubTheme
@@ -93,7 +95,7 @@ fun RustSearchBarTopAppBar(
     onClearSearchQuery: () -> Unit,
     isLoadingSearchHistory: () -> Boolean,
     showFiltersIcon: Boolean = true,
-    hasActiveFilters: () -> Boolean = { false },
+    filtersCount: () -> Int = { 0 },
     placeholderRes: StringResource = SharedRes.strings.search_servers,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -171,23 +173,20 @@ fun RustSearchBarTopAppBar(
                                 searchBarState.currentValue == SearchBarValue.Collapsed &&
                                 textFieldState.text.isEmpty()
                     ) {
-                        if (hasActiveFilters()) {
-                            BadgedBox(badge = { Badge() }) {
-                                IconButton(
-                                    onClick = onOpenFilters,
-                                    modifier = Modifier.minimumInteractiveComponentSize()
-                                ) {
-                                    Icon(
-                                        tint = contentColorFor(SearchBarDefaults.colors().containerColor),
-                                        imageVector = Icons.Default.FilterList,
-                                        contentDescription = stringResource(SharedRes.strings.open_filters)
-                                    )
+                        IconButton(
+                            onClick = onOpenFilters,
+                            modifier = Modifier.minimumInteractiveComponentSize()
+                        ) {
+                            BadgedBox(
+                                badge = {
+                                    Badge(
+                                        modifier = Modifier.offset(y = (-3).dp)
+                                    ) {
+                                        Text(
+                                            text = filtersCount().toString()
+                                        )
+                                    }
                                 }
-                            }
-                        } else {
-                            IconButton(
-                                onClick = onOpenFilters,
-                                modifier = Modifier.minimumInteractiveComponentSize()
                             ) {
                                 Icon(
                                     tint = contentColorFor(SearchBarDefaults.colors().containerColor),
