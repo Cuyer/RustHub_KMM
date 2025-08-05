@@ -74,8 +74,8 @@ actual fun platformModule(passphrase: String): Module = module {
     single { AppCheckTokenProvider() }
     single { HttpClientFactory(get(), get(), get(), get(), get()).create() }
     single { ClipboardHandler(get()) }
-    single { ShareHandler(get()) }
-    single { AdsConsentManager.getInstance(androidContext()) }
+    single { ShareHandler(get<ActivityProvider>()) }
+    single { AdsConsentManager.getInstance(get()) }
     single(createdAtStart = true) { ActivityProvider(androidApplication()) }
     single<NativeAdRepository> { NativeAdRepositoryImpl(get()) }
     factory { GetNativeAdUseCase(get()) }
@@ -90,14 +90,14 @@ actual fun platformModule(passphrase: String): Module = module {
     single { BillingRepositoryImpl(androidContext()) } bind BillingRepository::class
     single { ItemSyncDataSourceImpl(get()) } bind ItemSyncDataSource::class
     single { PurchaseSyncDataSourceImpl(get()) } bind PurchaseSyncDataSource::class
-    single { InAppUpdateManager(androidContext(), get(), get()) }
-    single { ReviewRequester(androidContext()) }
-    single { StoreNavigator(androidContext()) }
-    single { UrlOpener(androidContext()) }
-    single { EmailSender(androidContext()) }
+    single { InAppUpdateManager(get(), get(), get()) }
+    single { ReviewRequester(get()) }
+    single { StoreNavigator(get()) }
+    single { UrlOpener(get()) }
+    single { EmailSender(get()) }
     single { SystemDarkThemeObserver(androidContext()) }
     single { ConnectivityObserver(androidContext()) }
-    single { GoogleAuthClient(androidContext()) }
+    single { GoogleAuthClient(get()) }
     single { RemoteConfig() }
     single { StringProvider(androidContext()) }
     single { PermissionsController(androidContext()) }

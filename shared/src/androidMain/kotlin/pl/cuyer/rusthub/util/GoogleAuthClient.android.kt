@@ -1,6 +1,5 @@
 package pl.cuyer.rusthub.util
 
-import android.content.Context
 import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
@@ -9,11 +8,11 @@ import androidx.credentials.exceptions.NoCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CancellationException
 
-actual class GoogleAuthClient(private val context: Context) {
+actual class GoogleAuthClient(private val activityProvider: ActivityProvider) {
     actual suspend fun getIdToken(clientId: String): String? {
+        val context = activityProvider.currentActivity() ?: return null
         val manager = CredentialManager.create(context)
         val signInOption = GetGoogleIdOption.Builder()
             .setServerClientId(clientId)
@@ -53,8 +52,8 @@ actual class GoogleAuthClient(private val context: Context) {
             is CustomCredential -> {
                 if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                     return try {
-                        val googleIdTokenCredential = GoogleIdTokenCredential
-                            .createFrom(credential.data)
+                        val googleIdTokenCredential =
+                            GoogleIdTokenCredential.createFrom(credential.data)
                         googleIdTokenCredential.idToken
                     } catch (e: GoogleIdTokenParsingException) {
                         CrashReporter.recordException(e)
@@ -68,10 +67,11 @@ actual class GoogleAuthClient(private val context: Context) {
     }
 
     actual suspend fun signOut() {
+        val context = activityProvider.currentActivity() ?: return
         try {
             CredentialManager.create(context)
                 .clearCredentialState(
-                    ClearCredentialStateRequest()
+                    ClearCredentialStateRequest(),
                 )
         } catch (e: Exception) {
             if (e is CancellationException) throw e

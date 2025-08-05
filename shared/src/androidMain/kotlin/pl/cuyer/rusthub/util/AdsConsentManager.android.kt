@@ -1,21 +1,24 @@
 package pl.cuyer.rusthub.util
 
 import android.app.Activity
-import android.content.Context
 import com.google.android.ump.ConsentDebugSettings
 import com.google.android.ump.ConsentInformation
 import com.google.android.ump.ConsentRequestParameters
 import com.google.android.ump.UserMessagingPlatform
-import pl.cuyer.rusthub.BuildConfig
 
-actual class AdsConsentManager private constructor(context: Context) {
-    private val consentInformation = UserMessagingPlatform.getConsentInformation(context)
+actual class AdsConsentManager private constructor(
+    private val activityProvider: ActivityProvider
+) {
+    private val consentInformation: ConsentInformation?
+        get() = activityProvider.currentActivity()?.let {
+            UserMessagingPlatform.getConsentInformation(it)
+        }
 
     actual val canRequestAds: Boolean
-        get() = consentInformation.canRequestAds()
+        get() = consentInformation?.canRequestAds() ?: false
 
     actual val isPrivacyOptionsRequired: Boolean
-        get() = consentInformation.privacyOptionsRequirementStatus ==
+        get() = consentInformation?.privacyOptionsRequirementStatus ==
             ConsentInformation.PrivacyOptionsRequirementStatus.REQUIRED
 
     actual fun gatherConsent(activity: Any, onComplete: (String?) -> Unit) {
@@ -29,7 +32,7 @@ actual class AdsConsentManager private constructor(context: Context) {
         }
         val params = paramsBuilder.build()
 
-        consentInformation.requestConsentInfoUpdate(
+        UserMessagingPlatform.getConsentInformation(act).requestConsentInfoUpdate(
             act,
             params,
             {
@@ -54,9 +57,9 @@ actual class AdsConsentManager private constructor(context: Context) {
         private var instance: AdsConsentManager? = null
         private const val TEST_DEVICE_HASHED_ID = "ABCDEF012345"
 
-        fun getInstance(context: Context): AdsConsentManager =
+        fun getInstance(activityProvider: ActivityProvider): AdsConsentManager =
             instance ?: synchronized(this) {
-                instance ?: AdsConsentManager(context).also { instance = it }
+                instance ?: AdsConsentManager(activityProvider).also { instance = it }
             }
     }
 }
