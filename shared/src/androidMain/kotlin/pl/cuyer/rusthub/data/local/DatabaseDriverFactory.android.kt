@@ -13,15 +13,14 @@ import pl.cuyer.rusthub.BuildConfig
 
 actual class DatabaseDriverFactory(
     private val context: Context,
-    private val passphraseProvider: DatabasePassphraseProvider? = null
+    private val passphrase: String? = null
 ) {
-    actual suspend fun create(): RustHubDatabase {
-        val passphrase = passphraseProvider?.getPassphrase()
+    actual fun create(): RustHubDatabase {
         val driver = try {
-            createDriver(passphrase)
+            createDriver()
         } catch (e: SQLiteException) {
             context.deleteDatabase(DATABASE_NAME)
-            createDriver(passphrase)
+            createDriver()
         }
 
         return RustHubDatabase.Companion(
@@ -47,7 +46,7 @@ actual class DatabaseDriverFactory(
         )
     }
 
-    private fun createDriver(passphrase: String?): AndroidSqliteDriver {
+    private fun createDriver(): AndroidSqliteDriver {
         return if (BuildConfig.USE_ENCRYPTED_DB) {
             System.loadLibrary("sqlcipher")
             val factory = SupportOpenHelperFactory(

@@ -1,12 +1,13 @@
 package pl.cuyer.rusthub.presentation.di
 
 import dev.icerock.moko.permissions.PermissionsController
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import pl.cuyer.rusthub.BuildConfig
 import pl.cuyer.rusthub.data.local.DatabaseDriverFactory
 import pl.cuyer.rusthub.data.local.DatabasePassphraseProvider
 import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
@@ -65,8 +66,14 @@ import pl.cuyer.rusthub.util.UrlOpener
 
 actual val platformModule: Module = module {
     single { DatabasePassphraseProvider(androidContext()) }
-    single { DatabaseDriverFactory(androidContext(), get()) }
-    single<RustHubDatabase> { coroutineScope { get<DatabaseDriverFactory>().create() } }
+    single<RustHubDatabase> {
+        if (BuildConfig.USE_ENCRYPTED_DB) {
+            val passphrase = runBlocking { get<DatabasePassphraseProvider>().getPassphrase() }
+            DatabaseDriverFactory(androidContext(), passphrase).create()
+        } else {
+            DatabaseDriverFactory(androidContext()).create()
+        }
+    }
     single { AppCheckTokenProvider() }
     single { HttpClientFactory(get(), get(), get(), get(), get()).create() }
     single { ClipboardHandler(get()) }
