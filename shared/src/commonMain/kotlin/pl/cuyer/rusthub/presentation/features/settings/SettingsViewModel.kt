@@ -65,7 +65,9 @@ import pl.cuyer.rusthub.domain.model.ItemSyncState
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.util.updateAppLanguage
 import pl.cuyer.rusthub.domain.model.SubscriptionState
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class SettingsViewModel(
     private val logoutUserUseCase: LogoutUserUseCase,
     private val getUserUseCase: GetUserUseCase,

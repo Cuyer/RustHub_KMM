@@ -9,8 +9,10 @@ import pl.cuyer.rusthub.data.network.model.RegionDto
 import pl.cuyer.rusthub.data.network.model.ServerStatusDto
 import pl.cuyer.rusthub.data.network.model.WipeScheduleDto
 import pl.cuyer.rusthub.data.network.model.WipeTypeDto
-import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
+@OptIn(ExperimentalTime::class)
 @Serializable
 data class ServerInfoDto(
     val id: Long? = null,

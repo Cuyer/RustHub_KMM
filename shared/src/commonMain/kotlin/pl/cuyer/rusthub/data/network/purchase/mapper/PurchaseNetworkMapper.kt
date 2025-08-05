@@ -1,12 +1,15 @@
+@file:OptIn(ExperimentalTime::class)
+
 package pl.cuyer.rusthub.data.network.purchase.mapper
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import pl.cuyer.rusthub.data.network.purchase.model.PurchaseInfoDto
 import pl.cuyer.rusthub.data.network.purchase.model.PurchaseStateDto
 import pl.cuyer.rusthub.data.network.purchase.model.SubscriptionStateDto
 import pl.cuyer.rusthub.domain.model.ActiveSubscription
 import pl.cuyer.rusthub.domain.model.SubscriptionState
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
+import kotlin.time.ExperimentalTime
 
 fun PurchaseInfoDto.toDomain(): ActiveSubscription? {
     val subItem = subscriptionInfo?.lineItems?.firstOrNull()

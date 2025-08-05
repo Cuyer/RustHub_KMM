@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class)
+
 package pl.cuyer.rusthub.util
 
 import kotlinx.serialization.json.Json
@@ -8,10 +10,11 @@ import kotlinx.serialization.json.contentOrNull
 import pl.cuyer.rusthub.SharedRes
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
 private val json = Json { ignoreUnknownKeys = true }
 

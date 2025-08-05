@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class)
+
 package pl.cuyer.rusthub.presentation.model
 
 import kotlinx.serialization.Serializable
@@ -11,6 +13,7 @@ import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.model.WipeSchedule
 import pl.cuyer.rusthub.util.StringProvider
+import kotlin.time.ExperimentalTime
 
 @Serializable
 @Immutable

@@ -57,10 +57,12 @@ import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.ConnectivityObserver
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
-import kotlinx.datetime.Clock.System
+import kotlin.time.Clock.System
 import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.util.AdsConsentManager
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class ServerViewModel(
     private val clipboardHandler: ClipboardHandler,
     private val snackbarController: SnackbarController,

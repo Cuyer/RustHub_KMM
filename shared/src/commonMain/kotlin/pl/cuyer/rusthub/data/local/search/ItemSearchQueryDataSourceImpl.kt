@@ -14,7 +14,9 @@ import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.SearchQuery
 import pl.cuyer.rusthub.domain.repository.search.ItemSearchQueryDataSource
 import pl.cuyer.rusthub.util.CrashReporter
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class ItemSearchQueryDataSourceImpl(
     db: RustHubDatabase
 ) : ItemSearchQueryDataSource, Queries(db) {

@@ -19,7 +19,9 @@ import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.util.CrashReporter
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class ServerDataSourceImpl(
     db: RustHubDatabase
 ) : ServerDataSource, Queries(db) {

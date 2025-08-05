@@ -15,8 +15,9 @@ import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerCacheDataSource
 import pl.cuyer.rusthub.util.CrashReporter
 import kotlinx.coroutines.CancellationException
+import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalPagingApi::class)
+@OptIn(ExperimentalPagingApi::class, ExperimentalTime::class)
 class ServerRemoteMediator(
     private val dataSource: ServerDataSource,
     private val api: ServerRepository,
