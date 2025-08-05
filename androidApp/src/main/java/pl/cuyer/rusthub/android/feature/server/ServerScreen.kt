@@ -102,6 +102,7 @@ import pl.cuyer.rusthub.presentation.features.server.ServerState
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
 import pl.cuyer.rusthub.presentation.model.createDetails
 import pl.cuyer.rusthub.presentation.model.createLabels
+import pl.cuyer.rusthub.presentation.model.hasActiveFilters
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.StringProvider
@@ -161,6 +162,9 @@ fun ServerScreen(
     val stringProvider = koinInject<StringProvider>()
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val hasActiveFilters = remember(state.value.filters) {
+        state.value.filters?.hasActiveFilters() ?: false
+    }
     Scaffold(
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onBackground,
@@ -188,7 +192,8 @@ fun ServerScreen(
                             onAction(ServerAction.OnClearSearchQuery)
                         },
                         isLoadingSearchHistory = { state.value.isLoadingSearchHistory },
-                        showFiltersIcon = true
+                        showFiltersIcon = true,
+                        hasActiveFilters = { hasActiveFilters }
                     )
                     ServerFilterChips(
                         selected = state.value.filter,
