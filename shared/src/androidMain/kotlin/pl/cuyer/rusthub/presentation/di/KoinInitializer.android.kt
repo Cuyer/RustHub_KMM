@@ -1,7 +1,6 @@
 package pl.cuyer.rusthub.presentation.di
 
 import dev.icerock.moko.permissions.PermissionsController
-import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
@@ -9,7 +8,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import pl.cuyer.rusthub.BuildConfig
 import pl.cuyer.rusthub.data.local.DatabaseDriverFactory
-import pl.cuyer.rusthub.data.local.DatabasePassphraseProvider
 import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
 import pl.cuyer.rusthub.data.network.HttpClientFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
@@ -64,11 +62,9 @@ import org.koin.android.ext.koin.androidApplication
 import pl.cuyer.rusthub.util.EmailSender
 import pl.cuyer.rusthub.util.UrlOpener
 
-actual val platformModule: Module = module {
-    single { DatabasePassphraseProvider(androidContext()) }
-    single<RustHubDatabase> {
+actual fun platformModule(passphrase: String): Module = module {
+    single<RustHubDatabase>(createdAtStart = true) {
         if (BuildConfig.USE_ENCRYPTED_DB) {
-            val passphrase = runBlocking { get<DatabasePassphraseProvider>().getPassphrase() }
             DatabaseDriverFactory(androidContext(), passphrase).create()
         } else {
             DatabaseDriverFactory(androidContext()).create()

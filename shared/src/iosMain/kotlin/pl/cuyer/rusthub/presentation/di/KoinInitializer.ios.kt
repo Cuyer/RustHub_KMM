@@ -56,7 +56,8 @@ import pl.cuyer.rusthub.domain.usecase.ads.GetNativeAdUseCase
 import pl.cuyer.rusthub.domain.usecase.ads.ClearNativeAdsUseCase
 import pl.cuyer.rusthub.presentation.features.ads.NativeAdViewModel
 
-actual val platformModule: Module = module {
+@Suppress("UNUSED_PARAMETER")
+actual fun platformModule(passphrase: String): Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
     single { AppCheckTokenProvider() }
     single { HttpClientFactory(get(), get(), get(), get(), get()).create() }

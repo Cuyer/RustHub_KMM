@@ -28,12 +28,11 @@ import android.os.Build
 import android.os.StrictMode
 import com.appmattus.certificatetransparency.installCertificateTransparencyProvider
 import com.appmattus.certificatetransparency.BasicAndroidCTLogger
-import com.google.android.gms.ads.MobileAds
+import pl.cuyer.rusthub.data.local.DatabasePassphraseProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 private fun needCtProvider(): Boolean {
     return Build.VERSION.SDK_INT < 36
@@ -54,6 +53,8 @@ class RustHubApplication : Application(), Configuration.Provider {
     val purchaseSyncDataSource by inject<PurchaseSyncDataSource>()
     val userRepository by inject<pl.cuyer.rusthub.domain.repository.user.UserRepository>()
     val authDataSource by inject<pl.cuyer.rusthub.domain.repository.auth.AuthDataSource>()
+
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     @SuppressLint("MissingPermission")
     override fun onCreate() {
@@ -83,16 +84,19 @@ class RustHubApplication : Application(), Configuration.Provider {
             PlayIntegrityAppCheckProviderFactory.getInstance()
         }
         FirebaseAppCheck.getInstance().installAppCheckProviderFactory(factory)
-        initKoin {
-            androidContext(this@RustHubApplication)
-            if (BuildConfig.DEBUG) {
-                androidLogger()
-            }
-            modules(appModule, platformModule)
-        }
 
-        NotificationPresenter(this).createDefaultChannels()
-        WorkManager.initialize(this, workManagerConfiguration)
+        applicationScope.launch {
+            val passphrase = DatabasePassphraseProvider(this@RustHubApplication).loadPassphrase()
+            initKoin(passphrase) {
+                androidContext(this@RustHubApplication)
+                if (BuildConfig.DEBUG) {
+                    androidLogger()
+                }
+            }
+
+            NotificationPresenter(this@RustHubApplication).createDefaultChannels()
+            WorkManager.initialize(this@RustHubApplication, workManagerConfiguration)
+        }
     }
 
     override val workManagerConfiguration: Configuration

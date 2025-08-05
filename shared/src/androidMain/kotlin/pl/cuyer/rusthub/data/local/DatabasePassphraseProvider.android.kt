@@ -87,6 +87,8 @@ actual class DatabasePassphraseProvider(private val context: Context) {
         produceFile = { passphraseFile }
     )
 
+    private var cachedPassphrase: String? = null
+
     private fun resetStorage() {
         try {
             if (keyStore.containsAlias(KEY_ALIAS)) {
@@ -98,7 +100,7 @@ actual class DatabasePassphraseProvider(private val context: Context) {
         passphraseFile.delete()
     }
 
-    actual suspend fun getPassphrase(): String {
+    private suspend fun resolvePassphrase(): String {
         val stored = try {
             dataStore.data.first()
         } catch (e: Exception) {
@@ -112,5 +114,17 @@ actual class DatabasePassphraseProvider(private val context: Context) {
         val newPass = generatePassphrase()
         dataStore.updateData { newPass }
         return Base64.encodeToString(newPass, Base64.NO_WRAP)
+    }
+
+    suspend fun loadPassphrase(): String {
+        val cached = cachedPassphrase
+        if (cached != null) return cached
+        val passphrase = resolvePassphrase()
+        cachedPassphrase = passphrase
+        return passphrase
+    }
+
+    actual suspend fun getPassphrase(): String {
+        return loadPassphrase()
     }
 }
