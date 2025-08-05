@@ -37,6 +37,9 @@ import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.domain.model.ItemSyncState
 import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import pl.cuyer.rusthub.database.RustHubDatabase
 
 class StartupViewModel(
     private val snackbarController: SnackbarController,
@@ -51,7 +54,7 @@ class StartupViewModel(
     private val itemSyncDataSource: ItemSyncDataSource,
     private val purchaseSyncDataSource: PurchaseSyncDataSource,
     private val purchaseSyncScheduler: PurchaseSyncScheduler,
-) : BaseViewModel() {
+) : BaseViewModel(), KoinComponent {
 
     private val initializationJob = coroutineScope.launch(start = CoroutineStart.LAZY) {
         initialize()
@@ -73,6 +76,7 @@ class StartupViewModel(
     init {
         observePreferences()
         coroutineScope.launch {
+            get<RustHubDatabase>()
             if (itemDataSource.isEmpty(getCurrentAppLanguage())) {
                 itemSyncDataSource.setState(ItemSyncState.PENDING)
                 itemsScheduler.startNow()
