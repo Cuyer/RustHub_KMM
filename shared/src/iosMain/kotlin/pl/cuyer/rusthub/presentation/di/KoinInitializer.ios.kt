@@ -179,7 +179,8 @@ actual fun platformModule(passphrase: String): Module = module {
             userEventController = get(),
             setSubscribedUseCase = get(),
             remoteConfig = get(),
-            connectivityObserver = get()
+            connectivityObserver = get(),
+            adsConsentManager = get()
         )
     }
     factory {

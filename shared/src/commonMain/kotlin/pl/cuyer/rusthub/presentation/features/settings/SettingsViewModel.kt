@@ -58,6 +58,7 @@ import pl.cuyer.rusthub.util.formatExpiration
 import pl.cuyer.rusthub.util.formatLocalDateTime
 import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.util.ConnectivityObserver
+import pl.cuyer.rusthub.util.AdsConsentManager
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import pl.cuyer.rusthub.domain.model.ActiveSubscription
@@ -88,7 +89,8 @@ class SettingsViewModel(
     private val userEventController: UserEventController,
     private val setSubscribedUseCase: SetSubscribedUseCase,
     private val remoteConfig: RemoteConfig,
-    private val connectivityObserver: ConnectivityObserver
+    private val connectivityObserver: ConnectivityObserver,
+    private val adsConsentManager: AdsConsentManager
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -130,10 +132,14 @@ class SettingsViewModel(
             SettingsAction.OnSubscribe -> Unit
             SettingsAction.OnPrivacyPolicy -> openPrivacyPolicy()
             SettingsAction.OnTerms -> openTerms()
+            is SettingsAction.OnManagePrivacy -> showPrivacyOptionsForm(action.activity)
             SettingsAction.OnAbout -> navigateAbout()
             SettingsAction.OnDeleteAccount -> navigateDeleteAccount()
             SettingsAction.OnUpgradeAccount -> navigateUpgrade()
-            SettingsAction.OnResume -> refreshSubscription()
+            SettingsAction.OnResume -> {
+                refreshSubscription()
+                updatePrivacyOptionsRequired()
+            }
             is SettingsAction.OnThemeChange -> setTheme(action.theme)
             is SettingsAction.OnDynamicColorsChange -> setDynamicColors(action.enabled)
             is SettingsAction.OnUseSystemColorsChange -> setUseSystemColors(action.enabled)
@@ -294,6 +300,21 @@ class SettingsViewModel(
                         is Result.Error -> updateUser(user, null)
                     }
                 }
+        }
+    }
+
+    private fun showPrivacyOptionsForm(activity: Any) {
+        adsConsentManager.showPrivacyOptionsForm(activity) { error ->
+            if (error != null) {
+                showErrorSnackbar(stringProvider.get(SharedRes.strings.ads_consent_error))
+            }
+            updatePrivacyOptionsRequired()
+        }
+    }
+
+    private fun updatePrivacyOptionsRequired() {
+        _state.update {
+            it.copy(isPrivacyOptionsRequired = adsConsentManager.isPrivacyOptionsRequired)
         }
     }
 

@@ -165,6 +165,8 @@
     <string name="players">Игроки</string>
     <string name="preferences">Настройки</string>
     <string name="premium" translatable="false">Premium</string>
+    <string name="manage_privacy">Управление конфиденциальностью</string>
+    <string name="manage_privacy_button">Кнопка управления конфиденциальностью</string>
     <string name="privacy_policy">Политика конфиденциальности</string>
     <string name="privacy_policy_button">Кнопка политики конфиденциальности</string>
     <string name="onboarding_disclaimer">Создавая аккаунт, вы подтверждаете, что ознакомились и принимаете нашу политику конфиденциальности и условия использования.</string>

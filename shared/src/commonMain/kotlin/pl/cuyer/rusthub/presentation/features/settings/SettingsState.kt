@@ -20,6 +20,7 @@ data class SettingsState(
     val anonymousExpiration: String? = null,
     val isLoading: Boolean = false,
     val isLoggingOut: Boolean = false,
+    val isPrivacyOptionsRequired: Boolean = false,
     val theme: Theme = Theme.SYSTEM,
     val dynamicColors: Boolean = false,
     val useSystemColors: Boolean = true,

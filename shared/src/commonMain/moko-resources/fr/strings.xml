@@ -165,6 +165,8 @@
     <string name="players">Joueurs</string>
     <string name="preferences">Préférences</string>
     <string name="premium" translatable="false">Premium</string>
+    <string name="manage_privacy">Gérer la confidentialité</string>
+    <string name="manage_privacy_button">Bouton gérer la confidentialité</string>
     <string name="privacy_policy">Politique de confidentialité</string>
     <string name="privacy_policy_button">Bouton politique de confidentialité</string>
     <string name="onboarding_disclaimer">En créant un compte, vous confirmez avoir lu et accepter notre politique de confidentialité et nos conditions générales.</string>
