@@ -325,6 +325,7 @@
     <string name="unable_to_upgrade_account">Impossible d’améliorer le compte</string>
     <string name="google_sign_in_failed">La connexion Google a échoué</string>
     <string name="error_google_sign_in">Une erreur est survenue lors de la connexion avec Google.</string>
+    <string name="google_sign_in_disabled">La connexion avec Google est actuellement désactivée</string>
     <string name="unable_to_get_client_id">Impossible d’obtenir l’ID client</string>
     <string name="error_creating_guest_account">Erreur lors de la création d’un compte invité.</string>
     <string name="provided_credentials_incorrect">Identifiants incorrects.</string>
@@ -361,6 +362,7 @@
     <string name="error_network">Erreur réseau. Veuillez vérifier votre connexion.</string>
     <string name="offline_cached_servers_info">Réseau indisponible. Affichage des serveurs en cache.</string>
     <string name="offline">Pas de connexion Internet.</string>
+    <string name="subscription_disabled">Les abonnements sont actuellement désactivés.</string>
     <string name="connect_manage_subscription">Connectez-vous à Internet pour gérer votre abonnement.</string>
     <string name="no_servers_available_offline">Aucun serveur disponible hors ligne.</string>
     <string name="no_servers_available">Aucun serveur disponible.</string>

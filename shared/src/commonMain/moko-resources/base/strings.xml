@@ -327,6 +327,7 @@
     <string name="unable_to_upgrade_account">Unable to upgrade account</string>
     <string name="google_sign_in_failed">Google sign in failed</string>
     <string name="error_google_sign_in">An error occurred during Google sign-in.</string>
+    <string name="google_sign_in_disabled">Signing in with Google is currently disabled</string>
     <string name="unable_to_get_client_id">Unable to get client id</string>
     <string name="error_creating_guest_account">An error occurred while creating guest account.</string>
     <string name="provided_credentials_incorrect">Provided credentials are incorrect.</string>
@@ -363,6 +364,7 @@
     <string name="error_network">Network error. Please check your connection.</string>
     <string name="offline_cached_servers_info">Network unavailable. Showing cached servers.</string>
     <string name="offline">No internet connection.</string>
+    <string name="subscription_disabled">Subscriptions are currently disabled.</string>
     <string name="connect_manage_subscription">Connect to the internet to manage your subscription.</string>
     <string name="no_servers_available_offline">No servers available offline.</string>
     <string name="no_servers_available">No servers available.</string>

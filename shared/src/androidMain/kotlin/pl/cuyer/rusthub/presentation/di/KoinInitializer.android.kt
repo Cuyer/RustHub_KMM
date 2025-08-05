@@ -61,6 +61,7 @@ import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import org.koin.android.ext.koin.androidApplication
 import pl.cuyer.rusthub.util.EmailSender
 import pl.cuyer.rusthub.util.UrlOpener
+import pl.cuyer.rusthub.util.RemoteConfig
 
 actual fun platformModule(passphrase: String): Module = module {
     single<RustHubDatabase>(createdAtStart = true) {
@@ -97,6 +98,7 @@ actual fun platformModule(passphrase: String): Module = module {
     single { SystemDarkThemeObserver(androidContext()) }
     single { ConnectivityObserver(androidContext()) }
     single { GoogleAuthClient(androidContext()) }
+    single { RemoteConfig() }
     single { StringProvider(androidContext()) }
     single { PermissionsController(androidContext()) }
     viewModel {
@@ -124,7 +126,8 @@ actual fun platformModule(passphrase: String): Module = module {
             googleAuthClient = get(),
             snackbarController = get(),
             emailValidator = get(),
-            stringProvider = get()
+            stringProvider = get(),
+            remoteConfig = get()
         )
     }
     viewModel { (email: String, exists: Boolean, provider: AuthProvider?) ->
@@ -141,8 +144,9 @@ actual fun platformModule(passphrase: String): Module = module {
             usernameValidator = get(),
             loginWithGoogleUseCase = get(),
             getGoogleClientIdUseCase = get(),
-            googleAuthClient = get()
-            , stringProvider = get()
+            googleAuthClient = get(),
+            remoteConfig = get(),
+            stringProvider = get()
         )
     }
     viewModel {
@@ -202,6 +206,7 @@ actual fun platformModule(passphrase: String): Module = module {
             userEventController = get(),
             getActiveSubscriptionUseCase = get(),
             setSubscribedUseCase = get(),
+            remoteConfig = get(),
             connectivityObserver = get(),
         )
     }
@@ -243,7 +248,8 @@ actual fun platformModule(passphrase: String): Module = module {
             usernameValidator = get(),
             passwordValidator = get(),
             emailValidator = get(),
-            stringProvider = get()
+            stringProvider = get(),
+            remoteConfig = get()
         )
     }
     viewModel {

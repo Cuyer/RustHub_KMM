@@ -325,6 +325,7 @@
     <string name="unable_to_upgrade_account">Konto konnte nicht upgegradet werden</string>
     <string name="google_sign_in_failed">Google-Anmeldung fehlgeschlagen</string>
     <string name="error_google_sign_in">Bei der Google-Anmeldung ist ein Fehler aufgetreten.</string>
+    <string name="google_sign_in_disabled">Die Anmeldung mit Google ist derzeit deaktiviert</string>
     <string name="unable_to_get_client_id">Client-ID konnte nicht abgerufen werden</string>
     <string name="error_creating_guest_account">Beim Erstellen des Gastkontos ist ein Fehler aufgetreten.</string>
     <string name="provided_credentials_incorrect">Die angegebenen Zugangsdaten sind falsch.</string>
@@ -361,6 +362,7 @@
     <string name="error_network">Netzwerkfehler. Bitte überprüfe deine Verbindung.</string>
     <string name="offline_cached_servers_info">Netzwerk nicht verfügbar. Zeige zwischengespeicherte Server.</string>
     <string name="offline">Keine Internetverbindung.</string>
+    <string name="subscription_disabled">Abonnements sind derzeit deaktiviert.</string>
     <string name="connect_manage_subscription">Verbinde dich mit dem Internet, um das Abo zu verwalten.</string>
     <string name="no_servers_available_offline">Offline sind keine Server verfügbar.</string>
     <string name="no_servers_available">Keine Server verfügbar.</string>
