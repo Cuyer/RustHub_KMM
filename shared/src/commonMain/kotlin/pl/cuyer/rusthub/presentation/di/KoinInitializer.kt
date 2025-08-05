@@ -186,13 +186,13 @@ val appModule = module {
     single { GetNativeAdUseCase(get()) }
 }
 
-expect val platformModule: Module
+expect fun platformModule(passphrase: String): Module
 expect val userPreferencesModule: Module
 
-fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
+fun initKoin(passphrase: String = "", appDeclaration: KoinAppDeclaration = {}) = startKoin {
     if (BuildType.isDebug) {
         Napier.base(DebugAntilog())
     }
     appDeclaration()
-    modules(appModule, userPreferencesModule, platformModule)
+    modules(appModule, userPreferencesModule, platformModule(passphrase))
 }
