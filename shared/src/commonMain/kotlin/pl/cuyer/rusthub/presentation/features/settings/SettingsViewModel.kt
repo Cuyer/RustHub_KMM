@@ -48,6 +48,8 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.common.user.UserEvent
 import pl.cuyer.rusthub.common.user.UserEventController
 import pl.cuyer.rusthub.util.GoogleAuthClient
+import pl.cuyer.rusthub.util.RemoteConfig
+import pl.cuyer.rusthub.util.RemoteConfigKeys
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
@@ -85,6 +87,7 @@ class SettingsViewModel(
     private val itemSyncDataSource: ItemSyncDataSource,
     private val userEventController: UserEventController,
     private val setSubscribedUseCase: SetSubscribedUseCase,
+    private val remoteConfig: RemoteConfig,
     private val connectivityObserver: ConnectivityObserver
 ) : BaseViewModel() {
 
@@ -117,6 +120,8 @@ class SettingsViewModel(
                     showUnconfirmedSnackbar()
                 } else if (!state.value.isConnected) {
                     showErrorSnackbar(stringProvider.get(SharedRes.strings.connect_manage_subscription))
+                } else if (!remoteConfig.getBoolean(RemoteConfigKeys.FEATURE_SUBSCRIPTION_ENABLED)) {
+                    showErrorSnackbar(stringProvider.get(SharedRes.strings.subscription_disabled))
                 } else {
                     navigateSubscription()
                 }

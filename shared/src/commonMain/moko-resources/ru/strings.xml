@@ -325,6 +325,7 @@
     <string name="unable_to_upgrade_account">Не удалось улучшить аккаунт</string>
     <string name="google_sign_in_failed">Ошибка входа через Google</string>
     <string name="error_google_sign_in">Произошла ошибка при входе через Google.</string>
+    <string name="google_sign_in_disabled">Вход через Google временно отключён</string>
     <string name="unable_to_get_client_id">Не удалось получить client id</string>
     <string name="error_creating_guest_account">Ошибка при создании гостевого аккаунта.</string>
     <string name="provided_credentials_incorrect">Введены неверные данные.</string>
@@ -361,6 +362,7 @@
     <string name="error_network">Ошибка сети. Проверьте подключение.</string>
     <string name="offline_cached_servers_info">Нет сети. Отображаются кэшированные серверы.</string>
     <string name="offline">Нет подключения к интернету.</string>
+    <string name="subscription_disabled">Подписки временно отключены.</string>
     <string name="connect_manage_subscription">Подключитесь к интернету, чтобы управлять подпиской.</string>
     <string name="no_servers_available_offline">Нет серверов в автономном режиме.</string>
     <string name="no_servers_available">Нет доступных серверов.</string>

@@ -42,6 +42,7 @@ import pl.cuyer.rusthub.domain.usecase.ConfirmPurchaseUseCase
 import pl.cuyer.rusthub.domain.usecase.RefreshUserUseCase
 import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
+import pl.cuyer.rusthub.util.RemoteConfig
 import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
@@ -80,6 +81,7 @@ actual fun platformModule(passphrase: String): Module = module {
     single { EmailSender() }
     single { SystemDarkThemeObserver() }
     single { GoogleAuthClient() }
+    single { RemoteConfig() }
     single { StringProvider() }
     single { AdsConsentManager() }
     single<NativeAdRepository> { NativeAdRepositoryImpl() }
@@ -136,7 +138,8 @@ actual fun platformModule(passphrase: String): Module = module {
             googleAuthClient = get(),
             snackbarController = get(),
             emailValidator = get(),
-            stringProvider = get()
+            stringProvider = get(),
+            remoteConfig = get()
         )
     }
     factory { (email: String, exists: Boolean, provider: AuthProvider?) ->
@@ -151,6 +154,10 @@ actual fun platformModule(passphrase: String): Module = module {
             snackbarController = get(),
             passwordValidator = get(),
             usernameValidator = get(),
+            loginWithGoogleUseCase = get(),
+            getGoogleClientIdUseCase = get(),
+            googleAuthClient = get(),
+            remoteConfig = get(),
             stringProvider = get()
         )
     }
@@ -171,6 +178,7 @@ actual fun platformModule(passphrase: String): Module = module {
             itemSyncDataSource = get(),
             userEventController = get(),
             setSubscribedUseCase = get(),
+            remoteConfig = get(),
             connectivityObserver = get()
         )
     }
@@ -212,7 +220,8 @@ actual fun platformModule(passphrase: String): Module = module {
             usernameValidator = get(),
             passwordValidator = get(),
             emailValidator = get(),
-            stringProvider = get()
+            stringProvider = get(),
+            remoteConfig = get()
         )
     }
     factory { (plan: SubscriptionPlan?) ->
