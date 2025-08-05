@@ -147,6 +147,7 @@ fun SettingsScreen(
                     planExpiration = state.value.subscriptionExpiration,
                     status = state.value.subscriptionStatus,
                     loading = state.value.isLoading,
+                    isPrivacyOptionsRequired = state.value.isPrivacyOptionsRequired,
                     onAction = onAction,
                     onThemeClick = { showThemeSheet = true },
                     onLanguageClick = { showLanguageSheet = true }
@@ -165,6 +166,7 @@ fun SettingsScreen(
                     planExpiration = state.value.subscriptionExpiration,
                     status = state.value.subscriptionStatus,
                     loading = state.value.isLoading,
+                    isPrivacyOptionsRequired = state.value.isPrivacyOptionsRequired,
                     onAction = onAction,
                     onThemeClick = { showThemeSheet = true },
                     onLanguageClick = { showLanguageSheet = true }
@@ -220,6 +222,7 @@ private fun SettingsScreenCompact(
     planExpiration: String?,
     status: String?,
     loading: Boolean,
+    isPrivacyOptionsRequired: Boolean,
     onAction: (SettingsAction) -> Unit,
     onThemeClick: () -> Unit,
     onLanguageClick: () -> Unit
@@ -242,7 +245,7 @@ private fun SettingsScreenCompact(
             onAction = onAction
         )
         HorizontalDivider(modifier = Modifier.padding(vertical = spacing.medium))
-        OtherSection(onAction)
+        OtherSection(onAction, isPrivacyOptionsRequired)
     }
 }
 
@@ -257,6 +260,7 @@ private fun SettingsScreenExpanded(
     planExpiration: String?,
     status: String?,
     loading: Boolean,
+    isPrivacyOptionsRequired: Boolean,
     onAction: (SettingsAction) -> Unit,
     onThemeClick: () -> Unit,
     onLanguageClick: () -> Unit
@@ -291,7 +295,7 @@ private fun SettingsScreenExpanded(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(spacing.medium)
         ) {
-            OtherSection(onAction)
+            OtherSection(onAction, isPrivacyOptionsRequired)
         }
     }
 }
@@ -504,14 +508,37 @@ private fun AccountSection(
 }
 
 @Composable
-
-private fun OtherSection(onAction: (SettingsAction) -> Unit) {
+private fun OtherSection(
+    onAction: (SettingsAction) -> Unit,
+    isPrivacyOptionsRequired: Boolean
+) {
     val storeNavigator = koinInject<StoreNavigator>()
     Text(
         text = stringResource(SharedRes.strings.other),
         style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(bottom = spacing.small)
     )
+
+    if (isPrivacyOptionsRequired) {
+        val activity = LocalContext.current as Activity
+        AppTextButton(onClick = {
+            onAction(SettingsAction.OnManagePrivacy(activity))
+        }) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(SharedRes.strings.manage_privacy))
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowRight,
+                    contentDescription = stringResource(
+                        SharedRes.strings.manage_privacy_button
+                    )
+                )
+            }
+        }
+    }
 
     AppTextButton(
         onClick = { onAction(SettingsAction.OnPrivacyPolicy) }

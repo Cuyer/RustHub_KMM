@@ -23,6 +23,8 @@ sealed interface SettingsAction {
     @Immutable
     data object OnTerms : SettingsAction
     @Immutable
+    data class OnManagePrivacy(val activity: Any) : SettingsAction
+    @Immutable
     data object OnDeleteAccount : SettingsAction
     @Immutable
     data object OnUpgradeAccount : SettingsAction

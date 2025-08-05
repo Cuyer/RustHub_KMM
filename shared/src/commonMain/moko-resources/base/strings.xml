@@ -166,6 +166,8 @@
     <string name="players">Players</string>
     <string name="preferences">Preferences</string>
     <string name="premium" translatable="false" >Premium</string>
+    <string name="manage_privacy">Manage privacy</string>
+    <string name="manage_privacy_button">Manage privacy button</string>
     <string name="privacy_policy">Privacy policy</string>
     <string name="privacy_policy_button">Privacy policy button</string>
     <string name="onboarding_disclaimer">By creating an account you confirm that you have read and accept our privacy policy and terms &amp; conditions.</string>

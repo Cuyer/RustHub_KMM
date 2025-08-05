@@ -208,6 +208,7 @@ actual fun platformModule(passphrase: String): Module = module {
             setSubscribedUseCase = get(),
             remoteConfig = get(),
             connectivityObserver = get(),
+            adsConsentManager = get(),
         )
     }
     viewModel {

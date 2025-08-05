@@ -165,6 +165,8 @@
     <string name="players">Spieler</string>
     <string name="preferences">Einstellungen</string>
     <string name="premium" translatable="false">Premium</string>
+    <string name="manage_privacy">Datenschutz verwalten</string>
+    <string name="manage_privacy_button">Schaltfläche Datenschutz verwalten</string>
     <string name="privacy_policy">Datenschutzerklärung</string>
     <string name="privacy_policy_button">Datenschutz-Button</string>
     <string name="onboarding_disclaimer">Durch das Erstellen eines Kontos bestätigst du, dass du unsere Datenschutzrichtlinie und unsere AGB gelesen hast und akzeptierst.</string>
