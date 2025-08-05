@@ -9,4 +9,6 @@ sealed interface UiEvent {
     data class Navigate(val destination: NavKey) : UiEvent
     @Immutable
     data object NavigateUp: UiEvent
+    @Immutable
+    data object RefreshList : UiEvent
 }

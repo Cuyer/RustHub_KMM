@@ -49,7 +49,7 @@ class GetPagedItemsUseCase(
         }
         return Pager(
             config = PagingConfig(
-                pageSize = 40,
+                pageSize = 30,
                 enablePlaceholders = true
             ),
             pagingSourceFactory = {

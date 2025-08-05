@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class)
+
 package pl.cuyer.rusthub.data.network.server.mapper
 
 import pl.cuyer.rusthub.data.network.filtersOptions.mapper.toDomain
@@ -5,6 +7,7 @@ import pl.cuyer.rusthub.data.network.server.model.PagedServerInfoDto
 import pl.cuyer.rusthub.data.network.server.model.ServerInfoDto
 import pl.cuyer.rusthub.domain.model.PagedServerInfo
 import pl.cuyer.rusthub.domain.model.ServerInfo
+import kotlin.time.ExperimentalTime
 
 fun ServerInfoDto.toDomain(): ServerInfo {
     return ServerInfo(

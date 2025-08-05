@@ -48,9 +48,11 @@ import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.model.SearchQuery
 import pl.cuyer.rusthub.presentation.model.SearchQueryUi
 import pl.cuyer.rusthub.presentation.model.toUi
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import pl.cuyer.rusthub.util.AdsConsentManager
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class ItemViewModel(
     private val getPagedItemsUseCase: GetPagedItemsUseCase,
     private val itemSyncDataSource: ItemSyncDataSource,
@@ -175,7 +177,7 @@ class ItemViewModel(
             coroutineScope.launch {
                 runCatching {
                     saveSearchQueryUseCase(
-                        SearchQuery(query = query, timestamp = kotlinx.datetime.Clock.System.now(), id = null)
+                        SearchQuery(query = query, timestamp = Clock.System.now(), id = null)
                     )
                 }.onFailure {
                     sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_search))

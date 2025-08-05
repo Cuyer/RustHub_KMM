@@ -14,7 +14,9 @@ import pl.cuyer.rusthub.data.network.util.appendNonNull
 import pl.cuyer.rusthub.domain.model.PagedServerInfo
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class ServerClientImpl(
     private val httpClient: HttpClient,
     json: Json

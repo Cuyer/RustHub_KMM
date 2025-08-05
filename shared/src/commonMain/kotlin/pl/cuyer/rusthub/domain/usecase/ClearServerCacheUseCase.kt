@@ -2,10 +2,10 @@ package pl.cuyer.rusthub.domain.usecase
 
 import pl.cuyer.rusthub.domain.repository.server.ServerCacheDataSource
 
-class ClearServersAndKeysUseCase(
+class ClearServerCacheUseCase(
     private val cacheDataSource: ServerCacheDataSource
 ) {
     suspend operator fun invoke() {
-        cacheDataSource.clearServersAndKeys()
+        cacheDataSource.clearServers()
     }
 }

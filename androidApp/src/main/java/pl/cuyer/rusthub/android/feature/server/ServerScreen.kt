@@ -100,6 +100,7 @@ import pl.cuyer.rusthub.presentation.features.ads.NativeAdState
 import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.features.server.ServerState
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
+import pl.cuyer.rusthub.presentation.model.activeFiltersCount
 import pl.cuyer.rusthub.presentation.model.createDetails
 import pl.cuyer.rusthub.presentation.model.createLabels
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
@@ -128,14 +129,18 @@ fun ServerScreen(
     val scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
 
     ObserveAsEvents(uiEvent) { event ->
-        if (event is UiEvent.Navigate) onNavigate(event.destination)
+        when (event) {
+            is UiEvent.Navigate -> onNavigate(event.destination)
+            UiEvent.RefreshList -> pagedList.refresh()
+            else -> Unit
+        }
     }
 
     val coroutineScope = rememberCoroutineScope()
+    val lazyListState = rememberLazyListState()
 
     val pullToRefreshState = rememberPullToRefreshState()
 
-    val lazyListState = rememberLazyListState()
 
     val isAtTop by remember {
         derivedStateOf {
@@ -157,6 +162,10 @@ fun ServerScreen(
     val stringProvider = koinInject<StringProvider>()
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val activeFiltersCount = remember(state.value.filters) {
+        state.value.filters?.activeFiltersCount() ?: 0
+    }
+
     Scaffold(
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onBackground,
@@ -184,13 +193,13 @@ fun ServerScreen(
                             onAction(ServerAction.OnClearSearchQuery)
                         },
                         isLoadingSearchHistory = { state.value.isLoadingSearchHistory },
-                        showFiltersIcon = true
+                        showFiltersIcon = true,
+                        filtersCount = { activeFiltersCount }
                     )
                     ServerFilterChips(
                         selected = state.value.filter,
                         onSelectedChange = {
                             onAction(ServerAction.OnFilterChange(it))
-                            pagedList.refresh()
                         },
                         modifier = Modifier
                             .padding(horizontal = spacing.xmedium)
@@ -448,6 +457,7 @@ fun ServerScreen(
                     )
                 }
             }
+
             if (showSheet) {
                 FilterBottomSheet(
                     filters = state.value.filters,
@@ -458,7 +468,6 @@ fun ServerScreen(
                     },
                     onDismissAndRefresh = {
                         showSheet = false
-                        pagedList.refresh()
                     },
                     onAction = onAction
                 )

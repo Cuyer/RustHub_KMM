@@ -14,7 +14,6 @@ import pl.cuyer.rusthub.data.local.auth.AuthDataSourceImpl
 import pl.cuyer.rusthub.data.local.favourite.FavouriteSyncDataSourceImpl
 import pl.cuyer.rusthub.data.local.filter.FiltersDataSourceImpl
 import pl.cuyer.rusthub.data.local.filtersOptions.FiltersOptionsDataSourceImpl
-import pl.cuyer.rusthub.data.local.remotekey.RemoteKeyDataSourceImpl
 import pl.cuyer.rusthub.data.local.search.SearchQueryDataSourceImpl
 import pl.cuyer.rusthub.data.local.search.ItemSearchQueryDataSourceImpl
 import pl.cuyer.rusthub.data.local.server.ServerDataSourceImpl
@@ -30,7 +29,6 @@ import pl.cuyer.rusthub.data.network.notification.MessagingTokenClientImpl
 import pl.cuyer.rusthub.data.network.server.ServerClientImpl
 import pl.cuyer.rusthub.data.network.subscription.SubscriptionClientImpl
 import pl.cuyer.rusthub.data.network.user.UserRepositoryImpl
-import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.repository.auth.AuthRepository
 import pl.cuyer.rusthub.domain.repository.config.ConfigRepository
@@ -87,7 +85,7 @@ import pl.cuyer.rusthub.domain.usecase.RefreshUserUseCase
 import pl.cuyer.rusthub.domain.usecase.GetActiveSubscriptionUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeWithGoogleUseCase
-import pl.cuyer.rusthub.domain.usecase.ClearServersAndKeysUseCase
+import pl.cuyer.rusthub.domain.usecase.ClearServerCacheUseCase
 import pl.cuyer.rusthub.domain.repository.server.ServerCacheDataSource
 import pl.cuyer.rusthub.data.local.cache.ServerCacheDataSourceImpl
 import pl.cuyer.rusthub.domain.usecase.SetThemeConfigUseCase
@@ -131,7 +129,6 @@ val appModule = module {
     singleOf(::FiltersDataSourceImpl) bind FiltersDataSource::class
     singleOf(::SearchQueryDataSourceImpl) bind SearchQueryDataSource::class
     singleOf(::ItemSearchQueryDataSourceImpl) bind ItemSearchQueryDataSource::class
-    singleOf(::RemoteKeyDataSourceImpl) bind RemoteKeyDataSource::class
     singleOf(::MessagingTokenClientImpl) bind MessagingTokenRepository::class
     single { MessagingTokenManager(get(), get()) }
     singleOf(::FiltersOptionsClientImpl) bind FiltersOptionsRepository::class
@@ -143,7 +140,7 @@ val appModule = module {
     single { EmailValidator(get()) }
     single { PasswordValidator(get()) }
     single { UsernameValidator(get()) }
-    single { GetPagedServersUseCase(get(), get(), get(), get(), get()) }
+    single { GetPagedServersUseCase(get(), get(), get(), get()) }
     single { GetPagedItemsUseCase(get(), get()) }
     single { GetFiltersUseCase(get()) }
     single { SaveFiltersUseCase(get()) }
@@ -151,7 +148,7 @@ val appModule = module {
     single { SaveItemSearchQueryUseCase(get()) }
     single { ClearFiltersUseCase(get()) }
     singleOf(::ServerCacheDataSourceImpl) bind ServerCacheDataSource::class
-    single { ClearServersAndKeysUseCase(get()) }
+    single { ClearServerCacheUseCase(get()) }
     single { GetFiltersOptionsUseCase(get(), get()) }
     single { GetSearchQueriesUseCase(get()) }
     single { GetItemSearchQueriesUseCase(get()) }
@@ -189,13 +186,13 @@ val appModule = module {
     single { GetNativeAdUseCase(get()) }
 }
 
-expect val platformModule: Module
+expect fun platformModule(passphrase: String): Module
 expect val userPreferencesModule: Module
 
-fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
+fun initKoin(passphrase: String = "", appDeclaration: KoinAppDeclaration = {}) = startKoin {
     if (BuildType.isDebug) {
         Napier.base(DebugAntilog())
     }
     appDeclaration()
-    modules(appModule, userPreferencesModule, platformModule)
+    modules(appModule, userPreferencesModule, platformModule(passphrase))
 }

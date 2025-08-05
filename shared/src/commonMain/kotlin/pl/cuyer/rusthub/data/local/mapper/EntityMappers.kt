@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class)
+
 package pl.cuyer.rusthub.data.local.mapper
 
 import database.FiltersDifficultyEntity
@@ -7,7 +9,6 @@ import database.FiltersMapEntity
 import database.FiltersOptionsEntity
 import database.FiltersRegionEntity
 import database.FiltersWipeScheduleEntity
-import database.RemoteKeyEntity
 import database.SearchQueryEntity
 import database.ServerEntity
 import database.UserEntity
@@ -30,7 +31,6 @@ import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.Maps
 import pl.cuyer.rusthub.domain.model.Order
 import pl.cuyer.rusthub.domain.model.Region
-import pl.cuyer.rusthub.domain.model.RemoteKey
 import pl.cuyer.rusthub.domain.model.SearchQuery
 import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerInfo
@@ -49,9 +49,10 @@ import pl.cuyer.rusthub.domain.model.WhereToFind
 import pl.cuyer.rusthub.domain.model.Crafting
 import pl.cuyer.rusthub.domain.model.Recycling
 import pl.cuyer.rusthub.domain.model.Raiding
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import kotlin.time.ExperimentalTime
 
 fun DifficultyEntity?.toDomain(): Difficulty? = this?.let { Difficulty.valueOf(it.name) }
 fun Difficulty?.toEntity(): DifficultyEntity? = this?.let { DifficultyEntity.valueOf(it.name) }
@@ -147,22 +148,6 @@ fun ServerEntity.toServerInfo(): ServerInfo {
         isSubscribed = subscribed == 1L,
         nextWipe = rust_next_wipe?.let { Instant.parse(it) },
         nextMapWipe = rust_next_map_wipe?.let { Instant.parse(it) }
-    )
-}
-
-fun RemoteKeyEntity.toDomain(): RemoteKey {
-    return RemoteKey(
-        id = id,
-        nextPage = next_page,
-        lastUpdated = last_updated
-    )
-}
-
-fun RemoteKey.toEntity(): RemoteKeyEntity {
-    return RemoteKeyEntity(
-        id = id,
-        next_page = nextPage,
-        last_updated = lastUpdated
     )
 }
 

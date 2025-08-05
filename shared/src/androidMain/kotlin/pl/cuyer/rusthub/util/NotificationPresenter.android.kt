@@ -14,8 +14,10 @@ import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.NotificationType
 import kotlin.random.Random
-import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
+@OptIn(ExperimentalTime::class)
 actual class NotificationPresenter(private val context: Context) {
     actual fun show(name: String, type: NotificationType, timestamp: String) {
         buildNotification(type, name, timestamp)

@@ -16,7 +16,9 @@ import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
 import pl.cuyer.rusthub.util.CrashReporter
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class FiltersDataSourceImpl(
     db: RustHubDatabase
 ) : FiltersDataSource, Queries(db) {

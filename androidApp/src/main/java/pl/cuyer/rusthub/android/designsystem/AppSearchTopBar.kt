@@ -4,6 +4,7 @@ package pl.cuyer.rusthub.android.designsystem
 import android.app.Activity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,6 +33,8 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AppBarWithSearch
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -65,6 +69,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.theme.RustHubTheme
@@ -91,6 +96,7 @@ fun RustSearchBarTopAppBar(
     onClearSearchQuery: () -> Unit,
     isLoadingSearchHistory: () -> Boolean,
     showFiltersIcon: Boolean = true,
+    filtersCount: () -> Int = { 0 },
     placeholderRes: StringResource = SharedRes.strings.search_servers,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -172,11 +178,27 @@ fun RustSearchBarTopAppBar(
                             onClick = onOpenFilters,
                             modifier = Modifier.minimumInteractiveComponentSize()
                         ) {
-                            Icon(
-                                tint = contentColorFor(SearchBarDefaults.colors().containerColor),
-                                imageVector = Icons.Default.FilterList,
-                                contentDescription = stringResource(SharedRes.strings.open_filters)
-                            )
+                            BadgedBox(
+                                badge = {
+                                    Crossfade(filtersCount()) { count ->
+                                        if (count > 0) {
+                                            Badge(
+                                                modifier = Modifier.offset(y = (-3).dp)
+                                            ) {
+                                                Text(
+                                                    text = filtersCount().toString()
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    tint = contentColorFor(SearchBarDefaults.colors().containerColor),
+                                    imageVector = Icons.Default.FilterList,
+                                    contentDescription = stringResource(SharedRes.strings.open_filters)
+                                )
+                            }
                         }
                     }
                 }

@@ -1,13 +1,16 @@
+@file:OptIn(ExperimentalTime::class)
+
 package pl.cuyer.rusthub.presentation.model
 
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import pl.cuyer.rusthub.domain.model.ServerInfo
 import pl.cuyer.rusthub.util.formatLocalDateTime
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.util.StringProvider
+import kotlin.time.ExperimentalTime
 
 fun ServerInfo.toUi(stringProvider: StringProvider): ServerInfoUi {
     return ServerInfoUi(

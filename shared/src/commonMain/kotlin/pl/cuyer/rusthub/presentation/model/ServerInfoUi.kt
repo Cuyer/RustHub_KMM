@@ -1,8 +1,10 @@
+@file:OptIn(ExperimentalTime::class)
+
 package pl.cuyer.rusthub.presentation.model
 
 import kotlinx.serialization.Serializable
 import androidx.compose.runtime.Immutable
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import pl.cuyer.rusthub.domain.model.Difficulty
 import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Maps
@@ -10,12 +12,14 @@ import pl.cuyer.rusthub.domain.model.Region
 import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.WipeSchedule
 import pl.cuyer.rusthub.domain.model.WipeType
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.util.StringProvider
 import kotlin.getValue
 import kotlin.ranges.contains
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 @Serializable
 @Immutable
 data class ServerInfoUi(

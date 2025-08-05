@@ -14,7 +14,6 @@ import pl.cuyer.rusthub.data.local.mapper.toUser
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.domain.model.User
-import pl.cuyer.rusthub.domain.repository.RemoteKeyDataSource
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.repository.favourite.FavouriteSyncDataSource
 import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
@@ -31,7 +30,6 @@ class AuthDataSourceImpl(
     private val db: RustHubDatabase,
     val tokenRefresher: TokenRefresher,
     private val serverDataSource: ServerDataSource,
-    private val remoteKeyDataSource: RemoteKeyDataSource,
     private val filtersDataSource: FiltersDataSource,
     private val filtersOptionsDataSource: FiltersOptionsDataSource,
     private val searchQueryDataSource: SearchQueryDataSource,
@@ -73,7 +71,6 @@ class AuthDataSourceImpl(
         withContext(Dispatchers.IO) {
             safeExecute { queries.deleteUser() }
             serverDataSource.deleteServers()
-            remoteKeyDataSource.clearKeys()
             filtersDataSource.clearFilters()
             filtersOptionsDataSource.clearFiltersOptions()
             searchQueryDataSource.clearQueries()
