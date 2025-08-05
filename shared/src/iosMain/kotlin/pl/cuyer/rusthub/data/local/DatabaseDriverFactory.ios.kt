@@ -7,7 +7,7 @@ import database.FiltersEntity
 import pl.cuyer.rusthub.database.RustHubDatabase
 
 actual class DatabaseDriverFactory {
-    actual fun create(): RustHubDatabase {
+    actual suspend fun create(): RustHubDatabase {
         val driver = NativeSqliteDriver(
             schema = RustHubDatabase.Schema,
             name = "RustHubDatabase.db"
