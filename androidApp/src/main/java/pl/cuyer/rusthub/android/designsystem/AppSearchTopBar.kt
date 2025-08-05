@@ -31,6 +31,8 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AppBarWithSearch
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -91,6 +93,7 @@ fun RustSearchBarTopAppBar(
     onClearSearchQuery: () -> Unit,
     isLoadingSearchHistory: () -> Boolean,
     showFiltersIcon: Boolean = true,
+    hasActiveFilters: () -> Boolean = { false },
     placeholderRes: StringResource = SharedRes.strings.search_servers,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -168,15 +171,30 @@ fun RustSearchBarTopAppBar(
                                 searchBarState.currentValue == SearchBarValue.Collapsed &&
                                 textFieldState.text.isEmpty()
                     ) {
-                        IconButton(
-                            onClick = onOpenFilters,
-                            modifier = Modifier.minimumInteractiveComponentSize()
-                        ) {
-                            Icon(
-                                tint = contentColorFor(SearchBarDefaults.colors().containerColor),
-                                imageVector = Icons.Default.FilterList,
-                                contentDescription = stringResource(SharedRes.strings.open_filters)
-                            )
+                        if (hasActiveFilters()) {
+                            BadgedBox(badge = { Badge() }) {
+                                IconButton(
+                                    onClick = onOpenFilters,
+                                    modifier = Modifier.minimumInteractiveComponentSize()
+                                ) {
+                                    Icon(
+                                        tint = contentColorFor(SearchBarDefaults.colors().containerColor),
+                                        imageVector = Icons.Default.FilterList,
+                                        contentDescription = stringResource(SharedRes.strings.open_filters)
+                                    )
+                                }
+                            }
+                        } else {
+                            IconButton(
+                                onClick = onOpenFilters,
+                                modifier = Modifier.minimumInteractiveComponentSize()
+                            ) {
+                                Icon(
+                                    tint = contentColorFor(SearchBarDefaults.colors().containerColor),
+                                    imageVector = Icons.Default.FilterList,
+                                    contentDescription = stringResource(SharedRes.strings.open_filters)
+                                )
+                            }
                         }
                     }
                 }
