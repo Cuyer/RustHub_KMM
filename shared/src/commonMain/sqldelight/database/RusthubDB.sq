@@ -817,7 +817,7 @@ INSERT INTO monumentEntity (
     :mining,
     :puzzles,
     :language
-) ON CONFLICT(slug, language) DO UPDATE SET
+) ON CONFLICT(slug) DO UPDATE SET
     name = excluded.name,
     attributes = excluded.attributes,
     iconUrl = excluded.iconUrl,

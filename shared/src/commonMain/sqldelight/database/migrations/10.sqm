@@ -29,6 +29,7 @@ DROP TABLE monumentEntity;
 CREATE TABLE monumentEntity (
     slug TEXT NOT NULL,
     name TEXT,
+    iconUrl TEXT,
     attributes TEXT,
     spawns TEXT,
     usable_entities TEXT,
