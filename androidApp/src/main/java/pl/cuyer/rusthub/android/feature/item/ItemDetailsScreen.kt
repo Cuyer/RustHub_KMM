@@ -52,6 +52,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.ItemTooltipImage
 import pl.cuyer.rusthub.android.designsystem.LootContentListItem
@@ -81,6 +82,8 @@ import pl.cuyer.rusthub.domain.model.Recycling as RecyclingModel
 import pl.cuyer.rusthub.domain.model.WhereToFind as WhereToFindModel
 import pl.cuyer.rusthub.domain.model.ItemAttribute
 import pl.cuyer.rusthub.domain.model.ItemAttributeType
+import pl.cuyer.rusthub.domain.model.toNameRes
+import pl.cuyer.rusthub.util.StringProvider
 
 @Immutable
 private enum class DetailsPage(val title: StringResource) {
@@ -620,20 +623,22 @@ private fun TableRecipeContent(tableRecipe: TableRecipeModel, attributes: List<I
             }
         }
         tableRecipe.totalCost?.let { totalCost ->
-            item(key = "total_cost", contentType = "total_cost") {
-                TableRecipeItemList(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .animateItem()
-                        .padding(horizontal = spacing.xmedium),
-                    title = SharedRes.strings.total_cost,
-                    ingredients = totalCost,
-                    outputImage = tableRecipe.outputImage,
-                    outputName = tableRecipe.outputName,
-                    outputAmount = tableRecipe.outputAmount,
-                    tableImage = null,
-                    tableName = null
-                )
+            if (totalCost.isNotEmpty()) {
+                item(key = "total_cost", contentType = "total_cost") {
+                    TableRecipeItemList(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .animateItem()
+                            .padding(horizontal = spacing.xmedium),
+                        title = SharedRes.strings.total_cost,
+                        ingredients = totalCost,
+                        outputImage = tableRecipe.outputImage,
+                        outputName = tableRecipe.outputName,
+                        outputAmount = tableRecipe.outputAmount,
+                        tableImage = null,
+                        tableName = null
+                    )
+                }
             }
         }
     }
@@ -652,12 +657,13 @@ private fun TableRecipeAttributesItem(
                 vertical = spacing.xxmedium
             )
         ) {
+            val stringProvider = koinInject<StringProvider>()
             DetailsRow(
                 details = {
                     buildMap {
                         attributes.forEach { attribute ->
                             attribute.value?.let {
-                                put(stringResource(attribute.type.toNameRes()), it)
+                                put(attribute.type.toNameRes(stringProvider), it)
                             }
                         }
                     }
@@ -1159,26 +1165,5 @@ private fun formatRaidDuration(seconds: Int): String {
         hours > 0 -> "${hours}h ${minutes}m"
         totalMinutes > 0 -> "${minutes}m ${remainingSeconds}s"
         else -> "${seconds}s"
-    }
-}
-
-private fun ItemAttributeType.toNameRes(): StringResource {
-    return when (this) {
-        ItemAttributeType.HYDRATION -> SharedRes.strings.hydration
-        ItemAttributeType.CRAFTING_QUALITY -> SharedRes.strings.crafting_quality
-        ItemAttributeType.DURATION -> SharedRes.strings.duration
-        ItemAttributeType.HARVESTING_YIELD -> SharedRes.strings.harvesting_yield
-        ItemAttributeType.TEMPERATURE -> SharedRes.strings.temperature
-        ItemAttributeType.MAX_CORE_TEMPERATURE -> SharedRes.strings.max_core_temperature
-        ItemAttributeType.CALORIES -> SharedRes.strings.calories
-        ItemAttributeType.HEALTH -> SharedRes.strings.health
-        ItemAttributeType.HUNTER_VISION -> SharedRes.strings.hunter_vision
-        ItemAttributeType.VISION_CARE -> SharedRes.strings.vision_care
-        ItemAttributeType.MAX_HP -> SharedRes.strings.max_hp
-        ItemAttributeType.METABOLISM_BOOST -> SharedRes.strings.metabolism_boost
-        ItemAttributeType.CLOTTING -> SharedRes.strings.clotting
-        ItemAttributeType.COMFORT -> SharedRes.strings.comfort
-        ItemAttributeType.BETTER_GENE_CHANCE -> SharedRes.strings.better_gene_chance
-        ItemAttributeType.DIGESTION_BOOST -> SharedRes.strings.digestion_boost
     }
 }
