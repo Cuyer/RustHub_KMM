@@ -68,6 +68,9 @@ import pl.cuyer.rusthub.domain.model.ItemSyncState
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.util.updateAppLanguage
 import pl.cuyer.rusthub.domain.model.SubscriptionState
+import pl.cuyer.rusthub.domain.model.MonumentSyncState
+import pl.cuyer.rusthub.util.MonumentsScheduler
+import pl.cuyer.rusthub.domain.repository.monument.local.MonumentSyncDataSource
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -84,8 +87,10 @@ class SettingsViewModel(
     private val stringProvider: StringProvider,
     private val systemDarkThemeObserver: SystemDarkThemeObserver,
     private val itemsScheduler: ItemsScheduler,
+    private val monumentsScheduler: MonumentsScheduler,
     private val getActiveSubscriptionUseCase: GetActiveSubscriptionUseCase,
     private val itemSyncDataSource: ItemSyncDataSource,
+    private val monumentSyncDataSource: MonumentSyncDataSource,
     private val userEventController: UserEventController,
     private val setSubscribedUseCase: SetSubscribedUseCase,
     private val remoteConfig: RemoteConfig,
@@ -360,6 +365,9 @@ class SettingsViewModel(
             itemSyncDataSource.setState(ItemSyncState.PENDING)
             itemsScheduler.startNow()
             itemsScheduler.schedule()
+            monumentSyncDataSource.setState(MonumentSyncState.PENDING)
+            monumentsScheduler.startNow()
+            monumentsScheduler.schedule()
         }
     }
 

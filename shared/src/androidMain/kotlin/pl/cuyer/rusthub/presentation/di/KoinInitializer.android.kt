@@ -65,6 +65,8 @@ import pl.cuyer.rusthub.util.RemoteConfig
 import pl.cuyer.rusthub.util.MonumentsScheduler
 import pl.cuyer.rusthub.data.local.monument.MonumentSyncDataSourceImpl
 import pl.cuyer.rusthub.domain.repository.monument.local.MonumentSyncDataSource
+import pl.cuyer.rusthub.presentation.features.monument.MonumentViewModel
+import pl.cuyer.rusthub.presentation.features.monument.MonumentDetailsViewModel
 
 actual fun platformModule(passphrase: String): Module = module {
     single<RustHubDatabase>(createdAtStart = true) {
@@ -118,6 +120,9 @@ actual fun platformModule(passphrase: String): Module = module {
             itemsScheduler = get(),
             itemDataSource = get(),
             itemSyncDataSource = get(),
+            monumentsScheduler = get(),
+            monumentDataSource = get(),
+            monumentSyncDataSource = get(),
             purchaseSyncDataSource = get(),
             purchaseSyncScheduler = get()
         )
@@ -187,10 +192,27 @@ actual fun platformModule(passphrase: String): Module = module {
             adsConsentManager = get(),
         )
     }
+    viewModel {
+        MonumentViewModel(
+            getPagedMonumentsUseCase = get(),
+            monumentSyncDataSource = get(),
+            monumentsScheduler = get(),
+            snackbarController = get(),
+            stringProvider = get(),
+            getUserUseCase = get(),
+            adsConsentManager = get(),
+        )
+    }
     viewModel { (itemId: Long) ->
         ItemDetailsViewModel(
             getItemDetailsUseCase = get(),
             itemId = itemId,
+        )
+    }
+    viewModel { (slug: String) ->
+        MonumentDetailsViewModel(
+            getMonumentDetailsUseCase = get(),
+            slug = slug,
         )
     }
     viewModel {
@@ -208,6 +230,8 @@ actual fun platformModule(passphrase: String): Module = module {
             systemDarkThemeObserver = get(),
             itemsScheduler = get(),
             itemSyncDataSource = get(),
+            monumentsScheduler = get(),
+            monumentSyncDataSource = get(),
             userEventController = get(),
             getActiveSubscriptionUseCase = get(),
             setSubscribedUseCase = get(),

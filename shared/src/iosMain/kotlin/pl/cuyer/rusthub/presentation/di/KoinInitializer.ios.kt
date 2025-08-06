@@ -59,6 +59,8 @@ import pl.cuyer.rusthub.domain.repository.ads.NativeAdRepository
 import pl.cuyer.rusthub.domain.usecase.ads.GetNativeAdUseCase
 import pl.cuyer.rusthub.domain.usecase.ads.ClearNativeAdsUseCase
 import pl.cuyer.rusthub.presentation.features.ads.NativeAdViewModel
+import pl.cuyer.rusthub.presentation.features.monument.MonumentViewModel
+import pl.cuyer.rusthub.presentation.features.monument.MonumentDetailsViewModel
 
 @Suppress("UNUSED_PARAMETER")
 actual fun platformModule(passphrase: String): Module = module {
@@ -105,6 +107,9 @@ actual fun platformModule(passphrase: String): Module = module {
             itemsScheduler = get(),
             itemDataSource = get(),
             itemSyncDataSource = get(),
+            monumentsScheduler = get(),
+            monumentDataSource = get(),
+            monumentSyncDataSource = get(),
             purchaseSyncDataSource = get(),
             purchaseSyncScheduler = get()
         )
@@ -118,10 +123,25 @@ actual fun platformModule(passphrase: String): Module = module {
             adsConsentManager = get()
         )
     }
+    factory {
+        MonumentViewModel(
+            getPagedMonumentsUseCase = get(),
+            monumentSyncDataSource = get(),
+            monumentsScheduler = get(),
+            getUserUseCase = get(),
+            adsConsentManager = get(),
+        )
+    }
     factory { (itemId: Long) ->
         ItemDetailsViewModel(
             getItemDetailsUseCase = get(),
             itemId = itemId,
+        )
+    }
+    factory { (slug: String) ->
+        MonumentDetailsViewModel(
+            getMonumentDetailsUseCase = get(),
+            slug = slug,
         )
     }
     factory {
@@ -181,6 +201,8 @@ actual fun platformModule(passphrase: String): Module = module {
             systemDarkThemeObserver = get(),
             itemsScheduler = get(),
             itemSyncDataSource = get(),
+            monumentsScheduler = get(),
+            monumentSyncDataSource = get(),
             userEventController = get(),
             setSubscribedUseCase = get(),
             remoteConfig = get(),

@@ -63,6 +63,8 @@ import pl.cuyer.rusthub.android.feature.auth.ResetPasswordScreen
 import pl.cuyer.rusthub.android.feature.auth.UpgradeAccountScreen
 import pl.cuyer.rusthub.android.feature.item.ItemDetailsScreen
 import pl.cuyer.rusthub.android.feature.item.ItemScreen
+import pl.cuyer.rusthub.android.feature.monument.MonumentDetailsScreen
+import pl.cuyer.rusthub.android.feature.monument.MonumentScreen
 import pl.cuyer.rusthub.android.feature.onboarding.OnboardingScreen
 import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
@@ -88,6 +90,8 @@ import pl.cuyer.rusthub.presentation.features.auth.password.ResetPasswordViewMod
 import pl.cuyer.rusthub.presentation.features.auth.upgrade.UpgradeViewModel
 import pl.cuyer.rusthub.presentation.features.item.ItemState
 import pl.cuyer.rusthub.presentation.features.item.ItemViewModel
+import pl.cuyer.rusthub.presentation.features.monument.MonumentViewModel
+import pl.cuyer.rusthub.presentation.features.monument.MonumentDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
@@ -100,6 +104,8 @@ import pl.cuyer.rusthub.presentation.navigation.Credentials
 import pl.cuyer.rusthub.presentation.navigation.DeleteAccount
 import pl.cuyer.rusthub.presentation.navigation.ItemDetails
 import pl.cuyer.rusthub.presentation.navigation.ItemList
+import pl.cuyer.rusthub.presentation.navigation.MonumentDetails
+import pl.cuyer.rusthub.presentation.navigation.MonumentList
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
 import pl.cuyer.rusthub.presentation.navigation.ResetPassword
@@ -333,6 +339,38 @@ private fun AppScaffold(
                             state = state,
                             onNavigateUp = {
                                 while (backStack.lastOrNull() is ItemDetails) {
+                                    backStack.removeLastOrNull()
+                                }
+                            },
+                        )
+                    }
+                    entry<MonumentList>(metadata = ListDetailSceneStrategy.listPane()) {
+                        val viewModel = koinViewModel<MonumentViewModel>()
+                        val adViewModel = koinViewModel<NativeAdViewModel>()
+                        val state = viewModel.state.collectAsStateWithLifecycle()
+                        val paging = viewModel.paging.collectAsLazyPagingItems()
+                        val showAds by viewModel.showAds.collectAsStateWithLifecycle()
+                        val adState = adViewModel.state.collectAsStateWithLifecycle()
+                        MonumentScreen(
+                            state = state,
+                            onAction = viewModel::onAction,
+                            pagedList = paging,
+                            uiEvent = viewModel.uiEvent,
+                            onNavigate = { dest -> backStack.add(dest) },
+                            showAds = showAds,
+                            adState = adState,
+                            onAdAction = adViewModel::onAction
+                        )
+                    }
+                    entry<MonumentDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
+                        val viewModel: MonumentDetailsViewModel = koinViewModel(
+                            key = key.slug
+                        ) { parametersOf(key.slug) }
+                        val state = viewModel.state.collectAsStateWithLifecycle()
+                        MonumentDetailsScreen(
+                            state = state,
+                            onNavigateUp = {
+                                while (backStack.lastOrNull() is MonumentDetails) {
                                     backStack.removeLastOrNull()
                                 }
                             },

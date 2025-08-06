@@ -4,11 +4,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.presentation.navigation.ItemDetails
 import pl.cuyer.rusthub.presentation.navigation.ItemList
+import pl.cuyer.rusthub.presentation.navigation.MonumentDetails
+import pl.cuyer.rusthub.presentation.navigation.MonumentList
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.Settings as SettingsNav
@@ -39,6 +42,16 @@ internal sealed interface BottomNavKey {
     }
 
     @Immutable
+    data object Monuments : BottomNavKey {
+        override val root = MonumentList
+        override val icon = Icons.Filled.AccountBalance
+        override val label = SharedRes.strings.monuments
+        override val isInHierarchy: (NavKey?) -> Boolean = {
+            it is MonumentList || it is MonumentDetails
+        }
+    }
+
+    @Immutable
     data object Settings : BottomNavKey {
         override val root = SettingsNav
         override val icon = Icons.Filled.Settings
@@ -50,5 +63,6 @@ internal sealed interface BottomNavKey {
 internal val bottomNavItems: List<BottomNavKey> = listOf(
     BottomNavKey.Servers,
     BottomNavKey.Items,
+    BottomNavKey.Monuments,
     BottomNavKey.Settings
 )

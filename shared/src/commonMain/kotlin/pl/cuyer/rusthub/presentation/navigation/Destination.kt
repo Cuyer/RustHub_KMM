@@ -53,6 +53,15 @@ data class ItemDetails(
 ) : NavKey
 
 @Serializable
+data object MonumentList : NavKey
+
+@Serializable
+@Immutable
+data class MonumentDetails(
+    val slug: String,
+) : NavKey
+
+@Serializable
 data object PrivacyPolicy : NavKey
 
 @Serializable

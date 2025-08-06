@@ -67,10 +67,12 @@ import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedItemsUseCase
+import pl.cuyer.rusthub.domain.usecase.GetPagedMonumentsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetItemSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetItemDetailsUseCase
+import pl.cuyer.rusthub.domain.usecase.GetMonumentDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserPreferencesUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
@@ -151,6 +153,7 @@ val appModule = module {
     single { UsernameValidator(get()) }
     single { GetPagedServersUseCase(get(), get(), get(), get()) }
     single { GetPagedItemsUseCase(get(), get()) }
+    single { GetPagedMonumentsUseCase(get(), get()) }
     single { GetFiltersUseCase(get()) }
     single { SaveFiltersUseCase(get()) }
     single { SaveSearchQueryUseCase(get()) }
@@ -165,6 +168,7 @@ val appModule = module {
     single { DeleteItemSearchQueriesUseCase(get()) }
     single { GetServerDetailsUseCase(get()) }
     single { GetItemDetailsUseCase(get()) }
+    single { GetMonumentDetailsUseCase(get()) }
     single { RegisterUserUseCase(get(), get(), get(), get()) }
     single { LoginUserUseCase(get(), get(), get(), get()) }
     single { LoginWithGoogleUseCase(get(), get(), get(), get()) }
