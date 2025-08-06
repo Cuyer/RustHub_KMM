@@ -14,6 +14,7 @@ import database.ServerEntity
 import database.UserEntity
 import database.ItemEntity
 import database.ItemSearchQueryEntity
+import database.MonumentEntity
 import pl.cuyer.rusthub.data.local.model.DifficultyEntity
 import pl.cuyer.rusthub.data.local.model.FlagEntity
 import pl.cuyer.rusthub.data.local.model.MapsEntity
@@ -51,6 +52,12 @@ import pl.cuyer.rusthub.domain.model.TableRecipe
 import pl.cuyer.rusthub.domain.model.Recycling
 import pl.cuyer.rusthub.domain.model.Raiding
 import pl.cuyer.rusthub.domain.model.ItemAttribute
+import pl.cuyer.rusthub.domain.model.Monument
+import pl.cuyer.rusthub.domain.model.MonumentAttributes
+import pl.cuyer.rusthub.domain.model.MonumentSpawns
+import pl.cuyer.rusthub.domain.model.MonumentPuzzle
+import pl.cuyer.rusthub.domain.model.UsableEntity
+import pl.cuyer.rusthub.domain.model.Mining
 import kotlin.time.Instant
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
@@ -230,6 +237,23 @@ fun ItemEntity.toRustItem(json: Json): RustItem {
             json.decodeFromString(ListSerializer(Raiding.serializer()), it)
         },
         id = id
+    )
+}
+
+fun MonumentEntity.toMonument(json: Json): Monument {
+    return Monument(
+        name = name,
+        slug = slug,
+        attributes = attributes?.let { json.decodeFromString(MonumentAttributes.serializer(), it) },
+        spawns = spawns?.let { json.decodeFromString(MonumentSpawns.serializer(), it) },
+        usableEntities = usable_entities?.let {
+            json.decodeFromString(ListSerializer(UsableEntity.serializer()), it)
+        },
+        mining = mining?.let { json.decodeFromString(Mining.serializer(), it) },
+        puzzles = puzzles?.let {
+            json.decodeFromString(ListSerializer(MonumentPuzzle.serializer()), it)
+        },
+        language = language,
     )
 }
 

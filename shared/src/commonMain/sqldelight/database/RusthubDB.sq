@@ -808,6 +808,25 @@ SELECT COUNT(*) FROM monumentEntity WHERE language = :language;
 deleteMonuments:
 DELETE FROM monumentEntity;
 
+findMonumentsPagedFiltered:
+SELECT *
+FROM monumentEntity
+WHERE (name LIKE '%' || :name || '%' COLLATE NOCASE)
+  AND (:type IS NULL OR attributes LIKE '%' || :type || '%')
+  AND language = :language
+ORDER BY name
+LIMIT :limit OFFSET :offset;
+
+countPagedMonumentsFiltered:
+SELECT COUNT(*)
+FROM monumentEntity
+WHERE (name LIKE '%' || :name || '%' COLLATE NOCASE)
+  AND (:type IS NULL OR attributes LIKE '%' || :type || '%')
+  AND language = :language;
+
+getMonumentBySlug:
+SELECT * FROM monumentEntity WHERE slug = :slug AND language = :language;
+
 CREATE TABLE monumentSyncEntity (
     id TEXT NOT NULL PRIMARY KEY,
     sync_state TEXT NOT NULL

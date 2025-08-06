@@ -138,6 +138,13 @@
     <string name="modded">Modded</string>
     <string name="monthly">Monthly</string>
     <string name="monuments">Monuments</string>
+    <string name="monument_small">Small</string>
+    <string name="monument_safe_zones">Safe Zones</string>
+    <string name="monument_oceanside">Oceanside</string>
+    <string name="monument_medium">Medium</string>
+    <string name="monument_roadside">Roadside</string>
+    <string name="monument_offshore">Offshore</string>
+    <string name="monument_large">Large</string>
     <string name="narrow_your_search_using_advanced_filtering_options">Narrow your search using advanced filtering options.</string>
     <string name="navigate_up">Navigate up</string>
     <string name="need_to_compare">Need to compare?</string>
@@ -219,6 +226,13 @@
     <string name="search_and_explore_rust_servers_by_name_type_last_wipe_or_more">Search and explore Rust servers by name, type, last wipe or more.</string>
     <string name="search_servers">Search servers...</string>
     <string name="search_items">Search items...</string>
+    <string name="search_monuments">Search monuments...</string>
+    <string name="attributes">Attributes</string>
+    <string name="spawns">Spawns</string>
+    <string name="usable_entities">Usable Entities</string>
+    <string name="mining">Mining</string>
+    <string name="puzzles">Puzzles</string>
+    <string name="coming_soon">Coming soon</string>
     <string name="search_items_check_details_how_to_craft_drop_and_raid_costs">Search items and check their details, crafting, drops and raid costs.</string>
     <string name="see_server_info_like_time_of_last_wipe_map_ranking_and_more">See server info like time of last wipe, map, ranking and more.</string>
     <string name="seed" translatable="false">Seed</string>

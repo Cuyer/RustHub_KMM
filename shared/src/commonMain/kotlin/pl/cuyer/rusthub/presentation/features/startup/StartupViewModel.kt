@@ -38,6 +38,10 @@ import pl.cuyer.rusthub.domain.model.ItemSyncState
 import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
 import pl.cuyer.rusthub.util.InAppUpdateManager
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
+import pl.cuyer.rusthub.util.MonumentsScheduler
+import pl.cuyer.rusthub.domain.repository.monument.local.MonumentDataSource
+import pl.cuyer.rusthub.domain.repository.monument.local.MonumentSyncDataSource
+import pl.cuyer.rusthub.domain.model.MonumentSyncState
 
 class StartupViewModel(
     private val snackbarController: SnackbarController,
@@ -50,6 +54,9 @@ class StartupViewModel(
     private val itemsScheduler: ItemsScheduler,
     private val itemDataSource: ItemDataSource,
     private val itemSyncDataSource: ItemSyncDataSource,
+    private val monumentsScheduler: MonumentsScheduler,
+    private val monumentDataSource: MonumentDataSource,
+    private val monumentSyncDataSource: MonumentSyncDataSource,
     private val purchaseSyncDataSource: PurchaseSyncDataSource,
     private val purchaseSyncScheduler: PurchaseSyncScheduler
 ) : BaseViewModel() {
@@ -79,6 +86,12 @@ class StartupViewModel(
                 itemsScheduler.startNow()
             } else {
                 itemsScheduler.schedule()
+            }
+            if (monumentDataSource.isEmpty(getCurrentAppLanguage())) {
+                monumentSyncDataSource.setState(MonumentSyncState.PENDING)
+                monumentsScheduler.startNow()
+            } else {
+                monumentsScheduler.schedule()
             }
             if (purchaseSyncDataSource.getPendingOperations().isNotEmpty()) {
                 purchaseSyncScheduler.schedule()
