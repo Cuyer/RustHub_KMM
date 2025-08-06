@@ -7,6 +7,7 @@ fun MonumentDto.toDomain(): Monument {
     return Monument(
         name = name,
         slug = slug,
+        iconUrl = iconUrl,
         attributes = attributes?.toDomain(),
         spawns = spawns?.toDomain(),
         usableEntities = usableEntities?.map { it.toDomain() },
