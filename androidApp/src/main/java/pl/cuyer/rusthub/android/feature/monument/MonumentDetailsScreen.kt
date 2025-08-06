@@ -109,6 +109,11 @@ fun MonumentDetailsScreen(
                             modifier = Modifier.fillMaxSize()
                         )
 
+                        is PageData.UsableEntities -> MonumentUsableEntitiesPage(
+                            entities = data.entities,
+                            modifier = Modifier.fillMaxSize()
+                        )
+
                         else -> Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
