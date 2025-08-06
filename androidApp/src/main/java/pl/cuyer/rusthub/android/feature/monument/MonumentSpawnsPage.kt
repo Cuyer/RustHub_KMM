@@ -53,6 +53,7 @@ fun MonumentSpawnsPage(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 private fun LazyListScope.spawnSection(
     groups: List<SpawnGroup>?,
     title: dev.icerock.moko.resources.StringResource
@@ -86,24 +87,31 @@ private fun SpawnGroupCard(
         shape = MaterialTheme.shapes.extraSmall,
         modifier = modifier.fillMaxWidth()
     ) {
-        Column(
-            modifier = Modifier.padding(horizontal = spacing.xmedium, vertical = spacing.xxmedium),
-            verticalArrangement = Arrangement.spacedBy(spacing.small)
+        Row(
+            modifier = Modifier
+                .padding(horizontal = spacing.xmedium, vertical = spacing.xxmedium)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            group.amount?.let { amount ->
-                val label = stringResource(SharedRes.strings.amount)
-                Text(
-                    text = "$label x$amount",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(spacing.small)
+            ) {
+                group.options?.forEach { option ->
+                    SpawnOptionRow(option)
+                }
             }
-            group.options?.forEach { option ->
-                SpawnOptionRow(option)
+            group.amount?.let { amount ->
+                Text(
+                    text = "x$amount",
+                    style = MaterialTheme.typography.bodyLarge
+                )
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SpawnOptionRow(option: SpawnOption) {
     Row(
