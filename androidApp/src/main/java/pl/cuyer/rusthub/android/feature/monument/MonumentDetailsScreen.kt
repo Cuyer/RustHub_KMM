@@ -114,7 +114,12 @@ fun MonumentDetailsScreen(
                             modifier = Modifier.fillMaxSize()
                         )
 
-                        else -> Box(
+                        is PageData.Mining -> MonumentMiningPage(
+                            mining = data.mining,
+                            modifier = Modifier.fillMaxSize()
+                        )
+
+                        is PageData.Puzzles -> Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {

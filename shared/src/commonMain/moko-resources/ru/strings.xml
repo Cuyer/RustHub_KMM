@@ -447,6 +447,7 @@
     <string name="extra_chance_output">Дополнительный шанс на результат</string>
     <string name="multiplier_format">x%1$d</string>
     <string name="percentage_format">%1$d%%</string>
+    <string name="time_per_fuel">Time per fuel: %1$d s</string>
     <string name="raw_material_cost">Стоимость сырья</string>
     <string name="using_mixing_table">Используя смесительный стол x%1$d</string>
     <string name="time_to_raid">Время рейда: %1$s</string>
