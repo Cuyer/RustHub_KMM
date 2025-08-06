@@ -27,32 +27,32 @@ fun ServerQuery?.toUi(
             FilterDropdownOption(
                 label = stringProvider.get(SharedRes.strings.map),
                 options = maps,
-                selectedIndex = maps.indexOf(this?.map?.displayName ?: "")
+                selectedIndex = maps.indexOf(this?.map?.displayName ?: "").takeIf { it >= 0 }
             ),
             FilterDropdownOption(
                 label = stringProvider.get(SharedRes.strings.country),
                 options = flags,
-                selectedIndex = flags.indexOf(this?.flag?.displayName ?: "")
+                selectedIndex = flags.indexOf(this?.flag?.displayName ?: "").takeIf { it >= 0 }
             ),
             FilterDropdownOption(
                 label = stringProvider.get(SharedRes.strings.region),
                 options = regions,
-                selectedIndex = regions.indexOf(this?.region?.displayName(stringProvider) ?: "")
+                selectedIndex = regions.indexOf(this?.region?.displayName(stringProvider) ?: "").takeIf { it >= 0 }
             ),
             FilterDropdownOption(
                 label = stringProvider.get(SharedRes.strings.difficulty),
                 options = difficulties,
-                selectedIndex = difficulties.indexOf(this?.difficulty?.displayName ?: "")
+                selectedIndex = difficulties.indexOf(this?.difficulty?.displayName ?: "").takeIf { it >= 0 }
             ),
             FilterDropdownOption(
                 label = stringProvider.get(SharedRes.strings.wipe_schedule),
                 options = schedules,
-                selectedIndex = schedules.indexOf(this?.wipeSchedule?.displayName(stringProvider) ?: "")
+                selectedIndex = schedules.indexOf(this?.wipeSchedule?.displayName(stringProvider) ?: "").takeIf { it >= 0 }
             ),
             FilterDropdownOption(
                 label = stringProvider.get(SharedRes.strings.order),
                 options = order,
-                selectedIndex = order.indexOf(this?.order?.displayName(stringProvider))
+                selectedIndex = order.indexOf(this?.order?.displayName(stringProvider)).takeIf { it >= 0 }
             )
         ),
         checkboxes = listOf(
