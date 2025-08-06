@@ -383,6 +383,7 @@
     <string name="no_servers_available_offline">Offline sind keine Server verfügbar.</string>
     <string name="no_servers_available">Keine Server verfügbar.</string>
     <string name="no_items_available">Keine Gegenstände verfügbar.</string>
+    <string name="no_monuments_available">Keine Monumente verfügbar.</string>
     <string name="error_timeout">Zeitüberschreitung. Bitte versuche es erneut.</string>
     <string name="error_service_unavailable">Dienst vorübergehend nicht verfügbar. Bitte versuche es später erneut.</string>
     <string name="error_bad_request">Fehlerhafte Anfrage.</string>
