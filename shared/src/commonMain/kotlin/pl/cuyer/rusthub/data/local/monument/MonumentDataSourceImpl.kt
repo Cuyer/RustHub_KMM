@@ -57,9 +57,14 @@ class MonumentDataSourceImpl(
     }
 
     override suspend fun isEmpty(language: Language): Boolean {
+        val updatedLanguage = if (language == Language.POLISH) {
+            Language.ENGLISH
+        } else {
+            language
+        }
         return withContext(Dispatchers.IO) {
             safeQuery(true) {
-                queries.countMonuments(language = language.toEntity()).executeAsOne() == 0L
+                queries.countMonuments(language = updatedLanguage.toEntity()).executeAsOne() == 0L
             }
         }
     }
