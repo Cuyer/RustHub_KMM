@@ -375,6 +375,7 @@
     <string name="error_fetching_server_data">Beim Laden der Serverdaten ist ein Fehler aufgetreten.</string>
     <string name="server_query_cannot_be_empty">Bitte gib einen Servernamen ein.</string>
     <string name="item_query_cannot_be_empty">Gib den Namen des Gegenstands ein.</string>
+    <string name="monument_query_cannot_be_empty">Gib den Namen des Monuments ein.</string>
     <string name="error_network">Netzwerkfehler. Bitte überprüfe deine Verbindung.</string>
     <string name="offline_cached_servers_info">Netzwerk nicht verfügbar. Zeige zwischengespeicherte Server.</string>
     <string name="offline">Keine Internetverbindung.</string>

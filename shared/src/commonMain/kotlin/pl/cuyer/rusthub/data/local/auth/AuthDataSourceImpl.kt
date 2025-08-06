@@ -21,6 +21,7 @@ import pl.cuyer.rusthub.domain.repository.filtersOptions.FiltersOptionsDataSourc
 import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.domain.repository.search.ItemSearchQueryDataSource
 import pl.cuyer.rusthub.domain.repository.search.SearchQueryDataSource
+import pl.cuyer.rusthub.domain.repository.search.MonumentSearchQueryDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.util.CrashReporter
@@ -34,6 +35,7 @@ class AuthDataSourceImpl(
     private val filtersOptionsDataSource: FiltersOptionsDataSource,
     private val searchQueryDataSource: SearchQueryDataSource,
     private val itemSearchQueryDataSource: ItemSearchQueryDataSource,
+    private val monumentSearchQueryDataSource: MonumentSearchQueryDataSource,
     private val favouriteSyncDataSource: FavouriteSyncDataSource,
     private val subscriptionSyncDataSource: SubscriptionSyncDataSource,
     private val itemSyncDataSource: ItemSyncDataSource,
@@ -75,6 +77,7 @@ class AuthDataSourceImpl(
             filtersOptionsDataSource.clearFiltersOptions()
             searchQueryDataSource.clearQueries()
             itemSearchQueryDataSource.clearQueries()
+            monumentSearchQueryDataSource.clearQueries()
             favouriteSyncDataSource.clearOperations()
             subscriptionSyncDataSource.clearOperations()
             itemSyncDataSource.clearState()

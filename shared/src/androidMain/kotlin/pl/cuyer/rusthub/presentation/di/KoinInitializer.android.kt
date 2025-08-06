@@ -199,6 +199,9 @@ actual fun platformModule(passphrase: String): Module = module {
             monumentsScheduler = get(),
             snackbarController = get(),
             stringProvider = get(),
+            saveSearchQueryUseCase = get(),
+            getSearchQueriesUseCase = get(),
+            deleteSearchQueriesUseCase = get(),
             getUserUseCase = get(),
             adsConsentManager = get(),
         )

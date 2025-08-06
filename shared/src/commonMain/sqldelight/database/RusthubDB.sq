@@ -520,6 +520,28 @@ DELETE FROM itemSearchQueryEntity;
 deleteItemSearchQueryByQuery:
 DELETE FROM itemSearchQueryEntity WHERE query = :query;
 
+CREATE TABLE monumentSearchQueryEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    query TEXT NOT NULL UNIQUE,
+    timestamp TEXT NOT NULL
+);
+
+upsertMonumentSearchQuery:
+INSERT INTO monumentSearchQueryEntity (query, timestamp)
+VALUES (:query, :timestamp)
+ON CONFLICT(query) DO UPDATE SET
+    timestamp = excluded.timestamp;
+
+getMonumentSearchQueries:
+SELECT * FROM monumentSearchQueryEntity
+ORDER BY timestamp DESC;
+
+clearMonumentSearchQueries:
+DELETE FROM monumentSearchQueryEntity;
+
+deleteMonumentSearchQueryByQuery:
+DELETE FROM monumentSearchQueryEntity WHERE query = :query;
+
 CREATE TABLE favouriteSyncEntity (
     server_id INTEGER NOT NULL PRIMARY KEY,
     action INTEGER NOT NULL,
