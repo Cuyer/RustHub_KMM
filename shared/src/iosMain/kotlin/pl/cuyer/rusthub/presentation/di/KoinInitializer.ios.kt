@@ -119,6 +119,11 @@ actual fun platformModule(passphrase: String): Module = module {
             getPagedItemsUseCase = get(),
             itemSyncDataSource = get(),
             itemsScheduler = get(),
+            snackbarController = get(),
+            stringProvider = get(),
+            saveSearchQueryUseCase = get(),
+            getSearchQueriesUseCase = get(),
+            deleteSearchQueriesUseCase = get(),
             getUserUseCase = get(),
             adsConsentManager = get()
         )
@@ -128,6 +133,11 @@ actual fun platformModule(passphrase: String): Module = module {
             getPagedMonumentsUseCase = get(),
             monumentSyncDataSource = get(),
             monumentsScheduler = get(),
+            snackbarController = get(),
+            stringProvider = get(),
+            saveSearchQueryUseCase = get(),
+            getSearchQueriesUseCase = get(),
+            deleteSearchQueriesUseCase = get(),
             getUserUseCase = get(),
             adsConsentManager = get(),
         )

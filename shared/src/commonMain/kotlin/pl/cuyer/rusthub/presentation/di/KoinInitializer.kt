@@ -16,6 +16,7 @@ import pl.cuyer.rusthub.data.local.filter.FiltersDataSourceImpl
 import pl.cuyer.rusthub.data.local.filtersOptions.FiltersOptionsDataSourceImpl
 import pl.cuyer.rusthub.data.local.search.SearchQueryDataSourceImpl
 import pl.cuyer.rusthub.data.local.search.ItemSearchQueryDataSourceImpl
+import pl.cuyer.rusthub.data.local.search.MonumentSearchQueryDataSourceImpl
 import pl.cuyer.rusthub.data.local.server.ServerDataSourceImpl
 import pl.cuyer.rusthub.data.local.item.ItemDataSourceImpl
 import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
@@ -49,6 +50,7 @@ import pl.cuyer.rusthub.domain.repository.monument.local.MonumentSyncDataSource
 import pl.cuyer.rusthub.domain.repository.notification.MessagingTokenRepository
 import pl.cuyer.rusthub.domain.repository.search.SearchQueryDataSource
 import pl.cuyer.rusthub.domain.repository.search.ItemSearchQueryDataSource
+import pl.cuyer.rusthub.domain.repository.search.MonumentSearchQueryDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerRepository
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
@@ -62,6 +64,7 @@ import pl.cuyer.rusthub.domain.usecase.ClearFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteItemSearchQueriesUseCase
+import pl.cuyer.rusthub.domain.usecase.DeleteMonumentSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetFiltersOptionsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetGoogleClientIdUseCase
@@ -70,6 +73,7 @@ import pl.cuyer.rusthub.domain.usecase.GetPagedItemsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetPagedMonumentsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetItemSearchQueriesUseCase
+import pl.cuyer.rusthub.domain.usecase.GetMonumentSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetServerDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetItemDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetMonumentDetailsUseCase
@@ -86,6 +90,7 @@ import pl.cuyer.rusthub.domain.usecase.SetSubscribedUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveItemSearchQueryUseCase
+import pl.cuyer.rusthub.domain.usecase.SaveMonumentSearchQueryUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleFavouriteUseCase
 import pl.cuyer.rusthub.domain.usecase.ToggleSubscriptionUseCase
 import pl.cuyer.rusthub.domain.usecase.ConfirmPurchaseUseCase
@@ -140,6 +145,7 @@ val appModule = module {
     singleOf(::FiltersDataSourceImpl) bind FiltersDataSource::class
     singleOf(::SearchQueryDataSourceImpl) bind SearchQueryDataSource::class
     singleOf(::ItemSearchQueryDataSourceImpl) bind ItemSearchQueryDataSource::class
+    singleOf(::MonumentSearchQueryDataSourceImpl) bind MonumentSearchQueryDataSource::class
     singleOf(::MessagingTokenClientImpl) bind MessagingTokenRepository::class
     single { MessagingTokenManager(get(), get()) }
     singleOf(::FiltersOptionsClientImpl) bind FiltersOptionsRepository::class
@@ -158,14 +164,17 @@ val appModule = module {
     single { SaveFiltersUseCase(get()) }
     single { SaveSearchQueryUseCase(get()) }
     single { SaveItemSearchQueryUseCase(get()) }
+    single { SaveMonumentSearchQueryUseCase(get()) }
     single { ClearFiltersUseCase(get()) }
     singleOf(::ServerCacheDataSourceImpl) bind ServerCacheDataSource::class
     single { ClearServerCacheUseCase(get()) }
     single { GetFiltersOptionsUseCase(get(), get()) }
     single { GetSearchQueriesUseCase(get()) }
     single { GetItemSearchQueriesUseCase(get()) }
+    single { GetMonumentSearchQueriesUseCase(get()) }
     single { DeleteSearchQueriesUseCase(get()) }
     single { DeleteItemSearchQueriesUseCase(get()) }
+    single { DeleteMonumentSearchQueriesUseCase(get()) }
     single { GetServerDetailsUseCase(get()) }
     single { GetItemDetailsUseCase(get()) }
     single { GetMonumentDetailsUseCase(get()) }

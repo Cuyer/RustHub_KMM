@@ -98,7 +98,7 @@ fun MonumentScreen(
     onAdAction: (AdAction) -> Unit,
 ) {
     val searchBarState = rememberSearchBarState()
-    val textFieldState = rememberTextFieldState(state.value.searchText)
+    val textFieldState = rememberTextFieldState("")
     val scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -137,10 +137,13 @@ fun MonumentScreen(
                             onAction(MonumentAction.OnSearch(textFieldState.text.toString()))
                         },
                         onOpenFilters = {},
-                        searchQueryUi = { emptyList() },
-                        onDelete = {},
-                        onClearSearchQuery = {},
-                        isLoadingSearchHistory = { false },
+                        searchQueryUi = { state.value.searchQuery },
+                        onDelete = {
+                            if (it.isBlank()) onAction(MonumentAction.DeleteSearchQueries)
+                            else onAction(MonumentAction.DeleteSearchQueryByQuery(it))
+                        },
+                        onClearSearchQuery = { onAction(MonumentAction.OnClearSearchQuery) },
+                        isLoadingSearchHistory = { state.value.isLoadingSearchHistory },
                         placeholderRes = SharedRes.strings.search_monuments,
                         showFiltersIcon = false,
                     )
@@ -194,7 +197,7 @@ fun MonumentScreen(
             } else {
                 HandlePagingItems(
                     items = { pagedList },
-                    onError = {
+                    onError = { error ->
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -220,6 +223,7 @@ fun MonumentScreen(
                                 }
                             }
                         }
+                        onAction(MonumentAction.OnError(error))
                     },
                     onEmpty = {
                         LazyColumn(
