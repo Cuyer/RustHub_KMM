@@ -67,9 +67,28 @@ fun MonumentDetailsScreen(
                 HorizontalPager(
                     modifier = Modifier.fillMaxSize(),
                     state = pagerState
-                ) { _ ->
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(text = stringResource(SharedRes.strings.coming_soon))
+                ) { page ->
+                    when (pages[page]) {
+                        MonumentPage.Spawns -> {
+                            state.value.monument?.spawns?.let { spawns ->
+                                MonumentSpawnsPage(
+                                    spawns = spawns,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            } ?: Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(text = stringResource(SharedRes.strings.coming_soon))
+                            }
+                        }
+
+                        else -> Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = stringResource(SharedRes.strings.coming_soon))
+                        }
                     }
                 }
             }
