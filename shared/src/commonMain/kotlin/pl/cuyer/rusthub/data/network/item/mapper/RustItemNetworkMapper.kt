@@ -19,6 +19,8 @@ import pl.cuyer.rusthub.data.network.item.model.RaidItemDto
 import pl.cuyer.rusthub.data.network.item.model.RaidResourceDto
 import pl.cuyer.rusthub.data.network.item.model.LootContentDto
 import pl.cuyer.rusthub.data.network.item.model.WhereToFindDto
+import pl.cuyer.rusthub.data.network.item.model.TableRecipeDto
+import pl.cuyer.rusthub.data.network.item.model.TableRecipeIngredientDto
 import pl.cuyer.rusthub.domain.model.ItemCategory
 import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.RustItem
@@ -38,6 +40,8 @@ import pl.cuyer.rusthub.domain.model.RaidItem
 import pl.cuyer.rusthub.domain.model.RaidResource
 import pl.cuyer.rusthub.domain.model.LootContent
 import pl.cuyer.rusthub.domain.model.WhereToFind
+import pl.cuyer.rusthub.domain.model.TableRecipe
+import pl.cuyer.rusthub.domain.model.TableRecipeIngredient
 
 fun RustItemDto.toDomain(): RustItem {
     return RustItem(
@@ -53,6 +57,7 @@ fun RustItemDto.toDomain(): RustItem {
         lootContents = lootContents?.map { it.toDomain() },
         whereToFind = whereToFind?.map { it.toDomain() },
         crafting = crafting?.toDomain(),
+        tableRecipe = tableRecipe?.toDomain(),
         recycling = recycling?.toDomain(),
         raiding = raiding?.map { it.toDomain() },
         shortName = shortName,
@@ -149,6 +154,26 @@ fun TechTreeCostDto.toDomain(): TechTreeCost {
         scrapName = scrapName,
         scrapAmount = scrapAmount,
         outputName = outputName
+    )
+}
+
+fun TableRecipeDto.toDomain(): TableRecipe {
+    return TableRecipe(
+        tableImage = tableImage,
+        tableName = tableName,
+        ingredients = ingredients?.map { it.toDomain() },
+        outputImage = outputImage,
+        outputName = outputName,
+        outputAmount = outputAmount,
+        totalCost = totalCost?.map { it.toDomain() }
+    )
+}
+
+fun TableRecipeIngredientDto.toDomain(): TableRecipeIngredient {
+    return TableRecipeIngredient(
+        image = image,
+        name = name,
+        amount = amount,
     )
 }
 

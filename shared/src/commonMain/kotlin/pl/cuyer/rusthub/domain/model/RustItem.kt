@@ -27,6 +27,7 @@ data class RustItem(
     val lootContents: List<LootContent>? = null,
     val whereToFind: List<WhereToFind>? = null,
     val crafting: Crafting? = null,
+    val tableRecipe: TableRecipe? = null,
     val recycling: Recycling? = null,
     val raiding: List<Raiding>? = null,
     val shortName: String? = null,

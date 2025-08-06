@@ -47,6 +47,7 @@ import pl.cuyer.rusthub.domain.model.Looting
 import pl.cuyer.rusthub.domain.model.LootContent
 import pl.cuyer.rusthub.domain.model.WhereToFind
 import pl.cuyer.rusthub.domain.model.Crafting
+import pl.cuyer.rusthub.domain.model.TableRecipe
 import pl.cuyer.rusthub.domain.model.Recycling
 import pl.cuyer.rusthub.domain.model.Raiding
 import kotlin.time.Instant
@@ -219,6 +220,7 @@ fun ItemEntity.toRustItem(json: Json): RustItem {
             json.decodeFromString(ListSerializer(WhereToFind.serializer()), it)
         },
         crafting = crafting?.let { json.decodeFromString(Crafting.serializer(), it) },
+        tableRecipe = table_recipe?.let { json.decodeFromString(TableRecipe.serializer(), it) },
         recycling = recycling?.let { json.decodeFromString(Recycling.serializer(), it) },
         raiding = raiding?.let {
             json.decodeFromString(ListSerializer(Raiding.serializer()), it)

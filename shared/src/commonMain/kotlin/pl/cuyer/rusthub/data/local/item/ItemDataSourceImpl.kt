@@ -63,6 +63,7 @@ class ItemDataSourceImpl(
                                     json.encodeToString(ListSerializer(WhereToFind.serializer()), it)
                                 },
                                 crafting = item.crafting?.let { json.encodeToString(it) },
+                                tableRecipe = item.tableRecipe?.let { json.encodeToString(it) },
                                 recycling = item.recycling?.let { json.encodeToString(it) },
                                 raiding = item.raiding?.let {
                                     json.encodeToString(ListSerializer(Raiding.serializer()), it)
