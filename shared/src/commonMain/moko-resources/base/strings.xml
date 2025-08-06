@@ -229,6 +229,10 @@
     <string name="search_monuments">Search monuments...</string>
     <string name="attributes">Attributes</string>
     <string name="spawns">Spawns</string>
+    <string name="container">Container</string>
+    <string name="collectable">Collectable</string>
+    <string name="vehicle">Vehicle</string>
+    <string name="scientist">Scientist</string>
     <string name="usable_entities">Usable Entities</string>
     <string name="mining">Mining</string>
     <string name="puzzles">Puzzles</string>
