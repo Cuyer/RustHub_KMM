@@ -15,6 +15,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.data.local.Queries
+import pl.cuyer.rusthub.data.local.mapper.toEntity
 import pl.cuyer.rusthub.data.local.mapper.toMonument
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.Language
@@ -46,7 +47,7 @@ class MonumentDataSourceImpl(
                             puzzles = monument.puzzles?.let {
                                 json.encodeToString(ListSerializer(MonumentPuzzle.serializer()), it)
                             },
-                            language = monument.language?.toDbLanguage() ?: Language.ENGLISH.name
+                            language = monument.language.toEntity()
                         )
                     }
                 }
@@ -57,7 +58,7 @@ class MonumentDataSourceImpl(
     override suspend fun isEmpty(language: Language): Boolean {
         return withContext(Dispatchers.IO) {
             safeQuery(true) {
-                queries.countMonuments(language = language.name).executeAsOne() == 0L
+                queries.countMonuments(language = language.toEntity()).executeAsOne() == 0L
             }
         }
     }
@@ -71,7 +72,7 @@ class MonumentDataSourceImpl(
             countQuery = queries.countPagedMonumentsFiltered(
                 name = name ?: "",
                 type = type?.toDbValue(),
-                language = language.name
+                language = language.toEntity()
             ),
             transacter = queries,
             context = Dispatchers.IO,
@@ -79,7 +80,7 @@ class MonumentDataSourceImpl(
                 queries.findMonumentsPagedFiltered(
                     name = name ?: "",
                     type = type?.toDbValue(),
-                    language = language.name,
+                    language = language.toEntity(),
                     limit = limit,
                     offset = offset
                 )
@@ -88,7 +89,7 @@ class MonumentDataSourceImpl(
     }
 
     override fun getMonumentBySlug(slug: String, language: Language): Flow<Monument?> {
-        return queries.getMonumentBySlug(slug = slug, language = language.name)
+        return queries.getMonumentBySlug(slug = slug, language = language.toEntity())
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
             .map { it?.toMonument(json) }
@@ -108,11 +109,4 @@ class MonumentDataSourceImpl(
         MonumentType.LARGE -> "Large"
     }
 
-    private fun String.toDbLanguage(): String = when (lowercase()) {
-        "pl" -> Language.POLISH.name
-        "de" -> Language.GERMAN.name
-        "fr" -> Language.FRENCH.name
-        "ru" -> Language.RUSSIAN.name
-        else -> Language.ENGLISH.name
-    }
 }

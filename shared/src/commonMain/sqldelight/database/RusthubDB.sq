@@ -7,6 +7,7 @@ import pl.cuyer.rusthub.data.local.model.ServerFilterEntity;
 import pl.cuyer.rusthub.data.local.model.ServerStatusEntity;
 import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity;
 import pl.cuyer.rusthub.data.local.model.WipeTypeEntity;
+import pl.cuyer.rusthub.data.local.model.LanguageEntity;
 
 -- =============================================================================
 -- Table Definition
@@ -661,7 +662,7 @@ CREATE TABLE itemEntity (
     categories TEXT,
     short_name TEXT,
     icon_url TEXT,
-    language TEXT NOT NULL,
+    language TEXT NOT NULL AS LanguageEntity,
     looting TEXT,
     loot_contents TEXT,
     where_to_find TEXT,
@@ -790,7 +791,7 @@ CREATE TABLE monumentEntity (
     usable_entities TEXT,
     mining TEXT,
     puzzles TEXT,
-    language TEXT NOT NULL,
+    language TEXT NOT NULL AS LanguageEntity,
     PRIMARY KEY(slug, language)
 );
 

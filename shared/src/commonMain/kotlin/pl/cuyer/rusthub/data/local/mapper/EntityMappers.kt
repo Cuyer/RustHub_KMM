@@ -21,6 +21,7 @@ import pl.cuyer.rusthub.data.local.model.FlagEntity
 import pl.cuyer.rusthub.data.local.model.MapsEntity
 import pl.cuyer.rusthub.data.local.model.OrderEntity
 import pl.cuyer.rusthub.data.local.model.RegionEntity
+import pl.cuyer.rusthub.data.local.model.LanguageEntity
 import pl.cuyer.rusthub.data.local.model.ServerFilterEntity
 import pl.cuyer.rusthub.data.local.model.ServerStatusEntity
 import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity
@@ -91,6 +92,9 @@ fun ServerFilter?.toEntity(): ServerFilterEntity? = this?.let { ServerFilterEnti
 
 fun WipeTypeEntity?.toDomain(): WipeType? = this?.let { WipeType.valueOf(it.name) }
 fun WipeType?.toEntity(): WipeTypeEntity? = this?.let { WipeTypeEntity.valueOf(it.name) }
+
+fun LanguageEntity?.toDomain(): Language? = this?.let { Language.valueOf(it.name) }
+fun Language?.toEntity(): LanguageEntity? = this?.let { LanguageEntity.valueOf(it.name) }
 
 fun ItemSearchQueryEntity.toDomain(): SearchQuery {
     return SearchQuery(
@@ -229,7 +233,7 @@ fun ItemEntity.toRustItem(json: Json): RustItem {
         },
         shortName = short_name,
         iconUrl = icon_url,
-        language = language?.let { Language.valueOf(it) },
+        language = language.toDomain(),
         looting = looting?.let {
             json.decodeFromString(ListSerializer(Looting.serializer()), it)
         },
@@ -262,7 +266,7 @@ fun MonumentEntity.toMonument(json: Json): Monument {
         puzzles = puzzles?.let {
             json.decodeFromString(ListSerializer(MonumentPuzzle.serializer()), it)
         },
-        language = language,
+        language = language.toDomain(),
     )
 }
 

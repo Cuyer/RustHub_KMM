@@ -2,7 +2,6 @@ package pl.cuyer.rusthub.android.designsystem
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,24 +39,14 @@ fun MonumentListItemShimmer(modifier: Modifier = Modifier) {
                     .shimmer()
                     .clearAndSetSemantics {}
             )
-            Column(verticalArrangement = Arrangement.spacedBy(spacing.xxsmall)) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.6f)
-                        .height(20.dp)
-                        .clip(MaterialTheme.shapes.extraSmall)
-                        .shimmer()
-                        .clearAndSetSemantics {}
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.8f)
-                        .height(16.dp)
-                        .clip(MaterialTheme.shapes.extraSmall)
-                        .shimmer()
-                        .clearAndSetSemantics {}
-                )
-            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.6f)
+                    .height(20.dp)
+                    .clip(MaterialTheme.shapes.extraSmall)
+                    .shimmer()
+                    .clearAndSetSemantics {}
+            )
         }
     }
 }
