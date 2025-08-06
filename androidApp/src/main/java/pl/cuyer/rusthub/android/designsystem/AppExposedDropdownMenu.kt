@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -31,7 +30,6 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -43,15 +41,16 @@ import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
 
 @OptIn(ExperimentalMaterial3Api::class)
-
 @Composable
 fun AppExposedDropdownMenu(
     label: String,
     options: List<String>,
     selectedValue: Int?,
-    onSelectionChanged: (Int) -> Unit,
+    onSelectionChanged: (Int?) -> Unit,
     modifier: Modifier = Modifier,
-    maxVisibleItems: Int = 6
+    maxVisibleItems: Int = 6,
+    allowEmptySelection: Boolean = false,
+    enabledForIndex: (Int) -> Boolean = { true }
 ) {
     var expanded by remember { mutableStateOf(false) }
     val textFieldState = rememberTextFieldState(options.getOrElse(selectedValue ?: -1) { "" })
@@ -59,7 +58,6 @@ fun AppExposedDropdownMenu(
     val flagsByOption = remember(options) { options.associateWith { Flag.fromDisplayName(it) } }
     var textFieldWidth by remember { mutableIntStateOf(0) }
 
-    // Set text on selection change
     LaunchedEffect(selectedValue) {
         textFieldState.setTextAndPlaceCursorAtEnd(options.getOrElse(selectedValue ?: -1) { "" })
     }
@@ -94,15 +92,26 @@ fun AppExposedDropdownMenu(
             modifier = Modifier
                 .width(with(LocalResources.current.displayMetrics) { textFieldWidth / density }.dp)
         ) {
-            // Calculate dropdown height
             val visibleItems = options.size.coerceAtMost(maxVisibleItems)
             val dropdownHeight = visibleItems * 48.dp
-            // Menu with LazyColumn
             LazyColumn(
                 modifier = Modifier
                     .width(with(LocalResources.current.displayMetrics) { textFieldWidth / density }.dp)
                     .height(dropdownHeight)
             ) {
+                if (allowEmptySelection) {
+                    item(key = "empty") {
+                        DropdownMenuItem(
+                            text = { Text("", style = MaterialTheme.typography.bodyLarge) },
+                            onClick = {
+                                textFieldState.setTextAndPlaceCursorAtEnd("")
+                                expanded = false
+                                onSelectionChanged(null)
+                            },
+                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                        )
+                    }
+                }
                 itemsIndexed(
                     items = options,
                     key = { index, option -> "${option}_$index" }
@@ -114,6 +123,7 @@ fun AppExposedDropdownMenu(
                             expanded = false
                             onSelectionChanged(index)
                         },
+                        enabled = enabledForIndex(index),
                         contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                         trailingIcon = {
                             flagsByOption[option]?.let { flag ->
