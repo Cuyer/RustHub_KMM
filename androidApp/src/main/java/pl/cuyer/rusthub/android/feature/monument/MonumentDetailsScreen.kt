@@ -43,11 +43,21 @@ fun MonumentDetailsScreen(
     val pages = remember(state.value.monument) {
         state.value.monument?.let { monument ->
             buildList {
-                monument.attributes?.let { add(PageData.Attributes(it)) }
-                monument.spawns?.let { add(PageData.Spawns(it)) }
-                monument.usableEntities?.let { add(PageData.UsableEntities(it)) }
-                monument.mining?.let { add(PageData.Mining(it)) }
-                monument.puzzles?.let { add(PageData.Puzzles(it)) }
+                monument.attributes
+                    ?.takeIf { it.hasContent() }
+                    ?.let { add(PageData.Attributes(it)) }
+                monument.spawns
+                    ?.takeIf { it.hasContent() }
+                    ?.let { add(PageData.Spawns(it)) }
+                monument.usableEntities
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.let { add(PageData.UsableEntities(it)) }
+                monument.mining
+                    ?.takeIf { it.hasContent() }
+                    ?.let { add(PageData.Mining(it)) }
+                monument.puzzles
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.let { add(PageData.Puzzles(it)) }
             }
         } ?: emptyList()
     }
@@ -145,4 +155,29 @@ private sealed class PageData(val page: DetailsPage) {
     data class UsableEntities(val entities: List<UsableEntity>) : PageData(DetailsPage.USABLE_ENTITIES)
     data class Mining(val mining: pl.cuyer.rusthub.domain.model.Mining) : PageData(DetailsPage.MINING)
     data class Puzzles(val puzzles: List<MonumentPuzzle>) : PageData(DetailsPage.PUZZLES)
+}
+
+private fun MonumentAttributes.hasContent(): Boolean {
+    return listOf(
+        type,
+        isSafezone,
+        hasTunnelEntrance,
+        hasChinookDropZone,
+        allowsPatrolHeliCrash,
+        recyclers,
+        barrels,
+        crates,
+        scientists,
+        medianRadiationLevel,
+        maxRadiationLevel,
+        hasRadiation
+    ).any { it != null }
+}
+
+private fun MonumentSpawns.hasContent(): Boolean {
+    return listOfNotNull(container, collectable, scientist, vehicle).any { it.isNotEmpty() }
+}
+
+private fun pl.cuyer.rusthub.domain.model.Mining.hasContent(): Boolean {
+    return item != null || !productionItems.isNullOrEmpty() || timePerFuelSeconds != null
 }
