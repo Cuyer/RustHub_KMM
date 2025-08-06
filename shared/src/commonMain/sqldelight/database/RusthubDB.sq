@@ -716,7 +716,7 @@ INSERT INTO itemEntity (
     :tableRecipe,
     :recycling,
     :raiding
-) ON CONFLICT(id, language) DO UPDATE SET
+) ON CONFLICT(id) DO UPDATE SET
     slug = excluded.slug,
     url = excluded.url,
     name = excluded.name,
@@ -786,19 +786,21 @@ DELETE FROM itemSyncEntity;
 CREATE TABLE monumentEntity (
     slug TEXT NOT NULL,
     name TEXT,
+    iconUrl TEXT,
     attributes TEXT,
     spawns TEXT,
     usable_entities TEXT,
     mining TEXT,
     puzzles TEXT,
     language TEXT AS LanguageEntity,
-    PRIMARY KEY(slug, language)
+    PRIMARY KEY(slug)
 );
 
 upsertMonument:
 INSERT INTO monumentEntity (
     slug,
     name,
+    iconUrl,
     attributes,
     spawns,
     usable_entities,
@@ -808,6 +810,7 @@ INSERT INTO monumentEntity (
 ) VALUES (
     :slug,
     :name,
+    :iconUrl,
     :attributes,
     :spawns,
     :usableEntities,
@@ -817,6 +820,7 @@ INSERT INTO monumentEntity (
 ) ON CONFLICT(slug, language) DO UPDATE SET
     name = excluded.name,
     attributes = excluded.attributes,
+    iconUrl = excluded.iconUrl,
     spawns = excluded.spawns,
     usable_entities = excluded.usable_entities,
     mining = excluded.mining,
