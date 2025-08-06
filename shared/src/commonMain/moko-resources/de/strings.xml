@@ -450,7 +450,7 @@
     <string name="extra_chance_output">Zusätzliche Chance Ausgabe</string>
     <string name="multiplier_format">x%1$d</string>
     <string name="percentage_format">%1$d%%</string>
-    <string name="time_per_fuel">Time per fuel: %1$d s</string>
+    <string name="time_per_fuel">Zeit pro Brennstoffeinheit: %1$d s</string>
     <string name="raw_material_cost">Rohmaterialkosten</string>
     <string name="using_mixing_table">Mit Mischtisch x%1$d</string>
     <string name="time_to_raid">Raidzeit: %1$s</string>
