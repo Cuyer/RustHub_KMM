@@ -20,9 +20,9 @@ class GetPagedMonumentsUseCase(
     /**
      * Invokes the use case to retrieve a paginated flow of `Monument` objects.
      *
-     * @param query The optional search query to filter items by name.
-     * @param category The optional category to filter items.
-     * @param language The language to filter items. If Polish is provided, it is replaced with English.
+     * @param query The optional search query to filter monuments by name.
+     * @param type The optional type to monuments items.
+     * @param language The language to filter monuments. If Polish is provided, it is replaced with English.
      * @return A `Flow` emitting paginated data of `Monument` objects.
      */
 
