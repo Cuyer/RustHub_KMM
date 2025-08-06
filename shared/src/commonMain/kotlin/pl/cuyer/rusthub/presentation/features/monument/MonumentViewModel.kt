@@ -86,12 +86,6 @@ class MonumentViewModel(
                 _state.update { it.copy(selectedType = action.type) }
             }
             MonumentAction.OnRefresh -> refreshMonuments()
-            is MonumentAction.OnError -> {
-                val message = action.exception.toUserMessage(stringProvider)
-                coroutineScope.launch {
-                    snackbarController.sendEvent(SnackbarEvent(message = message))
-                }
-            }
         }
     }
 
