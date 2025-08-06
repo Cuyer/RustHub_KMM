@@ -1,6 +1,5 @@
 package pl.cuyer.rusthub.android.feature.monument
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -119,12 +118,10 @@ fun MonumentDetailsScreen(
                             modifier = Modifier.fillMaxSize()
                         )
 
-                        is PageData.Puzzles -> Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(text = stringResource(SharedRes.strings.coming_soon))
-                        }
+                        is PageData.Puzzles -> MonumentPuzzlesPage(
+                            puzzles = data.puzzles,
+                            modifier = Modifier.fillMaxSize()
+                        )
                     }
                 }
             }
