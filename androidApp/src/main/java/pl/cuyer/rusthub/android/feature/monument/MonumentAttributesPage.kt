@@ -63,6 +63,7 @@ private fun MonumentAttributesCard(
             )
         ) {
             DetailsRow(
+                maxItemsInColumn = 5,
                 details = {
                     buildMap {
                         attributes.type?.let { type ->

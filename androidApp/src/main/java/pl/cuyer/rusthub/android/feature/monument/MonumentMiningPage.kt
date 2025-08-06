@@ -58,8 +58,7 @@ fun MonumentMiningPage(
                                 imageUrl = item.image ?: "",
                                 text = item.amount?.let { amount ->
                                     stringResource(SharedRes.strings.multiplier_format, amount)
-                                },
-                                tooltipText = item.name
+                                }
                             )
                             Column(verticalArrangement = Arrangement.spacedBy(spacing.xxsmall)) {
                                 Text(
