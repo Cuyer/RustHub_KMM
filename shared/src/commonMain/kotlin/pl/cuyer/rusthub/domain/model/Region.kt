@@ -10,7 +10,6 @@ enum class Region {
     EUROPE,
     AMERICA,
     AFRICA,
-    SOUTH_AMERICA,
     OCEANIA,
     AUSTRALIA;
 
@@ -26,7 +25,6 @@ fun Region.displayName(stringProvider: StringProvider): String =
         Region.EUROPE -> stringProvider.get(SharedRes.strings.europe)
         Region.AMERICA -> stringProvider.get(SharedRes.strings.america)
         Region.AFRICA -> stringProvider.get(SharedRes.strings.africa)
-        Region.SOUTH_AMERICA -> stringProvider.get(SharedRes.strings.south_america)
         Region.OCEANIA -> stringProvider.get(SharedRes.strings.oceania)
         Region.AUSTRALIA -> stringProvider.get(SharedRes.strings.australia)
     }

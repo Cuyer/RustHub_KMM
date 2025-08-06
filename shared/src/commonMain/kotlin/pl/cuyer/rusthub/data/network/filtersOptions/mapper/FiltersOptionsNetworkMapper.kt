@@ -65,7 +65,6 @@ fun RegionDto.toDomain(): Region {
         RegionDto.EUROPE -> Region.EUROPE
         RegionDto.NORTH_AMERICA -> Region.AMERICA
         RegionDto.AFRICA -> Region.AFRICA
-        RegionDto.SOUTH_AMERICA -> Region.SOUTH_AMERICA
         RegionDto.OCEANIA -> Region.OCEANIA
         RegionDto.AUSTRALIA -> Region.AUSTRALIA
     }
