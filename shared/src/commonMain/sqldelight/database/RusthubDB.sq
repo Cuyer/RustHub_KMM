@@ -759,3 +759,68 @@ SELECT * FROM itemSyncEntity WHERE id = :id;
 
 clearItemSync:
 DELETE FROM itemSyncEntity;
+
+CREATE TABLE monumentEntity (
+    slug TEXT NOT NULL,
+    name TEXT,
+    attributes TEXT,
+    spawns TEXT,
+    usable_entities TEXT,
+    mining TEXT,
+    puzzles TEXT,
+    language TEXT NOT NULL,
+    PRIMARY KEY(slug, language)
+);
+
+upsertMonument:
+INSERT INTO monumentEntity (
+    slug,
+    name,
+    attributes,
+    spawns,
+    usable_entities,
+    mining,
+    puzzles,
+    language
+) VALUES (
+    :slug,
+    :name,
+    :attributes,
+    :spawns,
+    :usableEntities,
+    :mining,
+    :puzzles,
+    :language
+) ON CONFLICT(slug, language) DO UPDATE SET
+    name = excluded.name,
+    attributes = excluded.attributes,
+    spawns = excluded.spawns,
+    usable_entities = excluded.usable_entities,
+    mining = excluded.mining,
+    puzzles = excluded.puzzles;
+
+getMonuments:
+SELECT * FROM monumentEntity WHERE language = :language;
+
+countMonuments:
+SELECT COUNT(*) FROM monumentEntity WHERE language = :language;
+
+deleteMonuments:
+DELETE FROM monumentEntity;
+
+CREATE TABLE monumentSyncEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    sync_state TEXT NOT NULL
+);
+
+upsertMonumentSync:
+INSERT INTO monumentSyncEntity (id, sync_state)
+VALUES (:id, :sync_state)
+ON CONFLICT(id) DO UPDATE SET
+    sync_state = excluded.sync_state;
+
+getMonumentSync:
+SELECT * FROM monumentSyncEntity WHERE id = :id;
+
+clearMonumentSync:
+DELETE FROM monumentSyncEntity;

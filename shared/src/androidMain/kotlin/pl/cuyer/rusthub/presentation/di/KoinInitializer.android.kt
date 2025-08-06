@@ -62,6 +62,9 @@ import org.koin.android.ext.koin.androidApplication
 import pl.cuyer.rusthub.util.EmailSender
 import pl.cuyer.rusthub.util.UrlOpener
 import pl.cuyer.rusthub.util.RemoteConfig
+import pl.cuyer.rusthub.util.MonumentsScheduler
+import pl.cuyer.rusthub.data.local.monument.MonumentSyncDataSourceImpl
+import pl.cuyer.rusthub.domain.repository.monument.local.MonumentSyncDataSource
 
 actual fun platformModule(passphrase: String): Module = module {
     single<RustHubDatabase>(createdAtStart = true) {
@@ -85,10 +88,12 @@ actual fun platformModule(passphrase: String): Module = module {
     single { SubscriptionSyncScheduler(get()) }
     single { MessagingTokenScheduler(get()) }
     single { ItemsScheduler(get()) }
+    single { MonumentsScheduler(get()) }
     single { PurchaseSyncScheduler(get()) }
     single { UserSyncScheduler(get()) }
     single { BillingRepositoryImpl(androidContext()) } bind BillingRepository::class
     single { ItemSyncDataSourceImpl(get()) } bind ItemSyncDataSource::class
+    single { MonumentSyncDataSourceImpl(get()) } bind MonumentSyncDataSource::class
     single { PurchaseSyncDataSourceImpl(get()) } bind PurchaseSyncDataSource::class
     single { InAppUpdateManager(get(), get(), get()) }
     single { ReviewRequester(get()) }

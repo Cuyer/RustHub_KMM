@@ -1,0 +1,30 @@
+CREATE TABLE monumentEntity (
+    slug TEXT NOT NULL,
+    name TEXT,
+    attributes TEXT,
+    spawns TEXT,
+    usable_entities TEXT,
+    mining TEXT,
+    puzzles TEXT,
+    language TEXT NOT NULL,
+    PRIMARY KEY(slug, language)
+);
+
+CREATE TABLE monumentSyncEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    sync_state TEXT NOT NULL
+);
+
+INSERT INTO monumentEntity (slug, name, attributes, language) VALUES (
+    'abandoned-cabins',
+    'Abandoned Cabins',
+    '{"type":"Small","isSafezone":false}',
+    'en'
+);
+
+INSERT INTO monumentEntity (slug, name, attributes, language) VALUES (
+    'bandit-camp',
+    'Bandit Camp',
+    '{"type":"Safe Zones","isSafezone":true}',
+    'en'
+);
