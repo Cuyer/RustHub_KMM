@@ -2,20 +2,38 @@ package pl.cuyer.rusthub.android.feature.monument
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.PrimaryScrollableTabRow
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
+import pl.cuyer.rusthub.domain.model.MonumentAttributes
+import pl.cuyer.rusthub.domain.model.MonumentPuzzle
+import pl.cuyer.rusthub.domain.model.MonumentSpawns
+import pl.cuyer.rusthub.domain.model.Mining
+import pl.cuyer.rusthub.domain.model.UsableEntity
 import pl.cuyer.rusthub.presentation.features.monument.MonumentDetailsState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,7 +42,17 @@ fun MonumentDetailsScreen(
     state: State<MonumentDetailsState>,
     onNavigateUp: () -> Unit,
 ) {
-    val pages = state.value.monumentPages
+    val pages = remember(state.value.monument) {
+        state.value.monument?.let { monument ->
+            buildList {
+                monument.attributes?.let { add(PageData.Attributes(it)) }
+                monument.spawns?.let { add(PageData.Spawns(it)) }
+                monument.usableEntities?.let { add(PageData.UsableEntities(it)) }
+                monument.mining?.let { add(PageData.Mining(it)) }
+                monument.puzzles?.let { add(PageData.Puzzles(it)) }
+            }
+        } ?: emptyList()
+    }
     val pagerState = rememberPagerState { pages.size }
     val scope = rememberCoroutineScope()
 
@@ -52,36 +80,35 @@ fun MonumentDetailsScreen(
         Column(
             modifier = Modifier
                 .padding(inner)
+                .consumeWindowInsets(inner)
                 .fillMaxSize()
         ) {
             if (pages.isNotEmpty()) {
                 PrimaryScrollableTabRow(selectedTabIndex = pagerState.currentPage) {
                     pages.forEachIndexed { index, page ->
-                        Tab(
-                            selected = pagerState.currentPage == index,
-                            onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
-                            text = { Text(stringResource(page.title)) }
-                        )
+                        key(page.page.title) {
+                            Tab(
+                                selected = pagerState.currentPage == index,
+                                onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
+                                text = { Text(stringResource(page.page.title)) }
+                            )
+                        }
                     }
                 }
                 HorizontalPager(
                     modifier = Modifier.fillMaxSize(),
                     state = pagerState
                 ) { page ->
-                    when (pages[page]) {
-                        MonumentPage.Spawns -> {
-                            state.value.monument?.spawns?.let { spawns ->
-                                MonumentSpawnsPage(
-                                    spawns = spawns,
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                            } ?: Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(text = stringResource(SharedRes.strings.coming_soon))
-                            }
-                        }
+                    when (val data = pages[page]) {
+                        is PageData.Attributes -> MonumentAttributesPage(
+                            attributes = data.attributes,
+                            modifier = Modifier.fillMaxSize()
+                        )
+
+                        is PageData.Spawns -> MonumentSpawnsPage(
+                            spawns = data.spawns,
+                            modifier = Modifier.fillMaxSize()
+                        )
 
                         else -> Box(
                             modifier = Modifier.fillMaxSize(),
@@ -96,20 +123,20 @@ fun MonumentDetailsScreen(
     }
 }
 
-private val MonumentDetailsState.monumentPages: List<MonumentPage>
-    get() = buildList {
-        monument?.attributes?.let { add(MonumentPage.Attributes) }
-        monument?.spawns?.let { add(MonumentPage.Spawns) }
-        monument?.usableEntities?.let { add(MonumentPage.UsableEntities) }
-        monument?.mining?.let { add(MonumentPage.Mining) }
-        monument?.puzzles?.let { add(MonumentPage.Puzzles) }
-    }
+@Immutable
+private enum class DetailsPage(val title: dev.icerock.moko.resources.StringResource) {
+    ATTRIBUTES(SharedRes.strings.attributes),
+    SPAWNS(SharedRes.strings.spawns),
+    USABLE_ENTITIES(SharedRes.strings.usable_entities),
+    MINING(SharedRes.strings.mining),
+    PUZZLES(SharedRes.strings.puzzles)
+}
 
-private sealed interface MonumentPage {
-    val title: dev.icerock.moko.resources.StringResource
-    data object Attributes : MonumentPage { override val title = SharedRes.strings.attributes }
-    data object Spawns : MonumentPage { override val title = SharedRes.strings.spawns }
-    data object UsableEntities : MonumentPage { override val title = SharedRes.strings.usable_entities }
-    data object Mining : MonumentPage { override val title = SharedRes.strings.mining }
-    data object Puzzles : MonumentPage { override val title = SharedRes.strings.puzzles }
+@Immutable
+private sealed class PageData(val page: DetailsPage) {
+    data class Attributes(val attributes: MonumentAttributes) : PageData(DetailsPage.ATTRIBUTES)
+    data class Spawns(val spawns: MonumentSpawns) : PageData(DetailsPage.SPAWNS)
+    data class UsableEntities(val entities: List<UsableEntity>) : PageData(DetailsPage.USABLE_ENTITIES)
+    data class Mining(val mining: Mining) : PageData(DetailsPage.MINING)
+    data class Puzzles(val puzzles: List<MonumentPuzzle>) : PageData(DetailsPage.PUZZLES)
 }
