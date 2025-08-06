@@ -643,6 +643,7 @@ CREATE TABLE itemEntity (
     loot_contents TEXT,
     where_to_find TEXT,
     crafting TEXT,
+    table_recipe TEXT,
     recycling TEXT,
     raiding TEXT,
     PRIMARY KEY(id, language)
@@ -666,6 +667,7 @@ INSERT INTO itemEntity (
     loot_contents,
     where_to_find,
     crafting,
+    table_recipe,
     recycling,
     raiding
 ) VALUES (
@@ -685,6 +687,7 @@ INSERT INTO itemEntity (
     :lootContents,
     :whereToFind,
     :crafting,
+    :tableRecipe,
     :recycling,
     :raiding
 ) ON CONFLICT(id, language) DO UPDATE SET
@@ -703,6 +706,7 @@ INSERT INTO itemEntity (
     loot_contents = excluded.loot_contents,
     where_to_find = excluded.where_to_find,
     crafting = excluded.crafting,
+    table_recipe = excluded.table_recipe,
     recycling = excluded.recycling,
     raiding = excluded.raiding;
 
