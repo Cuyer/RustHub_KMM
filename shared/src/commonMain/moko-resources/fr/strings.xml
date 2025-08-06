@@ -449,7 +449,7 @@
     <string name="extra_chance_output">Sortie avec chance supplémentaire</string>
     <string name="multiplier_format">x%1$d</string>
     <string name="percentage_format">%1$d%%</string>
-    <string name="time_per_fuel">Time per fuel: %1$d s</string>
+    <string name="time_per_fuel">Temps par carburant : %1$d s</string>
     <string name="raw_material_cost">Coût des matières premières</string>
     <string name="using_mixing_table">Utilisation du table de mixage x%1$d</string>
     <string name="time_to_raid">Temps de raid : %1$s</string>
