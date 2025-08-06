@@ -1,3 +1,5 @@
+import pl.cuyer.rusthub.data.local.model.LanguageEntity;
+
 CREATE TABLE monumentEntity (
     slug TEXT NOT NULL,
     name TEXT,
@@ -6,7 +8,7 @@ CREATE TABLE monumentEntity (
     usable_entities TEXT,
     mining TEXT,
     puzzles TEXT,
-    language TEXT NOT NULL,
+    language TEXT AS LanguageEntity,
     PRIMARY KEY(slug, language)
 );
 

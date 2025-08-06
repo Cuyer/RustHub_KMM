@@ -662,7 +662,7 @@ CREATE TABLE itemEntity (
     categories TEXT,
     short_name TEXT,
     icon_url TEXT,
-    language TEXT NOT NULL AS LanguageEntity,
+    language TEXT AS LanguageEntity,
     looting TEXT,
     loot_contents TEXT,
     where_to_find TEXT,
@@ -791,7 +791,7 @@ CREATE TABLE monumentEntity (
     usable_entities TEXT,
     mining TEXT,
     puzzles TEXT,
-    language TEXT NOT NULL AS LanguageEntity,
+    language TEXT AS LanguageEntity,
     PRIMARY KEY(slug, language)
 );
 

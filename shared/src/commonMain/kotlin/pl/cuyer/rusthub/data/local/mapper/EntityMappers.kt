@@ -93,7 +93,7 @@ fun ServerFilter?.toEntity(): ServerFilterEntity? = this?.let { ServerFilterEnti
 fun WipeTypeEntity?.toDomain(): WipeType? = this?.let { WipeType.valueOf(it.name) }
 fun WipeType?.toEntity(): WipeTypeEntity? = this?.let { WipeTypeEntity.valueOf(it.name) }
 
-fun LanguageEntity?.toDomain(): Language? = this?.let { Language.valueOf(it.name) }
+fun LanguageEntity?.toDomain(): Language = this?.let { Language.valueOf(it.name) } ?: Language.ENGLISH
 fun Language?.toEntity(): LanguageEntity? = this?.let { LanguageEntity.valueOf(it.name) }
 
 fun ItemSearchQueryEntity.toDomain(): SearchQuery {
