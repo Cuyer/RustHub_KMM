@@ -42,6 +42,8 @@ import pl.cuyer.rusthub.domain.model.LootContent
 import pl.cuyer.rusthub.domain.model.WhereToFind
 import pl.cuyer.rusthub.domain.model.TableRecipe
 import pl.cuyer.rusthub.domain.model.TableRecipeIngredient
+import pl.cuyer.rusthub.domain.model.ItemAttribute
+import pl.cuyer.rusthub.domain.model.ItemAttributeType
 
 fun RustItemDto.toDomain(): RustItem {
     return RustItem(
@@ -52,6 +54,9 @@ fun RustItemDto.toDomain(): RustItem {
         image = image,
         stackSize = stackSize,
         health = health,
+        attributes = attributes?.mapNotNull { (key, value) ->
+            ItemAttributeType.fromKey(key)?.let { ItemAttribute(it, value) }
+        },
         categories = categories?.map { it.toDomain() },
         looting = looting?.map { it.toDomain() },
         lootContents = lootContents?.map { it.toDomain() },

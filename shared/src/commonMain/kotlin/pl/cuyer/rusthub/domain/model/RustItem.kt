@@ -22,6 +22,7 @@ data class RustItem(
     val image: String? = null,
     val stackSize: Int? = null,
     val health: Int? = null,
+    val attributes: List<ItemAttribute>? = null,
     val categories: List<ItemCategory>? = null,
     val looting: List<Looting>? = null,
     val lootContents: List<LootContent>? = null,

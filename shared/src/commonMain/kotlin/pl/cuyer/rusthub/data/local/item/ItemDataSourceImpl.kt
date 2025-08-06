@@ -26,6 +26,7 @@ import pl.cuyer.rusthub.domain.model.Raiding
 import pl.cuyer.rusthub.domain.model.Recycling
 import pl.cuyer.rusthub.domain.model.RustItem
 import pl.cuyer.rusthub.domain.model.WhereToFind
+import pl.cuyer.rusthub.domain.model.ItemAttribute
 import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 import pl.cuyer.rusthub.util.CrashReporter
 
@@ -49,6 +50,9 @@ class ItemDataSourceImpl(
                                 image = item.image,
                                 stackSize = item.stackSize?.toLong(),
                                 health = item.health?.toLong(),
+                                attributes = item.attributes?.let {
+                                    json.encodeToString(ListSerializer(ItemAttribute.serializer()), it)
+                                },
                                 categories = item.categories?.joinToString(",") { it.name },
                                 shortName = item.shortName,
                                 iconUrl = item.iconUrl,

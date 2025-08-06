@@ -50,6 +50,7 @@ import pl.cuyer.rusthub.domain.model.Crafting
 import pl.cuyer.rusthub.domain.model.TableRecipe
 import pl.cuyer.rusthub.domain.model.Recycling
 import pl.cuyer.rusthub.domain.model.Raiding
+import pl.cuyer.rusthub.domain.model.ItemAttribute
 import kotlin.time.Instant
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
@@ -204,6 +205,9 @@ fun ItemEntity.toRustItem(json: Json): RustItem {
         image = image,
         stackSize = stack_size?.toInt(),
         health = health?.toInt(),
+        attributes = attributes?.let {
+            json.decodeFromString(ListSerializer(ItemAttribute.serializer()), it)
+        },
         categories = categories?.split(",")?.mapNotNull {
             runCatching { ItemCategory.valueOf(it) }.getOrNull()
         },
