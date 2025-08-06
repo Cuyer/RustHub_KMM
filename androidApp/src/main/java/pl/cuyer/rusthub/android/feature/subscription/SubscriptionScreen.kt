@@ -33,7 +33,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -484,14 +483,10 @@ private fun PlanSelector(
     products: Map<SubscriptionPlan, BillingProduct>,
     currentPlan: SubscriptionPlan?
 ) {
-    Row(
-        modifier = Modifier
-            .height(IntrinsicSize.Max)
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(
-            spacing.small,
-            Alignment.CenterHorizontally
-        )
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(spacing.small),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val lifetimeOwned = currentPlan == SubscriptionPlan.LIFETIME
         SubscriptionPlan.entries.forEach { plan ->
@@ -516,18 +511,17 @@ private fun PlanSelector(
                     }
                     .then(
                         if (isSelected) Modifier
-                            .fillMaxHeight()
+                            .fillMaxWidth()
                             .border(
                                 width = 1.dp,
                                 color = MaterialTheme.colorScheme.primary,
                                 shape = CardDefaults.elevatedShape
-                            ) else Modifier.fillMaxHeight()
+                            ) else Modifier.fillMaxWidth()
                     )
             ) {
                 Column(
                     modifier = Modifier
                         .padding(spacing.medium)
-                        .widthIn(min = 60.dp, max = 80.dp)
                         .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
@@ -539,7 +533,7 @@ private fun PlanSelector(
                     Text(stringResource(plan.label), style = MaterialTheme.typography.titleMedium)
                     Text(
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxWidth(),
                         text = products[plan]?.price ?: stringResource(plan.billed),
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Thin)
                     )
