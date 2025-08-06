@@ -385,6 +385,7 @@
     <string name="no_servers_available_offline">No servers available offline.</string>
     <string name="no_servers_available">No servers available.</string>
     <string name="no_items_available">No items available.</string>
+    <string name="no_monuments_available">No monuments available.</string>
     <string name="error_timeout">Request timed out. Please try again.</string>
     <string name="error_service_unavailable">Service temporarily unavailable. Try again later.</string>
     <string name="error_bad_request">Bad request.</string>

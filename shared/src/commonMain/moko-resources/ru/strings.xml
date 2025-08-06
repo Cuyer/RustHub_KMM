@@ -383,6 +383,7 @@
     <string name="no_servers_available_offline">Нет серверов в автономном режиме.</string>
     <string name="no_servers_available">Нет доступных серверов.</string>
     <string name="no_items_available">Нет доступных предметов.</string>
+    <string name="no_monuments_available">Нет доступных монументов.</string>
     <string name="error_timeout">Превышено время ожидания. Попробуйте ещё раз.</string>
     <string name="error_service_unavailable">Сервис временно недоступен. Попробуйте позже.</string>
     <string name="error_bad_request">Неверный запрос.</string>
