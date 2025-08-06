@@ -46,7 +46,7 @@ class MonumentDataSourceImpl(
                             puzzles = monument.puzzles?.let {
                                 json.encodeToString(ListSerializer(MonumentPuzzle.serializer()), it)
                             },
-                            language = monument.language ?: Language.ENGLISH.name
+                            language = monument.language?.toDbLanguage() ?: Language.ENGLISH.name
                         )
                     }
                 }
@@ -106,5 +106,13 @@ class MonumentDataSourceImpl(
         MonumentType.ROADSIDE -> "Roadside"
         MonumentType.OFFSHORE -> "Offshore"
         MonumentType.LARGE -> "Large"
+    }
+
+    private fun String.toDbLanguage(): String = when (lowercase()) {
+        "pl" -> Language.POLISH.name
+        "de" -> Language.GERMAN.name
+        "fr" -> Language.FRENCH.name
+        "ru" -> Language.RUSSIAN.name
+        else -> Language.ENGLISH.name
     }
 }
