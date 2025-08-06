@@ -95,6 +95,7 @@ private fun SpawnGroupCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
+                modifier = Modifier.weight(0.8f),
                 verticalArrangement = Arrangement.spacedBy(spacing.small)
             ) {
                 group.options?.forEach { option ->
