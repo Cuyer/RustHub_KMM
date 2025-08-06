@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -74,30 +77,33 @@ private fun UsableEntityCard(
             horizontalArrangement = Arrangement.spacedBy(spacing.medium),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            SubcomposeAsyncImage(
-                modifier = Modifier.size(48.dp),
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(entity.image)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = entity.name,
-                loading = {
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .shimmer()
-                    )
-                },
-                error = {
-                    Image(
-                        painter = painterResource(
-                            getImageByFileName("ic_fallback").drawableResId
-                        ),
-                        contentDescription = entity.name,
-                        modifier = Modifier.matchParentSize()
-                    )
-                }
-            )
+            entity.image?.let {
+                SubcomposeAsyncImage(
+                    modifier = Modifier.size(48.dp),
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(it)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = entity.name,
+                    loading = {
+                        Box(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .shimmer()
+                        )
+                    },
+                    error = {
+                        Image(
+                            painter = painterResource(
+                                getImageByFileName("ic_fallback").drawableResId
+                            ),
+                            contentDescription = entity.name,
+                            modifier = Modifier.matchParentSize()
+                        )
+                    }
+                )
+            }
+
             Text(
                 modifier = Modifier.weight(1f),
                 text = entity.name.orEmpty(),
