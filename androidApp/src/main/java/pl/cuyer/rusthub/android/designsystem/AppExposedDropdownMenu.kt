@@ -48,7 +48,7 @@ fun AppExposedDropdownMenu(
     selectedValue: Int?,
     onSelectionChanged: (Int?) -> Unit,
     modifier: Modifier = Modifier,
-    maxVisibleItems: Int = 7,
+    maxVisibleItems: Int = 8,
     allowEmptySelection: Boolean = false,
     enabledForIndex: (Int) -> Boolean = { true }
 ) {
