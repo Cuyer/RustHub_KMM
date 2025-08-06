@@ -749,7 +749,7 @@ private fun RaidingContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(spacing.small)
             ) {
-                iconUrl?.let { ItemTooltipImage(imageUrl = it, size = 120) }
+                iconUrl?.let { ItemTooltipImage(imageUrl = it, size = 128) }
                 Slider(
                     state = sliderState
                 )
