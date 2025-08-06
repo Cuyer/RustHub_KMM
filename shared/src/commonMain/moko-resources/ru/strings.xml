@@ -479,4 +479,16 @@
     <string name="ore_yield">Добыча руды</string>
     <string name="scrap_yield">Добыча металлолома</string>
     <string name="rad_resistance">Сопротивление радиации</string>
+    <string name="type">Тип</string>
+    <string name="safe_zone">Безопасная зона</string>
+    <string name="tunnel_entrance">Вход в туннель</string>
+    <string name="chinook_drop_zone">Зона сброса Chinook</string>
+    <string name="patrol_heli_crash">Падение Patrol Heli</string>
+    <string name="recyclers">Ресайклеры</string>
+    <string name="barrels">Бочки</string>
+    <string name="crates">Ящики</string>
+    <string name="scientists">Учёные</string>
+    <string name="median_radiation_level">Средний уровень радиации</string>
+    <string name="max_radiation_level">Макс. уровень радиации</string>
+    <string name="radiation">Радиация</string>
 </resources>

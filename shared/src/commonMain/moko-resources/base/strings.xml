@@ -481,4 +481,16 @@
     <string name="ore_yield">Ore Yield</string>
     <string name="scrap_yield">Scrap Yield</string>
     <string name="rad_resistance">Rad. Resistance</string>
+    <string name="type">Type</string>
+    <string name="safe_zone">Safe Zone</string>
+    <string name="tunnel_entrance">Tunnel Entrance</string>
+    <string name="chinook_drop_zone">Chinook Drop Zone</string>
+    <string name="patrol_heli_crash">Patrol Heli Crash</string>
+    <string name="recyclers">Recyclers</string>
+    <string name="barrels">Barrels</string>
+    <string name="crates">Crates</string>
+    <string name="scientists">Scientists</string>
+    <string name="median_radiation_level">Median Radiation Level</string>
+    <string name="max_radiation_level">Max Radiation Level</string>
+    <string name="radiation">Radiation</string>
 </resources>

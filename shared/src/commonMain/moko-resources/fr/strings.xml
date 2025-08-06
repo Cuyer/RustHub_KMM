@@ -478,4 +478,16 @@
     <string name="ore_yield">Rendement en minerai</string>
     <string name="scrap_yield">Rendement en ferraille</string>
     <string name="rad_resistance">Résistance aux radiations</string>
+    <string name="type">Type</string>
+    <string name="safe_zone">Zone sûre</string>
+    <string name="tunnel_entrance">Entrée de tunnel</string>
+    <string name="chinook_drop_zone">Zone de largage Chinook</string>
+    <string name="patrol_heli_crash">Crash d'hélico de patrouille</string>
+    <string name="recyclers">Recycleurs</string>
+    <string name="barrels">Barils</string>
+    <string name="crates">Caisses</string>
+    <string name="scientists">Scientifiques</string>
+    <string name="median_radiation_level">Niveau médian de radiation</string>
+    <string name="max_radiation_level">Niveau max de radiation</string>
+    <string name="radiation">Radiation</string>
 </resources>

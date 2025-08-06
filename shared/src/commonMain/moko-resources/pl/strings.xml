@@ -479,4 +479,16 @@
     <string name="ore_yield">Wydajność rudy</string>
     <string name="scrap_yield">Wydajność złomu</string>
     <string name="rad_resistance">Odporność na promieniowanie</string>
+    <string name="type">Typ</string>
+    <string name="safe_zone">Bezpieczna strefa</string>
+    <string name="tunnel_entrance">Wejście do tunelu</string>
+    <string name="chinook_drop_zone">Strefa zrzutu Chinooka</string>
+    <string name="patrol_heli_crash">Patrol Heli Crash</string>
+    <string name="recyclers">Recyclery</string>
+    <string name="barrels">Beczki</string>
+    <string name="crates">Skrzynie</string>
+    <string name="scientists">Naukowcy</string>
+    <string name="median_radiation_level">Średni poziom promieniowania</string>
+    <string name="max_radiation_level">Maks. poziom promieniowania</string>
+    <string name="radiation">Promieniowanie</string>
 </resources>

@@ -479,4 +479,16 @@
     <string name="ore_yield">Erzausbeute</string>
     <string name="scrap_yield">Schrottausbeute</string>
     <string name="rad_resistance">Strahlungsresistenz</string>
+    <string name="type">Typ</string>
+    <string name="safe_zone">Sichere Zone</string>
+    <string name="tunnel_entrance">Tunneleingang</string>
+    <string name="chinook_drop_zone">Chinook-Abwurfzone</string>
+    <string name="patrol_heli_crash">Patrol-Heli-Absturz</string>
+    <string name="recyclers">Recycler</string>
+    <string name="barrels">Fässer</string>
+    <string name="crates">Kisten</string>
+    <string name="scientists">Wissenschaftler</string>
+    <string name="median_radiation_level">Mittlere Strahlenbelastung</string>
+    <string name="max_radiation_level">Maximale Strahlenbelastung</string>
+    <string name="radiation">Strahlung</string>
 </resources>
