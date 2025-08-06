@@ -441,4 +441,20 @@
     <string name="rated">Rated %1$s</string>
     <string name="error_fetching_subscription_plans">Failed to load subscription plans.</string>
     <string name="refresh">Refresh</string>
+    <string name="hydration">Hydration</string>
+    <string name="crafting_quality">Crafting Quality</string>
+    <string name="duration">Duration</string>
+    <string name="harvesting_yield">Harvesting Yield</string>
+    <string name="temperature">Temperature</string>
+    <string name="max_core_temperature">Max. Core Temperature</string>
+    <string name="calories">Calories</string>
+    <string name="health">Health</string>
+    <string name="hunter_vision">Hunter Vision</string>
+    <string name="vision_care">Vision Care</string>
+    <string name="max_hp">Max HP</string>
+    <string name="metabolism_boost">Metabolism Boost</string>
+    <string name="clotting">Clotting</string>
+    <string name="comfort">Comfort</string>
+    <string name="better_gene_chance">Better Gene Chance</string>
+    <string name="digestion_boost">Digestion Boost</string>
 </resources>

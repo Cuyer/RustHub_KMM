@@ -21,6 +21,7 @@ data class RustItemDto(
     val image: String? = null,
     @SerialName("stack_size") val stackSize: Int? = null,
     val health: Int? = null,
+    val attributes: Map<String, String>? = null,
     val categories: List<ItemCategoryDto>? = null,
     val looting: List<LootingDto>? = null,
     @SerialName("loot_contents") val lootContents: List<LootContentDto>? = null,

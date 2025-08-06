@@ -79,6 +79,8 @@ import pl.cuyer.rusthub.domain.model.Looting as LootingModel
 import pl.cuyer.rusthub.domain.model.Raiding as RaidingModel
 import pl.cuyer.rusthub.domain.model.Recycling as RecyclingModel
 import pl.cuyer.rusthub.domain.model.WhereToFind as WhereToFindModel
+import pl.cuyer.rusthub.domain.model.ItemAttribute
+import pl.cuyer.rusthub.domain.model.ItemAttributeType
 
 @Immutable
 private enum class DetailsPage(val title: StringResource) {
@@ -99,7 +101,7 @@ private sealed class PageData(val page: DetailsPage) {
     data class Contents(val contents: List<LootContent>) :
         PageData(DetailsPage.CONTENTS)
     data class Crafting(val crafting: CraftingModel) : PageData(DetailsPage.CRAFTING)
-    data class TableRecipe(val tableRecipe: TableRecipeModel) :
+    data class TableRecipe(val tableRecipe: TableRecipeModel, val attributes: List<ItemAttribute>?) :
         PageData(DetailsPage.TABLE_RECIPE)
     data class Recycling(val recycling: RecyclingModel) : PageData(DetailsPage.RECYCLING)
     data class Raiding(val raiding: List<RaidingModel>, val item: RustItem) :
@@ -124,7 +126,7 @@ fun ItemDetailsScreen(
                 item.crafting?.takeIf { it.hasContent() }
                     ?.let { add(PageData.Crafting(it)) }
                 item.tableRecipe?.takeIf { it.hasContent() }
-                    ?.let { add(PageData.TableRecipe(it)) }
+                    ?.let { add(PageData.TableRecipe(it, item.attributes)) }
                 item.recycling?.takeIf { it.hasContent() }
                     ?.let { add(PageData.Recycling(it)) }
                 item.raiding?.takeIf { it.isNotEmpty() }
@@ -272,7 +274,7 @@ private fun DetailsContent(data: PageData) {
 
         is PageData.Crafting -> CraftingContent(data.crafting)
 
-        is PageData.TableRecipe -> TableRecipeContent(data.tableRecipe)
+        is PageData.TableRecipe -> TableRecipeContent(data.tableRecipe, data.attributes)
 
         is PageData.Recycling -> RecyclingContent(data.recycling)
 
@@ -583,20 +585,22 @@ private fun TechTreeCostRow(
     }
 }
 @Composable
-private fun TableRecipeContent(tableRecipe: TableRecipeModel) {
+private fun TableRecipeContent(tableRecipe: TableRecipeModel, attributes: List<ItemAttribute>?) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
         verticalArrangement = Arrangement.spacedBy(spacing.medium)
     ) {
-        item(key = "attributes", contentType = "attributes") {
-            TableRecipeAttributesItem(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .animateItem()
-                    .padding(horizontal = spacing.xmedium),
-                recipe = tableRecipe
-            )
+        if (!attributes.isNullOrEmpty()) {
+            item(key = "attributes", contentType = "attributes") {
+                TableRecipeAttributesItem(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateItem()
+                        .padding(horizontal = spacing.xmedium),
+                    attributes = attributes
+                )
+            }
         }
         tableRecipe.ingredients?.let { ingredients ->
             item(key = "recipe", contentType = "recipe") {
@@ -609,7 +613,9 @@ private fun TableRecipeContent(tableRecipe: TableRecipeModel) {
                     ingredients = ingredients,
                     outputImage = tableRecipe.outputImage,
                     outputName = tableRecipe.outputName,
-                    outputAmount = tableRecipe.outputAmount
+                    outputAmount = tableRecipe.outputAmount,
+                    tableImage = tableRecipe.tableImage,
+                    tableName = tableRecipe.tableName
                 )
             }
         }
@@ -624,7 +630,9 @@ private fun TableRecipeContent(tableRecipe: TableRecipeModel) {
                     ingredients = totalCost,
                     outputImage = tableRecipe.outputImage,
                     outputName = tableRecipe.outputName,
-                    outputAmount = tableRecipe.outputAmount
+                    outputAmount = tableRecipe.outputAmount,
+                    tableImage = null,
+                    tableName = null
                 )
             }
         }
@@ -635,7 +643,7 @@ private fun TableRecipeContent(tableRecipe: TableRecipeModel) {
 @Composable
 private fun TableRecipeAttributesItem(
     modifier: Modifier = Modifier,
-    recipe: TableRecipeModel
+    attributes: List<ItemAttribute>,
 ) {
     ElevatedCard(shape = MaterialTheme.shapes.extraSmall, modifier = modifier) {
         Column(
@@ -644,20 +652,13 @@ private fun TableRecipeAttributesItem(
                 vertical = spacing.xxmedium
             )
         ) {
-            val table = stringResource(SharedRes.strings.table)
-            val output = stringResource(SharedRes.strings.output)
-            val amount = stringResource(SharedRes.strings.amount)
             DetailsRow(
                 details = {
                     buildMap {
-                        recipe.tableName?.let {
-                            put(table, it)
-                        }
-                        recipe.outputName?.let {
-                            put(output, it)
-                        }
-                        recipe.outputAmount?.let {
-                            put(amount, it.toString())
+                        attributes.forEach { attribute ->
+                            attribute.value?.let {
+                                put(stringResource(attribute.type.toNameRes()), it)
+                            }
                         }
                     }
                 }
@@ -674,7 +675,9 @@ private fun TableRecipeItemList(
     ingredients: List<TableRecipeIngredient>,
     outputImage: String?,
     outputName: String?,
-    outputAmount: Int?
+    outputAmount: Int?,
+    tableImage: String?,
+    tableName: String?
 ) {
     ElevatedCard(shape = MaterialTheme.shapes.extraSmall, modifier = modifier) {
         Column(verticalArrangement = Arrangement.spacedBy(spacing.xxsmall)) {
@@ -705,7 +708,9 @@ private fun TableRecipeItemList(
                 ingredients = ingredients,
                 outputImage = outputImage,
                 outputName = outputName,
-                outputAmount = outputAmount
+                outputAmount = outputAmount,
+                tableImage = tableImage,
+                tableName = tableName
             )
         }
     }
@@ -717,7 +722,9 @@ private fun TableRecipeRow(
     ingredients: List<TableRecipeIngredient>,
     outputImage: String?,
     outputName: String?,
-    outputAmount: Int?
+    outputAmount: Int?,
+    tableImage: String?,
+    tableName: String?
 ) {
     FlowRow(
         modifier = modifier,
@@ -725,6 +732,19 @@ private fun TableRecipeRow(
         verticalArrangement = Arrangement.spacedBy(spacing.small),
         itemVerticalAlignment = Alignment.CenterVertically
     ) {
+        tableImage?.let {
+            ItemTooltipImage(
+                imageUrl = it,
+                tooltipText = tableName
+            )
+            if (ingredients.isNotEmpty()) {
+                Icon(
+                    modifier = Modifier.size(24.dp),
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null
+                )
+            }
+        }
         ingredients.forEachIndexed { index, ingredient ->
             ingredient.image?.let {
                 ItemTooltipImage(
@@ -1139,5 +1159,26 @@ private fun formatRaidDuration(seconds: Int): String {
         hours > 0 -> "${hours}h ${minutes}m"
         totalMinutes > 0 -> "${minutes}m ${remainingSeconds}s"
         else -> "${seconds}s"
+    }
+}
+
+private fun ItemAttributeType.toNameRes(): StringResource {
+    return when (this) {
+        ItemAttributeType.HYDRATION -> SharedRes.strings.hydration
+        ItemAttributeType.CRAFTING_QUALITY -> SharedRes.strings.crafting_quality
+        ItemAttributeType.DURATION -> SharedRes.strings.duration
+        ItemAttributeType.HARVESTING_YIELD -> SharedRes.strings.harvesting_yield
+        ItemAttributeType.TEMPERATURE -> SharedRes.strings.temperature
+        ItemAttributeType.MAX_CORE_TEMPERATURE -> SharedRes.strings.max_core_temperature
+        ItemAttributeType.CALORIES -> SharedRes.strings.calories
+        ItemAttributeType.HEALTH -> SharedRes.strings.health
+        ItemAttributeType.HUNTER_VISION -> SharedRes.strings.hunter_vision
+        ItemAttributeType.VISION_CARE -> SharedRes.strings.vision_care
+        ItemAttributeType.MAX_HP -> SharedRes.strings.max_hp
+        ItemAttributeType.METABOLISM_BOOST -> SharedRes.strings.metabolism_boost
+        ItemAttributeType.CLOTTING -> SharedRes.strings.clotting
+        ItemAttributeType.COMFORT -> SharedRes.strings.comfort
+        ItemAttributeType.BETTER_GENE_CHANCE -> SharedRes.strings.better_gene_chance
+        ItemAttributeType.DIGESTION_BOOST -> SharedRes.strings.digestion_boost
     }
 }
