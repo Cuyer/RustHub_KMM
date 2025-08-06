@@ -15,6 +15,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.data.local.Queries
+import pl.cuyer.rusthub.data.local.mapper.toEntity
 import pl.cuyer.rusthub.data.local.mapper.toRustItem
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.Crafting
@@ -27,6 +28,7 @@ import pl.cuyer.rusthub.domain.model.Recycling
 import pl.cuyer.rusthub.domain.model.RustItem
 import pl.cuyer.rusthub.domain.model.WhereToFind
 import pl.cuyer.rusthub.domain.model.ItemAttribute
+import pl.cuyer.rusthub.data.local.model.LanguageEntity
 import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 import pl.cuyer.rusthub.util.CrashReporter
 
@@ -56,7 +58,7 @@ class ItemDataSourceImpl(
                                 categories = item.categories?.joinToString(",") { it.name },
                                 shortName = item.shortName,
                                 iconUrl = item.iconUrl,
-                                language = item.language?.name ?: Language.ENGLISH.name,
+                                language = item.language?.toEntity() ?: LanguageEntity.ENGLISH,
                                 looting = item.looting?.let {
                                     json.encodeToString(ListSerializer(Looting.serializer()), it)
                                 },
@@ -99,7 +101,7 @@ class ItemDataSourceImpl(
                 } else {
                     language
                 }
-                queries.countItems(language = updatedLanguage.name).executeAsOne() == 0L
+                queries.countItems(language = updatedLanguage.toEntity()).executeAsOne() == 0L
             }
         }
     }
@@ -113,7 +115,7 @@ class ItemDataSourceImpl(
             countQuery = queries.countPagedItemsFiltered(
                 name = name ?: "",
                 category = category?.name,
-                language = language.name
+                language = language.toEntity()
             ),
             transacter = queries,
             context = Dispatchers.IO,
@@ -121,7 +123,7 @@ class ItemDataSourceImpl(
                 queries.findItemsPagedFiltered(
                     name = name ?: "",
                     category = category?.name,
-                    language = language.name,
+                    language = language.toEntity(),
                     limit = limit,
                     offset = offset
                 )
@@ -130,7 +132,7 @@ class ItemDataSourceImpl(
     }
 
     override fun getItemById(id: Long, language: Language): Flow<RustItem?> {
-        return queries.getItemById(id = id, language = language.name)
+        return queries.getItemById(id = id, language = language.toEntity())
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
             .map { it?.toRustItem(json) }

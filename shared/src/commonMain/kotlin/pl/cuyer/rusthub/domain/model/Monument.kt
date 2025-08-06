@@ -14,7 +14,7 @@ data class Monument(
     @SerialName("usableEntities") val usableEntities: List<UsableEntity>? = null,
     val mining: Mining? = null,
     val puzzles: List<MonumentPuzzle>? = null,
-    val language: String? = null
+    val language: Language = Language.ENGLISH
 )
 
 @Serializable

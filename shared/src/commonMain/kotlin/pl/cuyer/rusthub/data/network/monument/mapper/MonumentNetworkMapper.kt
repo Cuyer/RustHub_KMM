@@ -12,7 +12,7 @@ fun MonumentDto.toDomain(): Monument {
         usableEntities = usableEntities?.map { it.toDomain() },
         mining = mining?.toDomain(),
         puzzles = puzzles?.map { it.toDomain() },
-        language = language
+        language = language?.toLanguage() ?: Language.ENGLISH
     )
 }
 
@@ -95,4 +95,12 @@ fun MonumentPuzzleDto.toDomain(): MonumentPuzzle {
 
 fun PuzzleRequirementDto.toDomain(): PuzzleRequirement {
     return PuzzleRequirement(name = name, amount = amount, image = image)
+}
+
+private fun String.toLanguage(): Language = when (lowercase()) {
+    "pl" -> Language.POLISH
+    "de" -> Language.GERMAN
+    "fr" -> Language.FRENCH
+    "ru" -> Language.RUSSIAN
+    else -> Language.ENGLISH
 }
