@@ -670,7 +670,7 @@ CREATE TABLE itemEntity (
     table_recipe TEXT,
     recycling TEXT,
     raiding TEXT,
-    PRIMARY KEY(id, language)
+    PRIMARY KEY(id)
 );
 
 upsertItem:
@@ -817,14 +817,15 @@ INSERT INTO monumentEntity (
     :mining,
     :puzzles,
     :language
-) ON CONFLICT(slug, language) DO UPDATE SET
+) ON CONFLICT(slug) DO UPDATE SET
     name = excluded.name,
     attributes = excluded.attributes,
     iconUrl = excluded.iconUrl,
     spawns = excluded.spawns,
     usable_entities = excluded.usable_entities,
     mining = excluded.mining,
-    puzzles = excluded.puzzles;
+    puzzles = excluded.puzzles,
+    language = excluded.language;
 
 getMonuments:
 SELECT * FROM monumentEntity WHERE language = :language;
