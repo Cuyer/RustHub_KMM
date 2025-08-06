@@ -412,10 +412,15 @@
     <string name="where_to_find">Where to find</string>
     <string name="chance">Chance</string>
     <string name="amount">Amount</string>
+    <string name="table">Table</string>
+    <string name="output">Output</string>
     <string name="crafting">Crafting</string>
+    <string name="table_recipe">Table Recipe</string>
     <string name="recycling">Recycling</string>
     <string name="raiding">Raiding</string>
     <string name="crafting_recipe">Crafting Recipe</string>
+    <string name="recipe">Recipe</string>
+    <string name="total_cost">Total Cost</string>
     <string name="research_table_cost">Research Table Cost</string>
     <string name="tech_tree_cost">Tech Tree Cost</string>
     <string name="safezone_recycler">Safezone Recycler</string>
