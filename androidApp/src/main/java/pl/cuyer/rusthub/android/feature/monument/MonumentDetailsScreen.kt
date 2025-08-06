@@ -32,7 +32,6 @@ import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.MonumentAttributes
 import pl.cuyer.rusthub.domain.model.MonumentPuzzle
 import pl.cuyer.rusthub.domain.model.MonumentSpawns
-import pl.cuyer.rusthub.domain.model.Mining
 import pl.cuyer.rusthub.domain.model.UsableEntity
 import pl.cuyer.rusthub.presentation.features.monument.MonumentDetailsState
 
@@ -137,6 +136,6 @@ private sealed class PageData(val page: DetailsPage) {
     data class Attributes(val attributes: MonumentAttributes) : PageData(DetailsPage.ATTRIBUTES)
     data class Spawns(val spawns: MonumentSpawns) : PageData(DetailsPage.SPAWNS)
     data class UsableEntities(val entities: List<UsableEntity>) : PageData(DetailsPage.USABLE_ENTITIES)
-    data class Mining(val mining: Mining) : PageData(DetailsPage.MINING)
+    data class Mining(val mining: pl.cuyer.rusthub.domain.model.Mining) : PageData(DetailsPage.MINING)
     data class Puzzles(val puzzles: List<MonumentPuzzle>) : PageData(DetailsPage.PUZZLES)
 }

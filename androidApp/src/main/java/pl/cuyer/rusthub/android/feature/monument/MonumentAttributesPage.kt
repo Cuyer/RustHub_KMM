@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -58,7 +59,7 @@ private fun MonumentAttributesCard(
         Column(
             modifier = Modifier.padding(
                 horizontal = spacing.xmedium,
-                vertical = spacing.xxmedium
+                vertical = spacing.medium
             )
         ) {
             DetailsRow(
