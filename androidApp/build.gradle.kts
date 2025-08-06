@@ -27,7 +27,7 @@ android {
         versionName = project.property("VERSION_NAME") as String
         buildConfigField("String", "SERVERS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/4096035325\"")
         buildConfigField("String", "ITEMS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/1469871989\"")
-        buildConfigField("String", "MONUMENTS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/1234567890\"")
+        buildConfigField("String", "MONUMENTS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/8411157612\"")
     }
 
     androidResources {
