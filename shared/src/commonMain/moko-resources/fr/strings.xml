@@ -434,4 +434,8 @@
     <string name="rated">Noté %1$s</string>
     <string name="error_fetching_subscription_plans">Échec du chargement des offres d'abonnement.</string>
     <string name="refresh">Rafraîchir</string>
+    <string name="wood_yield">Rendement en bois</string>
+    <string name="ore_yield">Rendement en minerai</string>
+    <string name="scrap_yield">Rendement en ferraille</string>
+    <string name="rad_resistance">Résistance aux radiations</string>
 </resources>

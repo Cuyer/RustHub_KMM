@@ -458,4 +458,7 @@
     <string name="better_gene_chance">Better Gene Chance</string>
     <string name="digestion_boost">Digestion Boost</string>
     <string name="wood_yield">Wood Yield</string>
+    <string name="ore_yield">Ore Yield</string>
+    <string name="scrap_yield">Scrap Yield</string>
+    <string name="rad_resistance">Rad. Resistance</string>
 </resources>
