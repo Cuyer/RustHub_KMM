@@ -434,4 +434,8 @@
     <string name="rated">Оценка %1$s</string>
     <string name="error_fetching_subscription_plans">Не удалось загрузить тарифы подписки.</string>
     <string name="refresh">Обновить</string>
+    <string name="wood_yield">Добыча дерева</string>
+    <string name="ore_yield">Добыча руды</string>
+    <string name="scrap_yield">Добыча металлолома</string>
+    <string name="rad_resistance">Сопротивление радиации</string>
 </resources>

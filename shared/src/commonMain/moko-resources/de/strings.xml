@@ -434,4 +434,8 @@
     <string name="rated">Bewertet %1$s</string>
     <string name="error_fetching_subscription_plans">Abonnementpläne konnten nicht geladen werden.</string>
     <string name="refresh">Aktualisieren</string>
+    <string name="wood_yield">Holzertrag</string>
+    <string name="ore_yield">Erzausbeute</string>
+    <string name="scrap_yield">Schrottausbeute</string>
+    <string name="rad_resistance">Strahlungsresistenz</string>
 </resources>

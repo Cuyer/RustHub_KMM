@@ -434,4 +434,8 @@
     <string name="rated">Ocena %1$s</string>
     <string name="error_fetching_subscription_plans">Nie udało się załadować planów subskrypcji.</string>
     <string name="refresh">Odśwież</string>
+    <string name="wood_yield">Wydajność drewna</string>
+    <string name="ore_yield">Wydajność rudy</string>
+    <string name="scrap_yield">Wydajność złomu</string>
+    <string name="rad_resistance">Odporność na promieniowanie</string>
 </resources>

@@ -32,8 +32,10 @@ enum class ItemAttributeType(val key: String) {
     COMFORT("comfort"),
     BETTER_GENE_CHANCE("betterGeneChance"),
     DIGESTION_BOOST("digestionBoost"),
-
-    WOOD_YIELD("woodYield");
+    WOOD_YIELD("woodYield"),
+    ORE_YIELD("oreYield"),
+    SCRAP_YIELD("scrapYield"),
+    RAD_RESISTANCE("radResistance");
 
     companion object {
         fun fromKey(key: String): ItemAttributeType? = values().find { it.key == key }
@@ -60,5 +62,8 @@ fun ItemAttributeType.toNameRes(stringProvider: StringProvider): String {
         ItemAttributeType.BETTER_GENE_CHANCE -> stringProvider.get(SharedRes.strings.better_gene_chance)
         ItemAttributeType.DIGESTION_BOOST -> stringProvider.get(SharedRes.strings.digestion_boost)
         ItemAttributeType.WOOD_YIELD -> stringProvider.get(SharedRes.strings.wood_yield)
+        ItemAttributeType.ORE_YIELD -> stringProvider.get(SharedRes.strings.ore_yield)
+        ItemAttributeType.SCRAP_YIELD -> stringProvider.get(SharedRes.strings.scrap_yield)
+        ItemAttributeType.RAD_RESISTANCE -> stringProvider.get(SharedRes.strings.rad_resistance)
     }
 }
