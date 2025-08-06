@@ -644,17 +644,20 @@ private fun TableRecipeAttributesItem(
                 vertical = spacing.xxmedium
             )
         ) {
+            val table = stringResource(SharedRes.strings.table)
+            val output = stringResource(SharedRes.strings.output)
+            val amount = stringResource(SharedRes.strings.amount)
             DetailsRow(
                 details = {
                     buildMap {
                         recipe.tableName?.let {
-                            put(stringResource(SharedRes.strings.table), it)
+                            put(table, it)
                         }
                         recipe.outputName?.let {
-                            put(stringResource(SharedRes.strings.output), it)
+                            put(output, it)
                         }
                         recipe.outputAmount?.let {
-                            put(stringResource(SharedRes.strings.amount), it.toString())
+                            put(amount, it.toString())
                         }
                     }
                 }
