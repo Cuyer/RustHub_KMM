@@ -17,18 +17,33 @@ class GetPagedMonumentsUseCase(
     private val dataSource: MonumentDataSource,
     private val json: Json,
 ) {
+    /**
+     * Invokes the use case to retrieve a paginated flow of `Monument` objects.
+     *
+     * @param query The optional search query to filter items by name.
+     * @param category The optional category to filter items.
+     * @param language The language to filter items. If Polish is provided, it is replaced with English.
+     * @return A `Flow` emitting paginated data of `Monument` objects.
+     */
+
     operator fun invoke(
         query: String?,
         type: MonumentType?,
         language: Language,
     ): Flow<PagingData<Monument>> {
+        val updatedLanguage = if (language == Language.POLISH) {
+            Language.ENGLISH
+        } else {
+            language
+        }
+
         return Pager(
             config = PagingConfig(
                 pageSize = 30,
                 enablePlaceholders = true,
             ),
             pagingSourceFactory = {
-                dataSource.getMonumentsPagingSource(query, type, language)
+                dataSource.getMonumentsPagingSource(query, type, updatedLanguage)
             },
         ).flow.map { pagingData ->
             pagingData.map { it.toMonument(json) }
