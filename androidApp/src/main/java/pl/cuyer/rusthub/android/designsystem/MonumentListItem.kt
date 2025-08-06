@@ -47,7 +47,7 @@ fun MonumentListItem(
             SubcomposeAsyncImage(
                 modifier = Modifier.size(48.dp),
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data("https://cdn.rustlabs.com/img/monuments/${monument.slug}.png")
+                    .data(monument.iconUrl)
                     .crossfade(true)
                     .build(),
                 contentDescription = monument.name,

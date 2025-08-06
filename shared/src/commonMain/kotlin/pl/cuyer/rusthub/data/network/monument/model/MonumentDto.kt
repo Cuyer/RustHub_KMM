@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 data class MonumentDto(
     val name: String? = null,
     val slug: String? = null,
+    val iconUrl: String? = null,
     val attributes: MonumentAttributesDto? = null,
     val spawns: MonumentSpawnsDto? = null,
     @SerialName("usableEntities") val usableEntities: List<UsableEntityDto>? = null,

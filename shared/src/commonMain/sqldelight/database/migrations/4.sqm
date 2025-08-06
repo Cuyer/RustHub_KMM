@@ -3,6 +3,7 @@ import pl.cuyer.rusthub.data.local.model.LanguageEntity;
 CREATE TABLE monumentEntity (
     slug TEXT NOT NULL,
     name TEXT,
+    iconUrl TEXT,
     attributes TEXT,
     spawns TEXT,
     usable_entities TEXT,

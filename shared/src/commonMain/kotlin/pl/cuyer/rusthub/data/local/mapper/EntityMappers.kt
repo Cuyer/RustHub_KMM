@@ -257,6 +257,7 @@ fun MonumentEntity.toMonument(json: Json): Monument {
     return Monument(
         name = name,
         slug = slug,
+        iconUrl = iconUrl,
         attributes = attributes?.let { json.decodeFromString(MonumentAttributes.serializer(), it) },
         spawns = spawns?.let { json.decodeFromString(MonumentSpawns.serializer(), it) },
         usableEntities = usable_entities?.let {

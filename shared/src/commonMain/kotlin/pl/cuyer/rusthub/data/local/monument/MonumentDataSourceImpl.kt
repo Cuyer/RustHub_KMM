@@ -38,6 +38,7 @@ class MonumentDataSourceImpl(
                         queries.upsertMonument(
                             slug = monument.slug ?: "",
                             name = monument.name,
+                            iconUrl = monument.iconUrl,
                             attributes = monument.attributes?.let { json.encodeToString(it) },
                             spawns = monument.spawns?.let { json.encodeToString(it) },
                             usableEntities = monument.usableEntities?.let {
