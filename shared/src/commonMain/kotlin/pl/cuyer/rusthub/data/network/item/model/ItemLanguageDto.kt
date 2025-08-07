@@ -21,5 +21,8 @@ enum class ItemLanguageDto {
     PT,
     @SerialName("es")
     @JsonNames("es-ES")
-    ES
+    ES,
+    @SerialName("uk")
+    @JsonNames("uk-UA")
+    UK
 }

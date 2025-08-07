@@ -12,7 +12,8 @@ enum class Language {
     FRENCH,
     RUSSIAN,
     PORTUGUESE,
-    SPANISH;
+    SPANISH,
+    UKRAINIAN;
 
     companion object {
         fun fromDisplayName(displayName: String, stringProvider: StringProvider): Language? {
@@ -30,4 +31,5 @@ fun Language.displayName(stringProvider: StringProvider): String =
         Language.RUSSIAN -> stringProvider.get(SharedRes.strings.russian)
         Language.PORTUGUESE -> stringProvider.get(SharedRes.strings.portuguese)
         Language.SPANISH -> stringProvider.get(SharedRes.strings.spanish)
+        Language.UKRAINIAN -> stringProvider.get(SharedRes.strings.ukrainian)
     }
