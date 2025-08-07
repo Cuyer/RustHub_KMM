@@ -1,7 +1,7 @@
 [versions]
 agp = "8.13.0-alpha03"
 android-compileSdk = "36"
-android-minSdk = "29"
+android-minSdk = "30"
 android-targetSdk = "36"
 androidx-appcompat = "1.7.1"
 desugar_jdk_libs = "2.1.5"
