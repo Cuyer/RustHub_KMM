@@ -99,6 +99,8 @@ fun ItemLanguageDto.toDomain(): Language {
         ItemLanguageDto.EN -> Language.ENGLISH
         ItemLanguageDto.DE -> Language.GERMAN
         ItemLanguageDto.RU -> Language.RUSSIAN
+        ItemLanguageDto.PT -> Language.PORTUGUESE
+        ItemLanguageDto.ES -> Language.SPANISH
     }
 }
 

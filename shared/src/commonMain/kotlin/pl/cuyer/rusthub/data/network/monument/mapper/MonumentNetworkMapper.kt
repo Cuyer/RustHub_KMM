@@ -103,5 +103,7 @@ private fun String.toLanguage(): Language = when (lowercase()) {
     "de" -> Language.GERMAN
     "fr" -> Language.FRENCH
     "ru" -> Language.RUSSIAN
+    "pt", "pt-br" -> Language.PORTUGUESE
+    "es", "es-es" -> Language.SPANISH
     else -> Language.ENGLISH
 }
