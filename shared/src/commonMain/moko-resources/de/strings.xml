@@ -122,6 +122,9 @@
     <string name="german">Deutsch</string>
     <string name="french">Französisch</string>
     <string name="russian">Russisch</string>
+    <string name="portuguese">Portugiesisch</string>
+    <string name="spanish">Spanisch</string>
+    <string name="ukrainian">Ukrainisch</string>
     <string name="selected">Ausgewählt</string>
     <string name="plan_selected">Plan ausgewählt</string>
     <string name="plan_not_selected">Plan nicht ausgewählt</string>

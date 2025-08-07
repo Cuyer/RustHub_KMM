@@ -12,6 +12,9 @@ actual fun updateAppLanguage(language: Language) {
         Language.GERMAN -> "de"
         Language.FRENCH -> "fr"
         Language.RUSSIAN -> "ru"
+        Language.PORTUGUESE -> "pt"
+        Language.SPANISH -> "es"
+        Language.UKRAINIAN -> "uk"
     }
     val locales = LocaleListCompat.forLanguageTags(tag)
     AppCompatDelegate.setApplicationLocales(locales)
@@ -25,6 +28,9 @@ actual fun getCurrentAppLanguage(): Language {
         "de" -> Language.GERMAN
         "fr" -> Language.FRENCH
         "ru" -> Language.RUSSIAN
+        "pt" -> Language.PORTUGUESE
+        "es" -> Language.SPANISH
+        "uk" -> Language.UKRAINIAN
         else -> Language.ENGLISH
     }
 }

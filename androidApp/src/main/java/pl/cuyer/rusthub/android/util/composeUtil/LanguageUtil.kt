@@ -26,6 +26,9 @@ fun rememberCurrentLanguage(): State<Language> {
             "de" -> Language.GERMAN
             "fr" -> Language.FRENCH
             "ru" -> Language.RUSSIAN
+            "pt" -> Language.PORTUGUESE
+            "es" -> Language.SPANISH
+            "uk" -> Language.UKRAINIAN
             else -> Language.ENGLISH
         }
     }
