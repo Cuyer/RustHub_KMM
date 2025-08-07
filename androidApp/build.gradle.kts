@@ -32,7 +32,7 @@ android {
 
     androidResources {
         generateLocaleConfig = true
-        localeFilters.addAll(listOf("pl", "en", "de", "fr", "ru"))
+        localeFilters.addAll(listOf("pl", "en", "de", "fr", "ru", "es", "uk", "pt"))
     }
 
     buildFeatures {
