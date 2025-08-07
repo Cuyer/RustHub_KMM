@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import pl.cuyer.rusthub.android.designsystem.shimmer
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.wrapContentSize
 import pl.cuyer.rusthub.android.designsystem.defaultFadeTransition
 import androidx.compose.ui.draw.clip
 import androidx.compose.material3.MaterialTheme
@@ -375,25 +376,6 @@ private fun AccountSection(
         modifier = Modifier.padding(bottom = spacing.small)
     )
 
-    if (provider !in listOf(AuthProvider.ANONYMOUS, AuthProvider.GOOGLE)) {
-        AppTextButton(
-            onClick = { onAction(SettingsAction.OnChangePasswordClick) }
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(stringResource(SharedRes.strings.change_password))
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                    contentDescription = stringResource(SharedRes.strings.change_password_button)
-                )
-            }
-        }
-    }
-
     val storeNavigator = koinInject<StoreNavigator>()
 
     AnimatedContent(
@@ -445,6 +427,26 @@ private fun AccountSection(
             }
         }
     }
+
+    if (provider !in listOf(AuthProvider.ANONYMOUS, AuthProvider.GOOGLE)) {
+        AppTextButton(
+            onClick = { onAction(SettingsAction.OnChangePasswordClick) }
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(SharedRes.strings.change_password))
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowRight,
+                    contentDescription = stringResource(SharedRes.strings.change_password_button)
+                )
+            }
+        }
+    }
+
     if (provider != AuthProvider.ANONYMOUS) {
         AppTextButton(
             onClick = { onAction(SettingsAction.OnSubscriptionClick) }
