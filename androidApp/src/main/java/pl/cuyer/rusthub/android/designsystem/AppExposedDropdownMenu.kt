@@ -92,12 +92,18 @@ fun AppExposedDropdownMenu(
             modifier = Modifier
                 .width(with(LocalResources.current.displayMetrics) { textFieldWidth / density }.dp)
         ) {
-            val visibleItems = options.size.coerceAtMost(maxVisibleItems)
+            val totalItems = options.size + if (allowEmptySelection) 1 else 0
+            val visibleItems = totalItems.coerceAtMost(maxVisibleItems)
             val dropdownHeight = visibleItems * 48.dp
-            LazyColumn(
-                modifier = Modifier
+            val listModifier = if (totalItems > maxVisibleItems) {
+                Modifier
                     .width(with(LocalResources.current.displayMetrics) { textFieldWidth / density }.dp)
                     .height(dropdownHeight)
+            } else {
+                Modifier.width(with(LocalResources.current.displayMetrics) { textFieldWidth / density }.dp)
+            }
+            LazyColumn(
+                modifier = listModifier
             ) {
                 if (allowEmptySelection) {
                     item(key = "empty") {
