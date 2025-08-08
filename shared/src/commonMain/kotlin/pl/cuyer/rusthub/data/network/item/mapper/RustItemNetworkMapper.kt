@@ -21,9 +21,11 @@ import pl.cuyer.rusthub.data.network.item.model.LootContentDto
 import pl.cuyer.rusthub.data.network.item.model.WhereToFindDto
 import pl.cuyer.rusthub.data.network.item.model.TableRecipeDto
 import pl.cuyer.rusthub.data.network.item.model.TableRecipeIngredientDto
+import pl.cuyer.rusthub.data.network.item.model.ItemsResponseDto
 import pl.cuyer.rusthub.domain.model.ItemCategory
 import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.RustItem
+import pl.cuyer.rusthub.domain.model.ItemsResponse
 import pl.cuyer.rusthub.domain.model.Looting
 import pl.cuyer.rusthub.domain.model.LootAmount
 import pl.cuyer.rusthub.domain.model.Crafting
@@ -240,4 +242,12 @@ fun WhereToFindDto.toDomain(): WhereToFind = WhereToFind(
     place = place,
     image = image,
     amount = amount?.let { LootAmount(it.min, it.max) }
+)
+
+fun ItemsResponseDto.toDomain(): ItemsResponse = ItemsResponse(
+    page = page,
+    size = size,
+    totalPages = totalPages,
+    totalItems = totalItems,
+    items = items.map { it.toDomain() }
 )
