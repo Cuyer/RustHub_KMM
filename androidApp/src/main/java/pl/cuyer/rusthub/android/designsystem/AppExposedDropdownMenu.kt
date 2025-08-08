@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.android.designsystem
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -92,7 +93,8 @@ fun AppExposedDropdownMenu(
             modifier = Modifier
                 .width(with(LocalResources.current.displayMetrics) { textFieldWidth / density }.dp)
         ) {
-            val visibleItems = options.size.coerceAtMost(maxVisibleItems)
+            val totalItems = options.size + if (allowEmptySelection) 1 else 0
+            val visibleItems = totalItems.coerceAtMost(maxVisibleItems)
             val dropdownHeight = visibleItems * 48.dp
             LazyColumn(
                 modifier = Modifier
