@@ -476,6 +476,7 @@
     <string name="max_core_temperature">Макс. температура тіла</string>
     <string name="calories">Калорій</string>
     <string name="health">Здоров'я</string>
+    <string name="health_over_time">Здоров'я з часом</string>
     <string name="hunter_vision">Мисливець</string>
     <string name="vision_care">Догляд за зором</string>
     <string name="max_hp">Макс HP</string>

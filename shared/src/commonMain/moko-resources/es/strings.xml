@@ -476,6 +476,7 @@
     <string name="max_core_temperature">Max. temperatura corporal</string>
     <string name="calories">Calorías</string>
     <string name="health">Salud</string>
+    <string name="health_over_time">Salud con el tiempo</string>
     <string name="hunter_vision">Visión de cazador</string>
     <string name="vision_care">Cuidado de la visión</string>
     <string name="max_hp">Max HP</string>
