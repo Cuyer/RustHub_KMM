@@ -471,7 +471,8 @@
     <string name="duration">Длительность</string>
     <string name="harvesting_yield">Урожайность</string>
     <string name="temperature">Температура</string>
-    <string name="max_core_temperature">Макс. температура ядра</string>
+    <string name="min_core_temperature">Мин. температура тела</string>
+    <string name="max_core_temperature">Макс. температура тела</string>
     <string name="calories">Калории</string>
     <string name="health">Здоровье</string>
     <string name="hunter_vision">Зрение охотника</string>
