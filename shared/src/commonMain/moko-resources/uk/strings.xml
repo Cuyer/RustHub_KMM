@@ -472,7 +472,8 @@
     <string name="duration">Тривалість</string>
     <string name="harvesting_yield">Врожайність урожаю</string>
     <string name="temperature">Температура</string>
-    <string name="max_core_temperature">Макс. Температура ядра</string>
+    <string name="min_core_temperature">Мін. температура тіла</string>
+    <string name="max_core_temperature">Макс. температура тіла</string>
     <string name="calories">Калорій</string>
     <string name="health">Здоров'я</string>
     <string name="hunter_vision">Мисливець</string>

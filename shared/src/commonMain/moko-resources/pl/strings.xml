@@ -471,7 +471,8 @@
     <string name="duration">Czas trwania</string>
     <string name="harvesting_yield">Wydajność zbiorów</string>
     <string name="temperature">Temperatura</string>
-    <string name="max_core_temperature">Maks. temperatura rdzenia</string>
+    <string name="min_core_temperature">Min. temperatura ciała</string>
+    <string name="max_core_temperature">Maks. temperatura ciała</string>
     <string name="calories">Kalorie</string>
     <string name="health">Zdrowie</string>
     <string name="hunter_vision">Wzrok łowcy</string>

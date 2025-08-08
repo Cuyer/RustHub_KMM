@@ -471,7 +471,8 @@
     <string name="duration">Dauer</string>
     <string name="harvesting_yield">Ernteertrag</string>
     <string name="temperature">Temperatur</string>
-    <string name="max_core_temperature">Max. Kerntemperatur</string>
+    <string name="min_core_temperature">Min. Körpertemperatur</string>
+    <string name="max_core_temperature">Max. Körpertemperatur</string>
     <string name="calories">Kalorien</string>
     <string name="health">Gesundheit</string>
     <string name="hunter_vision">Jägersicht</string>

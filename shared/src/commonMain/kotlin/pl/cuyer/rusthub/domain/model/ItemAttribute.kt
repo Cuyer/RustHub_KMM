@@ -21,6 +21,7 @@ enum class ItemAttributeType(val key: String) {
     DURATION("duration"),
     HARVESTING_YIELD("harvestingYield"),
     TEMPERATURE("temperature"),
+    MIN_CORE_TEMPERATURE("minCoreTemperature"),
     MAX_CORE_TEMPERATURE("maxCoreTemperature"),
     CALORIES("calories"),
     HEALTH("health"),
@@ -50,6 +51,7 @@ fun ItemAttributeType.toNameRes(stringProvider: StringProvider): String {
         ItemAttributeType.DURATION -> stringProvider.get(SharedRes.strings.duration)
         ItemAttributeType.HARVESTING_YIELD -> stringProvider.get(SharedRes.strings.harvesting_yield)
         ItemAttributeType.TEMPERATURE -> stringProvider.get(SharedRes.strings.temperature)
+        ItemAttributeType.MIN_CORE_TEMPERATURE -> stringProvider.get(SharedRes.strings.min_core_temperature)
         ItemAttributeType.MAX_CORE_TEMPERATURE -> stringProvider.get(SharedRes.strings.max_core_temperature)
         ItemAttributeType.CALORIES -> stringProvider.get(SharedRes.strings.calories)
         ItemAttributeType.HEALTH -> stringProvider.get(SharedRes.strings.health)
