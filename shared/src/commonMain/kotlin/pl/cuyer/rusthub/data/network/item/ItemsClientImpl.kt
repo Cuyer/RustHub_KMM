@@ -39,7 +39,7 @@ class ItemsClientImpl(
                 url {
                     appendNonNull("page" to page)
                     appendNonNull("size" to size)
-                    appendNonNull("category" to category?.name)
+                    appendNonNull("category" to category?.name?.lowercase()?.replaceFirstChar { it.uppercase() })
                     appendNonNull("language" to language.toApiValue())
                     if (!searchQuery.isNullOrBlank()) parameters.append("name", searchQuery)
                 }
