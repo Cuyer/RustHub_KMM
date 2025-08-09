@@ -766,23 +766,6 @@ WHERE (:category IS NULL OR categories LIKE '%' || :category || '%')
   AND (name LIKE '%' || :name || '%' COLLATE NOCASE)
   AND language = :language;
 
-CREATE TABLE itemSyncEntity (
-    id TEXT NOT NULL PRIMARY KEY,
-    sync_state TEXT NOT NULL
-);
-
-upsertItemSync:
-INSERT INTO itemSyncEntity (id, sync_state)
-VALUES (:id, :sync_state)
-ON CONFLICT(id) DO UPDATE SET
-    sync_state = excluded.sync_state;
-
-getItemSync:
-SELECT * FROM itemSyncEntity WHERE id = :id;
-
-clearItemSync:
-DELETE FROM itemSyncEntity;
-
 CREATE TABLE monumentEntity (
     slug TEXT NOT NULL,
     name TEXT,

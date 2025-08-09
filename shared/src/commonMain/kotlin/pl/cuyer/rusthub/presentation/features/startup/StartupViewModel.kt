@@ -31,10 +31,6 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.getCurrentAppLanguage
-import pl.cuyer.rusthub.util.ItemsScheduler
-import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
-import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
-import pl.cuyer.rusthub.domain.model.ItemSyncState
 import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
 import pl.cuyer.rusthub.util.InAppUpdateManager
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
@@ -51,9 +47,6 @@ class StartupViewModel(
     private val setSubscribedUseCase: SetSubscribedUseCase,
     private val stringProvider: StringProvider,
     private val getUserPreferencesUseCase: GetUserPreferencesUseCase,
-    private val itemsScheduler: ItemsScheduler,
-    private val itemDataSource: ItemDataSource,
-    private val itemSyncDataSource: ItemSyncDataSource,
     private val monumentsScheduler: MonumentsScheduler,
     private val monumentDataSource: MonumentDataSource,
     private val monumentSyncDataSource: MonumentSyncDataSource,
@@ -81,12 +74,6 @@ class StartupViewModel(
     init {
         observePreferences()
         coroutineScope.launch {
-            if (itemDataSource.isEmpty(getCurrentAppLanguage())) {
-                itemSyncDataSource.setState(ItemSyncState.PENDING)
-                itemsScheduler.startNow()
-            } else {
-                itemsScheduler.schedule()
-            }
             if (monumentDataSource.isEmpty(getCurrentAppLanguage())) {
                 monumentSyncDataSource.setState(MonumentSyncState.PENDING)
                 monumentsScheduler.startNow()

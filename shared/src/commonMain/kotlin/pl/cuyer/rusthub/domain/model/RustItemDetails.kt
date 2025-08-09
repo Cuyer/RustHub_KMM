@@ -161,6 +161,3 @@ data class Raiding(
     val rawMaterialCost: List<RaidResource>? = null
 )
 
-@Serializable
-@Immutable
-enum class ItemSyncState { PENDING, DONE }

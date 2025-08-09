@@ -56,15 +56,12 @@ import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import pl.cuyer.rusthub.util.anonymousAccountExpiresIn
 import pl.cuyer.rusthub.util.formatExpiration
 import pl.cuyer.rusthub.util.formatLocalDateTime
-import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.util.ConnectivityObserver
 import pl.cuyer.rusthub.util.AdsConsentManager
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import pl.cuyer.rusthub.domain.model.ActiveSubscription
 import pl.cuyer.rusthub.domain.usecase.GetActiveSubscriptionUseCase
-import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
-import pl.cuyer.rusthub.domain.model.ItemSyncState
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.util.updateAppLanguage
 import pl.cuyer.rusthub.domain.model.SubscriptionState
@@ -86,10 +83,8 @@ class SettingsViewModel(
     private val snackbarController: SnackbarController,
     private val stringProvider: StringProvider,
     private val systemDarkThemeObserver: SystemDarkThemeObserver,
-    private val itemsScheduler: ItemsScheduler,
     private val monumentsScheduler: MonumentsScheduler,
     private val getActiveSubscriptionUseCase: GetActiveSubscriptionUseCase,
-    private val itemSyncDataSource: ItemSyncDataSource,
     private val monumentSyncDataSource: MonumentSyncDataSource,
     private val userEventController: UserEventController,
     private val setSubscribedUseCase: SetSubscribedUseCase,
@@ -362,9 +357,6 @@ class SettingsViewModel(
     private fun changeLanguage(language: Language) {
         coroutineScope.launch {
             updateAppLanguage(language)
-            itemSyncDataSource.setState(ItemSyncState.PENDING)
-            itemsScheduler.startNow()
-            itemsScheduler.schedule()
             monumentSyncDataSource.setState(MonumentSyncState.PENDING)
             monumentsScheduler.startNow()
             monumentsScheduler.schedule()

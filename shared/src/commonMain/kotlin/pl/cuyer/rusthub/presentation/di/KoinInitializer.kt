@@ -19,7 +19,6 @@ import pl.cuyer.rusthub.data.local.search.ItemSearchQueryDataSourceImpl
 import pl.cuyer.rusthub.data.local.search.MonumentSearchQueryDataSourceImpl
 import pl.cuyer.rusthub.data.local.server.ServerDataSourceImpl
 import pl.cuyer.rusthub.data.local.item.ItemDataSourceImpl
-import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
 import pl.cuyer.rusthub.data.local.monument.MonumentDataSourceImpl
 import pl.cuyer.rusthub.data.local.monument.MonumentSyncDataSourceImpl
 import pl.cuyer.rusthub.data.local.subscription.SubscriptionSyncDataSourceImpl
@@ -43,7 +42,6 @@ import pl.cuyer.rusthub.domain.repository.filtersOptions.FiltersOptionsDataSourc
 import pl.cuyer.rusthub.domain.repository.filtersOptions.FiltersOptionsRepository
 import pl.cuyer.rusthub.domain.repository.item.ItemRepository
 import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
-import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.domain.repository.monument.MonumentRepository
 import pl.cuyer.rusthub.domain.repository.monument.local.MonumentDataSource
 import pl.cuyer.rusthub.domain.repository.monument.local.MonumentSyncDataSource
@@ -137,7 +135,6 @@ val appModule = module {
     singleOf(::ServerDataSourceImpl) bind ServerDataSource::class
     singleOf(::ItemDataSourceImpl) bind ItemDataSource::class
     singleOf(::MonumentDataSourceImpl) bind MonumentDataSource::class
-    singleOf(::ItemSyncDataSourceImpl) bind ItemSyncDataSource::class
     singleOf(::MonumentSyncDataSourceImpl) bind MonumentSyncDataSource::class
     singleOf(::FavouriteSyncDataSourceImpl) bind FavouriteSyncDataSource::class
     singleOf(::SubscriptionSyncDataSourceImpl) bind SubscriptionSyncDataSource::class
@@ -158,7 +155,7 @@ val appModule = module {
     single { PasswordValidator(get()) }
     single { UsernameValidator(get()) }
     single { GetPagedServersUseCase(get(), get(), get(), get()) }
-    single { GetPagedItemsUseCase(get(), get()) }
+    single { GetPagedItemsUseCase(get(), get(), get()) }
     single { GetPagedMonumentsUseCase(get(), get()) }
     single { GetFiltersUseCase(get()) }
     single { SaveFiltersUseCase(get()) }
