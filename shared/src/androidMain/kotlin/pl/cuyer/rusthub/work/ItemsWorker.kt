@@ -19,20 +19,24 @@ class ItemsWorker(
 ) : CoroutineWorker(appContext, params) {
 
     override suspend fun doWork(): Result {
-        var workResult: Result = Result.success()
-        repository.getItems().collectLatest { result ->
+        var hadError = false
+        repository.getItems().collect { result ->
             when (result) {
                 is DomainResult.Success -> {
                     dataSource.upsertItems(result.data)
-                    syncDataSource.setState(ItemSyncState.DONE)
-                    workResult = Result.success()
+                    syncDataSource.setState(ItemSyncState.PENDING)
                 }
                 is DomainResult.Error -> {
-                    workResult = Result.retry()
+                    hadError = true
                 }
             }
         }
-        return workResult
+
+        return if (!hadError) {
+            syncDataSource.setState(ItemSyncState.DONE)
+            Result.success()
+        } else {
+            Result.retry()
+        }
     }
 }
-

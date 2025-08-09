@@ -20,12 +20,15 @@ class ItemsClientImpl(
     private val httpClient: HttpClient,
     json: Json
 ) : ItemRepository, BaseApiResponse(json) {
+
+    private companion object { const val PAGE_SIZE = 100 }
+
     override fun getItems(): Flow<Result<List<RustItem>>> = flow {
-        val items = mutableListOf<RustItem>()
         var page = 0
-        var totalPages = 1
-        do {
-            when (val result = safeApiCall<ItemsResponseDto> {
+        var totalPages = Int.MAX_VALUE
+
+        while (page < totalPages) {
+            when (val res = safeApiCall<ItemsResponseDto> {
                 httpClient.get(NetworkConstants.BASE_URL + "items") {
                     url {
                         parameters.append("page", page.toString())
@@ -34,17 +37,17 @@ class ItemsClientImpl(
                 }
             }.first()) {
                 is Result.Success -> {
-                    val response = result.data.toDomain()
-                    items.addAll(response.items)
+                    val response = res.data.toDomain()
+                    emit(Result.Success(response.items)) // one page
                     totalPages = response.totalPages
                     page++
+                    if (response.items.isEmpty()) break // safety
                 }
                 is Result.Error -> {
-                    emit(result)
+                    emit(res)
                     return@flow
                 }
             }
-        } while (page < totalPages)
-        emit(Result.Success(items))
+        }
     }
 }
