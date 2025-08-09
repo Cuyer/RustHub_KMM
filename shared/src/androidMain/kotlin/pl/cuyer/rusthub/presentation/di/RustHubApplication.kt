@@ -93,7 +93,11 @@ class RustHubApplication : Application(), Configuration.Provider {
                 .build()
 
             NotificationPresenter(this@RustHubApplication).createDefaultChannels()
-            WorkManager.initialize(this@RustHubApplication, workManagerConfiguration)
+            try {
+                WorkManager.getInstance(this@RustHubApplication)
+            } catch (e: IllegalStateException) {
+                WorkManager.initialize(this@RustHubApplication, workManagerConfiguration)
+            }
             koinReady.complete(Unit)
         }
     }
