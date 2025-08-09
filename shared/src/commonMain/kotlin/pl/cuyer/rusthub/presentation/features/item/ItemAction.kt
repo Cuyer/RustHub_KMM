@@ -14,8 +14,6 @@ sealed interface ItemAction {
     @Immutable
     data class OnError(val exception: Throwable) : ItemAction
     @Immutable
-    data object OnRefresh : ItemAction
-    @Immutable
     data object OnClearSearchQuery : ItemAction
     @Immutable
     data object DeleteSearchQueries : ItemAction

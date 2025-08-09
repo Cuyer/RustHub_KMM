@@ -30,7 +30,6 @@ import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
-import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.util.MonumentsScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
@@ -45,8 +44,6 @@ import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import pl.cuyer.rusthub.util.RemoteConfig
 import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
-import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
-import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.data.local.monument.MonumentSyncDataSourceImpl
 import pl.cuyer.rusthub.domain.repository.monument.local.MonumentSyncDataSource
 import pl.cuyer.rusthub.data.local.purchase.PurchaseSyncDataSourceImpl
@@ -73,12 +70,10 @@ actual fun platformModule(passphrase: String): Module = module {
     single { SyncScheduler() }
     single { SubscriptionSyncScheduler() }
     single { MessagingTokenScheduler() }
-    single { ItemsScheduler() }
     single { MonumentsScheduler() }
     single { PurchaseSyncScheduler() }
     single { UserSyncScheduler() }
     single { BillingRepositoryImpl() } bind BillingRepository::class
-    single { ItemSyncDataSourceImpl(get()) } bind ItemSyncDataSource::class
     single { MonumentSyncDataSourceImpl(get()) } bind MonumentSyncDataSource::class
     single { PurchaseSyncDataSourceImpl(get()) } bind PurchaseSyncDataSource::class
     single { InAppUpdateManager() }
@@ -104,9 +99,6 @@ actual fun platformModule(passphrase: String): Module = module {
             setSubscribedUseCase = get(),
             stringProvider = get(),
             getUserPreferencesUseCase = get(),
-            itemsScheduler = get(),
-            itemDataSource = get(),
-            itemSyncDataSource = get(),
             monumentsScheduler = get(),
             monumentDataSource = get(),
             monumentSyncDataSource = get(),
@@ -117,8 +109,6 @@ actual fun platformModule(passphrase: String): Module = module {
     factory {
         ItemViewModel(
             getPagedItemsUseCase = get(),
-            itemSyncDataSource = get(),
-            itemsScheduler = get(),
             snackbarController = get(),
             stringProvider = get(),
             saveSearchQueryUseCase = get(),
@@ -209,8 +199,6 @@ actual fun platformModule(passphrase: String): Module = module {
             snackbarController = get(),
             stringProvider = get(),
             systemDarkThemeObserver = get(),
-            itemsScheduler = get(),
-            itemSyncDataSource = get(),
             monumentsScheduler = get(),
             monumentSyncDataSource = get(),
             userEventController = get(),
