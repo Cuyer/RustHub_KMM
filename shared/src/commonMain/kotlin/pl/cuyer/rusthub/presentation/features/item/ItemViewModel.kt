@@ -47,6 +47,7 @@ import pl.cuyer.rusthub.presentation.model.SearchQueryUi
 import pl.cuyer.rusthub.presentation.model.toUi
 import kotlin.time.Clock
 import pl.cuyer.rusthub.util.AdsConsentManager
+import pl.cuyer.rusthub.util.ConnectivityObserver
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -59,6 +60,7 @@ class ItemViewModel(
     private val deleteSearchQueriesUseCase: DeleteItemSearchQueriesUseCase,
     private val getUserUseCase: GetUserUseCase,
     private val adsConsentManager: AdsConsentManager,
+    private val connectivityObserver: ConnectivityObserver,
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -85,6 +87,7 @@ class ItemViewModel(
 
     init {
         observeSearchQueries()
+        observeConnectivity()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -190,6 +193,14 @@ class ItemViewModel(
 
     private fun updateIsLoadingSearchHistory(loading: Boolean) {
         _state.update { it.copy(isLoadingSearchHistory = loading) }
+    }
+
+    private fun observeConnectivity() {
+        connectivityObserver.isConnected
+            .onEach { connected ->
+                _state.update { it.copy(isConnected = connected) }
+            }
+            .launchIn(coroutineScope)
     }
 
     private fun sendSnackbarEvent(

@@ -389,10 +389,12 @@
     <string name="error_network">Ошибка сети. Проверьте подключение.</string>
     <string name="offline_cached_servers_info">Нет сети. Отображаются кэшированные серверы.</string>
     <string name="offline">Нет подключения к интернету.</string>
+    <string name="offline_cached_items_info">Нет сети. Отображаются кэшированные предметы.</string>
     <string name="subscription_disabled">Подписки временно отключены.</string>
     <string name="connect_manage_subscription">Подключитесь к интернету, чтобы управлять подпиской.</string>
     <string name="no_servers_available_offline">Нет серверов в автономном режиме.</string>
     <string name="no_servers_available">Нет доступных серверов.</string>
+    <string name="no_items_available_offline">Нет предметов в автономном режиме.</string>
     <string name="no_items_available">Нет доступных предметов.</string>
     <string name="no_monuments_available">Нет доступных монументов.</string>
     <string name="error_timeout">Превышено время ожидания. Попробуйте ещё раз.</string>

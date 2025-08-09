@@ -389,10 +389,12 @@
     <string name="error_network">Błąd sieci. Sprawdź swoje połączenie.</string>
     <string name="offline_cached_servers_info">Brak sieci. Wyświetlana jest zapisana lista serwerów.</string>
     <string name="offline">Brak połączenia z internetem.</string>
+    <string name="offline_cached_items_info">Brak sieci. Wyświetlana jest zapisana lista przedmiotów.</string>
     <string name="subscription_disabled">Subskrypcje są obecnie wyłączone.</string>
     <string name="connect_manage_subscription">Połącz się z internetem, aby zarządzać subskrypcją.</string>
     <string name="no_servers_available_offline">Brak dostępnych serwerów offline.</string>
     <string name="no_servers_available">Brak dostępnych serwerów.</string>
+    <string name="no_items_available_offline">Brak dostępnych przedmiotów offline.</string>
     <string name="no_items_available">Brak dostępnych przedmiotów.</string>
     <string name="no_monuments_available">Brak dostępnych monumentów.</string>
     <string name="error_timeout">Przekroczono czas oczekiwania. Spróbuj ponownie.</string>

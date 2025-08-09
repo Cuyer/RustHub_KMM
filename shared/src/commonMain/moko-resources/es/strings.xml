@@ -390,10 +390,12 @@
     <string name="error_network">Error de red. Verifique su conexión.</string>
     <string name="offline_cached_servers_info">Red no disponible. Mostrando servidores en caché.</string>
     <string name="offline">Sin conexión a Internet.</string>
+    <string name="offline_cached_items_info">Red no disponible. Mostrando artículos en caché.</string>
     <string name="subscription_disabled">Las suscripciones están actualmente deshabilitadas.</string>
     <string name="connect_manage_subscription">Conéctese a Internet para administrar su suscripción.</string>
     <string name="no_servers_available_offline">No hay servidores disponibles fuera de línea.</string>
     <string name="no_servers_available">No hay servidores disponibles.</string>
+    <string name="no_items_available_offline">No hay artículos disponibles fuera de línea.</string>
     <string name="no_items_available">No hay artículos disponibles.</string>
     <string name="no_monuments_available">No hay monumentos disponibles.</string>
     <string name="error_timeout">Solicitar tiempo fuera. Por favor intente de nuevo.</string>

@@ -180,6 +180,7 @@ actual fun platformModule(passphrase: String): Module = module {
             deleteSearchQueriesUseCase = get(),
             getUserUseCase = get(),
             adsConsentManager = get(),
+            connectivityObserver = get(),
         )
     }
     viewModel {
