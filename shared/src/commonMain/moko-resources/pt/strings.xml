@@ -389,10 +389,12 @@
     <string name="error_network">Erro de rede. Por favor, verifique sua conexão.</string>
     <string name="offline_cached_servers_info">Rede indisponível. Mostrando servidores em cache.</string>
     <string name="offline">Sem conexão com a Internet.</string>
+    <string name="offline_cached_items_info">Rede indisponível. Mostrando itens em cache.</string>
     <string name="subscription_disabled">As assinaturas estão atualmente desativadas.</string>
     <string name="connect_manage_subscription">Conecte -se à Internet para gerenciar sua assinatura.</string>
     <string name="no_servers_available_offline">Nenhum servidor disponível offline.</string>
     <string name="no_servers_available">Nenhum servidor disponível.</string>
+    <string name="no_items_available_offline">Nenhum item disponível offline.</string>
     <string name="no_items_available">Sem itens disponíveis.</string>
     <string name="no_monuments_available">Sem monumentos disponíveis.</string>
     <string name="error_timeout">Solicitação cronometrada. Por favor, tente novamente.</string>

@@ -10,6 +10,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -173,6 +174,32 @@ fun ItemScreen(
                         modifier = Modifier
                             .padding(horizontal = spacing.xmedium)
                     )
+                    AnimatedVisibility(
+                        visible = !state.value.isConnected,
+                        enter = slideInVertically(
+                            animationSpec = spring(
+                                stiffness = Spring.StiffnessLow,
+                                dampingRatio = Spring.DampingRatioLowBouncy
+                            )
+                        ),
+                        exit = slideOutVertically(
+                            animationSpec = spring(
+                                stiffness = Spring.StiffnessLow,
+                                dampingRatio = Spring.DampingRatioLowBouncy
+                            )
+                        )
+                    ) {
+                        Text(
+                            textAlign = TextAlign.Center,
+                            text = stringResource(SharedRes.strings.offline_cached_items_info),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = spacing.xsmall)
+                                .background(MaterialTheme.colorScheme.secondary)
+                        )
+                    }
                 }
             }
         },
@@ -264,8 +291,13 @@ fun ItemScreen(
                                         textAlign = TextAlign.Center,
                                         fontSize = 96.sp
                                     )
+                                    val message = if (!state.value.isConnected) {
+                                        stringResource(SharedRes.strings.no_items_available_offline)
+                                    } else {
+                                        stringResource(SharedRes.strings.no_items_available)
+                                    }
                                     Text(
-                                        text = stringResource(SharedRes.strings.no_items_available),
+                                        text = message,
                                         style = MaterialTheme.typography.bodyLarge,
                                         textAlign = TextAlign.Center
                                     )

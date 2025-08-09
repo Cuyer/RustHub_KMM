@@ -36,6 +36,7 @@ import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
 import pl.cuyer.rusthub.util.UserSyncScheduler
 import pl.cuyer.rusthub.util.AdsConsentManager
+import pl.cuyer.rusthub.util.ConnectivityObserver
 import pl.cuyer.rusthub.data.billing.BillingRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
 import pl.cuyer.rusthub.domain.usecase.ConfirmPurchaseUseCase
@@ -82,6 +83,7 @@ actual fun platformModule(passphrase: String): Module = module {
     single { UrlOpener() }
     single { EmailSender() }
     single { SystemDarkThemeObserver() }
+    single { ConnectivityObserver() }
     single { GoogleAuthClient() }
     single { RemoteConfig() }
     single { StringProvider() }
@@ -115,7 +117,8 @@ actual fun platformModule(passphrase: String): Module = module {
             getSearchQueriesUseCase = get(),
             deleteSearchQueriesUseCase = get(),
             getUserUseCase = get(),
-            adsConsentManager = get()
+            adsConsentManager = get(),
+            connectivityObserver = get()
         )
     }
     factory {
