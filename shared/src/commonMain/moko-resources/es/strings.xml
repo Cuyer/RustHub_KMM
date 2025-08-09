@@ -169,7 +169,7 @@
     <string name="pro" translatable="false">PRO</string>
     <string name="pve" translatable="false">Pve</string>
     <string name="padlock_icon">Icono de candado</string>
-    <string name="page_indicator">Página %1 $ d de %2 $ D</string>
+    <string name="page_indicator">Página %1$d de %2$d</string>
     <string name="password">Contraseña</string>
     <string name="pay_once">Pagar una vez</string>
     <string name="players">Jugadores</string>
