@@ -18,7 +18,6 @@ import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.repository.favourite.FavouriteSyncDataSource
 import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
 import pl.cuyer.rusthub.domain.repository.filtersOptions.FiltersOptionsDataSource
-import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.domain.repository.search.ItemSearchQueryDataSource
 import pl.cuyer.rusthub.domain.repository.search.SearchQueryDataSource
 import pl.cuyer.rusthub.domain.repository.search.MonumentSearchQueryDataSource
@@ -38,7 +37,6 @@ class AuthDataSourceImpl(
     private val monumentSearchQueryDataSource: MonumentSearchQueryDataSource,
     private val favouriteSyncDataSource: FavouriteSyncDataSource,
     private val subscriptionSyncDataSource: SubscriptionSyncDataSource,
-    private val itemSyncDataSource: ItemSyncDataSource,
 ) : AuthDataSource, Queries(db) {
 
     override suspend fun insertUser(
@@ -80,7 +78,6 @@ class AuthDataSourceImpl(
             monumentSearchQueryDataSource.clearQueries()
             favouriteSyncDataSource.clearOperations()
             subscriptionSyncDataSource.clearOperations()
-            itemSyncDataSource.clearState()
             tokenRefresher.clear()
             CrashReporter.setUserId(null)
         }
