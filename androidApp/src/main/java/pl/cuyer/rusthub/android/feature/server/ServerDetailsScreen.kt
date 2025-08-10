@@ -92,10 +92,10 @@ import androidx.compose.ui.platform.LocalContext
 import pl.cuyer.rusthub.android.designsystem.shimmer
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.domain.model.Flag
-import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
 import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.model.displayName
+import pl.cuyer.rusthub.domain.model.toDrawable
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsAction
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsState
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails

@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.times
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.Flag
-import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
+import pl.cuyer.rusthub.domain.model.toDrawable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

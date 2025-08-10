@@ -111,11 +111,6 @@ fun MonumentDetailsScreen(
                     state = pagerState
                 ) { page ->
                     when (val data = pages[page]) {
-                        is PageData.Map -> MonumentMapPage(
-                            mapUrls = data.mapUrls,
-                            modifier = Modifier.fillMaxSize()
-                        )
-
                         is PageData.Attributes -> MonumentAttributesPage(
                             attributes = data.attributes,
                             modifier = Modifier.fillMaxSize()
@@ -138,6 +133,11 @@ fun MonumentDetailsScreen(
 
                         is PageData.Puzzles -> MonumentPuzzlesPage(
                             puzzles = data.puzzles,
+                            modifier = Modifier.fillMaxSize()
+                        )
+
+                        is PageData.Map -> MonumentMapPage(
+                            mapUrls = data.mapUrls,
                             modifier = Modifier.fillMaxSize()
                         )
                     }
