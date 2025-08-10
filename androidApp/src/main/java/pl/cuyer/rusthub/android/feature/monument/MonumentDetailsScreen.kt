@@ -43,9 +43,6 @@ fun MonumentDetailsScreen(
     val pages = remember(state.value.monument) {
         state.value.monument?.let { monument ->
             buildList {
-                monument.mapUrls
-                    ?.takeIf { it.isNotEmpty() }
-                    ?.let { add(PageData.Map(it)) }
                 monument.attributes
                     ?.takeIf { it.hasContent() }
                     ?.let { add(PageData.Attributes(it)) }
@@ -61,6 +58,9 @@ fun MonumentDetailsScreen(
                 monument.puzzles
                     ?.takeIf { it.isNotEmpty() }
                     ?.let { add(PageData.Puzzles(it)) }
+                monument.mapUrls
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.let { add(PageData.Map(it)) }
             }
         } ?: emptyList()
     }
