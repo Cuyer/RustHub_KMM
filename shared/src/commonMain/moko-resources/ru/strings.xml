@@ -135,6 +135,8 @@
     <string name="mail_icon">Иконка почты</string>
     <string name="map">Карта</string>
     <string name="map_information">Информация о карте</string>
+    <string name="map_legend">Легенда</string>
+    <string name="map_creator_credit">Огромная благодарность создателю этих карт</string>
     <string name="map_name">Название карты</string>
     <string name="map_size">Размер карты</string>
     <string name="modded">Модифицированный</string>

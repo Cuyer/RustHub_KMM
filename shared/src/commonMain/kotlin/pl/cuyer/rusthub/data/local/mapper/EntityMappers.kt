@@ -62,6 +62,7 @@ import pl.cuyer.rusthub.domain.model.UsableEntity
 import pl.cuyer.rusthub.domain.model.Mining
 import kotlin.time.Instant
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlin.time.ExperimentalTime
 
@@ -258,6 +259,9 @@ fun MonumentEntity.toMonument(json: Json): Monument {
         name = name,
         slug = slug,
         iconUrl = iconUrl,
+        mapUrls = mapUrls?.let {
+            json.decodeFromString(ListSerializer(String.serializer()), it)
+        },
         attributes = attributes?.let { json.decodeFromString(MonumentAttributes.serializer(), it) },
         spawns = spawns?.let { json.decodeFromString(MonumentSpawns.serializer(), it) },
         usableEntities = usable_entities?.let {

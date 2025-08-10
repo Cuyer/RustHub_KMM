@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.data.local.Queries
@@ -39,6 +40,9 @@ class MonumentDataSourceImpl(
                             slug = monument.slug ?: "",
                             name = monument.name,
                             iconUrl = monument.iconUrl,
+                            mapUrls = monument.mapUrls?.let {
+                                json.encodeToString(ListSerializer(String.serializer()), it)
+                            },
                             attributes = monument.attributes?.let { json.encodeToString(it) },
                             spawns = monument.spawns?.let { json.encodeToString(it) },
                             usableEntities = monument.usableEntities?.let {
