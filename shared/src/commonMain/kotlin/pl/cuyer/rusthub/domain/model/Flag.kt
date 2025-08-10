@@ -1,6 +1,5 @@
 package pl.cuyer.rusthub.domain.model
 
-import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.util.getCountryCode
 import pl.cuyer.rusthub.util.getCountryDisplayName
 import androidx.compose.runtime.Immutable
@@ -34,16 +33,6 @@ enum class Flag {
     ZA, ZM, ZW, ZZ, XK;
 
     companion object {
-        fun Flag?.toDrawable(): Int {
-            return when(this) {
-                IN -> return getImageByFileName("ind").drawableResId
-                AS -> return getImageByFileName("asm").drawableResId
-                DO -> return getImageByFileName("dom").drawableResId
-                IS -> return getImageByFileName("isl").drawableResId
-                else -> return getImageByFileName(this?.name?.lowercase() ?: "pl").drawableResId
-            }
-        }
-
         fun fromDisplayName(displayName: String): Flag? {
             val code = getCountryCode(displayName)
             return code?.let { runCatching { Flag.valueOf(it) }.getOrNull() }

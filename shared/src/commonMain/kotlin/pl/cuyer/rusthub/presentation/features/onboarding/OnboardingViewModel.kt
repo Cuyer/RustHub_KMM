@@ -1,6 +1,6 @@
 package pl.cuyer.rusthub.presentation.features.onboarding
 
-import androidx.navigation3.runtime.NavKey
+import pl.cuyer.rusthub.presentation.navigation.NavKey
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
