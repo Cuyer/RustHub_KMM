@@ -9,7 +9,9 @@ import platform.Foundation.NSDateFormatterMediumStyle
 import platform.Foundation.NSDateFormatterShortStyle
 import platform.Foundation.NSLocale
 import platform.Foundation.currentLocale
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 actual fun formatLocalDateTime(dateTime: LocalDateTime): String {
     val formatter = NSDateFormatter()
     formatter.dateStyle = NSDateFormatterMediumStyle

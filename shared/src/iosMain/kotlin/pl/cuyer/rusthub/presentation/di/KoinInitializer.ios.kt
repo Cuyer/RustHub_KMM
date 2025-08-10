@@ -80,8 +80,8 @@ actual fun platformModule(passphrase: String): Module = module {
     single { InAppUpdateManager() }
     single { ReviewRequester() }
     single { StoreNavigator() }
-    single { UrlOpener() }
-    single { EmailSender() }
+    single<UrlOpener> { UrlOpener() }
+    single<EmailSender> { EmailSender() }
     single { SystemDarkThemeObserver() }
     single { ConnectivityObserver() }
     single { GoogleAuthClient() }

@@ -1,24 +1,32 @@
 package pl.cuyer.rusthub.util
 
-import apptrackingtransparency.ATTrackingManager
+import kotlinx.cinterop.ExperimentalForeignApi
 import platform.AdSupport.ASIdentifierManager
+import platform.AppTrackingTransparency.ATTrackingManager
+import platform.AppTrackingTransparency.ATTrackingManagerAuthorizationStatusAuthorized
+import platform.Foundation.NSOperatingSystemVersion
+import platform.Foundation.NSProcessInfo
 
 actual class AdsConsentManager {
 
     actual val canRequestAds: Boolean
-        get() =
-            if (ATTrackingManager.trackingAuthorizationStatus() ==
-                ATTrackingManagerAuthorizationStatusAuthorized)
-                true else ASIdentifierManager.sharedManager().isAdvertisingTrackingEnabled()
+        get() = if (
+            ATTrackingManager.trackingAuthorizationStatus() ==
+                ATTrackingManagerAuthorizationStatusAuthorized
+        ) {
+            true
+        } else {
+            ASIdentifierManager.sharedManager().isAdvertisingTrackingEnabled()
+        }
 
     actual val isPrivacyOptionsRequired: Boolean = false
 
+    @OptIn(ExperimentalForeignApi::class)
     actual fun gatherConsent(activity: Any, onComplete: (String?) -> Unit) {
-        if (platform.Foundation.NSProcessInfo.processInfo.isOperatingSystemAtLeastVersion(
-                platform.Foundation.NSOperatingSystemVersion(14, 0, 0)
-            )
-        ) {
-            ATTrackingManager.requestTrackingAuthorizationWithCompletionHandler { _ ->
+        val info = NSProcessInfo.processInfo
+        val version = NSOperatingSystemVersion(majorVersion = 14, minorVersion = 0, patchVersion = 0)
+        if (info.isOperatingSystemAtLeastVersion(version)) {
+            ATTrackingManager.requestTrackingAuthorizationWithCompletionHandler { _: UInt ->
                 onComplete(null)
             }
         } else {
