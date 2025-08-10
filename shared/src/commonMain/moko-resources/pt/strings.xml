@@ -133,6 +133,7 @@
     <string name="lifetime">Vida</string>
     <string name="mail_icon">Ícone de correio</string>
     <string name="map">Mapa</string>
+    <string name="maps">Mapas</string>
     <string name="map_information">Informações do mapa</string>
     <string name="map_legend">Legenda</string>
     <string name="map_creator_credit">Muito obrigado ao criador destes mapas</string>

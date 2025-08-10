@@ -82,7 +82,7 @@ fun MonumentMapPage(
                     .padding(horizontal = spacing.xmedium)
             ) {
                 Text(
-                    text = stringResource(SharedRes.strings.map),
+                    text = stringResource(SharedRes.strings.maps),
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(bottom = spacing.medium)
                 )
