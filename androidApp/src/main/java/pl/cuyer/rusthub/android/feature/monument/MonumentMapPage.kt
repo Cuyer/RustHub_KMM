@@ -92,7 +92,7 @@ fun MonumentMapPage(
             SubcomposeAsyncImage(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(300.dp)
                     .animateItem()
                     .padding(horizontal = spacing.xmedium)
                     .clickable { showImage = mapUrl },
@@ -102,7 +102,7 @@ fun MonumentMapPage(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(200.dp)
+                            .height(300.dp)
                             .shimmer()
                     )
                 },
@@ -110,7 +110,7 @@ fun MonumentMapPage(
                     Image(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(200.dp),
+                            .height(300.dp),
                         painter = painterResource(id = getImageByFileName("il_not_found").drawableResId),
                         contentDescription = stringResource(SharedRes.strings.error_not_found)
                     )
