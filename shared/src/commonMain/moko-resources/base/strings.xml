@@ -135,6 +135,7 @@
     <string name="lifetime">Lifetime</string>
     <string name="mail_icon">Mail Icon</string>
     <string name="map">Map</string>
+    <string name="maps">Maps</string>
     <string name="map_information">Map information</string>
     <string name="map_legend">Legend</string>
     <string name="map_creator_credit">Huge thanks to the creator of these maps</string>
