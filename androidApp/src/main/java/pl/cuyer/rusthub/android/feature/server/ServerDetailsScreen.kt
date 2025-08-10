@@ -131,7 +131,7 @@ fun ServerDetailsScreen(
 
     state.value.details?.mapImage?.let { mapUrl ->
         if (state.value.showMap) {
-            MapDialog(mapUrl = mapUrl) {
+            MapDialog(imageModel = mapUrl) {
                 onAction(ServerDetailsAction.OnDismissMap)
             }
         }
