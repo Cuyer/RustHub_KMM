@@ -16,12 +16,42 @@ struct ContentView: View {
                 endPoint: .bottom
             )
             .ignoresSafeArea()
+
+            TabView {
+                NavigationStack {
+                    ServerListView()
+                }
+                .tabItem {
+                    Label("Servers", systemImage: "list.bullet")
+                }
+
+                NavigationStack {
+                    ItemListView()
+                }
+                .tabItem {
+                    Label("Items", systemImage: "shippingbox")
+                }
+
+                NavigationStack {
+                    MonumentListView()
+                }
+                .tabItem {
+                    Label("Monuments", systemImage: "building.columns")
+                }
+
+                NavigationStack {
+                    SettingsView()
+                }
+                .tabItem {
+                    Label("Settings", systemImage: "gear")
+                }
+            }
         }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
-	static var previews: some View {
-		ContentView()
-	}
+    static var previews: some View {
+        ContentView(appModule: AppModuleImpl())
+    }
 }
