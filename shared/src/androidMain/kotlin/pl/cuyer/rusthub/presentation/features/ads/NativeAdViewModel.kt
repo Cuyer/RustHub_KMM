@@ -4,7 +4,7 @@ import io.github.aakira.napier.Napier
 import pl.cuyer.rusthub.domain.usecase.ads.ClearNativeAdsUseCase
 import pl.cuyer.rusthub.domain.usecase.ads.GetNativeAdUseCase
 
-class NativeAdViewModel(
+actual class NativeAdViewModel(
     getNativeAdUseCase: GetNativeAdUseCase,
     clearNativeAdsUseCase: ClearNativeAdsUseCase
 ) : BaseNativeAdViewModel(
