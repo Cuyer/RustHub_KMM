@@ -74,7 +74,7 @@ fun MonumentMapPage(
                 )
             }
         }
-        items(mapUrls, key = { it }) { mapUrl ->
+        item {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -86,34 +86,36 @@ fun MonumentMapPage(
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(bottom = spacing.medium)
                 )
-                SubcomposeAsyncImage(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .animateItem()
-                        .padding(horizontal = spacing.xmedium)
-                        .clickable { showImage = mapUrl },
-                    model = mapUrl,
-                    contentDescription = stringResource(SharedRes.strings.rust_map_image),
-                    loading = {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp)
-                                .shimmer()
-                        )
-                    },
-                    error = {
-                        Image(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp),
-                            painter = painterResource(id = getImageByFileName("il_not_found").drawableResId),
-                            contentDescription = stringResource(SharedRes.strings.error_not_found)
-                        )
-                    }
-                )
             }
+        }
+        items(mapUrls, key = { it }) { mapUrl ->
+            SubcomposeAsyncImage(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .animateItem()
+                    .padding(horizontal = spacing.xmedium)
+                    .clickable { showImage = mapUrl },
+                model = mapUrl,
+                contentDescription = stringResource(SharedRes.strings.rust_map_image),
+                loading = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .shimmer()
+                    )
+                },
+                error = {
+                    Image(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        painter = painterResource(id = getImageByFileName("il_not_found").drawableResId),
+                        contentDescription = stringResource(SharedRes.strings.error_not_found)
+                    )
+                }
+            )
         }
         item(key = "credit", contentType = "credit") {
             Text(
