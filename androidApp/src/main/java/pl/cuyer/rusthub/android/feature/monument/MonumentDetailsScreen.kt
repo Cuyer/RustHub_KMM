@@ -43,6 +43,9 @@ fun MonumentDetailsScreen(
     val pages = remember(state.value.monument) {
         state.value.monument?.let { monument ->
             buildList {
+                monument.mapUrls
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.let { add(PageData.Map(it)) }
                 monument.attributes
                     ?.takeIf { it.hasContent() }
                     ?.let { add(PageData.Attributes(it)) }
@@ -108,6 +111,11 @@ fun MonumentDetailsScreen(
                     state = pagerState
                 ) { page ->
                     when (val data = pages[page]) {
+                        is PageData.Map -> MonumentMapPage(
+                            mapUrls = data.mapUrls,
+                            modifier = Modifier.fillMaxSize()
+                        )
+
                         is PageData.Attributes -> MonumentAttributesPage(
                             attributes = data.attributes,
                             modifier = Modifier.fillMaxSize()
@@ -141,6 +149,7 @@ fun MonumentDetailsScreen(
 
 @Immutable
 private enum class DetailsPage(val title: dev.icerock.moko.resources.StringResource) {
+    MAP(SharedRes.strings.map),
     ATTRIBUTES(SharedRes.strings.attributes),
     SPAWNS(SharedRes.strings.spawns),
     USABLE_ENTITIES(SharedRes.strings.usable_entities),
@@ -150,6 +159,7 @@ private enum class DetailsPage(val title: dev.icerock.moko.resources.StringResou
 
 @Immutable
 private sealed class PageData(val page: DetailsPage) {
+    data class Map(val mapUrls: List<String>) : PageData(DetailsPage.MAP)
     data class Attributes(val attributes: MonumentAttributes) : PageData(DetailsPage.ATTRIBUTES)
     data class Spawns(val spawns: MonumentSpawns) : PageData(DetailsPage.SPAWNS)
     data class UsableEntities(val entities: List<UsableEntity>) : PageData(DetailsPage.USABLE_ENTITIES)

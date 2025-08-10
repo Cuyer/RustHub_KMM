@@ -135,6 +135,8 @@
     <string name="mail_icon">Піктограма пошти</string>
     <string name="map">Карта</string>
     <string name="map_information">Інформація про карту</string>
+    <string name="map_legend">Легенда</string>
+    <string name="map_creator_credit">Велика подяка творцю цих карт</string>
     <string name="map_name">Назва карти</string>
     <string name="map_size">Розмір карти</string>
     <string name="modded">Модифікований</string>

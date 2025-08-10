@@ -135,6 +135,8 @@
     <string name="mail_icon">Mail-Icon</string>
     <string name="map">Karte</string>
     <string name="map_information">Karteninformation</string>
+    <string name="map_legend">Legende</string>
+    <string name="map_creator_credit">Großer Dank an den Ersteller dieser Karten</string>
     <string name="map_name">Kartenname</string>
     <string name="map_size">Kartengröße</string>
     <string name="modded">Gemoddet</string>

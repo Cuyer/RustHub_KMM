@@ -10,6 +10,7 @@ data class Monument(
     val name: String? = null,
     val slug: String? = null,
     val iconUrl: String? = null,
+    @SerialName("mapUrl") val mapUrls: List<String>? = null,
     val attributes: MonumentAttributes? = null,
     val spawns: MonumentSpawns? = null,
     @SerialName("usableEntities") val usableEntities: List<UsableEntity>? = null,
