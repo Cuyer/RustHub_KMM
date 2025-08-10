@@ -605,13 +605,17 @@ fun ServerDetailsScreen(
                                         )
                                     },
                                     error = {
-                                        Image(
+                                        Box(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .height(200.dp),
-                                            painter = painterResource(id = getImageByFileName("il_not_found").drawableResId),
-                                            contentDescription = stringResource(SharedRes.strings.error_not_found)
-                                        )
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = stringResource(SharedRes.strings.error_image_emote),
+                                                style = MaterialTheme.typography.headlineMedium
+                                            )
+                                        }
                                     }
                                 )
                             }

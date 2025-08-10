@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
@@ -107,13 +108,17 @@ fun MonumentMapPage(
                     )
                 },
                 error = {
-                    Image(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(300.dp),
-                        painter = painterResource(id = getImageByFileName("il_not_found").drawableResId),
-                        contentDescription = stringResource(SharedRes.strings.error_not_found)
-                    )
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(SharedRes.strings.error_image_emote),
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                    }
                 }
             )
         }
