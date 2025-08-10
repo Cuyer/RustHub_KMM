@@ -10,7 +10,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.minimumInteractiveComponentSize
-import androidx.compose.material3.adaptive.layout.PaneExpansionAnchor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -39,7 +38,7 @@ import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @Composable
 fun MapDialog(
-    mapUrl: String,
+    imageModel: Any,
     onDismiss: () -> Unit
 ) {
     Dialog(
@@ -80,7 +79,7 @@ fun MapDialog(
                         scaleY = zoom
                         transformOrigin = TransformOrigin(0f, 0f)
                     },
-                model = mapUrl,
+                model = imageModel,
                 contentDescription = stringResource(SharedRes.strings.rust_map_image),
                 loading = {
                     Box(

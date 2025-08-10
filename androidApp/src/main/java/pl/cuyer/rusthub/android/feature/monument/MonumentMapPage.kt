@@ -39,11 +39,11 @@ fun MonumentMapPage(
     mapUrls: List<String>,
     modifier: Modifier = Modifier
 ) {
-    var showMapUrl by remember { mutableStateOf<String?>(null) }
+    var showImage by remember { mutableStateOf<Any?>(null) }
     val uriHandler = LocalUriHandler.current
 
-    showMapUrl?.let { url ->
-        MapDialog(mapUrl = url) { showMapUrl = null }
+    showImage?.let { model ->
+        MapDialog(imageModel = model) { showImage = null }
     }
 
     LazyColumn(
@@ -63,11 +63,13 @@ fun MonumentMapPage(
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(bottom = spacing.medium)
                 )
+                val legendRes = getImageByFileName("il_legend").drawableResId
                 Image(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp),
-                    painter = painterResource(id = getImageByFileName("il_legend").drawableResId),
+                        .height(200.dp)
+                        .clickable { showImage = legendRes },
+                    painter = painterResource(id = legendRes),
                     contentDescription = stringResource(SharedRes.strings.map_legend)
                 )
             }
@@ -90,7 +92,7 @@ fun MonumentMapPage(
                         .height(200.dp)
                         .animateItem()
                         .padding(horizontal = spacing.xmedium)
-                        .clickable { showMapUrl = mapUrl },
+                        .clickable { showImage = mapUrl },
                     model = mapUrl,
                     contentDescription = stringResource(SharedRes.strings.rust_map_image),
                     loading = {
