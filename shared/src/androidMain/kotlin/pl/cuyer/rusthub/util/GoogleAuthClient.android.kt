@@ -18,68 +18,54 @@ actual class GoogleAuthClient(
 ) {
     actual suspend fun getIdToken(clientId: String): String? {
         val activity = activityProvider.currentActivity() ?: return null
-        val signInOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(true)
+        val signIn = GetGoogleIdOption.Builder()
             .setServerClientId(clientId)
+            .setFilterByAuthorizedAccounts(true)
             .setAutoSelectEnabled(true)
             .build()
-        val signInRequest = GetCredentialRequest.Builder()
-            .addCredentialOption(signInOption)
-            .build()
 
-        val signUpOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
+        val signUp = GetGoogleIdOption.Builder()
             .setServerClientId(clientId)
-            .build()
-        val signUpRequest = GetCredentialRequest.Builder()
-            .addCredentialOption(signUpOption)
+            .setFilterByAuthorizedAccounts(false)
             .build()
 
-        val result = try {
-            manager.getCredential(activity, signInRequest)
-        } catch (noCred: NoCredentialException) {
-            try {
-                manager.getCredential(activity, signUpRequest)
-            } catch (e: Exception) {
-                if (e is CancellationException) throw e
-                CrashReporter.recordException(e)
-                return null
-            }
+        val trySignIn = GetCredentialRequest.Builder().addCredentialOption(signIn).build()
+        val trySignUp = GetCredentialRequest.Builder().addCredentialOption(signUp).build()
+
+        val response = try {
+            manager.getCredential(activity, trySignIn)
+        } catch (e: NoCredentialException) {
+            CrashReporter.recordException(e)
+            manager.getCredential(activity, trySignUp)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
-            if (e is CancellationException) throw e
             CrashReporter.recordException(e)
             return null
         }
 
-        return handleSignIn(result.credential)
+        return handleSignIn(response.credential)
     }
 
     private fun handleSignIn(credential: Credential): String? {
-        return when (credential) {
-            is CustomCredential -> {
-                if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-                    return try {
-                        val googleIdTokenCredential =
-                            GoogleIdTokenCredential.createFrom(credential.data)
-                        googleIdTokenCredential.idToken
-                    } catch (e: GoogleIdTokenParsingException) {
-                        CrashReporter.recordException(e)
-                        null
-                    }
-                } else null
+        if (credential is CustomCredential &&
+            credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
+        ) {
+            return try {
+                GoogleIdTokenCredential.createFrom(credential.data).idToken
+            } catch (e: GoogleIdTokenParsingException) {
+                CrashReporter.recordException(e); null
             }
-
-            else -> null
         }
+        return null
     }
 
     actual suspend fun signOut() {
         try {
-            manager.clearCredentialState(
-                    ClearCredentialStateRequest(),
-                )
+            manager.clearCredentialState(ClearCredentialStateRequest())
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
-            if (e is CancellationException) throw e
             CrashReporter.recordException(e)
         }
     }
