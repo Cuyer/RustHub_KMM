@@ -37,7 +37,13 @@ actual class GoogleAuthClient(
             manager.getCredential(activity, trySignIn)
         } catch (e: NoCredentialException) {
             CrashReporter.recordException(e)
-            manager.getCredential(activity, trySignUp)
+            try {
+                manager.getCredential(activity, trySignUp)
+            } catch (e: NoCredentialException) {
+                CrashReporter.log("No credentials found for the second time")
+                CrashReporter.recordException(e)
+                return null
+            }
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
