@@ -9,8 +9,6 @@ sealed interface ServerAction {
     @Immutable
     data class OnServerClick(val id: Long, val name: String) : ServerAction
     @Immutable
-    data class OnChangeIsRefreshingState(val isRefreshing: Boolean): ServerAction
-    @Immutable
     data class OnSaveFilters(val filters: ServerQuery): ServerAction
     @Immutable
     data class OnLongServerClick(val ipAddress: String?) : ServerAction

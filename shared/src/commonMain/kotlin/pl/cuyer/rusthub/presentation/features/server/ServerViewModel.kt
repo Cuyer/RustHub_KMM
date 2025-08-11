@@ -197,7 +197,6 @@ class ServerViewModel(
         when (action) {
             is ServerAction.OnServerClick -> navigateToServer(action.id, action.name)
             is ServerAction.OnLongServerClick -> saveIpToClipboard(action.ipAddress)
-            is ServerAction.OnChangeIsRefreshingState -> updateIsRefreshing(action.isRefreshing)
             is ServerAction.OnSaveFilters -> onSaveFilters(action.filters)
             is ServerAction.OnSearch -> handleSearch(query = action.query)
             is ServerAction.OnClearFilters -> clearFilters()
@@ -355,7 +354,6 @@ class ServerViewModel(
                 isLoadingFilters = loading
             )
         }
-        recomputeLoading()
     }
 
     private fun updateIsLoadingSearchHistory(loading: Boolean) {
@@ -364,24 +362,14 @@ class ServerViewModel(
                 isLoadingSearchHistory = loading
             )
         }
-        recomputeLoading()
     }
 
     private fun updateIsRefreshing(isRefreshing: Boolean) {
         _state.update { it.copy(isRefreshing = isRefreshing) }
-        recomputeLoading()
     }
 
     private fun updateLoadingMore(loading: Boolean) {
         _state.update { it.copy(loadingMore = loading) }
-    }
-
-    private fun recomputeLoading() {
-        _state.update { state ->
-            state.copy(
-                isLoading = state.isRefreshing || state.isLoadingFilters || state.isLoadingSearchHistory
-            )
-        }
     }
 
     private suspend fun clearServerCache() {
