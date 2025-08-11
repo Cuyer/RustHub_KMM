@@ -518,7 +518,7 @@ private fun ServerScreenPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            val state = remember { mutableStateOf(ServerState(isRefreshing = false)) }
+            val state = remember { mutableStateOf(ServerState(isLoading = false, isRefreshing = false)) }
             ServerScreen(
                 state = state,
                 onAction = {},

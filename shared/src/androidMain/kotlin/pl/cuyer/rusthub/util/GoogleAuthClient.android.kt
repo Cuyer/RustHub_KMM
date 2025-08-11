@@ -5,6 +5,7 @@ import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -59,11 +60,12 @@ actual class GoogleAuthClient(private val activityProvider: ActivityProvider) {
                     .addCredentialOption(authorizedAutoSelect)
                     .build()
             )
-        }.getOrElse { e ->
-            if (e is CancellationException) throw e
-            if (e !is NoCredentialException) CrashReporter.recordException(e)
-            null
-        }
+          }.getOrElse { e ->
+              if (e is CancellationException) throw e
+              if (e is GetCredentialCancellationException) return null
+              if (e !is NoCredentialException) CrashReporter.recordException(e)
+              null
+          }
 
         // Fallback: show chooser for any account
         val result = primary ?: runCatching {
@@ -73,11 +75,12 @@ actual class GoogleAuthClient(private val activityProvider: ActivityProvider) {
                     .addCredentialOption(anyAccountChooser)
                     .build()
             )
-        }.getOrElse { e ->
-            if (e is CancellationException) throw e
-            CrashReporter.recordException(e)
-            return null
-        }
+          }.getOrElse { e ->
+              if (e is CancellationException) throw e
+              if (e is GetCredentialCancellationException) return null
+              CrashReporter.recordException(e)
+              return null
+          }
 
         val cred = result.credential
         if (cred is CustomCredential &&

@@ -41,7 +41,7 @@ import pl.cuyer.rusthub.util.toUserMessage
 
 data class SubscriptionState(
     val products: Map<SubscriptionPlan, BillingProduct> = emptyMap(),
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val isProcessing: Boolean = false,
     val currentPlan: SubscriptionPlan? = null,
     val hasError: Boolean = false,

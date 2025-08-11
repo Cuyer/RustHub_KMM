@@ -834,7 +834,7 @@ private fun CarouselAutoPlayHandler(pagerState: PagerState, carouselSize: Int, d
 @Preview
 @Composable
 private fun SubscriptionScreenPreview() {
-    val state = remember { mutableStateOf(SubscriptionState()) }
+    val state = remember { mutableStateOf(SubscriptionState(isLoading = false)) }
     RustHubTheme {
         SubscriptionScreen(
             onNavigateUp = {},

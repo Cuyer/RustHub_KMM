@@ -18,7 +18,7 @@ data class SettingsState(
     val subscriptionExpiration: String? = null,
     val subscriptionStatus: String? = null,
     val anonymousExpiration: String? = null,
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val isLoggingOut: Boolean = false,
     val isPrivacyOptionsRequired: Boolean = false,
     val theme: Theme = Theme.SYSTEM,

@@ -701,7 +701,7 @@ private fun SettingsColumnShimmer(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun SettingsPreview() {
-    val state = remember { mutableStateOf(SettingsState()) }
+    val state = remember { mutableStateOf(SettingsState(isLoading = false)) }
     RustHubTheme {
         SettingsScreen(
             onNavigate = {},
