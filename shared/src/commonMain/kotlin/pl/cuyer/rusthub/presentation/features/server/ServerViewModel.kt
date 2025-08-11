@@ -363,11 +363,6 @@ class ServerViewModel(
             )
         }
     }
-
-    private fun updateIsRefreshing(isRefreshing: Boolean) {
-        _state.update { it.copy(isRefreshing = isRefreshing) }
-    }
-
     private fun updateLoadingMore(loading: Boolean) {
         _state.update { it.copy(loadingMore = loading) }
     }
