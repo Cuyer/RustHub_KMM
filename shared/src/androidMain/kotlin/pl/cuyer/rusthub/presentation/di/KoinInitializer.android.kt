@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.presentation.di
 
+import androidx.credentials.CredentialManager
 import dev.icerock.moko.permissions.PermissionsController
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
@@ -99,7 +100,8 @@ actual fun platformModule(passphrase: String): Module = module {
     single { EmailSender(get()) }
     single { SystemDarkThemeObserver(androidContext()) }
     single { ConnectivityObserver(androidContext()) }
-    single { GoogleAuthClient(get()) }
+    single { CredentialManager.create(androidContext()) }
+    single { GoogleAuthClient(get(), get()) }
     single { RemoteConfig() }
     single { StringProvider(androidContext()) }
     single { PermissionsController(androidContext()) }

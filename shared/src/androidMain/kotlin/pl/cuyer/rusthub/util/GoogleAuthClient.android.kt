@@ -1,6 +1,8 @@
 package pl.cuyer.rusthub.util
 
+import android.content.Context
 import androidx.credentials.ClearCredentialStateRequest
+import androidx.credentials.Credential
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -10,31 +12,34 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import kotlinx.coroutines.CancellationException
 
-actual class GoogleAuthClient(private val activityProvider: ActivityProvider) {
+actual class GoogleAuthClient(
+    private val activityProvider: ActivityProvider,
+    private val manager: CredentialManager
+) {
     actual suspend fun getIdToken(clientId: String): String? {
-        val context = activityProvider.currentActivity() ?: return null
-        val manager = CredentialManager.create(context)
+        val activity = activityProvider.currentActivity() ?: return null
         val signInOption = GetGoogleIdOption.Builder()
+            .setFilterByAuthorizedAccounts(true)
             .setServerClientId(clientId)
             .setAutoSelectEnabled(true)
-            .setFilterByAuthorizedAccounts(true)
             .build()
         val signInRequest = GetCredentialRequest.Builder()
             .addCredentialOption(signInOption)
             .build()
 
+        val signUpOption = GetGoogleIdOption.Builder()
+            .setFilterByAuthorizedAccounts(false)
+            .setServerClientId(clientId)
+            .build()
+        val signUpRequest = GetCredentialRequest.Builder()
+            .addCredentialOption(signUpOption)
+            .build()
+
         val result = try {
-            manager.getCredential(context, signInRequest)
+            manager.getCredential(activity, signInRequest)
         } catch (noCred: NoCredentialException) {
             try {
-                val signUpOption = GetGoogleIdOption.Builder()
-                    .setServerClientId(clientId)
-                    .setFilterByAuthorizedAccounts(false)
-                    .build()
-                val signUpRequest = GetCredentialRequest.Builder()
-                    .addCredentialOption(signUpOption)
-                    .build()
-                manager.getCredential(context, signUpRequest)
+                manager.getCredential(activity, signUpRequest)
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
                 CrashReporter.recordException(e)
@@ -46,8 +51,10 @@ actual class GoogleAuthClient(private val activityProvider: ActivityProvider) {
             return null
         }
 
-        val credential = result.credential
+        return handleSignIn(result.credential)
+    }
 
+    private fun handleSignIn(credential: Credential): String? {
         return when (credential) {
             is CustomCredential -> {
                 if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
