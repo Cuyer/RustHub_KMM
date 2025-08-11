@@ -27,6 +27,7 @@ actual class GoogleAuthClient(
         val signUp = GetGoogleIdOption.Builder()
             .setServerClientId(clientId)
             .setFilterByAuthorizedAccounts(false)
+            .setAutoSelectEnabled(false)
             .build()
 
         val trySignIn = GetCredentialRequest.Builder().addCredentialOption(signIn).build()
