@@ -355,6 +355,7 @@ class ServerViewModel(
                 isLoadingFilters = loading
             )
         }
+        recomputeLoading()
     }
 
     private fun updateIsLoadingSearchHistory(loading: Boolean) {
@@ -363,14 +364,24 @@ class ServerViewModel(
                 isLoadingSearchHistory = loading
             )
         }
+        recomputeLoading()
     }
 
     private fun updateIsRefreshing(isRefreshing: Boolean) {
         _state.update { it.copy(isRefreshing = isRefreshing) }
+        recomputeLoading()
     }
 
     private fun updateLoadingMore(loading: Boolean) {
         _state.update { it.copy(loadingMore = loading) }
+    }
+
+    private fun recomputeLoading() {
+        _state.update { state ->
+            state.copy(
+                isLoading = state.isRefreshing || state.isLoadingFilters || state.isLoadingSearchHistory
+            )
+        }
     }
 
     private suspend fun clearServerCache() {

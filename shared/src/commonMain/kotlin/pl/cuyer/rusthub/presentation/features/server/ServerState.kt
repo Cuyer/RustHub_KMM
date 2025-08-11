@@ -7,7 +7,8 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class ServerState(
-    val isRefreshing: Boolean = true,
+    val isLoading: Boolean = true,
+    val isRefreshing: Boolean = false,
     val filters: FilterUi? = null,
     val searchQuery: List<SearchQueryUi> = emptyList(),
     val isLoadingSearchHistory: Boolean = true,
