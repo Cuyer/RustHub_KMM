@@ -74,10 +74,8 @@ actual class GoogleAuthClient(
     }
 
     actual suspend fun signOut() {
-        val context = activityProvider.currentActivity() ?: return
         try {
-            CredentialManager.create(context)
-                .clearCredentialState(
+            manager.clearCredentialState(
                     ClearCredentialStateRequest(),
                 )
         } catch (e: Exception) {
