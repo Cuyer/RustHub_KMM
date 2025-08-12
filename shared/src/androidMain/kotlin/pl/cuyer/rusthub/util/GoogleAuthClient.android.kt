@@ -8,6 +8,7 @@ import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.NoCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import kotlinx.coroutines.CancellationException
@@ -18,32 +19,18 @@ actual class GoogleAuthClient(
 ) {
     actual suspend fun getIdToken(clientId: String): String? {
         val activity = activityProvider.currentActivity() ?: return null
-        val signIn = GetGoogleIdOption.Builder()
-            .setServerClientId(clientId)
-            .setFilterByAuthorizedAccounts(true)
-            .setAutoSelectEnabled(true)
-            .build()
-
-        val signUp = GetGoogleIdOption.Builder()
-            .setServerClientId(clientId)
-            .setFilterByAuthorizedAccounts(false)
-            .setAutoSelectEnabled(false)
+        val signIn = GetSignInWithGoogleOption.Builder(
+            clientId
+        )
             .build()
 
         val trySignIn = GetCredentialRequest.Builder().addCredentialOption(signIn).build()
-        val trySignUp = GetCredentialRequest.Builder().addCredentialOption(signUp).build()
 
         val response = try {
             manager.getCredential(activity, trySignIn)
         } catch (e: NoCredentialException) {
             CrashReporter.recordException(e)
-            try {
-                manager.getCredential(activity, trySignUp)
-            } catch (e: NoCredentialException) {
-                CrashReporter.log("No credentials found for the second time")
-                CrashReporter.recordException(e)
-                return null
-            }
+            return null
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
