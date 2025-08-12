@@ -21,6 +21,7 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import java.util.Locale
 import java.util.UUID
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -35,12 +36,10 @@ actual class GoogleAuthClient(
         val activity = activityProvider.currentActivity()
             ?: return Result.Error(IllegalStateException("No activity"))
 
-        var nonce = UUID.randomUUID().toString()
         var credentialOption: CredentialOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(true)
             .setServerClientId(clientId)
             .setAutoSelectEnabled(true)
-            .setNonce(nonce)
             .build()
 
         var request: GetCredentialRequest = GetCredentialRequest.Builder()
@@ -56,17 +55,14 @@ actual class GoogleAuthClient(
                 return Result.Error(e)
             }
             try {
-                nonce = UUID.randomUUID().toString()
                 credentialOption = GetGoogleIdOption.Builder()
                     .setFilterByAuthorizedAccounts(false)
                     .setServerClientId(clientId)
                     .setAutoSelectEnabled(false)
-                    .setNonce(nonce)
                     .build()
 
                 if (e.type == android.credentials.GetCredentialException.TYPE_NO_CREDENTIAL) {
                     credentialOption = GetSignInWithGoogleOption.Builder(clientId)
-                        .setNonce(nonce)
                         .build()
                 }
 
@@ -102,7 +98,7 @@ actual class GoogleAuthClient(
     ): Result<String> {
         if (e is GetCredentialException &&
             e.type == android.credentials.GetCredentialException.TYPE_NO_CREDENTIAL &&
-            e.errorMessage?.lowercase()?.contains("28434") == true
+            e.errorMessage?.toString()?.lowercase(Locale.ROOT)?.contains("28434") == true
         ) {
             return signInLegacy(activity, clientId)
         }
@@ -127,7 +123,8 @@ actual class GoogleAuthClient(
 
         val signInClient = GoogleSignIn.getClient(activity, gso)
         val key = "google_sign_in_${UUID.randomUUID()}"
-        val launcher: ActivityResultLauncher<Intent>
+
+        lateinit var launcher: ActivityResultLauncher<Intent>
         launcher = registryOwner.activityResultRegistry.register(
             key,
             ActivityResultContracts.StartActivityForResult()
@@ -180,4 +177,3 @@ actual class GoogleAuthClient(
         }
     }
 }
-
