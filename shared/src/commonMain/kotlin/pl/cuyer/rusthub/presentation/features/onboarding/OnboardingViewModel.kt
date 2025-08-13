@@ -156,13 +156,12 @@ class OnboardingViewModel(
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
-                            when (val tokenResult = googleAuthClient.getIdToken(result.data)) {
-                                is Result.Success -> loginWithGoogleToken(tokenResult.data)
-                                is Result.Error -> showErrorSnackbar(
-                                    tokenResult.exception.toUserMessage(stringProvider)
-                                        ?: stringProvider.get(
-                                            SharedRes.strings.google_sign_in_failed
-                                        )
+                            val token = googleAuthClient.getIdToken(result.data)
+                            if (token != null) {
+                                loginWithGoogleToken(token)
+                            } else {
+                                showErrorSnackbar(
+                                    stringProvider.get(SharedRes.strings.google_sign_in_failed)
                                 )
                             }
                         }

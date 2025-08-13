@@ -115,9 +115,7 @@ class UpgradeViewModel(
                         is Result.Success -> {
                             snackbarController.sendEvent(
                                 SnackbarEvent(
-                                    stringProvider.get(
-                                        SharedRes.strings.account_upgraded_successfully
-                                    )
+                                    stringProvider.get(SharedRes.strings.account_upgraded_successfully)
                                 )
                             )
                             _uiEvent.send(UiEvent.NavigateUp)
@@ -148,13 +146,12 @@ class UpgradeViewModel(
                 .collectLatest { result ->
                     when (result) {
                         is Result.Success -> {
-                            when (val tokenResult = googleAuthClient.getIdToken(result.data)) {
-                                is Result.Success -> upgradeWithGoogleToken(tokenResult.data)
-                                is Result.Error -> showErrorSnackbar(
-                                    tokenResult.exception.toUserMessage(stringProvider)
-                                        ?: stringProvider.get(
-                                            SharedRes.strings.google_sign_in_failed
-                                        )
+                            val token = googleAuthClient.getIdToken(result.data)
+                            if (token != null) {
+                                upgradeWithGoogleToken(token)
+                            } else {
+                                showErrorSnackbar(
+                                    stringProvider.get(SharedRes.strings.google_sign_in_failed)
                                 )
                             }
                         }
@@ -180,9 +177,7 @@ class UpgradeViewModel(
                         is Result.Success -> {
                             snackbarController.sendEvent(
                                 SnackbarEvent(
-                                    stringProvider.get(
-                                        SharedRes.strings.account_upgraded_successfully
-                                    )
+                                    stringProvider.get(SharedRes.strings.account_upgraded_successfully)
                                 )
                             )
                             navigateUp()
