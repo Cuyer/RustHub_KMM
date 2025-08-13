@@ -19,8 +19,10 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
+import org.koin.dsl.module
 import pl.cuyer.rusthub.BuildConfig
 import pl.cuyer.rusthub.data.local.DatabasePassphraseProvider
+import pl.cuyer.rusthub.util.ActivityProvider
 import pl.cuyer.rusthub.util.NotificationPresenter
 import pl.cuyer.rusthub.work.CustomWorkerFactory
 
@@ -33,6 +35,7 @@ class RustHubApplication : Application(), Configuration.Provider {
     val koinReady = CompletableDeferred<Unit>()
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private lateinit var workConfig: Configuration
+    private lateinit var activityProvider: ActivityProvider
 
     @SuppressLint("MissingPermission")
     override fun onCreate() {
@@ -63,6 +66,7 @@ class RustHubApplication : Application(), Configuration.Provider {
         }
         FirebaseAppCheck.getInstance().installAppCheckProviderFactory(factory)
 
+        activityProvider = ActivityProvider(this)
         applicationScope.launch {
             val passphrase = DatabasePassphraseProvider(this@RustHubApplication).loadPassphrase()
             initKoin(passphrase) {
@@ -70,6 +74,7 @@ class RustHubApplication : Application(), Configuration.Provider {
                 if (BuildConfig.DEBUG) {
                     androidLogger()
                 }
+                modules(module { single { activityProvider } })
             }
 
             workConfig = Configuration.Builder()

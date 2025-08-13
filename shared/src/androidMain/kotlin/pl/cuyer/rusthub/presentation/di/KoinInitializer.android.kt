@@ -79,7 +79,6 @@ actual fun platformModule(passphrase: String): Module = module {
     single { ClipboardHandler(get()) }
     single { ShareHandler(get<ActivityProvider>()) }
     single { AdsConsentManager.getInstance(get()) }
-    single(createdAtStart = true) { ActivityProvider(androidApplication()) }
     single<NativeAdRepository> { NativeAdRepositoryImpl(get()) }
     factory { GetNativeAdUseCase(get()) }
     factory { ClearNativeAdsUseCase(get()) }
