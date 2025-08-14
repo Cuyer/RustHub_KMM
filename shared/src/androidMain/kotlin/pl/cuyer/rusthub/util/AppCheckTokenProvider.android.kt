@@ -1,7 +1,7 @@
 package pl.cuyer.rusthub.util
 
-import com.google.android.play.core.integrity.IntegrityErrorCode
 import com.google.android.play.core.integrity.IntegrityServiceException
+import com.google.android.play.core.integrity.model.IntegrityErrorCode
 import com.google.firebase.appcheck.FirebaseAppCheck
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CancellationException
@@ -12,7 +12,6 @@ import kotlinx.coroutines.withContext
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
-import pl.cuyer.rusthub.util.CrashReporter
 
 actual class AppCheckTokenProvider actual constructor(
     private val stringProvider: StringProvider,
@@ -69,6 +68,6 @@ actual class AppCheckTokenProvider actual constructor(
 
     private companion object {
         private const val MAX_RETRIES = 3
-        private const val INITIAL_DELAY_MS = 200L
+        private const val INITIAL_DELAY_MS = 1000L
     }
 }

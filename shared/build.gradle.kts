@@ -79,6 +79,7 @@ kotlin {
             implementation(libs.androidx.appcompat)
             implementation(libs.play.services.ads)
             implementation(libs.user.messaging.platform)
+            implementation(libs.play.integrity)
         }
         commonMain.dependencies {
             implementation(project.dependencies.platform(libs.koin.bom))
