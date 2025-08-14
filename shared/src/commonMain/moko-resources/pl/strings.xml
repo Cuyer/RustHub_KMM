@@ -16,6 +16,7 @@
     <string name="logout_error">Nie udało się wylogować.</string>
     <string name="logout_button">Wyloguj</string>
     <string name="fetch_user_error">Nie udało się pobrać danych użytkownika.</string>
+    <string name="play_store_required">Wymagany jest Sklep Google Play. Zainstaluj go lub zaktualizuj.</string>
     <string name="wipe">Wipe</string>
     <string name="days"> dni</string>
     <string name="three_max">Maks 3</string>

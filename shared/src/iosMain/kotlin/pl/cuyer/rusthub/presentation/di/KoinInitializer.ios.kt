@@ -63,7 +63,7 @@ import pl.cuyer.rusthub.presentation.features.monument.MonumentDetailsViewModel
 @Suppress("UNUSED_PARAMETER")
 actual fun platformModule(passphrase: String): Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
-    single { AppCheckTokenProvider() }
+    single { AppCheckTokenProvider(get(), get()) }
     single { HttpClientFactory(get(), get(), get(), get(), get()).create() }
     single { TokenRefresher() }
     single { ClipboardHandler() }

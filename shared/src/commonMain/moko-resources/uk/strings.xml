@@ -16,6 +16,7 @@
     <string name="logout_error">Помилка сталася під час спроби вийти.</string>
     <string name="logout_button">Кнопка виходу</string>
     <string name="fetch_user_error">Під час отримання даних користувачів сталася помилка.</string>
+    <string name="play_store_required">Потрібен Google Play Store. Будь ласка, встановіть або оновіть його.</string>
     <string name="wipe">Витирати</string>
     <string name="days">дні</string>
     <string name="three_max">Макс 3</string>

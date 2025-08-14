@@ -16,6 +16,7 @@
     <string name="logout_error">Échec de la déconnexion.</string>
     <string name="logout_button">Se déconnecter</string>
     <string name="fetch_user_error">Impossible de récupérer les données de l'utilisateur.</string>
+    <string name="play_store_required">Google Play Store est requis. Veuillez l'installer ou le mettre à jour.</string>
     <string name="wipe">Wipe</string>
     <string name="days"> jours</string>
     <string name="three_max">Max 3</string>
