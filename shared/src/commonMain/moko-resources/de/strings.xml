@@ -16,6 +16,7 @@
     <string name="logout_error">Abmeldung fehlgeschlagen.</string>
     <string name="logout_button">Abmelden</string>
     <string name="fetch_user_error">Benutzerdaten konnten nicht geladen werden.</string>
+    <string name="play_store_required">Google Play Store wird benötigt. Bitte installieren oder aktualisieren Sie ihn.</string>
     <string name="wipe">Wipe</string>
     <string name="days"> Tage</string>
     <string name="three_max">Max 3</string>

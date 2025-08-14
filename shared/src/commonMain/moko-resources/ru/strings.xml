@@ -16,6 +16,7 @@
     <string name="logout_error">Не удалось выйти из аккаунта.</string>
     <string name="logout_button">Выйти</string>
     <string name="fetch_user_error">Не удалось получить данные пользователя.</string>
+    <string name="play_store_required">Требуется Google Play Store. Пожалуйста, установите или обновите его.</string>
     <string name="wipe">Вайп</string>
     <string name="days"> дней</string>
     <string name="three_max">Макс 3</string>

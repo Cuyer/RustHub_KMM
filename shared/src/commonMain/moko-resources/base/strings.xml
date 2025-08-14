@@ -16,6 +16,7 @@
     <string name="logout_error">An error occurred while trying to log out.</string>
     <string name="logout_button">Logout button</string>
     <string name="fetch_user_error">An error occurred while fetching user data.</string>
+    <string name="play_store_required">Google Play Store is required. Please install or update it.</string>
     <string name="wipe">Wipe</string>
     <string name="days"> days</string>
     <string name="three_max">Max 3</string>

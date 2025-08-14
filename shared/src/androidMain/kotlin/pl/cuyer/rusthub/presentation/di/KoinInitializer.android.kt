@@ -74,7 +74,7 @@ actual fun platformModule(passphrase: String): Module = module {
             DatabaseDriverFactory(androidContext()).create()
         }
     }
-    single { AppCheckTokenProvider() }
+    single { AppCheckTokenProvider(get(), get()) }
     single { HttpClientFactory(get(), get(), get(), get(), get()).create() }
     single { ClipboardHandler(get()) }
     single { ShareHandler(get<ActivityProvider>()) }
