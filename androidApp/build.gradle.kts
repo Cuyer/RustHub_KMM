@@ -125,11 +125,10 @@ dependencies {
     implementation(libs.androidx.navigation)
     implementation(libs.androidx.navigation.ui)
     implementation(libs.androidx.navigation.viewmodel)
-    implementation(libs.androidx.compose.material3.adaptive)
-    implementation(libs.androidx.compose.material3.adaptive.layout)
-    implementation(libs.androidx.compose.material3.adaptive.navigation)
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
-    implementation(libs.androidx.compose.material3.adaptive.navigation3)
+    implementation(libs.androidx.material3.adaptive.navigation3) {
+        isChanging = true
+    }
     implementation(libs.androidx.compose.material3.windowsizeclass)
     implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.core.splashscreen)

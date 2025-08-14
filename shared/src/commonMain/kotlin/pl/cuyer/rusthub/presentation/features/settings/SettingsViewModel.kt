@@ -287,6 +287,7 @@ class SettingsViewModel(
         subscriptionJob = coroutineScope.launch {
             val user = getUserUseCase().first()
             if (user?.provider == AuthProvider.ANONYMOUS) {
+                updateLoading(false)
                 updateUser(user, null)
                 return@launch
             }

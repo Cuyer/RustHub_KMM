@@ -12,20 +12,20 @@ sql-delight-version = "2.1.0"
 coroutines-core = "1.10.2"
 datetime = "0.7.1-0.6.x-compat"
 napier = "2.7.1"
-splash-screen = "1.2.0-SNAPSHOT"
+splash-screen = "1.2.0-rc01"
 google-services = "4.4.3"
 firebase-bom = "34.1.0"
 crashlytics-gradle = "3.0.6"
 lifecycle = "2.9.1"
-navigation3 = "1.0.0-SNAPSHOT"
-navigation3-viewmodel = "2.10.0-SNAPSHOT"
-activity-compose = "1.12.0-SNAPSHOT"
-compose-material3 = "1.5.0-SNAPSHOT"
+navigation3Core = "1.0.0-alpha07"
+lifecycleViewmodelNav3 = "1.0.0-alpha04"
+material3AdaptiveNav3 = "1.0.0-SNAPSHOT"
+activity-compose = "1.12.0-alpha06"
+compose-material3 = "1.5.0-alpha02"
 compose-bom = "2025.08.00"
 moko-resources = "0.25.0"
 moko-permissions = "0.19.1"
-paging = "3.4.0-SNAPSHOT"
-material3-adaptive = "1.2.0-SNAPSHOT"
+paging = "3.4.0-alpha02"
 work = "2.10.3"
 serialization = "1.9.0"
 coil = "3.3.0"
@@ -35,7 +35,7 @@ google-auth = "21.4.0"
 credential = "1.6.0-alpha05"
 identity = "1.1.1"
 certificate-transparency = "2.8.2"
-datastore = "1.2.0-SNAPSHOT"
+datastore = "1.2.0-alpha02"
 security-crypto = "1.1.0"
 sqlcipher = "4.10.0"
 playcore = "2.1.0"
@@ -107,22 +107,13 @@ kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-j
 kotlin-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "serialization" }
 
 #ADAPTIVE LAYOUT
-androidx-compose-material3-adaptive = { module = "androidx.compose.material3.adaptive:adaptive", version.ref = "material3-adaptive" }
-androidx-compose-material3-adaptive-layout = { module = "androidx.compose.material3.adaptive:adaptive-layout", version.ref = "material3-adaptive" }
-androidx-compose-material3-adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-navigation", version.ref = "material3-adaptive" }
 androidx-compose-material3-adaptive-navigation-suite = { module = "androidx.compose.material3:material3-adaptive-navigation-suite", version.ref = "compose-material3" }
-androidx-compose-material3-adaptive-navigation3 = { module = "androidx.compose.material3.adaptive:adaptive-navigation3", version.ref = "navigation3" }
 androidx-compose-material3-windowsizeclass = { group = "androidx.compose.material3", name = "material3-window-size-class-android", version.ref = "compose-material3" }
 
 #ANDROIDX(outside BOM)
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
-androidx-navigation = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
-androidx-navigation-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
-androidx-navigation-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "navigation3-viewmodel" }
-lifecycle-runtime = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycle" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splash-screen" }
 androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
@@ -131,7 +122,18 @@ androidx-credentials-compat = { module = "androidx.credentials:credentials-play-
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "security-crypto" }
-sqlcipher-android = { module = "net.zetetic:sqlcipher-android", version.ref = "sqlcipher" }
+
+#LIFECYCLE
+lifecycle-runtime = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+
+#NAVIGATION3
+androidx-navigation = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3Core" }
+androidx-navigation-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3Core" }
+androidx-navigation-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
+
+#NAVIGATION3-ADAPTIVE
+androidx-material3-adaptive-navigation3 = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation3", version.ref = "material3AdaptiveNav3" }
 
 #PAGING3
 paging = { module = "androidx.paging:paging-common", version.ref = "paging" }
@@ -141,27 +143,31 @@ paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pag
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 
-#OTHER
-napier = { module = "io.github.aakira:napier", version.ref = "napier" }
-moko-resources-generator = { module = "dev.icerock.moko:resources-generator", version.ref = "moko-resources" }
-moko-resources = { module = "dev.icerock.moko:resources", version.ref = "moko-resources" }
-moko-permissions = { module = "dev.icerock.moko:permissions", version.ref = "moko-permissions" }
-moko-permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "moko-permissions" }
-moko-permissions-notifications = { module = "dev.icerock.moko:permissions-notifications", version.ref = "moko-permissions" }
+#GOOGLE
+play-integrity = { group = "com.google.android.play", name = "integrity", version.ref = "integrity" }
+user-messaging-platform = { group = "com.google.android.ump", name = "user-messaging-platform", version.ref = "userMessagingPlatform" }
+google-play-app-update = { module = "com.google.android.play:app-update", version.ref = "playcore" }
+google-play-app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.ref = "playcore" }
 google-identity = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "identity" }
 google-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "google-auth" }
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "play-services-ads" }
 play-services-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version.ref = "oss-licenses" }
 play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "play-review" }
 play-billing = { module = "com.android.billingclient:billing-ktx", version.ref = "play-billing" }
-certificate-transparency = { module = "com.appmattus.certificatetransparency:certificatetransparency-android", version.ref = "certificate-transparency" }
-google-play-app-update = { module = "com.google.android.play:app-update", version.ref = "playcore" }
-google-play-app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.ref = "playcore" }
-desugar_jdk_libs-v215 = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
 protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
-user-messaging-platform = { group = "com.google.android.ump", name = "user-messaging-platform", version.ref = "userMessagingPlatform" }
-play-integrity = { group = "com.google.android.play", name = "integrity", version.ref = "integrity" }
+
+#MOKO
+moko-resources = { module = "dev.icerock.moko:resources", version.ref = "moko-resources" }
+moko-permissions = { module = "dev.icerock.moko:permissions", version.ref = "moko-permissions" }
+moko-permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "moko-permissions" }
+moko-permissions-notifications = { module = "dev.icerock.moko:permissions-notifications", version.ref = "moko-permissions" }
+
+#OTHER
+sqlcipher-android = { module = "net.zetetic:sqlcipher-android", version.ref = "sqlcipher" }
+napier = { module = "io.github.aakira:napier", version.ref = "napier" }
+certificate-transparency = { module = "com.appmattus.certificatetransparency:certificatetransparency-android", version.ref = "certificate-transparency" }
+desugar_jdk_libs-v215 = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
