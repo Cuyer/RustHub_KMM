@@ -8,6 +8,7 @@ fun Flag?.toDrawable(): Int {
         Flag.AS -> getImageByFileName("asm").drawableResId
         Flag.DO -> getImageByFileName("dom").drawableResId
         Flag.IS -> getImageByFileName("isl").drawableResId
+        Flag.US -> getImageByFileName("us_modified").drawableResId
         else -> getImageByFileName(this?.name?.lowercase() ?: "pl").drawableResId
     }
 }
