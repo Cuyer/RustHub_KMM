@@ -1,67 +1,74 @@
+@file:OptIn(
+    ExperimentalFoundationApi::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3ExpressiveApi::class,
+    kotlin.time.ExperimentalTime::class
+)
+
 package pl.cuyer.rusthub.android.feature.raid
 
+import android.content.ClipData
+import android.view.DragAndDropPermissions
+import android.view.View
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.draganddrop.dragAndDropSource
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.ReorderableItem
-import androidx.compose.foundation.lazy.rememberReorderableLazyListState
-import androidx.compose.foundation.lazy.reorderable
-import androidx.compose.foundation.lazy.detectReorderAfterLongPress
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonGroup
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draganddrop.DragAndDropEvent
+import androidx.compose.ui.draganddrop.DragAndDropTarget
+import androidx.compose.ui.draganddrop.DragAndDropTransferData
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import kotlin.time.Clock
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.Raid
 import pl.cuyer.rusthub.presentation.features.raid.RaidSchedulerAction
 import pl.cuyer.rusthub.presentation.features.raid.RaidSchedulerState
-import pl.cuyer.rusthub.SharedRes
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun RaidSchedulerScreen(
-    state: RaidSchedulerState,
+    state: State<RaidSchedulerState>,
     onAction: (RaidSchedulerAction) -> Unit,
 ) {
+    val uiState = state.value
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    if (state.showForm) {
+    val listState = rememberLazyListState()
+
+    // Copy raids into a mutable list for UI reordering
+    val raids = remember(uiState.raids) { mutableStateListOf(*uiState.raids.toTypedArray()) }
+
+    if (uiState.showForm) {
         ModalBottomSheet(
             onDismissRequest = { onAction(RaidSchedulerAction.OnDismissForm) },
             sheetState = sheetState
         ) {
             RaidForm(
-                raid = state.editingRaid,
+                raid = uiState.editingRaid,
                 onSave = { onAction(RaidSchedulerAction.OnSaveRaid(it)) }
             )
         }
     }
+
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = { onAction(RaidSchedulerAction.OnAddClick) }) {
@@ -69,60 +76,79 @@ fun RaidSchedulerScreen(
             }
         },
         bottomBar = {
-            if (state.selectedIds.isNotEmpty()) {
+            if (uiState.selectedIds.isNotEmpty()) {
+                val delete = stringResource(SharedRes.strings.delete)
+                val edit = stringResource(SharedRes.strings.edit)
                 ButtonGroup(
                     overflowIndicator = {
                         Icon(Icons.Filled.MoreVert, contentDescription = null)
                     }
                 ) {
-                    Button(onClick = { onAction(RaidSchedulerAction.OnDeleteSelected) }) {
-                        Icon(Icons.Filled.Delete, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(SharedRes.strings.delete))
-                    }
-                    Button(
+                    clickableItem(
+                        onClick = { onAction(RaidSchedulerAction.OnDeleteSelected) },
+                        label = delete,
+                        icon = { Icon(Icons.Filled.Delete, contentDescription = null) }
+                    )
+                    clickableItem(
                         onClick = { onAction(RaidSchedulerAction.OnEditSelected) },
-                        enabled = state.selectedIds.size == 1
-                    ) {
-                        Icon(Icons.Filled.Edit, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(SharedRes.strings.edit))
-                    }
+                        label = edit,
+                        icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
+                        enabled = uiState.selectedIds.size == 1
+                    )
                 }
             }
         }
     ) { padding ->
-        val reorderState = rememberReorderableLazyListState(onMove = { from, to ->
-            onAction(RaidSchedulerAction.OnMoveRaid(from.index, to.index))
-        })
         LazyColumn(
-            state = reorderState.listState,
-            modifier = Modifier
-                .padding(padding)
-                .reorderable(reorderState)
-                .detectReorderAfterLongPress(reorderState)
+            state = listState,
+            modifier = Modifier.padding(padding)
         ) {
-            items(state.raids, key = { it.id }) { raid ->
-                ReorderableItem(reorderState, key = raid.id) { _ ->
-                    RaidItem(
-                        raid = raid,
-                        selected = raid.id in state.selectedIds,
-                        selectionMode = state.selectedIds.isNotEmpty(),
-                        onLongClick = { onAction(RaidSchedulerAction.OnRaidLongClick(raid.id)) },
-                        onClick = {
-                            if (state.selectedIds.isNotEmpty()) {
-                                onAction(RaidSchedulerAction.OnRaidLongClick(raid.id))
+            itemsIndexed(raids, key = { _, raid -> raid.id }) { index, raid ->
+                RaidItem(
+                    raid = raid,
+                    selected = raid.id in uiState.selectedIds,
+                    selectionMode = uiState.selectedIds.isNotEmpty(),
+                    onLongClick = { onAction(RaidSchedulerAction.OnRaidLongClick(raid.id)) },
+                    onClick = {
+                        if (uiState.selectedIds.isNotEmpty()) {
+                            onAction(RaidSchedulerAction.OnRaidLongClick(raid.id))
+                        }
+                    },
+                    onDismiss = { onAction(RaidSchedulerAction.OnRaidSwiped(raid.id)) },
+                    modifier = Modifier
+                        .pointerInput(Unit) {
+                            detectDragGesturesAfterLongPress { change, _ ->
+                                change.consume()
                             }
-                        },
-                        onDismiss = { onAction(RaidSchedulerAction.OnRaidSwiped(raid.id)) }
-                    )
-                }
+                        }
+                        .dragAndDropSource(
+                            transferData = { _: Offset ->
+                                DragAndDropTransferData(
+                                    ClipData.newPlainText("id", raid.id),
+                                    flags = View.DRAG_FLAG_GLOBAL,
+                                )
+                            }
+                        )
+                        .dragAndDropTarget(
+                            shouldStartDragAndDrop = { true },
+                            target = object : DragAndDropTarget {
+                                override fun onDrop(event: DragAndDropEvent): Boolean {
+                                    val fromIndex = raids.indexOfFirst { it.id == raid.id }
+                                    if (fromIndex != -1 && fromIndex != index) {
+                                        val moved = raids.removeAt(fromIndex)
+                                        raids.add(index, moved)
+                                        onAction(RaidSchedulerAction.OnMoveRaid(fromIndex, index))
+                                    }
+                                    return true
+                                }
+                            }
+                        )
+                )
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RaidItem(
     raid: Raid,
@@ -130,7 +156,8 @@ private fun RaidItem(
     selectionMode: Boolean,
     onLongClick: () -> Unit,
     onClick: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val dismissState = rememberSwipeToDismissBoxState()
     SwipeToDismissBox(
@@ -143,7 +170,8 @@ private fun RaidItem(
         },
         content = {
             val timeLeft = remember(raid.dateTime) {
-                val diff = raid.dateTime.toInstant(TimeZone.currentSystemDefault()) - Clock.System.now()
+                val diff =
+                    raid.dateTime.toInstant(TimeZone.currentSystemDefault()) - Clock.System.now()
                 val minutes = diff.inWholeMinutes
                 if (minutes <= 0) "0m" else {
                     val days = minutes / (60 * 24)
@@ -157,7 +185,7 @@ private fun RaidItem(
                 }
             }
             Row(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
                     .background(if (selected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent)
                     .combinedClickable(onClick = onClick, onLongClick = onLongClick)
@@ -171,8 +199,14 @@ private fun RaidItem(
                     Text(raid.name, style = MaterialTheme.typography.titleMedium)
                     Text(raid.dateTime.toString(), style = MaterialTheme.typography.bodyMedium)
                     Text(raid.target, style = MaterialTheme.typography.bodyMedium)
-                    Text(stringResource(SharedRes.strings.time_to_raid, timeLeft), style = MaterialTheme.typography.bodyMedium)
-                    Text(stringResource(SharedRes.strings.estimated_raid_time, "1h"), style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        stringResource(SharedRes.strings.time_to_raid, timeLeft),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        stringResource(SharedRes.strings.estimated_raid_time, "1h"),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
         }
@@ -188,6 +222,7 @@ private fun RaidForm(
     var date by remember { mutableStateOf(raid?.dateTime.toString()) }
     var target by remember { mutableStateOf(raid?.target.orEmpty()) }
     var description by remember { mutableStateOf(raid?.description.orEmpty()) }
+
     Column(modifier = Modifier.padding(16.dp)) {
         OutlinedTextField(
             value = name,
@@ -209,23 +244,26 @@ private fun RaidForm(
             onValueChange = { description = it },
             label = { Text(stringResource(SharedRes.strings.description)) }
         )
-        Button(onClick = {
-            val id = raid?.id ?: kotlinx.datetime.Clock.System.now().toEpochMilliseconds().toString()
-            val dateTime = try {
-                LocalDateTime.parse(date)
-            } catch (e: Exception) {
-                LocalDateTime.parse("1970-01-01T00:00")
-            }
-            onSave(
-                Raid(
-                    id = id,
-                    name = name,
-                    dateTime = dateTime,
-                    target = target,
-                    description = description.ifBlank { null }
+        Button(
+            onClick = {
+                val id = raid?.id ?: Clock.System.now().toEpochMilliseconds().toString()
+                val dateTime = try {
+                    LocalDateTime.parse(date)
+                } catch (e: Exception) {
+                    LocalDateTime.parse("1970-01-01T00:00")
+                }
+                onSave(
+                    Raid(
+                        id = id,
+                        name = name,
+                        dateTime = dateTime,
+                        target = target,
+                        description = description.ifBlank { null }
+                    )
                 )
-            )
-        }, modifier = Modifier.padding(top = 16.dp)) {
+            },
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
             Text(stringResource(SharedRes.strings.save))
         }
     }
