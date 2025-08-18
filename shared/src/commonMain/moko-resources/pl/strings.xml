@@ -506,4 +506,13 @@
     <string name="median_radiation_level">Średni poziom promieniowania</string>
     <string name="max_radiation_level">Maks. poziom promieniowania</string>
     <string name="radiation">Promieniowanie</string>
+    <string name="raids">Raids</string>
+    <string name="raid_name">Name</string>
+    <string name="raid_date_time">Date and Time</string>
+    <string name="raid_target">Target</string>
+    <string name="save">Save</string>
+    <string name="edit">Edit</string>
+    <string name="undo">Undo</string>
+    <string name="raids_deleted">%1$d raids deleted</string>
+    <string name="estimated_raid_time">Estimated time: %1$s</string>
 </resources>
