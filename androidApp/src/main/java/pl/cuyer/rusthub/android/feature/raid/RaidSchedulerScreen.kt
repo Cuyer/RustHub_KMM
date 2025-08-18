@@ -54,7 +54,13 @@ fun RaidSchedulerScreen(
     val listState = rememberLazyListState()
 
     // Copy raids into a mutable list for UI reordering
-    val raids = remember(state.value.raids) { mutableStateListOf(*state.value.raids.toTypedArray()) }
+    val mutableRaids = remember(state.value.raids) {
+        mutableStateListOf(*state.value.raids.toTypedArray())
+    }
+
+    val raids = state.value.raids
+    val selectedIds = state.value.selectedIds
+    val selectionMode = selectedIds.isNotEmpty()
 
     if (state.value.showForm) {
         ModalBottomSheet(
@@ -75,7 +81,7 @@ fun RaidSchedulerScreen(
             }
         },
         bottomBar = {
-            if (state.value.selectedIds.isNotEmpty()) {
+            if (selectionMode) {
                 val delete = stringResource(SharedRes.strings.delete)
                 val edit = stringResource(SharedRes.strings.edit)
                 ButtonGroup(
@@ -92,7 +98,7 @@ fun RaidSchedulerScreen(
                         onClick = { onAction(RaidSchedulerAction.OnEditSelected) },
                         label = edit,
                         icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
-                        enabled = state.value.selectedIds.size == 1
+                        enabled = selectedIds.size == 1
                     )
                 }
             }
@@ -102,14 +108,14 @@ fun RaidSchedulerScreen(
             state = listState,
             modifier = Modifier.padding(padding)
         ) {
-            itemsIndexed(state.value.raids, key = { _, raid -> raid.id }) { index, raid ->
+            itemsIndexed(raids, key = { _, raid -> raid.id }) { index, raid ->
                 RaidItem(
                     raid = raid,
-                    selected = raid.id in state.value.selectedIds,
-                    selectionMode = state.value.selectedIds.isNotEmpty(),
+                    selected = raid.id in selectedIds,
+                    selectionMode = selectionMode,
                     onLongClick = { onAction(RaidSchedulerAction.OnRaidLongClick(raid.id)) },
                     onClick = {
-                        if (state.value.selectedIds.isNotEmpty()) {
+                        if (selectionMode) {
                             onAction(RaidSchedulerAction.OnRaidLongClick(raid.id))
                         }
                     },
@@ -132,10 +138,10 @@ fun RaidSchedulerScreen(
                             shouldStartDragAndDrop = { true },
                             target = object : DragAndDropTarget {
                                 override fun onDrop(event: DragAndDropEvent): Boolean {
-                                    val fromIndex = raids.indexOfFirst { it.id == raid.id }
+                                    val fromIndex = mutableRaids.indexOfFirst { it.id == raid.id }
                                     if (fromIndex != -1 && fromIndex != index) {
-                                        val moved = raids.removeAt(fromIndex)
-                                        raids.add(index, moved)
+                                        val moved = mutableRaids.removeAt(fromIndex)
+                                        mutableRaids.add(index, moved)
                                         onAction(RaidSchedulerAction.OnMoveRaid(fromIndex, index))
                                     }
                                     return true
