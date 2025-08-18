@@ -52,6 +52,7 @@ class RaidSchedulerViewModel(
             }
             is RaidSchedulerAction.OnRaidLongClick -> toggleSelection(action.id)
             is RaidSchedulerAction.OnRaidSwiped -> deleteRaids(listOf(action.id))
+            is RaidSchedulerAction.OnMoveRaid -> moveRaid(action.from, action.to)
             RaidSchedulerAction.OnDeleteSelected -> deleteRaids(_state.value.selectedIds.toList())
             RaidSchedulerAction.OnEditSelected -> {
                 val raid = _state.value.raids.firstOrNull { it.id in _state.value.selectedIds }
@@ -76,6 +77,18 @@ class RaidSchedulerViewModel(
         coroutineScope.launch {
             saveRaidUseCase(raid)
             _state.update { it.copy(showForm = false, editingRaid = null) }
+        }
+    }
+
+    private fun moveRaid(from: Int, to: Int) {
+        _state.update { state ->
+            val raids = state.raids.toMutableList()
+            if (from in raids.indices) {
+                val raid = raids.removeAt(from)
+                val target = to.coerceIn(0, raids.size)
+                raids.add(target, raid)
+            }
+            state.copy(raids = raids)
         }
     }
 
