@@ -25,6 +25,7 @@ import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
+import pl.cuyer.rusthub.presentation.features.raid.RaidSchedulerViewModel
 import pl.cuyer.rusthub.common.user.UserEventController
 import pl.cuyer.rusthub.domain.usecase.ClearServerCacheUseCase
 import pl.cuyer.rusthub.util.AppCheckTokenProvider
@@ -231,6 +232,15 @@ actual fun platformModule(passphrase: String): Module = module {
             remoteConfig = get(),
             connectivityObserver = get(),
             adsConsentManager = get(),
+        )
+    }
+    viewModel {
+        RaidSchedulerViewModel(
+            observeRaidsUseCase = get(),
+            saveRaidUseCase = get(),
+            deleteRaidsUseCase = get(),
+            snackbarController = get(),
+            stringProvider = get()
         )
     }
     viewModel {

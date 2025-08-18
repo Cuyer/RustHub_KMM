@@ -61,6 +61,9 @@ data class MonumentDetails(
 ) : NavKey
 
 @Serializable
+data object RaidScheduler : NavKey
+
+@Serializable
 data object PrivacyPolicy : NavKey
 
 @Serializable
