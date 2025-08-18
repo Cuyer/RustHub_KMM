@@ -103,10 +103,13 @@ fun RaidSchedulerScreen(
                 }
             }
         }
-    ) { padding ->
+    ) { innerPadding ->
         LazyColumn(
             state = listState,
-            modifier = Modifier.padding(padding)
+            modifier = Modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .fillMaxSize()
         ) {
             itemsIndexed(raids, key = { _, raid -> raid.id }) { index, raid ->
                 RaidItem(
