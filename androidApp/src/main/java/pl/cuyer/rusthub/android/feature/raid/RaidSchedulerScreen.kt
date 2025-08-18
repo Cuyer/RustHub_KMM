@@ -1,16 +1,23 @@
 package pl.cuyer.rusthub.android.feature.raid
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.ReorderableItem
+import androidx.compose.foundation.lazy.rememberReorderableLazyListState
+import androidx.compose.foundation.lazy.reorderable
+import androidx.compose.foundation.lazy.detectReorderAfterLongPress
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -18,10 +25,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SwipeToDismiss
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDismissState
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,7 +44,7 @@ import pl.cuyer.rusthub.presentation.features.raid.RaidSchedulerAction
 import pl.cuyer.rusthub.presentation.features.raid.RaidSchedulerState
 import pl.cuyer.rusthub.SharedRes
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun RaidSchedulerScreen(
     state: RaidSchedulerState,
@@ -62,34 +70,53 @@ fun RaidSchedulerScreen(
         },
         bottomBar = {
             if (state.selectedIds.isNotEmpty()) {
-                ButtonGroup {
+                ButtonGroup(
+                    overflowIndicator = {
+                        Icon(Icons.Filled.MoreVert, contentDescription = null)
+                    }
+                ) {
                     Button(onClick = { onAction(RaidSchedulerAction.OnDeleteSelected) }) {
+                        Icon(Icons.Filled.Delete, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(stringResource(SharedRes.strings.delete))
                     }
                     Button(
                         onClick = { onAction(RaidSchedulerAction.OnEditSelected) },
                         enabled = state.selectedIds.size == 1
                     ) {
+                        Icon(Icons.Filled.Edit, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(stringResource(SharedRes.strings.edit))
                     }
                 }
             }
         }
     ) { padding ->
-        LazyColumn(modifier = Modifier.padding(padding)) {
+        val reorderState = rememberReorderableLazyListState(onMove = { from, to ->
+            onAction(RaidSchedulerAction.OnMoveRaid(from.index, to.index))
+        })
+        LazyColumn(
+            state = reorderState.listState,
+            modifier = Modifier
+                .padding(padding)
+                .reorderable(reorderState)
+                .detectReorderAfterLongPress(reorderState)
+        ) {
             items(state.raids, key = { it.id }) { raid ->
-                RaidItem(
-                    raid = raid,
-                    selected = raid.id in state.selectedIds,
-                    selectionMode = state.selectedIds.isNotEmpty(),
-                    onLongClick = { onAction(RaidSchedulerAction.OnRaidLongClick(raid.id)) },
-                    onClick = {
-                        if (state.selectedIds.isNotEmpty()) {
-                            onAction(RaidSchedulerAction.OnRaidLongClick(raid.id))
-                        }
-                    },
-                    onDismiss = { onAction(RaidSchedulerAction.OnRaidSwiped(raid.id)) }
-                )
+                ReorderableItem(reorderState, key = raid.id) { _ ->
+                    RaidItem(
+                        raid = raid,
+                        selected = raid.id in state.selectedIds,
+                        selectionMode = state.selectedIds.isNotEmpty(),
+                        onLongClick = { onAction(RaidSchedulerAction.OnRaidLongClick(raid.id)) },
+                        onClick = {
+                            if (state.selectedIds.isNotEmpty()) {
+                                onAction(RaidSchedulerAction.OnRaidLongClick(raid.id))
+                            }
+                        },
+                        onDismiss = { onAction(RaidSchedulerAction.OnRaidSwiped(raid.id)) }
+                    )
+                }
             }
         }
     }
@@ -105,20 +132,16 @@ private fun RaidItem(
     onClick: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    val dismissState = rememberDismissState(
-        confirmValueChange = {
-            if (it == DismissValue.DismissedToEnd || it == DismissValue.DismissedToStart) {
-                onDismiss()
-                true
-            } else {
-                false
-            }
-        }
-    )
-    SwipeToDismiss(
+    val dismissState = rememberSwipeToDismissBoxState()
+    SwipeToDismissBox(
         state = dismissState,
-        background = {},
-        dismissContent = {
+        backgroundContent = {},
+        onDismiss = {
+            if (it == SwipeToDismissBoxValue.StartToEnd || it == SwipeToDismissBoxValue.EndToStart) {
+                onDismiss()
+            }
+        },
+        content = {
             val timeLeft = remember(raid.dateTime) {
                 val diff = raid.dateTime.toInstant(TimeZone.currentSystemDefault()) - Clock.System.now()
                 val minutes = diff.inWholeMinutes
