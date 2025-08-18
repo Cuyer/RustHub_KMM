@@ -16,6 +16,18 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Gavel
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.PrivacyTip
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,6 +61,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -313,49 +326,24 @@ private fun PreferencesSection(
         modifier = Modifier.padding(bottom = spacing.small)
     )
 
-    AppTextButton(onClick = onThemeClick) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(stringResource(SharedRes.strings.theme))
-            Icon(
-                imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                contentDescription = stringResource(SharedRes.strings.theme)
-            )
-        }
-    }
+    SettingsButton(
+        text = stringResource(SharedRes.strings.theme),
+        icon = Icons.Default.Palette,
+        onClick = onThemeClick
+    )
 
-    AppTextButton(onClick = onLanguageClick) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(stringResource(SharedRes.strings.language))
-            Icon(
-                imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                contentDescription = stringResource(SharedRes.strings.language)
-            )
-        }
-    }
+    SettingsButton(
+        text = stringResource(SharedRes.strings.language),
+        icon = Icons.Default.Language,
+        onClick = onLanguageClick
+    )
 
-    AppTextButton(
+    SettingsButton(
+        text = stringResource(SharedRes.strings.notifications),
+        icon = Icons.Default.Notifications,
+        contentDescription = stringResource(SharedRes.strings.notifications_toggle),
         onClick = { onAction(SettingsAction.OnNotificationsClick) }
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(stringResource(SharedRes.strings.notifications))
-            Icon(
-                imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                contentDescription = stringResource(SharedRes.strings.notifications_toggle)
-            )
-        }
-    }
+    )
 }
 
 
@@ -406,63 +394,34 @@ private fun AccountSection(
                     )
                 }
                 if (plan != SubscriptionPlan.LIFETIME) {
-                    AppTextButton(
+                    SettingsButton(
+                        text = stringResource(SharedRes.strings.manage_subscription),
+                        icon = Icons.Default.CreditCard,
                         onClick = {
                             storeNavigator.openSubscriptionManagement(SubscriptionPlan.SUBSCRIPTION_ID)
                         }
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(stringResource(SharedRes.strings.manage_subscription))
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                                contentDescription = stringResource(SharedRes.strings.manage_subscription)
-                            )
-                        }
-                    }
+                    )
                 }
             }
         }
     }
 
     if (provider !in listOf(AuthProvider.ANONYMOUS, AuthProvider.GOOGLE)) {
-        AppTextButton(
+        SettingsButton(
+            text = stringResource(SharedRes.strings.change_password),
+            icon = Icons.Default.Lock,
+            contentDescription = stringResource(SharedRes.strings.change_password_button),
             onClick = { onAction(SettingsAction.OnChangePasswordClick) }
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(stringResource(SharedRes.strings.change_password))
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                    contentDescription = stringResource(SharedRes.strings.change_password_button)
-                )
-            }
-        }
+        )
     }
 
     if (provider != AuthProvider.ANONYMOUS) {
-        AppTextButton(
+        SettingsButton(
+            text = stringResource(SharedRes.strings.subscription),
+            icon = Icons.Default.CreditCard,
+            contentDescription = stringResource(SharedRes.strings.subscription_button),
             onClick = { onAction(SettingsAction.OnSubscriptionClick) }
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(stringResource(SharedRes.strings.subscription))
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                    contentDescription = stringResource(SharedRes.strings.subscription_button)
-                )
-            }
-        }
+        )
     }
 
     if (provider == AuthProvider.ANONYMOUS) {
@@ -474,38 +433,20 @@ private fun AccountSection(
                 modifier = Modifier.padding(bottom = spacing.small)
             )
         }
-        AppTextButton(
+        SettingsButton(
+            text = stringResource(SharedRes.strings.upgrade_account),
+            icon = Icons.Default.ArrowUpward,
+            contentDescription = stringResource(SharedRes.strings.upgrade_account_button),
             onClick = { onAction(SettingsAction.OnUpgradeAccount) }
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(stringResource(SharedRes.strings.upgrade_account))
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                    contentDescription = stringResource(SharedRes.strings.upgrade_account_button)
-                )
-            }
-        }
+        )
     } else {
-        AppTextButton(
-            onClick = { onAction(SettingsAction.OnDeleteAccount) }
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(stringResource(SharedRes.strings.delete_account), color = MaterialTheme.colorScheme.error)
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                    contentDescription = stringResource(SharedRes.strings.delete_account_button),
-                    tint = MaterialTheme.colorScheme.error
-                )
-            }
-        }
+        SettingsButton(
+            text = stringResource(SharedRes.strings.delete_account),
+            icon = Icons.Default.Delete,
+            contentDescription = stringResource(SharedRes.strings.delete_account_button),
+            onClick = { onAction(SettingsAction.OnDeleteAccount) },
+            color = MaterialTheme.colorScheme.error
+        )
     }
 }
 
@@ -523,92 +464,81 @@ private fun OtherSection(
 
     if (isPrivacyOptionsRequired) {
         val activity = LocalContext.current as Activity
-        AppTextButton(onClick = {
-            onAction(SettingsAction.OnManagePrivacy(activity))
-        }) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(stringResource(SharedRes.strings.manage_privacy))
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                    contentDescription = stringResource(
-                        SharedRes.strings.manage_privacy_button
-                    )
-                )
+        SettingsButton(
+            text = stringResource(SharedRes.strings.manage_privacy),
+            icon = Icons.Default.PrivacyTip,
+            contentDescription = stringResource(SharedRes.strings.manage_privacy_button),
+            onClick = {
+                onAction(SettingsAction.OnManagePrivacy(activity))
             }
-        }
+        )
     }
 
-    AppTextButton(
+    SettingsButton(
+        text = stringResource(SharedRes.strings.privacy_policy),
+        icon = Icons.Default.Description,
+        contentDescription = stringResource(SharedRes.strings.privacy_policy_button),
         onClick = { onAction(SettingsAction.OnPrivacyPolicy) }
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(stringResource(SharedRes.strings.privacy_policy))
-            Icon(
-                imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                contentDescription = stringResource(SharedRes.strings.privacy_policy_button)
-            )
-        }
-    }
+    )
 
-    AppTextButton(
+    SettingsButton(
+        text = stringResource(SharedRes.strings.terms_conditions),
+        icon = Icons.Default.Gavel,
+        contentDescription = stringResource(SharedRes.strings.terms_conditions_button),
         onClick = { onAction(SettingsAction.OnTerms) }
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(stringResource(SharedRes.strings.terms_conditions))
-            Icon(
-                imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                contentDescription = stringResource(SharedRes.strings.terms_conditions_button)
-            )
-        }
-    }
+    )
 
-    AppTextButton(
+    SettingsButton(
+        text = stringResource(SharedRes.strings.rate_application),
+        icon = Icons.Default.Star,
+        contentDescription = stringResource(SharedRes.strings.rate_application_button),
         onClick = { storeNavigator.openStore() }
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(stringResource(SharedRes.strings.rate_application))
-            Icon(
-                imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                contentDescription = stringResource(SharedRes.strings.rate_application_button)
-            )
-        }
-    }
+    )
 
-    AppTextButton(
+    SettingsButton(
+        text = stringResource(SharedRes.strings.about),
+        icon = Icons.Default.Info,
+        contentDescription = stringResource(SharedRes.strings.about_button),
         onClick = { onAction(SettingsAction.OnAbout) }
-    ) {
+    )
+
+}
+
+@Composable
+private fun SettingsButton(
+    text: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    contentDescription: String = text,
+    color: Color = MaterialTheme.colorScheme.onBackground
+) {
+    AppTextButton(onClick = onClick) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(stringResource(SharedRes.strings.about))
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = text,
+                    tint = color
+                )
+                Text(
+                    text = text,
+                    modifier = Modifier.padding(start = spacing.small),
+                    color = color
+                )
+            }
             Icon(
                 imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                contentDescription = stringResource(SharedRes.strings.about_button)
+                contentDescription = contentDescription,
+                tint = color
             )
         }
     }
-
 }
 
 @Composable
