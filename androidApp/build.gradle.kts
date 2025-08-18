@@ -23,7 +23,7 @@ android {
         applicationId = "pl.cuyer.rusthub.android"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 72
+        versionCode = 73
         versionName = project.property("VERSION_NAME") as String
         buildConfigField("String", "SERVERS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/4096035325\"")
         buildConfigField("String", "ITEMS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/1469871989\"")
