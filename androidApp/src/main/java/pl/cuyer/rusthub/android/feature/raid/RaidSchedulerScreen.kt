@@ -50,20 +50,19 @@ fun RaidSchedulerScreen(
     state: State<RaidSchedulerState>,
     onAction: (RaidSchedulerAction) -> Unit,
 ) {
-    val uiState = state.value
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val listState = rememberLazyListState()
 
     // Copy raids into a mutable list for UI reordering
-    val raids = remember(uiState.raids) { mutableStateListOf(*uiState.raids.toTypedArray()) }
+    val raids = remember(state.value.raids) { mutableStateListOf(*state.value.raids.toTypedArray()) }
 
-    if (uiState.showForm) {
+    if (state.value.showForm) {
         ModalBottomSheet(
             onDismissRequest = { onAction(RaidSchedulerAction.OnDismissForm) },
             sheetState = sheetState
         ) {
             RaidForm(
-                raid = uiState.editingRaid,
+                raid = state.value.editingRaid,
                 onSave = { onAction(RaidSchedulerAction.OnSaveRaid(it)) }
             )
         }
@@ -76,7 +75,7 @@ fun RaidSchedulerScreen(
             }
         },
         bottomBar = {
-            if (uiState.selectedIds.isNotEmpty()) {
+            if (state.value.selectedIds.isNotEmpty()) {
                 val delete = stringResource(SharedRes.strings.delete)
                 val edit = stringResource(SharedRes.strings.edit)
                 ButtonGroup(
@@ -93,7 +92,7 @@ fun RaidSchedulerScreen(
                         onClick = { onAction(RaidSchedulerAction.OnEditSelected) },
                         label = edit,
                         icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
-                        enabled = uiState.selectedIds.size == 1
+                        enabled = state.value.selectedIds.size == 1
                     )
                 }
             }
@@ -103,14 +102,14 @@ fun RaidSchedulerScreen(
             state = listState,
             modifier = Modifier.padding(padding)
         ) {
-            itemsIndexed(raids, key = { _, raid -> raid.id }) { index, raid ->
+            itemsIndexed(state.value.raids, key = { _, raid -> raid.id }) { index, raid ->
                 RaidItem(
                     raid = raid,
-                    selected = raid.id in uiState.selectedIds,
-                    selectionMode = uiState.selectedIds.isNotEmpty(),
+                    selected = raid.id in state.value.selectedIds,
+                    selectionMode = state.value.selectedIds.isNotEmpty(),
                     onLongClick = { onAction(RaidSchedulerAction.OnRaidLongClick(raid.id)) },
                     onClick = {
-                        if (uiState.selectedIds.isNotEmpty()) {
+                        if (state.value.selectedIds.isNotEmpty()) {
                             onAction(RaidSchedulerAction.OnRaidLongClick(raid.id))
                         }
                     },

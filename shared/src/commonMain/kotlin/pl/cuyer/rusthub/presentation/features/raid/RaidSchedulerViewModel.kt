@@ -69,7 +69,7 @@ class RaidSchedulerViewModel(
             if (!new.add(id)) {
                 new.remove(id)
             }
-            state.copy(selectedIds = new)
+            state.copy(selectedIds = new.toSet())
         }
     }
 
@@ -88,7 +88,7 @@ class RaidSchedulerViewModel(
                 val target = to.coerceIn(0, raids.size)
                 raids.add(target, raid)
             }
-            state.copy(raids = raids)
+            state.copy(raids = raids.toList())
         }
     }
 
