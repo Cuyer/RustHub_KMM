@@ -50,6 +50,7 @@ import androidx.compose.ui.draganddrop.DragAndDropTransferData
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -153,7 +154,6 @@ fun RaidSchedulerScreen(
     ) { innerPadding ->
         LazyColumn(
             state = listState,
-            contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
             verticalArrangement = Arrangement.spacedBy(spacing.medium),
             modifier = Modifier
                 .padding(innerPadding)
@@ -171,9 +171,7 @@ fun RaidSchedulerScreen(
                             onAction(RaidSchedulerAction.OnRaidLongClick(raid.id))
                         }
                     },
-                    onDismiss = { onAction(RaidSchedulerAction.OnRaidSwiped(raid.id)) },
-                    modifier = Modifier
-                        .padding(horizontal = spacing.xmedium)
+                    onDismiss = { onAction(RaidSchedulerAction.OnRaidSwiped(raid.id)) }
                 )
             }
         }
@@ -193,12 +191,27 @@ private fun RaidItem(
     val dismissState = rememberSwipeToDismissBoxState()
     SwipeToDismissBox(
         state = dismissState,
-        backgroundContent = {},
+        backgroundContent = {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.error, shape = RectangleShape)
+                    .padding(end = spacing.medium),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = stringResource(SharedRes.strings.delete),
+                    tint = MaterialTheme.colorScheme.onError
+                )
+            }
+        },
         onDismiss = {
-            if (it == SwipeToDismissBoxValue.StartToEnd || it == SwipeToDismissBoxValue.EndToStart) {
+            if (it == SwipeToDismissBoxValue.EndToStart) {
                 onDismiss()
             }
         },
+        enableDismissFromStartToEnd = false,
         content = {
             val timeLeft = remember(raid.dateTime) {
                 val diff =
@@ -216,7 +229,7 @@ private fun RaidItem(
                 }
             }
             ElevatedCard(
-                shape = MaterialTheme.shapes.extraSmall,
+                shape = RectangleShape,
                 colors = CardDefaults.elevatedCardColors().copy(
                     containerColor = if (selected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainer
                 ),

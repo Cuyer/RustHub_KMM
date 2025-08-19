@@ -36,6 +36,7 @@ import androidx.compose.material3.AppBarWithSearch
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExpandedDockedSearchBar
@@ -319,7 +320,8 @@ private fun SearchHistorySuggestions(
                         onDismiss = { if (it == SwipeToDismissBoxValue.EndToStart) onDelete(item.query) },
                         enableDismissFromStartToEnd = false
                     ) {
-                        ElevatedCard(
+                        Card(
+                            elevation = CardDefaults.cardElevation(),
                             onClick = {
                                 textFieldState.setTextAndPlaceCursorAtEnd(item.query)
                                 onSearchTriggered()
@@ -330,8 +332,8 @@ private fun SearchHistorySuggestions(
                                 .fillMaxWidth(),
                             shape = RectangleShape,
                             colors = CardDefaults.elevatedCardColors().copy(
-                                containerColor = MaterialTheme.colorScheme.background,
-                                contentColor = MaterialTheme.colorScheme.onBackground
+                                containerColor = SearchBarDefaults.colors().containerColor,
+                                contentColor = MaterialTheme.colorScheme.onSurface
                             )
                         ) {
                             Text(
