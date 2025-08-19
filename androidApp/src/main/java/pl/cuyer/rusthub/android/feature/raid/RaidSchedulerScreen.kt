@@ -10,6 +10,20 @@ package pl.cuyer.rusthub.android.feature.raid
 import android.content.ClipData
 import android.view.DragAndDropPermissions
 import android.view.View
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -21,25 +35,31 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.draganddrop.DragAndDropTransferData
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.designsystem.defaultFadeTransition
+import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.Raid
 import pl.cuyer.rusthub.presentation.features.raid.RaidSchedulerAction
@@ -52,12 +72,6 @@ fun RaidSchedulerScreen(
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val listState = rememberLazyListState()
-
-    // Copy raids into a mutable list for UI reordering
-    val mutableRaids = remember(state.value.raids) {
-        mutableStateListOf(*state.value.raids.toTypedArray())
-    }
-
     val raids = state.value.raids
     val selectedIds = state.value.selectedIds
     val selectionMode = selectedIds.isNotEmpty()
@@ -80,32 +94,67 @@ fun RaidSchedulerScreen(
                 Icon(Icons.Filled.Add, contentDescription = null)
             }
         },
-        bottomBar = {
-            if (selectionMode) {
-                val delete = stringResource(SharedRes.strings.delete)
-                val edit = stringResource(SharedRes.strings.edit)
-                ButtonGroup(
-                    overflowIndicator = {
-                        Icon(Icons.Filled.MoreVert, contentDescription = null)
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(stringResource(SharedRes.strings.raids), fontWeight = FontWeight.SemiBold)
+                },
+                actions = {
+                    AnimatedVisibility(
+                        visible = selectionMode,
+                        enter = slideInHorizontally(
+                            initialOffsetX = { it },
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioLowBouncy,
+                                stiffness = Spring.StiffnessVeryLow
+                            )
+                        ) + scaleIn(
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioLowBouncy,
+                                stiffness = Spring.StiffnessLow
+                            )
+                        ),
+                        exit = slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(durationMillis = 150)
+                        )
+                    ) {
+                        Row {
+                            val delete = stringResource(SharedRes.strings.delete)
+                            val edit = stringResource(SharedRes.strings.edit)
+                            IconButton(
+                                onClick = { onAction(RaidSchedulerAction.OnDeleteSelected) },
+                                modifier = Modifier.minimumInteractiveComponentSize(),
+                            ) {
+                                Icon(
+                                    tint = contentColorFor(SearchBarDefaults.colors().containerColor),
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = delete,
+                                )
+                            }
+                            IconButton(
+                                enabled = selectedIds.size == 1,
+                                onClick = { onAction(RaidSchedulerAction.OnEditSelected) },
+                                modifier = Modifier.minimumInteractiveComponentSize()
+                            ) {
+                                Icon(
+                                    tint = if (selectedIds.size == 1) contentColorFor(
+                                        TopAppBarDefaults.topAppBarColors().containerColor) else contentColorFor(
+                                        IconButtonDefaults.iconButtonColors().disabledContainerColor),
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = edit
+                                )
+                            }
+                        }
                     }
-                ) {
-                    clickableItem(
-                        onClick = { onAction(RaidSchedulerAction.OnDeleteSelected) },
-                        label = delete,
-                        icon = { Icon(Icons.Filled.Delete, contentDescription = null) }
-                    )
-                    clickableItem(
-                        onClick = { onAction(RaidSchedulerAction.OnEditSelected) },
-                        label = edit,
-                        icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
-                        enabled = selectedIds.size == 1
-                    )
                 }
-            }
+            )
         }
     ) { innerPadding ->
         LazyColumn(
             state = listState,
+            contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
+            verticalArrangement = Arrangement.spacedBy(spacing.medium),
             modifier = Modifier
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding)
@@ -124,33 +173,7 @@ fun RaidSchedulerScreen(
                     },
                     onDismiss = { onAction(RaidSchedulerAction.OnRaidSwiped(raid.id)) },
                     modifier = Modifier
-                        .pointerInput(Unit) {
-                            detectDragGesturesAfterLongPress { change, _ ->
-                                change.consume()
-                            }
-                        }
-                        .dragAndDropSource(
-                            transferData = { _: Offset ->
-                                DragAndDropTransferData(
-                                    ClipData.newPlainText("id", raid.id),
-                                    flags = View.DRAG_FLAG_GLOBAL,
-                                )
-                            }
-                        )
-                        .dragAndDropTarget(
-                            shouldStartDragAndDrop = { true },
-                            target = object : DragAndDropTarget {
-                                override fun onDrop(event: DragAndDropEvent): Boolean {
-                                    val fromIndex = mutableRaids.indexOfFirst { it.id == raid.id }
-                                    if (fromIndex != -1 && fromIndex != index) {
-                                        val moved = mutableRaids.removeAt(fromIndex)
-                                        mutableRaids.add(index, moved)
-                                        onAction(RaidSchedulerAction.OnMoveRaid(fromIndex, index))
-                                    }
-                                    return true
-                                }
-                            }
-                        )
+                        .padding(horizontal = spacing.xmedium)
                 )
             }
         }
@@ -192,29 +215,56 @@ private fun RaidItem(
                     }
                 }
             }
-            Row(
+            ElevatedCard(
+                shape = MaterialTheme.shapes.extraSmall,
+                colors = CardDefaults.elevatedCardColors().copy(
+                    containerColor = if (selected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainer
+                ),
                 modifier = modifier
                     .fillMaxWidth()
-                    .background(if (selected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent)
                     .combinedClickable(onClick = onClick, onLongClick = onLongClick)
-                    .padding(16.dp)
             ) {
-                if (selectionMode) {
-                    Checkbox(checked = selected, onCheckedChange = { onLongClick() })
-                    Spacer(modifier = Modifier.width(16.dp))
-                }
-                Column {
-                    Text(raid.name, style = MaterialTheme.typography.titleMedium)
-                    Text(raid.dateTime.toString(), style = MaterialTheme.typography.bodyMedium)
-                    Text(raid.target, style = MaterialTheme.typography.bodyMedium)
-                    Text(
-                        stringResource(SharedRes.strings.time_to_raid, timeLeft),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Text(
-                        stringResource(SharedRes.strings.estimated_raid_time, "1h"),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(spacing.medium),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(spacing.medium),
+                ) {
+                    AnimatedVisibility(
+                        visible = selectionMode,
+                        enter = slideInHorizontally(
+                            initialOffsetX = { -it },
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioLowBouncy,
+                                stiffness = Spring.StiffnessVeryLow
+                            )
+                        ) + scaleIn(
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioLowBouncy,
+                                stiffness = Spring.StiffnessLow
+                            )
+                        ),
+                        exit = slideOutHorizontally(
+                            targetOffsetX = { -it },
+                            animationSpec = tween(durationMillis = 150)
+                        ),
+                    ) {
+                        Checkbox(checked = selected, onCheckedChange = { onLongClick() })
+                    }
+                    Column {
+                        Text(raid.name, style = MaterialTheme.typography.titleMedium)
+                        Text(raid.dateTime.toString(), style = MaterialTheme.typography.bodyMedium)
+                        Text(raid.target, style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            stringResource(SharedRes.strings.time_to_raid, timeLeft),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Text(
+                            stringResource(SharedRes.strings.estimated_raid_time, "1h"),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 }
             }
         }
