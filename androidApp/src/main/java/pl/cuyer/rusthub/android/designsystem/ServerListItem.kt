@@ -41,8 +41,8 @@ import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.role
-import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
 import pl.cuyer.rusthub.domain.model.displayName
+import pl.cuyer.rusthub.domain.model.toDrawable
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable

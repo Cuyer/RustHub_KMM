@@ -7,6 +7,7 @@ import pl.cuyer.rusthub.data.local.model.ServerFilterEntity;
 import pl.cuyer.rusthub.data.local.model.ServerStatusEntity;
 import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity;
 import pl.cuyer.rusthub.data.local.model.WipeTypeEntity;
+import pl.cuyer.rusthub.data.local.model.LanguageEntity;
 
 -- =============================================================================
 -- Table Definition
@@ -520,6 +521,28 @@ DELETE FROM itemSearchQueryEntity;
 deleteItemSearchQueryByQuery:
 DELETE FROM itemSearchQueryEntity WHERE query = :query;
 
+CREATE TABLE monumentSearchQueryEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    query TEXT NOT NULL UNIQUE,
+    timestamp TEXT NOT NULL
+);
+
+upsertMonumentSearchQuery:
+INSERT INTO monumentSearchQueryEntity (query, timestamp)
+VALUES (:query, :timestamp)
+ON CONFLICT(query) DO UPDATE SET
+    timestamp = excluded.timestamp;
+
+getMonumentSearchQueries:
+SELECT * FROM monumentSearchQueryEntity
+ORDER BY timestamp DESC;
+
+clearMonumentSearchQueries:
+DELETE FROM monumentSearchQueryEntity;
+
+deleteMonumentSearchQueryByQuery:
+DELETE FROM monumentSearchQueryEntity WHERE query = :query;
+
 CREATE TABLE favouriteSyncEntity (
     server_id INTEGER NOT NULL PRIMARY KEY,
     action INTEGER NOT NULL,
@@ -635,17 +658,19 @@ CREATE TABLE itemEntity (
     image TEXT,
     stack_size INTEGER,
     health INTEGER,
+    attributes TEXT,
     categories TEXT,
     short_name TEXT,
     icon_url TEXT,
-    language TEXT NOT NULL,
+    language TEXT AS LanguageEntity,
     looting TEXT,
     loot_contents TEXT,
     where_to_find TEXT,
     crafting TEXT,
+    table_recipe TEXT,
     recycling TEXT,
     raiding TEXT,
-    PRIMARY KEY(id, language)
+    PRIMARY KEY(id)
 );
 
 upsertItem:
@@ -658,6 +683,7 @@ INSERT INTO itemEntity (
     image,
     stack_size,
     health,
+    attributes,
     categories,
     short_name,
     icon_url,
@@ -666,6 +692,7 @@ INSERT INTO itemEntity (
     loot_contents,
     where_to_find,
     crafting,
+    table_recipe,
     recycling,
     raiding
 ) VALUES (
@@ -677,6 +704,7 @@ INSERT INTO itemEntity (
     :image,
     :stackSize,
     :health,
+    :attributes,
     :categories,
     :shortName,
     :iconUrl,
@@ -685,9 +713,10 @@ INSERT INTO itemEntity (
     :lootContents,
     :whereToFind,
     :crafting,
+    :tableRecipe,
     :recycling,
     :raiding
-) ON CONFLICT(id, language) DO UPDATE SET
+) ON CONFLICT(id) DO UPDATE SET
     slug = excluded.slug,
     url = excluded.url,
     name = excluded.name,
@@ -695,6 +724,7 @@ INSERT INTO itemEntity (
     image = excluded.image,
     stack_size = excluded.stack_size,
     health = excluded.health,
+    attributes = excluded.attributes,
     categories = excluded.categories,
     short_name = excluded.short_name,
     icon_url = excluded.icon_url,
@@ -703,6 +733,7 @@ INSERT INTO itemEntity (
     loot_contents = excluded.loot_contents,
     where_to_find = excluded.where_to_find,
     crafting = excluded.crafting,
+    table_recipe = excluded.table_recipe,
     recycling = excluded.recycling,
     raiding = excluded.raiding;
 
@@ -735,19 +766,95 @@ WHERE (:category IS NULL OR categories LIKE '%' || :category || '%')
   AND (name LIKE '%' || :name || '%' COLLATE NOCASE)
   AND language = :language;
 
-CREATE TABLE itemSyncEntity (
+CREATE TABLE monumentEntity (
+    slug TEXT NOT NULL,
+    name TEXT,
+    iconUrl TEXT,
+    mapUrls TEXT,
+    attributes TEXT,
+    spawns TEXT,
+    usable_entities TEXT,
+    mining TEXT,
+    puzzles TEXT,
+    language TEXT AS LanguageEntity,
+    PRIMARY KEY(slug)
+);
+
+upsertMonument:
+INSERT INTO monumentEntity (
+    slug,
+    name,
+    iconUrl,
+    mapUrls,
+    attributes,
+    spawns,
+    usable_entities,
+    mining,
+    puzzles,
+    language
+) VALUES (
+    :slug,
+    :name,
+    :iconUrl,
+    :mapUrls,
+    :attributes,
+    :spawns,
+    :usableEntities,
+    :mining,
+    :puzzles,
+    :language
+) ON CONFLICT(slug) DO UPDATE SET
+    name = excluded.name,
+    attributes = excluded.attributes,
+    iconUrl = excluded.iconUrl,
+    mapUrls = excluded.mapUrls,
+    spawns = excluded.spawns,
+    usable_entities = excluded.usable_entities,
+    mining = excluded.mining,
+    puzzles = excluded.puzzles,
+    language = excluded.language;
+
+getMonuments:
+SELECT * FROM monumentEntity WHERE language = :language;
+
+countMonuments:
+SELECT COUNT(*) FROM monumentEntity WHERE language = :language;
+
+deleteMonuments:
+DELETE FROM monumentEntity;
+
+findMonumentsPagedFiltered:
+SELECT *
+FROM monumentEntity
+WHERE (name LIKE '%' || :name || '%' COLLATE NOCASE)
+  AND (:type IS NULL OR attributes LIKE '%' || :type || '%')
+  AND language = :language
+ORDER BY name
+LIMIT :limit OFFSET :offset;
+
+countPagedMonumentsFiltered:
+SELECT COUNT(*)
+FROM monumentEntity
+WHERE (name LIKE '%' || :name || '%' COLLATE NOCASE)
+  AND (:type IS NULL OR attributes LIKE '%' || :type || '%')
+  AND language = :language;
+
+getMonumentBySlug:
+SELECT * FROM monumentEntity WHERE slug = :slug AND language = :language;
+
+CREATE TABLE monumentSyncEntity (
     id TEXT NOT NULL PRIMARY KEY,
     sync_state TEXT NOT NULL
 );
 
-upsertItemSync:
-INSERT INTO itemSyncEntity (id, sync_state)
+upsertMonumentSync:
+INSERT INTO monumentSyncEntity (id, sync_state)
 VALUES (:id, :sync_state)
 ON CONFLICT(id) DO UPDATE SET
     sync_state = excluded.sync_state;
 
-getItemSync:
-SELECT * FROM itemSyncEntity WHERE id = :id;
+getMonumentSync:
+SELECT * FROM monumentSyncEntity WHERE id = :id;
 
-clearItemSync:
-DELETE FROM itemSyncEntity;
+clearMonumentSync:
+DELETE FROM monumentSyncEntity;

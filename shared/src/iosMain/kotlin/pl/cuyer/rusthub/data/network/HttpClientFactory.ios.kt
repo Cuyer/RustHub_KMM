@@ -9,8 +9,6 @@ import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.compression.ContentEncoding
-import io.ktor.client.plugins.compression.gzip
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
@@ -26,9 +24,7 @@ import io.ktor.http.encodedPath
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
-import kotlinx.io.IOException
 import kotlinx.serialization.json.Json
 import kotlinx.coroutines.CancellationException
 import pl.cuyer.rusthub.data.network.MutexSharedDeferred
@@ -50,7 +46,6 @@ import platform.Foundation.NSLocale
 import platform.Foundation.currentLocale
 import platform.Foundation.languageCode
 import platform.Foundation.preferredLanguages
-import kotlin.random.Random
 
 private fun preferredLanguageCode(): String {
     val first = (preferredLanguages.firstOrNull() as? String)
@@ -85,6 +80,13 @@ actual class HttpClientFactory actual constructor(
                             if (user?.provider == AuthProvider.ANONYMOUS || oldRefresh.isNullOrBlank()) {
                                 logoutOnce()
                                 return@run null
+                            }
+
+                            val currentRefresh = user?.refreshToken
+                            if (currentRefresh != oldRefresh) {
+                                return@run user?.let {
+                                    BearerTokens(it.accessToken, currentRefresh ?: "")
+                                }
                             }
 
                             val response = client.post("${NetworkConstants.BASE_URL}auth/refresh") {

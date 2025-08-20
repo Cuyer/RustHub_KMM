@@ -1,0 +1,2 @@
+-- Migration 6 removed: iconUrl column already present.
+-- This migration is intentionally left blank to avoid duplicate column errors.

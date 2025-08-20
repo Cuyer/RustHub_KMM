@@ -27,17 +27,14 @@ import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.domain.model.ItemCategory
 import pl.cuyer.rusthub.domain.model.RustItem
-import pl.cuyer.rusthub.domain.model.ItemSyncState
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.presentation.navigation.ItemDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.domain.usecase.GetPagedItemsUseCase
-import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
-import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.getCurrentAppLanguage
 import pl.cuyer.rusthub.util.toUserMessage
@@ -50,13 +47,12 @@ import pl.cuyer.rusthub.presentation.model.SearchQueryUi
 import pl.cuyer.rusthub.presentation.model.toUi
 import kotlin.time.Clock
 import pl.cuyer.rusthub.util.AdsConsentManager
+import pl.cuyer.rusthub.util.ConnectivityObserver
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
 class ItemViewModel(
     private val getPagedItemsUseCase: GetPagedItemsUseCase,
-    private val itemSyncDataSource: ItemSyncDataSource,
-    private val itemsScheduler: ItemsScheduler,
     private val snackbarController: SnackbarController,
     private val stringProvider: StringProvider,
     private val saveSearchQueryUseCase: SaveItemSearchQueryUseCase,
@@ -64,6 +60,7 @@ class ItemViewModel(
     private val deleteSearchQueriesUseCase: DeleteItemSearchQueriesUseCase,
     private val getUserUseCase: GetUserUseCase,
     private val adsConsentManager: AdsConsentManager,
+    private val connectivityObserver: ConnectivityObserver,
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -89,8 +86,8 @@ class ItemViewModel(
         )
 
     init {
-        observeSyncState()
         observeSearchQueries()
+        observeConnectivity()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -112,7 +109,6 @@ class ItemViewModel(
             ItemAction.OnClearSearchQuery -> clearSearchQuery()
             ItemAction.DeleteSearchQueries -> deleteSearchQueries(null)
             is ItemAction.DeleteSearchQueryByQuery -> deleteSearchQueries(action.query)
-            ItemAction.OnRefresh -> refreshItems()
             is ItemAction.OnError -> sendSnackbarEvent(
                 action.exception.toUserMessage(stringProvider) ?: stringProvider.get(
                     SharedRes.strings.error_unknown
@@ -135,24 +131,6 @@ class ItemViewModel(
     private fun navigateToItem(id: Long) {
         coroutineScope.launch {
             _uiEvent.send(UiEvent.Navigate(ItemDetails(id)))
-        }
-    }
-
-    private fun observeSyncState() {
-        coroutineScope.launch {
-            itemSyncDataSource.observeState().collect { stateValue ->
-                stateValue ?: return@collect
-                _state.update { current ->
-                    current.copy(syncState = stateValue)
-                }
-            }
-        }
-    }
-
-    private fun refreshItems() {
-        coroutineScope.launch {
-            itemSyncDataSource.setState(ItemSyncState.PENDING)
-            itemsScheduler.startNow()
         }
     }
 
@@ -215,6 +193,14 @@ class ItemViewModel(
 
     private fun updateIsLoadingSearchHistory(loading: Boolean) {
         _state.update { it.copy(isLoadingSearchHistory = loading) }
+    }
+
+    private fun observeConnectivity() {
+        connectivityObserver.isConnected
+            .onEach { connected ->
+                _state.update { it.copy(isConnected = connected) }
+            }
+            .launchIn(coroutineScope)
     }
 
     private fun sendSnackbarEvent(

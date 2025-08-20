@@ -1,13 +1,11 @@
 package pl.cuyer.rusthub.android.util.composeUtil
 
-import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.core.os.LocaleListCompat
 import pl.cuyer.rusthub.domain.model.Language
 import java.util.Locale
 
@@ -17,7 +15,7 @@ fun rememberCurrentLanguage(): State<Language> {
     val language = remember(configuration) {
         val locales = AppCompatDelegate.getApplicationLocales()
         val tag = if (!locales.isEmpty) {
-            locales[0]!!.language
+            locales[0]?.language ?: Locale.getDefault().language
         } else {
             Locale.getDefault().language
         }
@@ -26,6 +24,9 @@ fun rememberCurrentLanguage(): State<Language> {
             "de" -> Language.GERMAN
             "fr" -> Language.FRENCH
             "ru" -> Language.RUSSIAN
+            "pt" -> Language.PORTUGUESE
+            "es" -> Language.SPANISH
+            "uk" -> Language.UKRAINIAN
             else -> Language.ENGLISH
         }
     }

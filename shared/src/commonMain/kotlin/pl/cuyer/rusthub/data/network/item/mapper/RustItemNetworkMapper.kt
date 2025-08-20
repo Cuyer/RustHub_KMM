@@ -19,9 +19,13 @@ import pl.cuyer.rusthub.data.network.item.model.RaidItemDto
 import pl.cuyer.rusthub.data.network.item.model.RaidResourceDto
 import pl.cuyer.rusthub.data.network.item.model.LootContentDto
 import pl.cuyer.rusthub.data.network.item.model.WhereToFindDto
+import pl.cuyer.rusthub.data.network.item.model.TableRecipeDto
+import pl.cuyer.rusthub.data.network.item.model.TableRecipeIngredientDto
+import pl.cuyer.rusthub.data.network.item.model.ItemsResponseDto
 import pl.cuyer.rusthub.domain.model.ItemCategory
 import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.RustItem
+import pl.cuyer.rusthub.domain.model.ItemsResponse
 import pl.cuyer.rusthub.domain.model.Looting
 import pl.cuyer.rusthub.domain.model.LootAmount
 import pl.cuyer.rusthub.domain.model.Crafting
@@ -38,6 +42,10 @@ import pl.cuyer.rusthub.domain.model.RaidItem
 import pl.cuyer.rusthub.domain.model.RaidResource
 import pl.cuyer.rusthub.domain.model.LootContent
 import pl.cuyer.rusthub.domain.model.WhereToFind
+import pl.cuyer.rusthub.domain.model.TableRecipe
+import pl.cuyer.rusthub.domain.model.TableRecipeIngredient
+import pl.cuyer.rusthub.domain.model.ItemAttribute
+import pl.cuyer.rusthub.domain.model.ItemAttributeType
 
 fun RustItemDto.toDomain(): RustItem {
     return RustItem(
@@ -48,11 +56,15 @@ fun RustItemDto.toDomain(): RustItem {
         image = image,
         stackSize = stackSize,
         health = health,
+        attributes = attributes?.mapNotNull { (key, value) ->
+            ItemAttributeType.fromKey(key)?.let { ItemAttribute(it, value) }
+        },
         categories = categories?.map { it.toDomain() },
         looting = looting?.map { it.toDomain() },
         lootContents = lootContents?.map { it.toDomain() },
         whereToFind = whereToFind?.map { it.toDomain() },
         crafting = crafting?.toDomain(),
+        tableRecipe = tableRecipe?.toDomain(),
         recycling = recycling?.toDomain(),
         raiding = raiding?.map { it.toDomain() },
         shortName = shortName,
@@ -89,6 +101,9 @@ fun ItemLanguageDto.toDomain(): Language {
         ItemLanguageDto.EN -> Language.ENGLISH
         ItemLanguageDto.DE -> Language.GERMAN
         ItemLanguageDto.RU -> Language.RUSSIAN
+        ItemLanguageDto.PT -> Language.PORTUGUESE
+        ItemLanguageDto.ES -> Language.SPANISH
+        ItemLanguageDto.UK -> Language.UKRAINIAN
     }
 }
 
@@ -152,6 +167,26 @@ fun TechTreeCostDto.toDomain(): TechTreeCost {
     )
 }
 
+fun TableRecipeDto.toDomain(): TableRecipe {
+    return TableRecipe(
+        tableImage = tableImage,
+        tableName = tableName,
+        ingredients = ingredients?.map { it.toDomain() },
+        outputImage = outputImage,
+        outputName = outputName,
+        outputAmount = outputAmount,
+        totalCost = totalCost?.map { it.toDomain() }
+    )
+}
+
+fun TableRecipeIngredientDto.toDomain(): TableRecipeIngredient {
+    return TableRecipeIngredient(
+        image = image,
+        name = name,
+        amount = amount,
+    )
+}
+
 fun RecyclingDto.toDomain(): Recycling {
     return Recycling(
         radtownRecycler = radtownRecycler?.toDomain(),
@@ -207,4 +242,12 @@ fun WhereToFindDto.toDomain(): WhereToFind = WhereToFind(
     place = place,
     image = image,
     amount = amount?.let { LootAmount(it.min, it.max) }
+)
+
+fun ItemsResponseDto.toDomain(): ItemsResponse = ItemsResponse(
+    page = page,
+    size = size,
+    totalPages = totalPages,
+    totalItems = totalItems,
+    items = items.map { it.toDomain() }
 )

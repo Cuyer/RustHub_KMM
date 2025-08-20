@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.presentation.di
 
+import androidx.credentials.CredentialManager
 import dev.icerock.moko.permissions.PermissionsController
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
@@ -8,11 +9,9 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import pl.cuyer.rusthub.BuildConfig
 import pl.cuyer.rusthub.data.local.DatabaseDriverFactory
-import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
 import pl.cuyer.rusthub.data.network.HttpClientFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.AuthProvider
-import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.presentation.features.auth.confirm.ConfirmEmailViewModel
 import pl.cuyer.rusthub.presentation.features.auth.credentials.CredentialsViewModel
 import pl.cuyer.rusthub.presentation.features.auth.delete.DeleteAccountViewModel
@@ -33,7 +32,6 @@ import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.ConnectivityObserver
 import pl.cuyer.rusthub.util.GoogleAuthClient
 import pl.cuyer.rusthub.util.InAppUpdateManager
-import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.util.MessagingTokenScheduler
 import pl.cuyer.rusthub.util.ReviewRequester
 import pl.cuyer.rusthub.util.ShareHandler
@@ -61,6 +59,12 @@ import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import org.koin.android.ext.koin.androidApplication
 import pl.cuyer.rusthub.util.EmailSender
 import pl.cuyer.rusthub.util.UrlOpener
+import pl.cuyer.rusthub.util.RemoteConfig
+import pl.cuyer.rusthub.util.MonumentsScheduler
+import pl.cuyer.rusthub.data.local.monument.MonumentSyncDataSourceImpl
+import pl.cuyer.rusthub.domain.repository.monument.local.MonumentSyncDataSource
+import pl.cuyer.rusthub.presentation.features.monument.MonumentViewModel
+import pl.cuyer.rusthub.presentation.features.monument.MonumentDetailsViewModel
 
 actual fun platformModule(passphrase: String): Module = module {
     single<RustHubDatabase>(createdAtStart = true) {
@@ -70,12 +74,11 @@ actual fun platformModule(passphrase: String): Module = module {
             DatabaseDriverFactory(androidContext()).create()
         }
     }
-    single { AppCheckTokenProvider() }
+    single { AppCheckTokenProvider(get(), get()) }
     single { HttpClientFactory(get(), get(), get(), get(), get()).create() }
     single { ClipboardHandler(get()) }
-    single { ShareHandler(get()) }
-    single { AdsConsentManager.getInstance(androidContext()) }
-    single(createdAtStart = true) { ActivityProvider(androidApplication()) }
+    single { ShareHandler(get<ActivityProvider>()) }
+    single { AdsConsentManager.getInstance(get()) }
     single<NativeAdRepository> { NativeAdRepositoryImpl(get()) }
     factory { GetNativeAdUseCase(get()) }
     factory { ClearNativeAdsUseCase(get()) }
@@ -83,20 +86,22 @@ actual fun platformModule(passphrase: String): Module = module {
     single { SyncScheduler(get()) }
     single { SubscriptionSyncScheduler(get()) }
     single { MessagingTokenScheduler(get()) }
-    single { ItemsScheduler(get()) }
+    single { MonumentsScheduler(get()) }
     single { PurchaseSyncScheduler(get()) }
     single { UserSyncScheduler(get()) }
     single { BillingRepositoryImpl(androidContext()) } bind BillingRepository::class
-    single { ItemSyncDataSourceImpl(get()) } bind ItemSyncDataSource::class
+    single { MonumentSyncDataSourceImpl(get()) } bind MonumentSyncDataSource::class
     single { PurchaseSyncDataSourceImpl(get()) } bind PurchaseSyncDataSource::class
-    single { InAppUpdateManager(androidContext(), get(), get()) }
-    single { ReviewRequester(androidContext()) }
-    single { StoreNavigator(androidContext()) }
-    single { UrlOpener(androidContext()) }
-    single { EmailSender(androidContext()) }
+    single { InAppUpdateManager(get(), get(), get()) }
+    single { ReviewRequester(get()) }
+    single { StoreNavigator(get()) }
+    single { UrlOpener(get()) }
+    single { EmailSender(get()) }
     single { SystemDarkThemeObserver(androidContext()) }
     single { ConnectivityObserver(androidContext()) }
-    single { GoogleAuthClient(androidContext()) }
+    single { CredentialManager.create(androidContext()) }
+    single { GoogleAuthClient(get(), get()) }
+    single { RemoteConfig() }
     single { StringProvider(androidContext()) }
     single { PermissionsController(androidContext()) }
     viewModel {
@@ -108,9 +113,9 @@ actual fun platformModule(passphrase: String): Module = module {
             setSubscribedUseCase = get(),
             stringProvider = get(),
             getUserPreferencesUseCase = get(),
-            itemsScheduler = get(),
-            itemDataSource = get(),
-            itemSyncDataSource = get(),
+            monumentsScheduler = get(),
+            monumentDataSource = get(),
+            monumentSyncDataSource = get(),
             purchaseSyncDataSource = get(),
             purchaseSyncScheduler = get()
         )
@@ -124,7 +129,8 @@ actual fun platformModule(passphrase: String): Module = module {
             googleAuthClient = get(),
             snackbarController = get(),
             emailValidator = get(),
-            stringProvider = get()
+            stringProvider = get(),
+            remoteConfig = get()
         )
     }
     viewModel { (email: String, exists: Boolean, provider: AuthProvider?) ->
@@ -141,8 +147,9 @@ actual fun platformModule(passphrase: String): Module = module {
             usernameValidator = get(),
             loginWithGoogleUseCase = get(),
             getGoogleClientIdUseCase = get(),
-            googleAuthClient = get()
-            , stringProvider = get()
+            googleAuthClient = get(),
+            remoteConfig = get(),
+            stringProvider = get()
         )
     }
     viewModel {
@@ -167,8 +174,21 @@ actual fun platformModule(passphrase: String): Module = module {
     viewModel {
         ItemViewModel(
             getPagedItemsUseCase = get(),
-            itemSyncDataSource = get(),
-            itemsScheduler = get(),
+            snackbarController = get(),
+            stringProvider = get(),
+            saveSearchQueryUseCase = get(),
+            getSearchQueriesUseCase = get(),
+            deleteSearchQueriesUseCase = get(),
+            getUserUseCase = get(),
+            adsConsentManager = get(),
+            connectivityObserver = get(),
+        )
+    }
+    viewModel {
+        MonumentViewModel(
+            getPagedMonumentsUseCase = get(),
+            monumentSyncDataSource = get(),
+            monumentsScheduler = get(),
             snackbarController = get(),
             stringProvider = get(),
             saveSearchQueryUseCase = get(),
@@ -184,6 +204,12 @@ actual fun platformModule(passphrase: String): Module = module {
             itemId = itemId,
         )
     }
+    viewModel { (slug: String) ->
+        MonumentDetailsViewModel(
+            getMonumentDetailsUseCase = get(),
+            slug = slug,
+        )
+    }
     viewModel {
         SettingsViewModel(
             logoutUserUseCase = get(),
@@ -197,12 +223,14 @@ actual fun platformModule(passphrase: String): Module = module {
             snackbarController = get(),
             stringProvider = get(),
             systemDarkThemeObserver = get(),
-            itemsScheduler = get(),
-            itemSyncDataSource = get(),
+            monumentsScheduler = get(),
+            monumentSyncDataSource = get(),
             userEventController = get(),
             getActiveSubscriptionUseCase = get(),
             setSubscribedUseCase = get(),
+            remoteConfig = get(),
             connectivityObserver = get(),
+            adsConsentManager = get(),
         )
     }
     viewModel {
@@ -243,7 +271,8 @@ actual fun platformModule(passphrase: String): Module = module {
             usernameValidator = get(),
             passwordValidator = get(),
             emailValidator = get(),
-            stringProvider = get()
+            stringProvider = get(),
+            remoteConfig = get()
         )
     }
     viewModel {

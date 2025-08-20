@@ -1,0 +1,39 @@
+import pl.cuyer.rusthub.data.local.model.LanguageEntity;
+
+DROP TABLE itemEntity;
+CREATE TABLE itemEntity (
+    id INTEGER NOT NULL,
+    slug TEXT,
+    url TEXT,
+    name TEXT,
+    description TEXT,
+    image TEXT,
+    stack_size INTEGER,
+    health INTEGER,
+    attributes TEXT,
+    categories TEXT,
+    short_name TEXT,
+    icon_url TEXT,
+    language TEXT AS LanguageEntity,
+    looting TEXT,
+    loot_contents TEXT,
+    where_to_find TEXT,
+    crafting TEXT,
+    table_recipe TEXT,
+    recycling TEXT,
+    raiding TEXT,
+    PRIMARY KEY(id)
+);
+
+DROP TABLE monumentEntity;
+CREATE TABLE monumentEntity (
+    slug TEXT NOT NULL,
+    name TEXT,
+    attributes TEXT,
+    spawns TEXT,
+    usable_entities TEXT,
+    mining TEXT,
+    puzzles TEXT,
+    language TEXT AS LanguageEntity,
+    PRIMARY KEY(slug)
+);

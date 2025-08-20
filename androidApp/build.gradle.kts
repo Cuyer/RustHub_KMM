@@ -23,15 +23,16 @@ android {
         applicationId = "pl.cuyer.rusthub.android"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 51
+        versionCode = 74
         versionName = project.property("VERSION_NAME") as String
         buildConfigField("String", "SERVERS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/4096035325\"")
         buildConfigField("String", "ITEMS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/1469871989\"")
+        buildConfigField("String", "MONUMENTS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/8411157612\"")
     }
 
     androidResources {
         generateLocaleConfig = true
-        localeFilters.addAll(listOf("pl", "en", "de", "fr", "ru"))
+        localeFilters.addAll(listOf("pl", "en", "de", "fr", "ru", "es", "uk", "pt"))
     }
 
     buildFeatures {
@@ -124,11 +125,10 @@ dependencies {
     implementation(libs.androidx.navigation)
     implementation(libs.androidx.navigation.ui)
     implementation(libs.androidx.navigation.viewmodel)
-    implementation(libs.androidx.compose.material3.adaptive)
-    implementation(libs.androidx.compose.material3.adaptive.layout)
-    implementation(libs.androidx.compose.material3.adaptive.navigation)
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
-    implementation(libs.androidx.compose.material3.adaptive.navigation3)
+    implementation(libs.androidx.material3.adaptive.navigation3) {
+        isChanging = true
+    }
     implementation(libs.androidx.compose.material3.windowsizeclass)
     implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.core.splashscreen)

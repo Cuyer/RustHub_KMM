@@ -35,6 +35,16 @@ fun TechTreeCost.hasContent(): Boolean {
         outputName != null
 }
 
+fun TableRecipe.hasContent(): Boolean {
+    return tableImage != null ||
+        tableName != null ||
+        !ingredients.isNullOrEmpty() ||
+        outputImage != null ||
+        outputName != null ||
+        outputAmount != null ||
+        !totalCost.isNullOrEmpty()
+}
+
 fun Recycler.hasContent(): Boolean {
     return image != null ||
         !guarantedOutput.isNullOrEmpty() ||

@@ -1,0 +1,33 @@
+import pl.cuyer.rusthub.data.local.model.LanguageEntity;
+
+CREATE TABLE monumentEntity (
+    slug TEXT NOT NULL,
+    name TEXT,
+    iconUrl TEXT,
+    attributes TEXT,
+    spawns TEXT,
+    usable_entities TEXT,
+    mining TEXT,
+    puzzles TEXT,
+    language TEXT AS LanguageEntity,
+    PRIMARY KEY(slug, language)
+);
+
+CREATE TABLE monumentSyncEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    sync_state TEXT NOT NULL
+);
+
+INSERT INTO monumentEntity (slug, name, attributes, language) VALUES (
+    'abandoned-cabins',
+    'Abandoned Cabins',
+    '{"type":"Small","isSafezone":false}',
+    'en'
+);
+
+INSERT INTO monumentEntity (slug, name, attributes, language) VALUES (
+    'bandit-camp',
+    'Bandit Camp',
+    '{"type":"Safe Zones","isSafezone":true}',
+    'en'
+);

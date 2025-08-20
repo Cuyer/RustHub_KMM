@@ -22,6 +22,8 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
+import pl.cuyer.rusthub.util.RemoteConfig
+import pl.cuyer.rusthub.util.RemoteConfigKeys
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.toUserMessage
@@ -39,6 +41,7 @@ class UpgradeViewModel(
     private val passwordValidator: PasswordValidator,
     private val emailValidator: EmailValidator,
     private val stringProvider: StringProvider,
+    private val remoteConfig: RemoteConfig,
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -128,6 +131,12 @@ class UpgradeViewModel(
     private fun startGoogleLogin() {
         googleJob?.cancel()
         googleJob = coroutineScope.launch {
+            if (!remoteConfig.getBoolean(RemoteConfigKeys.GOOGLE_AUTH_ENABLED)) {
+                showErrorSnackbar(
+                    stringProvider.get(SharedRes.strings.google_sign_in_disabled)
+                )
+                return@launch
+            }
             getGoogleClientIdUseCase()
                 .onStart { updateGoogleLoading(true) }
                 .onCompletion { updateGoogleLoading(false) }

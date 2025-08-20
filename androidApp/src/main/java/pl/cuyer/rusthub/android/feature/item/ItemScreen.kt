@@ -1,6 +1,5 @@
 package pl.cuyer.rusthub.android.feature.item
 
-import android.app.Activity
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateBounds
 import androidx.compose.animation.AnimatedVisibility
@@ -11,6 +10,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -76,7 +76,6 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -96,12 +95,10 @@ import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.ItemCategory
 import pl.cuyer.rusthub.domain.model.RustItem
-import pl.cuyer.rusthub.domain.model.ItemSyncState
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.presentation.features.item.ItemAction
 import pl.cuyer.rusthub.presentation.features.item.ItemState
-import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.navigation.ItemList
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 
@@ -120,7 +117,6 @@ fun ItemScreen(
     adState: State<NativeAdState>,
     onAdAction: (AdAction) -> Unit
 ) {
-    val syncState = state.value.syncState
     val searchBarState = rememberSearchBarState()
     val textFieldState = rememberTextFieldState()
     val scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
@@ -178,6 +174,32 @@ fun ItemScreen(
                         modifier = Modifier
                             .padding(horizontal = spacing.xmedium)
                     )
+                    AnimatedVisibility(
+                        visible = !state.value.isConnected,
+                        enter = slideInVertically(
+                            animationSpec = spring(
+                                stiffness = Spring.StiffnessLow,
+                                dampingRatio = Spring.DampingRatioLowBouncy
+                            )
+                        ),
+                        exit = slideOutVertically(
+                            animationSpec = spring(
+                                stiffness = Spring.StiffnessLow,
+                                dampingRatio = Spring.DampingRatioLowBouncy
+                            )
+                        )
+                    ) {
+                        Text(
+                            textAlign = TextAlign.Center,
+                            text = stringResource(SharedRes.strings.offline_cached_items_info),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = spacing.xsmall)
+                                .background(MaterialTheme.colorScheme.secondary)
+                        )
+                    }
                 }
             }
         },
@@ -185,109 +207,16 @@ fun ItemScreen(
     ) { innerPadding ->
         PullToRefreshBox(
             isRefreshing = false,
-            onRefresh = {
-                onAction(ItemAction.OnRefresh)
-                pagedList.refresh()
-            },
+            onRefresh = { pagedList.refresh() },
             state = pullToRefreshState,
             modifier = Modifier
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding)
-                .fillMaxSize()
+                .fillMaxSize(),
         ) {
-            if (syncState == ItemSyncState.PENDING) {
-                LazyColumn(
-                    contentPadding = PaddingValues(
-                        top = 0.dp,
-                        bottom = WindowInsets.safeDrawing.asPaddingValues()
-                            .calculateBottomPadding(),
-                        start = 0.dp,
-                        end = 0.dp
-                    ),
-                    verticalArrangement = Arrangement.spacedBy(spacing.medium),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    items(
-                        count = 8,
-                        key = { it },
-                        contentType = { "shimmer" }
-                    ) {
-                        ItemListItemShimmer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .animateItem()
-                                .padding(horizontal = spacing.xmedium)
-                        )
-                    }
-                }
-            } else {
-                HandlePagingItems(
-                    items = { pagedList },
-                    onError = { error ->
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            item(key = "error", contentType = "error") {
-                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Column(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.Center
-                                    ) {
-                                        Text(
-                                            text = "(×_×)",
-                                            style = MaterialTheme.typography.headlineLarge,
-                                            textAlign = TextAlign.Center,
-                                            fontSize = 96.sp
-                                        )
-                                        Text(
-                                            text = stringResource(SharedRes.strings.error_oops),
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            textAlign = TextAlign.Center
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                        onAction(ItemAction.OnError(error))
-                    },
-                    onEmpty = {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            item(key = "empty", contentType = "empty") {
-                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Column(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.Center
-                                    ) {
-                                        Text(
-                                            text = "( •_•)?",
-                                            style = MaterialTheme.typography.headlineLarge,
-                                            textAlign = TextAlign.Center,
-                                            fontSize = 96.sp
-                                        )
-                                        Text(
-                                            text = stringResource(SharedRes.strings.no_items_available),
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            textAlign = TextAlign.Center
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ) {
-                    val adIndex = remember(pagedList.itemCount) {
-                        if (pagedList.itemCount > 0) {
-                            if (pagedList.itemCount >= 5) 4 else pagedList.itemCount - 1
-                        } else -1
-                    }
+            HandlePagingItems(
+                items = { pagedList },
+                onRefresh = {
                     LazyColumn(
                         contentPadding = PaddingValues(
                             top = 0.dp,
@@ -296,44 +225,137 @@ fun ItemScreen(
                             start = 0.dp,
                             end = 0.dp
                         ),
-                        state = lazyListState,
                         verticalArrangement = Arrangement.spacedBy(spacing.medium),
                         horizontalAlignment = Alignment.CenterHorizontally
-                    )
-                    {
-                        onPagingItemsIndexed(
-                            key = { index, item ->
-                                if (showAds && index == adIndex) "ad" else item.id ?: item.slug ?: item.hashCode()
-                            },
-                            contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "item" }
-                        ) { index, item ->
-                            if (showAds && index == adIndex) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                ) {
-                                    NativeAdListItem(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = spacing.xmedium),
-                                        ad = ads.value.ads[BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID]
-                                    )
-                                    Spacer(modifier = Modifier.height(spacing.medium))
-                                }
-                            }
-
-                            ItemListItem(
+                    ) {
+                        items(
+                            count = 8,
+                            key = { it },
+                            contentType = { "shimmer" }
+                        ) {
+                            ItemListItemShimmer(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .animateItem()
-                                    .padding(horizontal = spacing.xmedium),
-                                item = item,
-                                onClick = { id ->
-                                    onAction(ItemAction.OnItemClick(id))
-                                }
+                                    .padding(horizontal = spacing.xmedium)
                             )
                         }
+                    }
+                },
+                onError = { error ->
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        item(key = "error", contentType = "error") {
+                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = "(×_×)",
+                                        style = MaterialTheme.typography.headlineLarge,
+                                        textAlign = TextAlign.Center,
+                                        fontSize = 96.sp
+                                    )
+                                    Text(
+                                        text = stringResource(SharedRes.strings.error_oops),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    onAction(ItemAction.OnError(error))
+                },
+                onEmpty = {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        item(key = "empty", contentType = "empty") {
+                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = "( •_•)?",
+                                        style = MaterialTheme.typography.headlineLarge,
+                                        textAlign = TextAlign.Center,
+                                        fontSize = 96.sp
+                                    )
+                                    val message = if (!state.value.isConnected) {
+                                        stringResource(SharedRes.strings.no_items_available_offline)
+                                    } else {
+                                        stringResource(SharedRes.strings.no_items_available)
+                                    }
+                                    Text(
+                                        text = message,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            ) {
+                val adIndex = remember(pagedList.itemCount) {
+                    if (pagedList.itemCount > 0) {
+                        if (pagedList.itemCount >= 5) 4 else pagedList.itemCount - 1
+                    } else -1
+                }
+                LazyColumn(
+                    contentPadding = PaddingValues(
+                        top = 0.dp,
+                        bottom = WindowInsets.safeDrawing.asPaddingValues()
+                            .calculateBottomPadding(),
+                        start = 0.dp,
+                        end = 0.dp
+                    ),
+                    state = lazyListState,
+                    verticalArrangement = Arrangement.spacedBy(spacing.medium),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    onPagingItemsIndexed(
+                        key = { index, item ->
+                            if (showAds && index == adIndex) "ad" else item.id ?: item.slug ?: item.hashCode()
+                        },
+                        contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "item" }
+                    ) { index, item ->
+                        if (showAds && index == adIndex) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem(),
+                            ) {
+                                NativeAdListItem(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = spacing.xmedium),
+                                    ad = ads.value.ads[BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID]
+                                )
+                                Spacer(modifier = Modifier.height(spacing.medium))
+                            }
+                        }
+
+                        ItemListItem(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .animateItem()
+                                .padding(horizontal = spacing.xmedium),
+                            item = item,
+                            onClick = { id ->
+                                onAction(ItemAction.OnItemClick(id))
+                            }
+                        )
                     }
                 }
             }
@@ -411,7 +433,7 @@ private fun ItemCategoryChips(
 @Preview
 @Composable
 private fun ItemScreenPreview() {
-    val state = remember { mutableStateOf(ItemState(isRefreshing = false)) }
+    val state = remember { mutableStateOf(ItemState()) }
     RustHubTheme {
         ItemScreen(
             state = state,

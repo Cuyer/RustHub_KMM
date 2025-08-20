@@ -6,6 +6,8 @@ import android.util.Base64
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import database.FiltersEntity
+import database.ItemEntity
+import database.MonumentEntity
 import database.ServerEntity
 import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
@@ -43,6 +45,12 @@ actual class DatabaseDriverFactory(
                 sort_orderAdapter = EnumColumnAdapter(),
                 filterAdapter = EnumColumnAdapter()
             ),
+            itemEntityAdapter = ItemEntity.Adapter(
+                languageAdapter = EnumColumnAdapter()
+            ),
+            monumentEntityAdapter = MonumentEntity.Adapter(
+                languageAdapter = EnumColumnAdapter(),
+            )
         )
     }
 

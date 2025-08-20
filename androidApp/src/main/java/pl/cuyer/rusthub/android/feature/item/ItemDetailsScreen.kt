@@ -52,10 +52,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.ItemTooltipImage
 import pl.cuyer.rusthub.android.designsystem.LootContentListItem
 import pl.cuyer.rusthub.android.designsystem.LootingListItem
+import pl.cuyer.rusthub.android.designsystem.DetailsRow
 import pl.cuyer.rusthub.android.designsystem.WhereToFindListItem
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
@@ -68,6 +70,8 @@ import pl.cuyer.rusthub.domain.model.RecyclerOutput
 import pl.cuyer.rusthub.domain.model.ResearchTableCost
 import pl.cuyer.rusthub.domain.model.RustItem
 import pl.cuyer.rusthub.domain.model.TechTreeCost
+import pl.cuyer.rusthub.domain.model.TableRecipeIngredient
+import pl.cuyer.rusthub.domain.model.TableRecipe as TableRecipeModel
 import pl.cuyer.rusthub.domain.model.hasContent
 import pl.cuyer.rusthub.presentation.features.item.ItemDetailsState
 import kotlin.math.roundToInt
@@ -76,6 +80,10 @@ import pl.cuyer.rusthub.domain.model.Looting as LootingModel
 import pl.cuyer.rusthub.domain.model.Raiding as RaidingModel
 import pl.cuyer.rusthub.domain.model.Recycling as RecyclingModel
 import pl.cuyer.rusthub.domain.model.WhereToFind as WhereToFindModel
+import pl.cuyer.rusthub.domain.model.ItemAttribute
+import pl.cuyer.rusthub.domain.model.ItemAttributeType
+import pl.cuyer.rusthub.domain.model.toNameRes
+import pl.cuyer.rusthub.util.StringProvider
 
 @Immutable
 private enum class DetailsPage(val title: StringResource) {
@@ -83,6 +91,7 @@ private enum class DetailsPage(val title: StringResource) {
     WHERE_TO_FIND(SharedRes.strings.where_to_find),
     CONTENTS(SharedRes.strings.contents),
     CRAFTING(SharedRes.strings.crafting),
+    TABLE_RECIPE(SharedRes.strings.table_recipe),
     RECYCLING(SharedRes.strings.recycling),
     RAIDING(SharedRes.strings.raiding)
 }
@@ -95,6 +104,8 @@ private sealed class PageData(val page: DetailsPage) {
     data class Contents(val contents: List<LootContent>) :
         PageData(DetailsPage.CONTENTS)
     data class Crafting(val crafting: CraftingModel) : PageData(DetailsPage.CRAFTING)
+    data class TableRecipe(val tableRecipe: TableRecipeModel, val attributes: List<ItemAttribute>?) :
+        PageData(DetailsPage.TABLE_RECIPE)
     data class Recycling(val recycling: RecyclingModel) : PageData(DetailsPage.RECYCLING)
     data class Raiding(val raiding: List<RaidingModel>, val item: RustItem) :
         PageData(DetailsPage.RAIDING)
@@ -117,6 +128,8 @@ fun ItemDetailsScreen(
                     ?.let { add(PageData.Contents(it)) }
                 item.crafting?.takeIf { it.hasContent() }
                     ?.let { add(PageData.Crafting(it)) }
+                item.tableRecipe?.takeIf { it.hasContent() }
+                    ?.let { add(PageData.TableRecipe(it, item.attributes)) }
                 item.recycling?.takeIf { it.hasContent() }
                     ?.let { add(PageData.Recycling(it)) }
                 item.raiding?.takeIf { it.isNotEmpty() }
@@ -263,6 +276,8 @@ private fun DetailsContent(data: PageData) {
         }
 
         is PageData.Crafting -> CraftingContent(data.crafting)
+
+        is PageData.TableRecipe -> TableRecipeContent(data.tableRecipe, data.attributes)
 
         is PageData.Recycling -> RecyclingContent(data.recycling)
 
@@ -572,6 +587,202 @@ private fun TechTreeCostRow(
         }
     }
 }
+@Composable
+private fun TableRecipeContent(tableRecipe: TableRecipeModel, attributes: List<ItemAttribute>?) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
+        verticalArrangement = Arrangement.spacedBy(spacing.medium)
+    ) {
+        if (!attributes.isNullOrEmpty()) {
+            item(key = "attributes", contentType = "attributes") {
+                TableRecipeAttributesItem(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateItem()
+                        .padding(horizontal = spacing.xmedium),
+                    attributes = attributes
+                )
+            }
+        }
+        tableRecipe.ingredients?.let { ingredients ->
+            item(key = "recipe", contentType = "recipe") {
+                TableRecipeItemList(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateItem()
+                        .padding(horizontal = spacing.xmedium),
+                    title = SharedRes.strings.recipe,
+                    ingredients = ingredients,
+                    outputImage = tableRecipe.outputImage,
+                    outputName = tableRecipe.outputName,
+                    outputAmount = tableRecipe.outputAmount,
+                    tableImage = tableRecipe.tableImage,
+                    tableName = tableRecipe.tableName
+                )
+            }
+        }
+        tableRecipe.totalCost?.let { totalCost ->
+            if (totalCost.isNotEmpty()) {
+                item(key = "total_cost", contentType = "total_cost") {
+                    TableRecipeItemList(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .animateItem()
+                            .padding(horizontal = spacing.xmedium),
+                        title = SharedRes.strings.total_cost,
+                        ingredients = totalCost,
+                        outputImage = tableRecipe.outputImage,
+                        outputName = tableRecipe.outputName,
+                        outputAmount = tableRecipe.outputAmount,
+                        tableImage = null,
+                        tableName = null
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun TableRecipeAttributesItem(
+    modifier: Modifier = Modifier,
+    attributes: List<ItemAttribute>,
+) {
+    ElevatedCard(shape = MaterialTheme.shapes.extraSmall, modifier = modifier) {
+        Column(
+            modifier = Modifier.padding(
+                horizontal = spacing.xmedium,
+                vertical = spacing.xxmedium
+            )
+        ) {
+            val stringProvider = koinInject<StringProvider>()
+            DetailsRow(
+                details = {
+                    buildMap {
+                        attributes.forEach { attribute ->
+                            attribute.value?.let {
+                                put(attribute.type.toNameRes(stringProvider), it)
+                            }
+                        }
+                    }
+                }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun TableRecipeItemList(
+    modifier: Modifier = Modifier,
+    title: StringResource,
+    ingredients: List<TableRecipeIngredient>,
+    outputImage: String?,
+    outputName: String?,
+    outputAmount: Int?,
+    tableImage: String?,
+    tableName: String?
+) {
+    ElevatedCard(shape = MaterialTheme.shapes.extraSmall, modifier = modifier) {
+        Column(verticalArrangement = Arrangement.spacedBy(spacing.xxsmall)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(spacing.xxsmall, Alignment.Start),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                            shape = MaterialTheme.shapes.extraSmall
+                        )
+                        .padding(vertical = spacing.medium),
+                    textAlign = TextAlign.Center,
+                    text = stringResource(title),
+                    style = MaterialTheme.typography.titleLargeEmphasized,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            TableRecipeRow(
+                modifier = Modifier
+                    .padding(vertical = spacing.medium)
+                    .fillMaxWidth(),
+                ingredients = ingredients,
+                outputImage = outputImage,
+                outputName = outputName,
+                outputAmount = outputAmount,
+                tableImage = tableImage,
+                tableName = tableName
+            )
+        }
+    }
+}
+
+@Composable
+private fun TableRecipeRow(
+    modifier: Modifier = Modifier,
+    ingredients: List<TableRecipeIngredient>,
+    outputImage: String?,
+    outputName: String?,
+    outputAmount: Int?,
+    tableImage: String?,
+    tableName: String?
+) {
+    FlowRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(spacing.medium, Alignment.CenterHorizontally),
+        verticalArrangement = Arrangement.spacedBy(spacing.small),
+        itemVerticalAlignment = Alignment.CenterVertically
+    ) {
+        tableImage?.let {
+            ItemTooltipImage(
+                imageUrl = it,
+                tooltipText = tableName
+            )
+            if (ingredients.isNotEmpty()) {
+                Icon(
+                    modifier = Modifier.size(24.dp),
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null
+                )
+            }
+        }
+        ingredients.forEachIndexed { index, ingredient ->
+            ingredient.image?.let {
+                ItemTooltipImage(
+                    imageUrl = it,
+                    text = "x${ingredient.amount}",
+                    tooltipText = ingredient.name
+                )
+            }
+            if (index != ingredients.lastIndex) {
+                Icon(
+                    modifier = Modifier.size(24.dp),
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null
+                )
+            }
+        }
+
+        Icon(
+            modifier = Modifier.size(24.dp),
+            imageVector = Icons.AutoMirrored.Filled.ArrowRight,
+            contentDescription = null
+        )
+
+        outputImage?.let {
+            ItemTooltipImage(
+                imageUrl = it,
+                text = "x${outputAmount}",
+                tooltipText = outputName
+            )
+        }
+    }
+}
 
 @Composable
 private fun RecyclingContent(recycling: RecyclingModel) {
@@ -749,7 +960,7 @@ private fun RaidingContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(spacing.small)
             ) {
-                iconUrl?.let { ItemTooltipImage(imageUrl = it, size = 120) }
+                iconUrl?.let { ItemTooltipImage(imageUrl = it, size = 128) }
                 Slider(
                     state = sliderState
                 )

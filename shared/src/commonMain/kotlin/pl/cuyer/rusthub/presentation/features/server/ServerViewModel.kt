@@ -197,7 +197,6 @@ class ServerViewModel(
         when (action) {
             is ServerAction.OnServerClick -> navigateToServer(action.id, action.name)
             is ServerAction.OnLongServerClick -> saveIpToClipboard(action.ipAddress)
-            is ServerAction.OnChangeIsRefreshingState -> updateIsRefreshing(action.isRefreshing)
             is ServerAction.OnSaveFilters -> onSaveFilters(action.filters)
             is ServerAction.OnSearch -> handleSearch(query = action.query)
             is ServerAction.OnClearFilters -> clearFilters()
@@ -364,11 +363,6 @@ class ServerViewModel(
             )
         }
     }
-
-    private fun updateIsRefreshing(isRefreshing: Boolean) {
-        _state.update { it.copy(isRefreshing = isRefreshing) }
-    }
-
     private fun updateLoadingMore(loading: Boolean) {
         _state.update { it.copy(loadingMore = loading) }
     }

@@ -4,14 +4,17 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.map
 import androidx.paging.PagingData
+import androidx.paging.ExperimentalPagingApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import pl.cuyer.rusthub.data.local.mapper.toRustItem
 import pl.cuyer.rusthub.domain.model.ItemCategory
 import pl.cuyer.rusthub.domain.model.RustItem
+import pl.cuyer.rusthub.domain.repository.item.ItemRepository
 import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.domain.model.Language
+import pl.cuyer.rusthub.domain.repository.item.ItemRemoteMediator
 
 /**
  * Use case for retrieving paginated items from the local database or remote source.
@@ -27,6 +30,7 @@ import pl.cuyer.rusthub.domain.model.Language
  */
 class GetPagedItemsUseCase(
     private val dataSource: ItemDataSource,
+    private val api: ItemRepository,
     private val json: Json
 ) {
     /**
@@ -37,6 +41,7 @@ class GetPagedItemsUseCase(
      * @param language The language to filter items. If Polish is provided, it is replaced with English.
      * @return A `Flow` emitting paginated data of `RustItem` objects.
      */
+    @OptIn(ExperimentalPagingApi::class)
     operator fun invoke(
         query: String?,
         category: ItemCategory?,
@@ -51,6 +56,13 @@ class GetPagedItemsUseCase(
             config = PagingConfig(
                 pageSize = 30,
                 enablePlaceholders = true
+            ),
+            remoteMediator = ItemRemoteMediator(
+                dataSource,
+                api,
+                category,
+                updatedLanguage,
+                query
             ),
             pagingSourceFactory = {
                 dataSource.getItemsPagingSource(query, category, updatedLanguage)

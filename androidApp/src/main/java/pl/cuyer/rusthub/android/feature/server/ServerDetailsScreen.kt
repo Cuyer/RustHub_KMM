@@ -92,10 +92,10 @@ import androidx.compose.ui.platform.LocalContext
 import pl.cuyer.rusthub.android.designsystem.shimmer
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.domain.model.Flag
-import pl.cuyer.rusthub.domain.model.Flag.Companion.toDrawable
 import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.model.displayName
+import pl.cuyer.rusthub.domain.model.toDrawable
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsAction
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsState
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
@@ -131,7 +131,7 @@ fun ServerDetailsScreen(
 
     state.value.details?.mapImage?.let { mapUrl ->
         if (state.value.showMap) {
-            MapDialog(mapUrl = mapUrl) {
+            MapDialog(imageModel = mapUrl) {
                 onAction(ServerDetailsAction.OnDismissMap)
             }
         }
@@ -605,13 +605,17 @@ fun ServerDetailsScreen(
                                         )
                                     },
                                     error = {
-                                        Image(
+                                        Box(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .height(200.dp),
-                                            painter = painterResource(id = getImageByFileName("il_not_found").drawableResId),
-                                            contentDescription = stringResource(SharedRes.strings.error_not_found)
-                                        )
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = stringResource(SharedRes.strings.error_image_emote),
+                                                style = MaterialTheme.typography.headlineMedium
+                                            )
+                                        }
                                     }
                                 )
                             }

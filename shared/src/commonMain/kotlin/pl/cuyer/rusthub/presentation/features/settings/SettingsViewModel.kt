@@ -48,23 +48,26 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.common.user.UserEvent
 import pl.cuyer.rusthub.common.user.UserEventController
 import pl.cuyer.rusthub.util.GoogleAuthClient
+import pl.cuyer.rusthub.util.RemoteConfig
+import pl.cuyer.rusthub.util.RemoteConfigKeys
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import pl.cuyer.rusthub.util.anonymousAccountExpiresIn
 import pl.cuyer.rusthub.util.formatExpiration
 import pl.cuyer.rusthub.util.formatLocalDateTime
-import pl.cuyer.rusthub.util.ItemsScheduler
 import pl.cuyer.rusthub.util.ConnectivityObserver
+import pl.cuyer.rusthub.util.AdsConsentManager
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import pl.cuyer.rusthub.domain.model.ActiveSubscription
 import pl.cuyer.rusthub.domain.usecase.GetActiveSubscriptionUseCase
-import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
-import pl.cuyer.rusthub.domain.model.ItemSyncState
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.util.updateAppLanguage
 import pl.cuyer.rusthub.domain.model.SubscriptionState
+import pl.cuyer.rusthub.domain.model.MonumentSyncState
+import pl.cuyer.rusthub.util.MonumentsScheduler
+import pl.cuyer.rusthub.domain.repository.monument.local.MonumentSyncDataSource
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -80,12 +83,14 @@ class SettingsViewModel(
     private val snackbarController: SnackbarController,
     private val stringProvider: StringProvider,
     private val systemDarkThemeObserver: SystemDarkThemeObserver,
-    private val itemsScheduler: ItemsScheduler,
+    private val monumentsScheduler: MonumentsScheduler,
     private val getActiveSubscriptionUseCase: GetActiveSubscriptionUseCase,
-    private val itemSyncDataSource: ItemSyncDataSource,
+    private val monumentSyncDataSource: MonumentSyncDataSource,
     private val userEventController: UserEventController,
     private val setSubscribedUseCase: SetSubscribedUseCase,
-    private val connectivityObserver: ConnectivityObserver
+    private val remoteConfig: RemoteConfig,
+    private val connectivityObserver: ConnectivityObserver,
+    private val adsConsentManager: AdsConsentManager
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -117,6 +122,8 @@ class SettingsViewModel(
                     showUnconfirmedSnackbar()
                 } else if (!state.value.isConnected) {
                     showErrorSnackbar(stringProvider.get(SharedRes.strings.connect_manage_subscription))
+                } else if (!remoteConfig.getBoolean(RemoteConfigKeys.FEATURE_SUBSCRIPTION_ENABLED)) {
+                    showErrorSnackbar(stringProvider.get(SharedRes.strings.subscription_disabled))
                 } else {
                     navigateSubscription()
                 }
@@ -125,10 +132,14 @@ class SettingsViewModel(
             SettingsAction.OnSubscribe -> Unit
             SettingsAction.OnPrivacyPolicy -> openPrivacyPolicy()
             SettingsAction.OnTerms -> openTerms()
+            is SettingsAction.OnManagePrivacy -> showPrivacyOptionsForm(action.activity)
             SettingsAction.OnAbout -> navigateAbout()
             SettingsAction.OnDeleteAccount -> navigateDeleteAccount()
             SettingsAction.OnUpgradeAccount -> navigateUpgrade()
-            SettingsAction.OnResume -> refreshSubscription()
+            SettingsAction.OnResume -> {
+                refreshSubscription()
+                updatePrivacyOptionsRequired()
+            }
             is SettingsAction.OnThemeChange -> setTheme(action.theme)
             is SettingsAction.OnDynamicColorsChange -> setDynamicColors(action.enabled)
             is SettingsAction.OnUseSystemColorsChange -> setUseSystemColors(action.enabled)
@@ -276,6 +287,7 @@ class SettingsViewModel(
         subscriptionJob = coroutineScope.launch {
             val user = getUserUseCase().first()
             if (user?.provider == AuthProvider.ANONYMOUS) {
+                updateLoading(false)
                 updateUser(user, null)
                 return@launch
             }
@@ -289,6 +301,21 @@ class SettingsViewModel(
                         is Result.Error -> updateUser(user, null)
                     }
                 }
+        }
+    }
+
+    private fun showPrivacyOptionsForm(activity: Any) {
+        adsConsentManager.showPrivacyOptionsForm(activity) { error ->
+            if (error != null) {
+                showErrorSnackbar(stringProvider.get(SharedRes.strings.ads_consent_error))
+            }
+            updatePrivacyOptionsRequired()
+        }
+    }
+
+    private fun updatePrivacyOptionsRequired() {
+        _state.update {
+            it.copy(isPrivacyOptionsRequired = adsConsentManager.isPrivacyOptionsRequired)
         }
     }
 
@@ -331,9 +358,9 @@ class SettingsViewModel(
     private fun changeLanguage(language: Language) {
         coroutineScope.launch {
             updateAppLanguage(language)
-            itemSyncDataSource.setState(ItemSyncState.PENDING)
-            itemsScheduler.startNow()
-            itemsScheduler.schedule()
+            monumentSyncDataSource.setState(MonumentSyncState.PENDING)
+            monumentsScheduler.startNow()
+            monumentsScheduler.schedule()
         }
     }
 

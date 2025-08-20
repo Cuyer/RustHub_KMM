@@ -527,7 +527,7 @@ private fun PlanSelector(
                 Column(
                     modifier = Modifier
                         .padding(spacing.medium)
-                        .widthIn(min = 60.dp, max = 80.dp)
+                        .widthIn(min = 60.dp, max = 90.dp)
                         .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
@@ -834,7 +834,7 @@ private fun CarouselAutoPlayHandler(pagerState: PagerState, carouselSize: Int, d
 @Preview
 @Composable
 private fun SubscriptionScreenPreview() {
-    val state = remember { mutableStateOf(SubscriptionState()) }
+    val state = remember { mutableStateOf(SubscriptionState(isLoading = false)) }
     RustHubTheme {
         SubscriptionScreen(
             onNavigateUp = {},

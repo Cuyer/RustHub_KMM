@@ -16,13 +16,17 @@ import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.domain.model.Theme
 
 @Composable
-fun DetailsRow(details: () -> Map<String, String>) {
+fun DetailsRow(
+    details: () -> Map<String, String>,
+    maxItemsInColumn: Int = 3,
+    maxLines: Int = 2
+) {
     FlowColumn(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight(),
-        maxItemsInEachColumn = 3,
-        maxLines = 2,
+        maxItemsInEachColumn = maxItemsInColumn,
+        maxLines = maxLines,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         details().forEach {

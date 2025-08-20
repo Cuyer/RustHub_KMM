@@ -73,6 +73,9 @@ import pl.cuyer.rusthub.presentation.model.FilterRangeOption
 import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.presentation.model.toDomain
 import pl.cuyer.rusthub.domain.model.ServerFilter
+import pl.cuyer.rusthub.domain.model.Flag
+import pl.cuyer.rusthub.domain.model.Region
+import pl.cuyer.rusthub.domain.model.CountryRegionMapper
 import pl.cuyer.rusthub.util.StringProvider
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -221,17 +224,69 @@ private fun DropdownFilters(
     options: () -> List<FilterDropdownOption>,
     onOptionsChange: (List<FilterDropdownOption>) -> Unit
 ) {
+    val stringProvider = koinInject<StringProvider>()
+    val selectedCountry = options().getOrNull(1)?.let { opt ->
+        opt.selectedIndex?.let { idx ->
+            opt.options.getOrNull(idx)?.let { Flag.fromDisplayName(it) }
+        }
+    }
+    val selectedRegion = options().getOrNull(2)?.let { opt ->
+        opt.selectedIndex?.let { idx ->
+            opt.options.getOrNull(idx)?.let { Region.fromDisplayName(it, stringProvider) }
+        }
+    }
     options().forEachIndexed { index, option ->
         key(option.label) {
+            val enabledForIndex: (Int) -> Boolean = when (index) {
+                1 -> { idx ->
+                    selectedRegion?.let { region ->
+                        Flag.fromDisplayName(option.options[idx])?.let { flag ->
+                            CountryRegionMapper.regionForFlag(flag) == region
+                        } ?: false
+                    } ?: true
+                }
+                2 -> { idx ->
+                    selectedCountry?.let { flag ->
+                        val countryRegion = CountryRegionMapper.regionForFlag(flag)
+                        val region = Region.fromDisplayName(option.options[idx], stringProvider)
+                        countryRegion == region
+                    } ?: true
+                }
+                else -> { _ -> true }
+            }
             AppExposedDropdownMenu(
                 label = option.label,
                 options = option.options,
-                selectedValue = option.selectedIndex ?: 0,
+                selectedValue = option.selectedIndex,
                 onSelectionChanged = { selected ->
                     val updated = options().toMutableList()
+                    if (index == 1) {
+                        val regionOpt = options().getOrNull(2)
+                        val newFlag = selected?.let { Flag.fromDisplayName(option.options[it]) }
+                        val region = regionOpt?.selectedIndex?.let { idx ->
+                            regionOpt.options.getOrNull(idx)?.let { Region.fromDisplayName(it, stringProvider) }
+                        }
+                        val countryRegion = newFlag?.let { CountryRegionMapper.regionForFlag(it) }
+                        if (region != null && countryRegion != region) {
+                            regionOpt?.let { updated[2] = it.copy(selectedIndex = null) }
+                        }
+                    }
+                    if (index == 2) {
+                        val countryOpt = options().getOrNull(1)
+                        val newRegion = selected?.let { Region.fromDisplayName(option.options[it], stringProvider) }
+                        val flag = countryOpt?.selectedIndex?.let { idx ->
+                            countryOpt.options.getOrNull(idx)?.let { Flag.fromDisplayName(it) }
+                        }
+                        val flagRegion = flag?.let { CountryRegionMapper.regionForFlag(it) }
+                        if (newRegion != null && flagRegion != null && flagRegion != newRegion) {
+                            countryOpt?.let { updated[1] = it.copy(selectedIndex = null) }
+                        }
+                    }
                     updated[index] = option.copy(selectedIndex = selected)
                     onOptionsChange(updated)
-                }
+                },
+                allowEmptySelection = true,
+                enabledForIndex = enabledForIndex
             )
         }
     }

@@ -7,11 +7,8 @@ import kotlinx.serialization.Serializable
 enum class RegionDto {
     ASIA,
     EUROPE,
-    @SerialName("NORTH AMERICA")
-    NORTH_AMERICA,
+    AMERICA,
     AFRICA,
-    @SerialName("SOUTH AMERICA")
-    SOUTH_AMERICA,
     OCEANIA,
     AUSTRALIA
 }

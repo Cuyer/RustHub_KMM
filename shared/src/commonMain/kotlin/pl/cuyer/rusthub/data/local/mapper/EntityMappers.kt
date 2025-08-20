@@ -14,11 +14,14 @@ import database.ServerEntity
 import database.UserEntity
 import database.ItemEntity
 import database.ItemSearchQueryEntity
+import database.MonumentSearchQueryEntity
+import database.MonumentEntity
 import pl.cuyer.rusthub.data.local.model.DifficultyEntity
 import pl.cuyer.rusthub.data.local.model.FlagEntity
 import pl.cuyer.rusthub.data.local.model.MapsEntity
 import pl.cuyer.rusthub.data.local.model.OrderEntity
 import pl.cuyer.rusthub.data.local.model.RegionEntity
+import pl.cuyer.rusthub.data.local.model.LanguageEntity
 import pl.cuyer.rusthub.data.local.model.ServerFilterEntity
 import pl.cuyer.rusthub.data.local.model.ServerStatusEntity
 import pl.cuyer.rusthub.data.local.model.WipeScheduleEntity
@@ -47,10 +50,19 @@ import pl.cuyer.rusthub.domain.model.Looting
 import pl.cuyer.rusthub.domain.model.LootContent
 import pl.cuyer.rusthub.domain.model.WhereToFind
 import pl.cuyer.rusthub.domain.model.Crafting
+import pl.cuyer.rusthub.domain.model.TableRecipe
 import pl.cuyer.rusthub.domain.model.Recycling
 import pl.cuyer.rusthub.domain.model.Raiding
+import pl.cuyer.rusthub.domain.model.ItemAttribute
+import pl.cuyer.rusthub.domain.model.Monument
+import pl.cuyer.rusthub.domain.model.MonumentAttributes
+import pl.cuyer.rusthub.domain.model.MonumentSpawns
+import pl.cuyer.rusthub.domain.model.MonumentPuzzle
+import pl.cuyer.rusthub.domain.model.UsableEntity
+import pl.cuyer.rusthub.domain.model.Mining
 import kotlin.time.Instant
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlin.time.ExperimentalTime
 
@@ -82,7 +94,18 @@ fun ServerFilter?.toEntity(): ServerFilterEntity? = this?.let { ServerFilterEnti
 fun WipeTypeEntity?.toDomain(): WipeType? = this?.let { WipeType.valueOf(it.name) }
 fun WipeType?.toEntity(): WipeTypeEntity? = this?.let { WipeTypeEntity.valueOf(it.name) }
 
+fun LanguageEntity?.toDomain(): Language = this?.let { Language.valueOf(it.name) } ?: Language.ENGLISH
+fun Language?.toEntity(): LanguageEntity? = this?.let { LanguageEntity.valueOf(it.name) }
+
 fun ItemSearchQueryEntity.toDomain(): SearchQuery {
+    return SearchQuery(
+        id = id,
+        query = query,
+        timestamp = Instant.parse(timestamp)
+    )
+}
+
+fun MonumentSearchQueryEntity.toDomain(): SearchQuery {
     return SearchQuery(
         id = id,
         query = query,
@@ -203,12 +226,15 @@ fun ItemEntity.toRustItem(json: Json): RustItem {
         image = image,
         stackSize = stack_size?.toInt(),
         health = health?.toInt(),
+        attributes = attributes?.let {
+            json.decodeFromString(ListSerializer(ItemAttribute.serializer()), it)
+        },
         categories = categories?.split(",")?.mapNotNull {
             runCatching { ItemCategory.valueOf(it) }.getOrNull()
         },
         shortName = short_name,
         iconUrl = icon_url,
-        language = language?.let { Language.valueOf(it) },
+        language = language.toDomain(),
         looting = looting?.let {
             json.decodeFromString(ListSerializer(Looting.serializer()), it)
         },
@@ -219,11 +245,33 @@ fun ItemEntity.toRustItem(json: Json): RustItem {
             json.decodeFromString(ListSerializer(WhereToFind.serializer()), it)
         },
         crafting = crafting?.let { json.decodeFromString(Crafting.serializer(), it) },
+        tableRecipe = table_recipe?.let { json.decodeFromString(TableRecipe.serializer(), it) },
         recycling = recycling?.let { json.decodeFromString(Recycling.serializer(), it) },
         raiding = raiding?.let {
             json.decodeFromString(ListSerializer(Raiding.serializer()), it)
         },
         id = id
+    )
+}
+
+fun MonumentEntity.toMonument(json: Json): Monument {
+    return Monument(
+        name = name,
+        slug = slug,
+        iconUrl = iconUrl,
+        mapUrls = mapUrls?.let {
+            json.decodeFromString(ListSerializer(String.serializer()), it)
+        },
+        attributes = attributes?.let { json.decodeFromString(MonumentAttributes.serializer(), it) },
+        spawns = spawns?.let { json.decodeFromString(MonumentSpawns.serializer(), it) },
+        usableEntities = usable_entities?.let {
+            json.decodeFromString(ListSerializer(UsableEntity.serializer()), it)
+        },
+        mining = mining?.let { json.decodeFromString(Mining.serializer(), it) },
+        puzzles = puzzles?.let {
+            json.decodeFromString(ListSerializer(MonumentPuzzle.serializer()), it)
+        },
+        language = language.toDomain(),
     )
 }
 

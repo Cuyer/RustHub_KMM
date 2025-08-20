@@ -67,6 +67,7 @@ kotlin {
             implementation(libs.firebase.crashlytics)
             implementation(libs.firebase.appcheck.playintegrity)
             implementation(libs.firebase.appcheck.debug)
+            implementation(libs.firebase.config)
             implementation(libs.google.auth)
             implementation(libs.androidx.credentials)
             implementation(libs.google.identity)
@@ -78,6 +79,7 @@ kotlin {
             implementation(libs.androidx.appcompat)
             implementation(libs.play.services.ads)
             implementation(libs.user.messaging.platform)
+            implementation(libs.play.integrity)
         }
         commonMain.dependencies {
             implementation(project.dependencies.platform(libs.koin.bom))

@@ -87,6 +87,26 @@ data class Crafting(
 
 @Serializable
 @Immutable
+data class TableRecipeIngredient(
+    val image: String? = null,
+    val name: String? = null,
+    val amount: Int? = null,
+)
+
+@Serializable
+@Immutable
+data class TableRecipe(
+    val tableImage: String? = null,
+    val tableName: String? = null,
+    val ingredients: List<TableRecipeIngredient>? = null,
+    val outputImage: String? = null,
+    val outputName: String? = null,
+    val outputAmount: Int? = null,
+    val totalCost: List<TableRecipeIngredient>? = null,
+)
+
+@Serializable
+@Immutable
 data class RecyclerOutput(
     val image: String? = null,
     val name: String? = null,
@@ -141,6 +161,3 @@ data class Raiding(
     val rawMaterialCost: List<RaidResource>? = null
 )
 
-@Serializable
-@Immutable
-enum class ItemSyncState { PENDING, DONE }

@@ -1,7 +1,6 @@
 package pl.cuyer.rusthub.presentation.navigation
 
 import androidx.compose.runtime.Immutable
-import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 import pl.cuyer.rusthub.domain.model.AuthProvider
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
@@ -50,6 +49,15 @@ data object ItemList : NavKey
 @Immutable
 data class ItemDetails(
     val id: Long,
+) : NavKey
+
+@Serializable
+data object MonumentList : NavKey
+
+@Serializable
+@Immutable
+data class MonumentDetails(
+    val slug: String,
 ) : NavKey
 
 @Serializable

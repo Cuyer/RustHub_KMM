@@ -18,9 +18,9 @@ import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.repository.favourite.FavouriteSyncDataSource
 import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
 import pl.cuyer.rusthub.domain.repository.filtersOptions.FiltersOptionsDataSource
-import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
 import pl.cuyer.rusthub.domain.repository.search.ItemSearchQueryDataSource
 import pl.cuyer.rusthub.domain.repository.search.SearchQueryDataSource
+import pl.cuyer.rusthub.domain.repository.search.MonumentSearchQueryDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.util.CrashReporter
@@ -34,9 +34,9 @@ class AuthDataSourceImpl(
     private val filtersOptionsDataSource: FiltersOptionsDataSource,
     private val searchQueryDataSource: SearchQueryDataSource,
     private val itemSearchQueryDataSource: ItemSearchQueryDataSource,
+    private val monumentSearchQueryDataSource: MonumentSearchQueryDataSource,
     private val favouriteSyncDataSource: FavouriteSyncDataSource,
     private val subscriptionSyncDataSource: SubscriptionSyncDataSource,
-    private val itemSyncDataSource: ItemSyncDataSource,
 ) : AuthDataSource, Queries(db) {
 
     override suspend fun insertUser(
@@ -75,9 +75,9 @@ class AuthDataSourceImpl(
             filtersOptionsDataSource.clearFiltersOptions()
             searchQueryDataSource.clearQueries()
             itemSearchQueryDataSource.clearQueries()
+            monumentSearchQueryDataSource.clearQueries()
             favouriteSyncDataSource.clearOperations()
             subscriptionSyncDataSource.clearOperations()
-            itemSyncDataSource.clearState()
             tokenRefresher.clear()
             CrashReporter.setUserId(null)
         }

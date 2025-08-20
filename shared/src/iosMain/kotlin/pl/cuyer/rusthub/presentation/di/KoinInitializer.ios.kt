@@ -30,21 +30,23 @@ import pl.cuyer.rusthub.util.StoreNavigator
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.SubscriptionSyncScheduler
 import pl.cuyer.rusthub.util.SyncScheduler
-import pl.cuyer.rusthub.util.ItemsScheduler
+import pl.cuyer.rusthub.util.MonumentsScheduler
 import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
 import pl.cuyer.rusthub.util.UserSyncScheduler
 import pl.cuyer.rusthub.util.AdsConsentManager
+import pl.cuyer.rusthub.util.ConnectivityObserver
 import pl.cuyer.rusthub.data.billing.BillingRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.purchase.BillingRepository
 import pl.cuyer.rusthub.domain.usecase.ConfirmPurchaseUseCase
 import pl.cuyer.rusthub.domain.usecase.RefreshUserUseCase
 import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
+import pl.cuyer.rusthub.util.RemoteConfig
 import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
-import pl.cuyer.rusthub.data.local.item.ItemSyncDataSourceImpl
-import pl.cuyer.rusthub.domain.repository.item.local.ItemSyncDataSource
+import pl.cuyer.rusthub.data.local.monument.MonumentSyncDataSourceImpl
+import pl.cuyer.rusthub.domain.repository.monument.local.MonumentSyncDataSource
 import pl.cuyer.rusthub.data.local.purchase.PurchaseSyncDataSourceImpl
 import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
 import pl.cuyer.rusthub.presentation.features.item.ItemViewModel
@@ -55,11 +57,13 @@ import pl.cuyer.rusthub.domain.repository.ads.NativeAdRepository
 import pl.cuyer.rusthub.domain.usecase.ads.GetNativeAdUseCase
 import pl.cuyer.rusthub.domain.usecase.ads.ClearNativeAdsUseCase
 import pl.cuyer.rusthub.presentation.features.ads.NativeAdViewModel
+import pl.cuyer.rusthub.presentation.features.monument.MonumentViewModel
+import pl.cuyer.rusthub.presentation.features.monument.MonumentDetailsViewModel
 
 @Suppress("UNUSED_PARAMETER")
 actual fun platformModule(passphrase: String): Module = module {
     single<RustHubDatabase> { DatabaseDriverFactory().create() }
-    single { AppCheckTokenProvider() }
+    single { AppCheckTokenProvider(get(), get()) }
     single { HttpClientFactory(get(), get(), get(), get(), get()).create() }
     single { TokenRefresher() }
     single { ClipboardHandler() }
@@ -67,19 +71,21 @@ actual fun platformModule(passphrase: String): Module = module {
     single { SyncScheduler() }
     single { SubscriptionSyncScheduler() }
     single { MessagingTokenScheduler() }
-    single { ItemsScheduler() }
+    single { MonumentsScheduler() }
     single { PurchaseSyncScheduler() }
     single { UserSyncScheduler() }
     single { BillingRepositoryImpl() } bind BillingRepository::class
-    single { ItemSyncDataSourceImpl(get()) } bind ItemSyncDataSource::class
+    single { MonumentSyncDataSourceImpl(get()) } bind MonumentSyncDataSource::class
     single { PurchaseSyncDataSourceImpl(get()) } bind PurchaseSyncDataSource::class
     single { InAppUpdateManager() }
     single { ReviewRequester() }
     single { StoreNavigator() }
-    single { UrlOpener() }
-    single { EmailSender() }
+    single<UrlOpener> { UrlOpener() }
+    single<EmailSender> { EmailSender() }
     single { SystemDarkThemeObserver() }
+    single { ConnectivityObserver() }
     single { GoogleAuthClient() }
+    single { RemoteConfig() }
     single { StringProvider() }
     single { AdsConsentManager() }
     single<NativeAdRepository> { NativeAdRepositoryImpl() }
@@ -95,9 +101,9 @@ actual fun platformModule(passphrase: String): Module = module {
             setSubscribedUseCase = get(),
             stringProvider = get(),
             getUserPreferencesUseCase = get(),
-            itemsScheduler = get(),
-            itemDataSource = get(),
-            itemSyncDataSource = get(),
+            monumentsScheduler = get(),
+            monumentDataSource = get(),
+            monumentSyncDataSource = get(),
             purchaseSyncDataSource = get(),
             purchaseSyncScheduler = get()
         )
@@ -105,16 +111,40 @@ actual fun platformModule(passphrase: String): Module = module {
     factory {
         ItemViewModel(
             getPagedItemsUseCase = get(),
-            itemSyncDataSource = get(),
-            itemsScheduler = get(),
+            snackbarController = get(),
+            stringProvider = get(),
+            saveSearchQueryUseCase = get(),
+            getSearchQueriesUseCase = get(),
+            deleteSearchQueriesUseCase = get(),
             getUserUseCase = get(),
-            adsConsentManager = get()
+            adsConsentManager = get(),
+            connectivityObserver = get()
+        )
+    }
+    factory {
+        MonumentViewModel(
+            getPagedMonumentsUseCase = get(),
+            monumentSyncDataSource = get(),
+            monumentsScheduler = get(),
+            snackbarController = get(),
+            stringProvider = get(),
+            saveSearchQueryUseCase = get(),
+            getSearchQueriesUseCase = get(),
+            deleteSearchQueriesUseCase = get(),
+            getUserUseCase = get(),
+            adsConsentManager = get(),
         )
     }
     factory { (itemId: Long) ->
         ItemDetailsViewModel(
             getItemDetailsUseCase = get(),
             itemId = itemId,
+        )
+    }
+    factory { (slug: String) ->
+        MonumentDetailsViewModel(
+            getMonumentDetailsUseCase = get(),
+            slug = slug,
         )
     }
     factory {
@@ -136,7 +166,8 @@ actual fun platformModule(passphrase: String): Module = module {
             googleAuthClient = get(),
             snackbarController = get(),
             emailValidator = get(),
-            stringProvider = get()
+            stringProvider = get(),
+            remoteConfig = get()
         )
     }
     factory { (email: String, exists: Boolean, provider: AuthProvider?) ->
@@ -151,6 +182,10 @@ actual fun platformModule(passphrase: String): Module = module {
             snackbarController = get(),
             passwordValidator = get(),
             usernameValidator = get(),
+            loginWithGoogleUseCase = get(),
+            getGoogleClientIdUseCase = get(),
+            googleAuthClient = get(),
+            remoteConfig = get(),
             stringProvider = get()
         )
     }
@@ -167,11 +202,13 @@ actual fun platformModule(passphrase: String): Module = module {
             snackbarController = get(),
             stringProvider = get(),
             systemDarkThemeObserver = get(),
-            itemsScheduler = get(),
-            itemSyncDataSource = get(),
+            monumentsScheduler = get(),
+            monumentSyncDataSource = get(),
             userEventController = get(),
             setSubscribedUseCase = get(),
-            connectivityObserver = get()
+            remoteConfig = get(),
+            connectivityObserver = get(),
+            adsConsentManager = get()
         )
     }
     factory {
@@ -212,7 +249,8 @@ actual fun platformModule(passphrase: String): Module = module {
             usernameValidator = get(),
             passwordValidator = get(),
             emailValidator = get(),
-            stringProvider = get()
+            stringProvider = get(),
+            remoteConfig = get()
         )
     }
     factory { (plan: SubscriptionPlan?) ->

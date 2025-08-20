@@ -1,7 +1,8 @@
 package pl.cuyer.rusthub.common
 
+import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.Platform
-
+@OptIn(ExperimentalNativeApi::class)
 actual object Urls {
     actual val PRIVACY_POLICY_URL: String
         get() = if (Platform.isDebugBinary) {

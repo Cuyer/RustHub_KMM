@@ -8,12 +8,12 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import pl.cuyer.rusthub.work.ItemsWorker
+import pl.cuyer.rusthub.work.MonumentsWorker
 import java.util.concurrent.TimeUnit
 
-actual class ItemsScheduler(private val context: Context) {
+actual class MonumentsScheduler(private val context: Context) {
     actual fun schedule() {
-        val request = PeriodicWorkRequestBuilder<ItemsWorker>(7, TimeUnit.DAYS)
+        val request = PeriodicWorkRequestBuilder<MonumentsWorker>(7, TimeUnit.DAYS)
             .setInitialDelay(7, TimeUnit.DAYS)
             .setConstraints(
                 Constraints.Builder()
@@ -29,7 +29,7 @@ actual class ItemsScheduler(private val context: Context) {
     }
 
     actual fun startNow() {
-        val request = OneTimeWorkRequestBuilder<ItemsWorker>()
+        val request = OneTimeWorkRequestBuilder<MonumentsWorker>()
             .setConstraints(
                 Constraints.Builder()
                     .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -44,7 +44,7 @@ actual class ItemsScheduler(private val context: Context) {
     }
 
     companion object {
-        private const val WORK_NAME = "items_sync"
-        private const val WORK_NAME_PERIODIC = "items_sync_periodic"
+        private const val WORK_NAME = "monuments_sync"
+        private const val WORK_NAME_PERIODIC = "monuments_sync_periodic"
     }
 }

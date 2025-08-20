@@ -10,7 +10,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.minimumInteractiveComponentSize
-import androidx.compose.material3.adaptive.layout.PaneExpansionAnchor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -27,10 +26,15 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.SharedRes
@@ -39,7 +43,7 @@ import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 
 @Composable
 fun MapDialog(
-    mapUrl: String,
+    imageModel: Any,
     onDismiss: () -> Unit
 ) {
     Dialog(
@@ -80,7 +84,7 @@ fun MapDialog(
                         scaleY = zoom
                         transformOrigin = TransformOrigin(0f, 0f)
                     },
-                model = mapUrl,
+                model = imageModel,
                 contentDescription = stringResource(SharedRes.strings.rust_map_image),
                 loading = {
                     Box(
@@ -90,11 +94,17 @@ fun MapDialog(
                     )
                 },
                 error = {
-                    Image(
-                        modifier = Modifier.matchParentSize(),
-                        painter = painterResource(id = getImageByFileName("il_not_found").drawableResId),
-                        contentDescription = stringResource(SharedRes.strings.error_not_found)
-                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(SharedRes.strings.error_image_emote),
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                    }
                 }
             )
             val dismissLabel = stringResource(SharedRes.strings.dismiss)

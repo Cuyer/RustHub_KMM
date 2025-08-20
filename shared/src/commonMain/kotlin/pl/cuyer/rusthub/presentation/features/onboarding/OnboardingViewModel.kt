@@ -1,6 +1,6 @@
 package pl.cuyer.rusthub.presentation.features.onboarding
 
-import androidx.navigation3.runtime.NavKey
+import pl.cuyer.rusthub.presentation.navigation.NavKey
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
@@ -29,6 +29,8 @@ import pl.cuyer.rusthub.presentation.navigation.Terms
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.util.GoogleAuthClient
+import pl.cuyer.rusthub.util.RemoteConfig
+import pl.cuyer.rusthub.util.RemoteConfigKeys
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.toUserMessage
@@ -42,7 +44,8 @@ class OnboardingViewModel(
     private val googleAuthClient: GoogleAuthClient,
     private val snackbarController: SnackbarController,
     private val emailValidator: EmailValidator,
-    private val stringProvider: StringProvider
+    private val stringProvider: StringProvider,
+    private val remoteConfig: RemoteConfig
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -138,6 +141,12 @@ class OnboardingViewModel(
     private fun startGoogleLogin() {
         googleJob?.cancel()
         googleJob = coroutineScope.launch {
+            if (!remoteConfig.getBoolean(RemoteConfigKeys.GOOGLE_AUTH_ENABLED)) {
+                showErrorSnackbar(
+                    stringProvider.get(SharedRes.strings.google_sign_in_disabled)
+                )
+                return@launch
+            }
             getGoogleClientIdUseCase()
                 .onStart { updateGoogleLoading(true) }
                 .onCompletion { updateGoogleLoading(false) }
