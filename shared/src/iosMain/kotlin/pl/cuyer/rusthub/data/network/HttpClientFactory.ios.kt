@@ -82,6 +82,13 @@ actual class HttpClientFactory actual constructor(
                                 return@run null
                             }
 
+                            val currentRefresh = user?.refreshToken
+                            if (currentRefresh != oldRefresh) {
+                                return@run user?.let {
+                                    BearerTokens(it.accessToken, currentRefresh ?: "")
+                                }
+                            }
+
                             val response = client.post("${NetworkConstants.BASE_URL}auth/refresh") {
                                 markAsRefreshTokenRequest()
                                 contentType(ContentType.Application.Json)
