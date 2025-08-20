@@ -8,6 +8,7 @@ import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
+import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.DEFAULT
@@ -63,6 +64,12 @@ actual class HttpClientFactory actual constructor(
     private val deleteRunner = MutexSharedDeferred<Unit>()
     actual fun create(): HttpClient {
         return HttpClient(Darwin) {
+
+            install(ContentEncoding) {
+                gzip(1.0f)
+                deflate(0.9f)
+            }
+
             install(ContentNegotiation) {
                 json(json)
             }
@@ -126,7 +133,7 @@ actual class HttpClientFactory actual constructor(
             if (BuildType.isDebug) {
                 install(Logging) {
                     logger = Logger.DEFAULT
-                    level = LogLevel.ALL
+                    level = LogLevel.HEADERS
                 }
             }
 
