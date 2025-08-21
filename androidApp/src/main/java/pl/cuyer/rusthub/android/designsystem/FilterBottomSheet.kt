@@ -317,9 +317,6 @@ fun ButtonsSection(
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
         AppButton(
-            colors = ButtonDefaults.outlinedButtonColors().copy(
-                contentColor = contentColorFor(BottomSheetDefaults.ContainerColor)
-            ),
             onClick = {
                 onAction(ServerAction.OnClearFilters)
                 onDismiss()
