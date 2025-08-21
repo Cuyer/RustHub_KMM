@@ -355,6 +355,7 @@ class ServerDetailsViewModel(
                     showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
+                    ensureActive()
                     when (result) {
                         is Result.Success -> snackbarController.sendEvent(
                             SnackbarEvent(

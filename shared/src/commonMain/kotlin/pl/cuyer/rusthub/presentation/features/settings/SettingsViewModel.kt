@@ -4,6 +4,7 @@ import dev.icerock.moko.permissions.PermissionsController
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import pl.cuyer.rusthub.util.catchAndLog
@@ -247,6 +248,7 @@ class SettingsViewModel(
                     showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
+                    ensureActive()
                     when (result) {
                         is Result.Success -> {
                             if (state.value.provider == AuthProvider.GOOGLE) {
@@ -296,6 +298,7 @@ class SettingsViewModel(
                 .onStart { if (shouldShowLoading) updateLoading(true) }
                 .onCompletion { if (shouldShowLoading) updateLoading(false) }
                 .collectLatest { result ->
+                    ensureActive()
                     when (result) {
                         is Result.Success -> updateUser(user, result.data)
                         is Result.Error -> updateUser(user, null)
