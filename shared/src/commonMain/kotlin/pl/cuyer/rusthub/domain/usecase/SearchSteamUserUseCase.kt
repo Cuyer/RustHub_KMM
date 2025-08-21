@@ -13,10 +13,10 @@ class SearchSteamUserUseCase(
     private val steamRepository: SteamRepository,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(query: String): Flow<Result<SteamUser?>> {
+    operator fun invoke(queries: List<String>): Flow<Result<List<SteamUser>>> {
         return getSteamApiKeyUseCase().flatMapLatest { keyResult ->
             when (keyResult) {
-                is Result.Success -> steamRepository.searchUser(keyResult.data, query)
+                is Result.Success -> steamRepository.searchUsers(keyResult.data, queries)
                 is Result.Error -> flowOf(Result.Error(keyResult.exception))
             }
         }

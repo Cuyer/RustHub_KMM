@@ -4,7 +4,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -17,6 +17,7 @@ import kotlin.time.Clock
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.Raid
+import pl.cuyer.rusthub.domain.model.SteamUser
 import pl.cuyer.rusthub.domain.usecase.SaveRaidUseCase
 import pl.cuyer.rusthub.domain.usecase.SearchSteamUserUseCase
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
@@ -47,7 +48,7 @@ class RaidFormViewModel(
             id = raid?.id,
             name = raid?.name.orEmpty(),
             dateTime = "${initialDateTime.date} ${initialDateTime.time.toString().substring(0, 5)}",
-            steamId = raid?.steamId.orEmpty(),
+            steamIds = raid?.steamIds ?: emptyList(),
             description = raid?.description.orEmpty(),
         )
     )
@@ -64,20 +65,18 @@ class RaidFormViewModel(
             is RaidFormAction.OnSelectTargetClick -> _state.update { it.copy(searchDialogVisible = true) }
             is RaidFormAction.OnSearchQueryChange -> _state.update { it.copy(searchQuery = action.value) }
             RaidFormAction.OnSearchUser -> searchUser()
-            is RaidFormAction.OnUserSelected -> _state.update {
-                it.copy(
-                    steamId = action.user.steamId,
-                    searchDialogVisible = false,
-                    searchQuery = "",
-                    foundUser = null,
-                    searchNotFound = false
-                )
+            is RaidFormAction.OnToggleFoundUser -> _state.update { state ->
+                val new = state.selectedFoundIds.toMutableSet()
+                if (!new.add(action.id)) new.remove(action.id)
+                state.copy(selectedFoundIds = new)
             }
+            RaidFormAction.OnAddFoundUsers -> addFoundUsers()
             RaidFormAction.OnDismissSearch -> _state.update {
                 it.copy(
                     searchDialogVisible = false,
                     searchQuery = "",
-                    foundUser = null,
+                    foundUsers = emptyList(),
+                    selectedFoundIds = emptySet(),
                     searchNotFound = false
                 )
             }
@@ -87,24 +86,59 @@ class RaidFormViewModel(
     }
 
     private fun searchUser() {
-        val query = _state.value.searchQuery
+        val rawQuery = _state.value.searchQuery
+        val existing = _state.value.steamIds.size
+        val queries = rawQuery.split(",")
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .take(4 - existing)
+        if (queries.isEmpty()) {
+            _state.update {
+                it.copy(searchNotFound = true, selectedFoundIds = emptySet())
+            }
+            return
+        }
         coroutineScope.launch {
-            _state.update { it.copy(searchLoading = true, foundUser = null, searchNotFound = false) }
-            searchSteamUserUseCase(query).collect { result ->
-                _state.update {
-                    when (result) {
-                        is Result.Success -> {
-                            val user = result.data
-                            if (user != null) {
-                                it.copy(foundUser = user, searchLoading = false)
-                            } else {
-                                it.copy(searchLoading = false, searchNotFound = true)
-                            }
-                        }
-                        is Result.Error -> it.copy(searchLoading = false, searchNotFound = true)
-                    }
+            _state.update {
+                it.copy(
+                    searchLoading = true,
+                    foundUsers = emptyList(),
+                    searchNotFound = false,
+                    selectedFoundIds = emptySet()
+                )
+            }
+            when (val result = searchSteamUserUseCase(queries).first()) {
+                is Result.Success -> _state.update {
+                    it.copy(
+                        foundUsers = result.data,
+                        searchLoading = false,
+                        searchNotFound = result.data.isEmpty()
+                    )
+                }
+                is Result.Error -> _state.update {
+                    it.copy(searchLoading = false, searchNotFound = true)
                 }
             }
+        }
+    }
+
+    private fun addFoundUsers() {
+        val current = _state.value
+        val toAdd = if (current.selectedFoundIds.isNotEmpty()) {
+            current.foundUsers.filter { it.steamId in current.selectedFoundIds }
+        } else {
+            current.foundUsers
+        }
+        val newIds = (current.steamIds + toAdd.map { it.steamId }).distinct().take(4)
+        _state.update {
+            it.copy(
+                steamIds = newIds,
+                searchDialogVisible = false,
+                searchQuery = "",
+                foundUsers = emptyList(),
+                selectedFoundIds = emptySet(),
+                searchNotFound = false
+            )
         }
     }
 
@@ -127,7 +161,7 @@ class RaidFormViewModel(
             id = id,
             name = current.name,
             dateTime = dateTime,
-            steamId = current.steamId,
+            steamIds = current.steamIds,
             description = current.description.ifBlank { null }
         )
         coroutineScope.launch {
