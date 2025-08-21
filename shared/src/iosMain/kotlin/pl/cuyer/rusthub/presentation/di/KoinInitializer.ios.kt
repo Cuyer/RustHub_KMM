@@ -35,6 +35,7 @@ import pl.cuyer.rusthub.util.TokenRefresher
 import pl.cuyer.rusthub.util.SystemDarkThemeObserver
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
 import pl.cuyer.rusthub.util.UserSyncScheduler
+import pl.cuyer.rusthub.util.AlarmScheduler
 import pl.cuyer.rusthub.util.AdsConsentManager
 import pl.cuyer.rusthub.util.ConnectivityObserver
 import pl.cuyer.rusthub.data.billing.BillingRepositoryImpl
@@ -74,6 +75,7 @@ actual fun platformModule(passphrase: String): Module = module {
     single { MonumentsScheduler() }
     single { PurchaseSyncScheduler() }
     single { UserSyncScheduler() }
+    single { AlarmScheduler() }
     single { BillingRepositoryImpl() } bind BillingRepository::class
     single { MonumentSyncDataSourceImpl(get()) } bind MonumentSyncDataSource::class
     single { PurchaseSyncDataSourceImpl(get()) } bind PurchaseSyncDataSource::class

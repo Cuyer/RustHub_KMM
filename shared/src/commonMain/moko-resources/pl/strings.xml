@@ -462,7 +462,7 @@
     <string name="time_per_fuel">Czas na jednostkę paliwa: %1$d s</string>
     <string name="raw_material_cost">Koszt surowców</string>
     <string name="using_mixing_table">Używając stołu mieszającego x%1$d</string>
-    <string name="time_to_raid">Czas rajdu: %1$s</string>
+    <string name="time_to_raid">Czas do rajdu: %1$s</string>
     <string name="hp">HP</string>
     <string name="update_ready">Aktualizacja gotowa do instalacji</string>
     <string name="error_image_emote">(×_×)</string>
@@ -506,7 +506,7 @@
     <string name="median_radiation_level">Średni poziom promieniowania</string>
     <string name="max_radiation_level">Maks. poziom promieniowania</string>
     <string name="radiation">Promieniowanie</string>
-    <string name="raids">Naloty</string>
+    <string name="raids">Rajdy</string>
     <string name="raid_name">Name</string>
     <string name="raid_date_time">Date and Time</string>
     <string name="raid_target">Target Steam ID</string>
@@ -533,4 +533,8 @@
     <string name="days_short">d</string>
     <string name="hours_short">h</string>
     <string name="minutes_short">m</string>
+    <string name="raid_notification_scheduled">Powiadomimy Cię o rajdzie o %1$s</string>
+    <string name="raid_notification_title">Przypomnienie o rajdzie</string>
+    <string name="raid_notification_body">Rajd %1$s właśnie się zaczyna</string>
+    <string name="raid_date_in_past">Wybierz przyszłą datę</string>
 </resources>

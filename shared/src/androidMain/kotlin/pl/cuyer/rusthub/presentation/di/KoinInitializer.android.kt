@@ -51,6 +51,7 @@ import pl.cuyer.rusthub.presentation.features.ads.NativeAdViewModel
 import pl.cuyer.rusthub.util.ActivityProvider
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
 import pl.cuyer.rusthub.util.UserSyncScheduler
+import pl.cuyer.rusthub.util.AlarmScheduler
 import pl.cuyer.rusthub.domain.usecase.SetSubscribedUseCase
 import pl.cuyer.rusthub.data.local.purchase.PurchaseSyncDataSourceImpl
 import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
@@ -92,6 +93,7 @@ actual fun platformModule(passphrase: String): Module = module {
     single { MonumentsScheduler(get()) }
     single { PurchaseSyncScheduler(get()) }
     single { UserSyncScheduler(get()) }
+    single { AlarmScheduler(get()) }
     single { BillingRepositoryImpl(androidContext()) } bind BillingRepository::class
     single { MonumentSyncDataSourceImpl(get()) } bind MonumentSyncDataSource::class
     single { PurchaseSyncDataSourceImpl(get()) } bind PurchaseSyncDataSource::class
@@ -251,6 +253,10 @@ actual fun platformModule(passphrase: String): Module = module {
             raid = raid,
             saveRaidUseCase = get(),
             searchSteamUserUseCase = get(),
+            alarmScheduler = get(),
+            permissionsController = get(),
+            snackbarController = get(),
+            stringProvider = get(),
         )
     }
     viewModel {

@@ -45,7 +45,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unuser.dp
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import pl.cuyer.rusthub.SharedRes
@@ -274,18 +274,14 @@ private fun RaidItem(
                             stringResource(SharedRes.strings.time_to_raid, timeLeft),
                             style = MaterialTheme.typography.bodyMedium
                         )
-                        Text(
-                            stringResource(SharedRes.strings.estimated_raid_time, "1$hoursShort"),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
                     }
-                    user?.let {
+                    if (user != null) {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(spacing.small),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(horizontalAlignment = Alignment.End) {
-                                Text(it.personaName, style = MaterialTheme.typography.bodyMedium)
+                                Text(user.personaName, style = MaterialTheme.typography.bodyMedium)
                                 val offline = "Offline"
                                 val online = stringResource(SharedRes.strings.online)
                                 val busy = stringResource(SharedRes.strings.busy)
@@ -295,7 +291,7 @@ private fun RaidItem(
                                 val lookingToPlay = stringResource(SharedRes.strings.looking_to_play)
                                 val unknown = stringResource(SharedRes.strings.unknown)
                                 Text(
-                                    text = when (it.personaState) {
+                                    text = when (user.personaState) {
                                         0 -> offline
                                         1 -> online
                                         2 -> busy
@@ -305,14 +301,14 @@ private fun RaidItem(
                                         6 -> lookingToPlay
                                         else -> unknown
                                     },
-                                    color = personaStateColor(it.personaState),
+                                    color = personaStateColor(user.personaState),
                                     style = MaterialTheme.typography.bodySmall
                                 )
                             }
                             SubcomposeAsyncImage(
                                 modifier = Modifier.size(48.dp),
                                 model = ImageRequest.Builder(LocalContext.current)
-                                    .data(it.avatar)
+                                    .data(user.avatar)
                                     .crossfade(true)
                                     .build(),
                                 contentDescription = "User avatar",
@@ -323,6 +319,32 @@ private fun RaidItem(
                                             .shimmer()
                                     )
                                 }
+                            )
+                        }
+                    } else {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(spacing.small),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Column(horizontalAlignment = Alignment.End) {
+                                Box(
+                                    modifier = Modifier
+                                        .width(80.dp)
+                                        .height(16.dp)
+                                        .shimmer(),
+                                )
+                                Spacer(modifier = Modifier.height(spacing.extraSmall))
+                                Box(
+                                    modifier = Modifier
+                                        .width(60.dp)
+                                        .height(12.dp)
+                                        .shimmer(),
+                                )
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .shimmer(),
                             )
                         }
                     }

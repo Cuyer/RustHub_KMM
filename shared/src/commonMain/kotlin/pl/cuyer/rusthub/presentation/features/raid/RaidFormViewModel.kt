@@ -11,14 +11,25 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
+import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.Raid
 import pl.cuyer.rusthub.domain.usecase.SaveRaidUseCase
 import pl.cuyer.rusthub.domain.usecase.SearchSteamUserUseCase
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.util.AlarmScheduler
+import pl.cuyer.rusthub.util.formatLocalDateTime
+import pl.cuyer.rusthub.util.StringProvider
+import dev.icerock.moko.permissions.Permission
+import dev.icerock.moko.permissions.PermissionsController
+import dev.icerock.moko.permissions.DeniedException
+import dev.icerock.moko.permissions.DeniedAlwaysException
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -26,6 +37,10 @@ class RaidFormViewModel(
     raid: Raid?,
     private val saveRaidUseCase: SaveRaidUseCase,
     private val searchSteamUserUseCase: SearchSteamUserUseCase,
+    private val alarmScheduler: AlarmScheduler,
+    private val permissionsController: PermissionsController,
+    private val snackbarController: SnackbarController,
+    private val stringProvider: StringProvider,
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -111,6 +126,14 @@ class RaidFormViewModel(
         } catch (e: Exception) {
             LocalDateTime.parse("1970-01-01T00:00")
         }
+        if (dateTime.toInstant(TimeZone.currentSystemDefault()) <= Clock.System.now()) {
+            coroutineScope.launch {
+                snackbarController.sendEvent(
+                    SnackbarEvent(stringProvider.get(SharedRes.strings.raid_date_in_past))
+                )
+            }
+            return
+        }
         val raid = Raid(
             id = id,
             name = current.name,
@@ -120,6 +143,23 @@ class RaidFormViewModel(
         )
         coroutineScope.launch {
             saveRaidUseCase(raid)
+            if (dateTime != initialDateTime) {
+                try {
+                    permissionsController.providePermission(Permission.REMOTE_NOTIFICATION)
+                    alarmScheduler.schedule(raid)
+                    snackbarController.sendEvent(
+                        SnackbarEvent(
+                            message = stringProvider.get(
+                                SharedRes.strings.raid_notification_scheduled,
+                                formatLocalDateTime(raid.dateTime)
+                            )
+                        )
+                    )
+                } catch (_: DeniedAlwaysException) {
+                    permissionsController.openAppSettings()
+                } catch (_: DeniedException) {
+                }
+            }
             _uiEvent.send(UiEvent.NavigateUp)
         }
     }
