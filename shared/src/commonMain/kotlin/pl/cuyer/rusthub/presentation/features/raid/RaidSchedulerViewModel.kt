@@ -205,6 +205,9 @@ class RaidSchedulerViewModel(
                     when (result) {
                         is Result.Success -> {
                             val raids = result.data
+                            _state.update {
+                                it.copy(raids = raids, isRefreshing = false, hasError = false)
+                            }
                             val missing = raids.flatMap { it.steamIds }
                                 .filter { _state.value.users[it] == null }
                                 .distinct()
@@ -212,8 +215,6 @@ class RaidSchedulerViewModel(
                                 searchJob?.cancel()
                                 searchJob = coroutineScope.launch {
                                     searchSteamUserUseCase(missing)
-                                        .onStart { _state.update { it.copy(isRefreshing = true, hasError = false) } }
-                                        .onCompletion { _state.update { it.copy(isRefreshing = false, hasError = false) } }
                                         .collectLatest { res ->
                                             ensureActive()
                                             if (res is Result.Success) {
@@ -227,10 +228,6 @@ class RaidSchedulerViewModel(
                                                 }
                                             }
                                         }
-                                }
-                            } else {
-                                _state.update {
-                                    it.copy(raids = raids, isRefreshing = false, hasError = false)
                                 }
                             }
                         }
