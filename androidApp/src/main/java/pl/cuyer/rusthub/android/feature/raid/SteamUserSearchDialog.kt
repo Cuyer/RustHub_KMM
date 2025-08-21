@@ -181,7 +181,7 @@ private fun SteamUserCard(user: SteamUser, selected: Boolean, onClick: () -> Uni
             .border(
                 width = 1.dp,
                 color = if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
-                shape = CardDefaults.elevatedShape
+                shape = MaterialTheme.shapes.extraSmall
             ),
         shape = MaterialTheme.shapes.extraSmall,
         onClick = onClick

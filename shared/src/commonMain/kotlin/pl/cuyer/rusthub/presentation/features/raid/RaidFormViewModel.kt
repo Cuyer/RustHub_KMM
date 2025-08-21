@@ -39,6 +39,7 @@ import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.DeniedException
 import dev.icerock.moko.permissions.DeniedAlwaysException
 import dev.icerock.moko.permissions.notifications.REMOTE_NOTIFICATION
+import kotlinx.coroutines.ensureActive
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -221,6 +222,7 @@ class RaidFormViewModel(
                     )
                 }
                 .collectLatest { result ->
+                    ensureActive()
                     when (result) {
                         is Result.Success -> {
                             runCatching {

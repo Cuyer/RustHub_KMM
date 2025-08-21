@@ -35,6 +35,7 @@ import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.util.AlarmScheduler
 import pl.cuyer.rusthub.util.ConnectivityObserver
+import pl.cuyer.rusthub.util.catchAndLog
 import pl.cuyer.rusthub.util.toUserMessage
 
 class RaidSchedulerViewModel(
@@ -215,16 +216,6 @@ class RaidSchedulerViewModel(
                         )
                     }
                 }
-            }
-            .catch { e ->
-                _state.update { it.copy(isRefreshing = false, hasError = true) }
-                snackbarController.sendEvent(
-                    SnackbarEvent(
-                        message = e.toUserMessage(stringProvider)
-                            ?: stringProvider.get(SharedRes.strings.error_unknown),
-                        duration = Duration.SHORT
-                    )
-                )
             }
             .launchIn(coroutineScope)
     }
