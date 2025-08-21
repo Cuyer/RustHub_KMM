@@ -511,9 +511,11 @@
     <string name="raid_name">Nazwa</string>
     <string name="raid_date_time">Data i godzina</string>
     <string name="raid_target">Docelowe identyfikatory Steam</string>
+    <string name="raid_data">Dane rajdu</string>
+    <string name="targets">Cele</string>
     <string name="steam_id">Identyfikatory Steam</string>
     <string name="enter_steam_id_or_name">Wprowadź identyfikatory Steam</string>
-    <string name="search_players_info">Wyszukaj do 4 graczy oddzielonych ","</string>
+    <string name="search_players_info">Wyszukaj do 6 graczy oddzielonych ","</string>
     <string name="raid_form_info">Wypełnij formularz, aby zaplanować rajd. Otrzymasz powiadomienie i zobaczysz status online celów.</string>
     <string name="add">Dodaj</string>
     <string name="no_user_found">Nie znaleziono użytkownika</string>

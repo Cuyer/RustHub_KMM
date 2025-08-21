@@ -511,9 +511,11 @@
     <string name="raid_name">Nome</string>
     <string name="raid_date_time">Data e hora</string>
     <string name="raid_target">IDs Steam de destino</string>
+    <string name="raid_data">Dados do raid</string>
+    <string name="targets">Alvos</string>
     <string name="steam_id">IDs Steam</string>
     <string name="enter_steam_id_or_name">Insira IDs Steam</string>
-    <string name="search_players_info">Pesquise até 4 jogadores separados por ","</string>
+    <string name="search_players_info">Pesquise até 6 jogadores separados por ","</string>
     <string name="raid_form_info">Preencha o formulário para agendar um raid. Você receberá uma notificação e poderá acompanhar o status online dos alvos.</string>
     <string name="add">Adicionar</string>
     <string name="no_user_found">Nenhum usuário encontrado</string>

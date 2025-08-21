@@ -104,7 +104,7 @@ fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Un
                     imeAction = ImeAction.Search,
                     onSubmit = { onAction(RaidFormAction.OnSearchUser) },
                     lineLimits = TextFieldLineLimits.SingleLine,
-                    maxLength = 120,
+                    maxLength = 200,
                     showCharacterCounter = true,
                     requestFocus = true
                 )

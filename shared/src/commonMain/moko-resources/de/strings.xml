@@ -395,6 +395,7 @@
     <string name="offline_cached_servers_info">Netzwerk nicht verfügbar. Zeige zwischengespeicherte Server.</string>
     <string name="no_connection">Keine Internetverbindung.</string>
     <string name="offline_cached_items_info">Netzwerk nicht verfügbar. Zeige zwischengespeicherte Gegenstände.</string>
+    <string name="offline_cached_raids_info">Netzwerk nicht verfügbar. Zeige zwischengespeicherte Raids.</string>
     <string name="subscription_disabled">Abonnements sind derzeit deaktiviert.</string>
     <string name="connect_manage_subscription">Verbinde dich mit dem Internet, um das Abo zu verwalten.</string>
     <string name="no_servers_available_offline">Offline sind keine Server verfügbar.</string>
@@ -402,6 +403,8 @@
     <string name="no_items_available_offline">Offline sind keine Gegenstände verfügbar.</string>
     <string name="no_items_available">Keine Gegenstände verfügbar.</string>
     <string name="no_monuments_available">Keine Monumente verfügbar.</string>
+    <string name="no_raids_available_offline">Offline sind keine Raids verfügbar.</string>
+    <string name="no_raids_available">Keine Raids verfügbar.</string>
     <string name="error_timeout">Zeitüberschreitung. Bitte versuche es erneut.</string>
     <string name="error_service_unavailable">Dienst vorübergehend nicht verfügbar. Bitte versuche es später erneut.</string>
     <string name="error_bad_request">Fehlerhafte Anfrage.</string>
@@ -511,9 +514,11 @@
     <string name="raid_name">Name</string>
     <string name="raid_date_time">Datum und Uhrzeit</string>
     <string name="raid_target">Ziel-Steam-IDs</string>
+    <string name="raid_data">Raid-Daten</string>
+    <string name="targets">Ziele</string>
     <string name="steam_id">Steam-IDs</string>
     <string name="enter_steam_id_or_name">Steam-IDs eingeben</string>
-    <string name="search_players_info">Suche bis zu 4 Spieler, getrennt durch ","</string>
+    <string name="search_players_info">Suche bis zu 6 Spieler, getrennt durch ","</string>
     <string name="raid_form_info">Fülle das Formular aus, um einen Raid zu planen. Du erhältst eine Benachrichtigung und kannst den Online-Status deiner Ziele verfolgen.</string>
     <string name="add">Hinzufügen</string>
     <string name="no_user_found">Kein Benutzer gefunden</string>
@@ -521,6 +526,7 @@
     <string name="edit_raid">Überfall bearbeiten</string>
     <string name="required">Required</string>
     <string name="save">Save</string>
+    <string name="update">Update</string>
     <string name="edit">Edit</string>
     <string name="undo">Undo</string>
     <string name="raids_deleted">%1$d Überfälle gelöscht</string>

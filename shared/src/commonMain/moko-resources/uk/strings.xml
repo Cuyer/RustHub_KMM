@@ -512,9 +512,11 @@
     <string name="raid_name">Назва</string>
     <string name="raid_date_time">Дата і час</string>
     <string name="raid_target">Цільові Steam ID</string>
+    <string name="raid_data">Дані рейду</string>
+    <string name="targets">Цілі</string>
     <string name="steam_id">Steam ID</string>
     <string name="enter_steam_id_or_name">Введіть Steam ID</string>
-    <string name="search_players_info">Шукайте до 4 гравців, розділених ","</string>
+    <string name="search_players_info">Шукайте до 6 гравців, розділених ","</string>
     <string name="raid_form_info">Заповніть форму, щоб запланувати рейд. Ви отримаєте сповіщення та зможете відстежувати онлайн-статус цілей.</string>
     <string name="add">Додати</string>
     <string name="no_user_found">Користувача не знайдено</string>

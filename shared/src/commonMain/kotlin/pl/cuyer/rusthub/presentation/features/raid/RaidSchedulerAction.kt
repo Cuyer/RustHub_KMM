@@ -10,4 +10,5 @@ sealed interface RaidSchedulerAction {
     data object OnDeleteSelected : RaidSchedulerAction
     data object OnEditSelected : RaidSchedulerAction
     data class OnNavigateToRaid(val raid: Raid): RaidSchedulerAction
+    data object OnRefresh : RaidSchedulerAction
 }

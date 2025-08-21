@@ -394,6 +394,7 @@
     <string name="offline_cached_servers_info">Réseau indisponible. Affichage des serveurs en cache.</string>
     <string name="no_connection">Pas de connexion Internet.</string>
     <string name="offline_cached_items_info">Réseau indisponible. Affichage des objets en cache.</string>
+    <string name="offline_cached_raids_info">Réseau indisponible. Affichage des raids en cache.</string>
     <string name="subscription_disabled">Les abonnements sont actuellement désactivés.</string>
     <string name="connect_manage_subscription">Connectez-vous à Internet pour gérer votre abonnement.</string>
     <string name="no_servers_available_offline">Aucun serveur disponible hors ligne.</string>
@@ -401,6 +402,8 @@
     <string name="no_items_available_offline">Aucun objet disponible hors ligne.</string>
     <string name="no_items_available">Aucun objet disponible.</string>
     <string name="no_monuments_available">Aucun monument disponible.</string>
+    <string name="no_raids_available_offline">Aucun raid disponible hors ligne.</string>
+    <string name="no_raids_available">Aucun raid disponible.</string>
     <string name="error_timeout">Temps d'attente écoulé. Veuillez réessayer.</string>
     <string name="error_service_unavailable">Service temporairement indisponible. Veuillez réessayer plus tard.</string>
     <string name="error_bad_request">Requête incorrecte.</string>
@@ -510,9 +513,11 @@
     <string name="raid_name">Nom</string>
     <string name="raid_date_time">Date et heure</string>
     <string name="raid_target">ID Steam cibles</string>
+    <string name="raid_data">Données du raid</string>
+    <string name="targets">Cibles</string>
     <string name="steam_id">ID Steam</string>
     <string name="enter_steam_id_or_name">Entrez des ID Steam</string>
-    <string name="search_players_info">Recherchez jusqu'à 4 joueurs séparés par ","</string>
+    <string name="search_players_info">Recherchez jusqu'à 6 joueurs séparés par ","</string>
     <string name="raid_form_info">Remplissez le formulaire pour planifier un raid. Vous recevrez une notification et pourrez suivre l'état en ligne de vos cibles.</string>
     <string name="add">Ajouter</string>
     <string name="no_user_found">Aucun utilisateur trouvé</string>
@@ -520,6 +525,7 @@
     <string name="edit_raid">Modifier le raid</string>
     <string name="required">Required</string>
     <string name="save">Save</string>
+    <string name="update">Update</string>
     <string name="edit">Edit</string>
     <string name="undo">Undo</string>
     <string name="raids_deleted">%1$d raids supprimés</string>
