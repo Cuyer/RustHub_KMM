@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.data.network.steam
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -41,6 +42,7 @@ class SteamRepositoryImpl(
     private val httpClient: HttpClient,
     json: Json,
 ) : SteamRepository, BaseApiResponse(json) {
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun searchUser(apiKey: String, query: String): Flow<Result<SteamUser?>> {
         return if (query.all { it.isDigit() }) {
             getPlayer(apiKey, query)

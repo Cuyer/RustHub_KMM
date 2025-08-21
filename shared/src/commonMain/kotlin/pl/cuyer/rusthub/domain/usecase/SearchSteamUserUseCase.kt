@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.domain.usecase
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -11,6 +12,7 @@ class SearchSteamUserUseCase(
     private val getSteamApiKeyUseCase: GetSteamApiKeyUseCase,
     private val steamRepository: SteamRepository,
 ) {
+    @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(query: String): Flow<Result<SteamUser?>> {
         return getSteamApiKeyUseCase().flatMapLatest { keyResult ->
             when (keyResult) {
