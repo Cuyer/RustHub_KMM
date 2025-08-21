@@ -323,9 +323,9 @@ private fun RaidItem(
             Box(
                 Modifier
                     .fillMaxSize()
+                    .padding(horizontal = spacing.medium)
                     .clip( MaterialTheme.shapes.extraSmall)
-                    .background(MaterialTheme.colorScheme.error, shape = MaterialTheme.shapes.extraSmall)
-                    .padding(end = spacing.medium),
+                    .background(MaterialTheme.colorScheme.error, shape = MaterialTheme.shapes.extraSmall),
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Icon(
@@ -367,6 +367,7 @@ private fun RaidItem(
                 ),
                 modifier = modifier
                     .fillMaxWidth()
+                    .padding(horizontal = spacing.medium)
                     .combinedClickable(onClick = onClick, onLongClick = onLongClick)
             ) {
                 Row(
