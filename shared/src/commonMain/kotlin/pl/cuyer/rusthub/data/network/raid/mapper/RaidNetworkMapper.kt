@@ -5,7 +5,9 @@ import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import pl.cuyer.rusthub.data.network.raid.model.RaidDto
 import pl.cuyer.rusthub.domain.model.Raid
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 fun RaidDto.toDomain(): Raid {
     return Raid(
         id = id,
@@ -16,6 +18,7 @@ fun RaidDto.toDomain(): Raid {
     )
 }
 
+@OptIn(ExperimentalTime::class)
 fun Raid.toDto(): RaidDto {
     return RaidDto(
         id = id,
