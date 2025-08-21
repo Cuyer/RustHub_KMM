@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.presentation.navigation
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 import pl.cuyer.rusthub.domain.model.AuthProvider
+import pl.cuyer.rusthub.domain.model.Raid
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 
 @Serializable
@@ -62,6 +63,10 @@ data class MonumentDetails(
 
 @Serializable
 data object RaidScheduler : NavKey
+
+@Serializable
+@Immutable
+data class RaidForm(val raid: Raid? = null) : NavKey
 
 @Serializable
 data object PrivacyPolicy : NavKey

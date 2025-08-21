@@ -65,6 +65,7 @@ import pl.cuyer.rusthub.android.feature.settings.PrivacyPolicyScreen
 import pl.cuyer.rusthub.android.feature.settings.SettingsScreen
 import pl.cuyer.rusthub.android.feature.subscription.SubscriptionScreen
 import pl.cuyer.rusthub.android.feature.raid.RaidSchedulerScreen
+import pl.cuyer.rusthub.android.feature.raid.RaidFormScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.navigation.bottomNavItems
 import pl.cuyer.rusthub.android.navigation.navigateBottomBar
@@ -89,6 +90,7 @@ import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
 import pl.cuyer.rusthub.presentation.features.raid.RaidSchedulerViewModel
+import pl.cuyer.rusthub.presentation.features.raid.RaidFormViewModel
 import pl.cuyer.rusthub.presentation.navigation.About
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
@@ -100,6 +102,7 @@ import pl.cuyer.rusthub.presentation.navigation.MonumentDetails
 import pl.cuyer.rusthub.presentation.navigation.MonumentList
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.presentation.navigation.RaidScheduler
+import pl.cuyer.rusthub.presentation.navigation.RaidForm
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
 import pl.cuyer.rusthub.presentation.navigation.ResetPassword
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
@@ -370,8 +373,22 @@ private fun AppScaffold(
                         val viewModel = koinViewModel<RaidSchedulerViewModel>()
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         RaidSchedulerScreen(
+                            onNavigate = { dest -> backStack.add(dest) },
                             state = state,
-                            onAction = viewModel::onAction
+                            onAction = viewModel::onAction,
+                            uiEvent = viewModel.uiEvent
+                        )
+                    }
+                    entry<RaidForm> { key ->
+                        val viewModel: RaidFormViewModel = koinViewModel(
+                            key = key.raid?.id ?: "new"
+                        ) { parametersOf(key.raid) }
+                        val state = viewModel.state.collectAsStateWithLifecycle()
+                        RaidFormScreen(
+                            onNavigateUp = { backStack.removeLastOrNull() },
+                            state = state,
+                            onAction = viewModel::onAction,
+                            uiEvent = viewModel.uiEvent
                         )
                     }
                     entry<Settings> {

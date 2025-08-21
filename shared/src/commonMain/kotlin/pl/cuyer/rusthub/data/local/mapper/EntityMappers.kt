@@ -283,7 +283,7 @@ fun RaidEntity.toRaid(): Raid {
         id = id,
         name = name,
         dateTime = dateTime.toLocalDateTime(),
-        target = target,
+        steamId = steamId,
         description = description
     )
 }

@@ -26,6 +26,8 @@ import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
 import pl.cuyer.rusthub.presentation.features.raid.RaidSchedulerViewModel
+import pl.cuyer.rusthub.presentation.features.raid.RaidFormViewModel
+import pl.cuyer.rusthub.domain.model.Raid
 import pl.cuyer.rusthub.common.user.UserEventController
 import pl.cuyer.rusthub.domain.usecase.ClearServerCacheUseCase
 import pl.cuyer.rusthub.util.AppCheckTokenProvider
@@ -237,10 +239,17 @@ actual fun platformModule(passphrase: String): Module = module {
     viewModel {
         RaidSchedulerViewModel(
             observeRaidsUseCase = get(),
-            saveRaidUseCase = get(),
             deleteRaidsUseCase = get(),
             snackbarController = get(),
-            stringProvider = get()
+            stringProvider = get(),
+            saveRaidUseCase = get()
+        )
+    }
+    viewModel { (raid: Raid?) ->
+        RaidFormViewModel(
+            raid = raid,
+            saveRaidUseCase = get(),
+            searchSteamUserUseCase = get(),
         )
     }
     viewModel {
