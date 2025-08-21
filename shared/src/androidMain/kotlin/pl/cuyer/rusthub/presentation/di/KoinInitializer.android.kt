@@ -241,6 +241,7 @@ actual fun platformModule(passphrase: String): Module = module {
     viewModel {
         RaidSchedulerViewModel(
             getRaidsUseCase = get(),
+            observeRaidsUseCase = get(),
             deleteRaidUseCase = get(),
             snackbarController = get(),
             stringProvider = get(),

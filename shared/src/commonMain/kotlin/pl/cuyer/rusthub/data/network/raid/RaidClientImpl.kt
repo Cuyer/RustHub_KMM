@@ -8,6 +8,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import pl.cuyer.rusthub.domain.repository.raid.local.RaidDataSource
 import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.data.network.raid.mapper.toDomain
@@ -20,14 +21,19 @@ import pl.cuyer.rusthub.domain.repository.raid.RaidRepository
 
 class RaidClientImpl(
     private val httpClient: HttpClient,
-    json: Json
+    json: Json,
+    private val raidDataSource: RaidDataSource,
 ) : RaidRepository, BaseApiResponse(json) {
     override fun getRaids(): Flow<Result<List<Raid>>> {
         return safeApiCall<List<RaidDto>> {
             httpClient.get(NetworkConstants.BASE_URL + "raids")
         }.map { result ->
             when (result) {
-                is Result.Success -> Result.Success(result.data.map { it.toDomain() })
+                is Result.Success -> {
+                    val raids = result.data.map { it.toDomain() }
+                    raids.forEach { raidDataSource.upsertRaid(it) }
+                    Result.Success(raids)
+                }
                 is Result.Error -> result
             }
         }
@@ -38,6 +44,11 @@ class RaidClientImpl(
             httpClient.post(NetworkConstants.BASE_URL + "raids") {
                 setBody(raid.toDto())
             }
+        }.map { result ->
+            if (result is Result.Success) {
+                raidDataSource.upsertRaid(raid)
+            }
+            result
         }
     }
 
@@ -46,12 +57,22 @@ class RaidClientImpl(
             httpClient.patch(NetworkConstants.BASE_URL + "raids/${raid.id}") {
                 setBody(raid.toDto())
             }
+        }.map { result ->
+            if (result is Result.Success) {
+                raidDataSource.upsertRaid(raid)
+            }
+            result
         }
     }
 
     override fun deleteRaid(id: String): Flow<Result<Unit>> {
         return safeApiCall<Unit> {
             httpClient.delete(NetworkConstants.BASE_URL + "raids/$id")
+        }.map { result ->
+            if (result is Result.Success) {
+                raidDataSource.deleteRaid(id)
+            }
+            result
         }
     }
 }

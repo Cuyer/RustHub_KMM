@@ -8,7 +8,6 @@ import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
@@ -22,10 +21,10 @@ import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.domain.model.Raid
-import pl.cuyer.rusthub.domain.model.SteamUser
 import pl.cuyer.rusthub.domain.usecase.DeleteRaidUseCase
 import pl.cuyer.rusthub.domain.usecase.GetRaidsUseCase
 import pl.cuyer.rusthub.domain.usecase.CreateRaidUseCase
+import pl.cuyer.rusthub.domain.usecase.ObserveRaidsUseCase
 import pl.cuyer.rusthub.domain.usecase.SearchSteamUserUseCase
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
@@ -43,6 +42,7 @@ import pl.cuyer.rusthub.util.toUserMessage
 
 class RaidSchedulerViewModel(
     private val getRaidsUseCase: GetRaidsUseCase,
+    private val observeRaidsUseCase: ObserveRaidsUseCase,
     private val deleteRaidUseCase: DeleteRaidUseCase,
     private val snackbarController: SnackbarController,
     private val stringProvider: StringProvider,
@@ -70,6 +70,7 @@ class RaidSchedulerViewModel(
 
     init {
         observeConnectivity()
+        observeRaids()
     }
 
     fun onAction(action: RaidSchedulerAction) {
@@ -183,13 +184,49 @@ class RaidSchedulerViewModel(
         }
     }
 
+    private fun observeRaids() {
+        observeRaidsUseCase()
+            .onEach { raids ->
+                _state.update { it.copy(raids = raids) }
+                val ids = raids.flatMap { it.steamIds }.distinct()
+                if (ids.isNotEmpty()) {
+                    searchJob?.cancel()
+                    searchJob = coroutineScope.launch {
+                        searchSteamUserUseCase(ids)
+                            .collectLatest { res ->
+                                ensureActive()
+                                if (res is Result.Success) {
+                                    _state.update { state ->
+                                        val fetched = res.data.associateBy { it.steamId }
+                                        val notFound = ids
+                                            .filter { it !in fetched.keys }
+                                            .associateWith { null }
+                                        state.copy(users = state.users + fetched + notFound)
+                                    }
+                                }
+                            }
+                    }
+                }
+            }
+            .catchAndLog { e ->
+                snackbarController.sendEvent(
+                    SnackbarEvent(
+                        message = e.toUserMessage(stringProvider)
+                            ?: stringProvider.get(SharedRes.strings.error_unknown),
+                        duration = Duration.SHORT,
+                    )
+                )
+            }
+            .launchIn(coroutineScope)
+    }
+
     private fun loadRaids() {
         loadJob?.cancel()
         searchJob?.cancel()
         loadJob = coroutineScope.launch {
             getRaidsUseCase()
                 .onStart { _state.update { it.copy(isRefreshing = true, hasError = false) } }
-                .onCompletion { _state.update { it.copy(isRefreshing = false, hasError = false) } }
+                .onCompletion { _state.update { it.copy(isRefreshing = false) } }
                 .catchAndLog { e ->
                     _state.update { it.copy(isRefreshing = false, hasError = true) }
                     snackbarController.sendEvent(
@@ -204,32 +241,7 @@ class RaidSchedulerViewModel(
                     ensureActive()
                     when (result) {
                         is Result.Success -> {
-                            val raids = result.data
-                            _state.update {
-                                it.copy(raids = raids, isRefreshing = false, hasError = false)
-                            }
-                            val missing = raids.flatMap { it.steamIds }
-                                .filter { _state.value.users[it] == null }
-                                .distinct()
-                            if (missing.isNotEmpty()) {
-                                searchJob?.cancel()
-                                searchJob = coroutineScope.launch {
-                                    searchSteamUserUseCase(missing)
-                                        .collectLatest { res ->
-                                            ensureActive()
-                                            if (res is Result.Success) {
-                                                _state.update { state ->
-                                                    val fetched =
-                                                        res.data.associateBy { it.steamId }
-                                                    val notFound = missing
-                                                        .filter { it !in fetched.keys }
-                                                        .associateWith { null }
-                                                    state.copy(users = state.users + fetched + notFound)
-                                                }
-                                            }
-                                        }
-                                }
-                            }
+                            _state.update { it.copy(isRefreshing = false, hasError = false) }
                         }
 
                         is Result.Error -> {
