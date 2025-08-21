@@ -17,6 +17,7 @@ import database.ItemSearchQueryEntity
 import database.MonumentSearchQueryEntity
 import database.MonumentEntity
 import database.RaidEntity
+import kotlinx.datetime.LocalDateTime
 import pl.cuyer.rusthub.data.local.model.DifficultyEntity
 import kotlinx.datetime.toLocalDateTime
 import pl.cuyer.rusthub.data.local.model.FlagEntity
@@ -282,7 +283,7 @@ fun RaidEntity.toRaid(): Raid {
     return Raid(
         id = id,
         name = name,
-        dateTime = dateTime.toLocalDateTime(),
+        dateTime = LocalDateTime.parse(dateTime),
         steamId = steamId,
         description = description
     )

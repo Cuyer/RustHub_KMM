@@ -13,7 +13,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
@@ -31,6 +31,9 @@ import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.DeniedException
 import dev.icerock.moko.permissions.DeniedAlwaysException
 import dev.icerock.moko.permissions.notifications.REMOTE_NOTIFICATION
+import kotlin.time.ExperimentalTime
+
+@OptIn(ExperimentalTime::class)
 class RaidFormViewModel(
     raid: Raid?,
     private val saveRaidUseCase: SaveRaidUseCase,

@@ -63,8 +63,8 @@ import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.presentation.features.raid.RaidFormAction
 import pl.cuyer.rusthub.presentation.features.raid.RaidFormState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -74,8 +74,11 @@ import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.compose.BindEffect
 import org.koin.compose.koinInject
 import androidx.compose.material3.SelectableDates
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
+import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun RaidFormScreen(
     onNavigateUp: () -> Unit,
@@ -168,8 +171,8 @@ fun RaidFormScreen(
                                     .toLocalDateTime(TimeZone.currentSystemDefault()).date
                                 selectedDate = "%04d-%02d-%02d".format(
                                     picked.year,
-                                    picked.monthNumber,
-                                    picked.dayOfMonth
+                                    picked.month.number,
+                                    picked.day
                                 )
                                 showTimePicker = true
                             }
