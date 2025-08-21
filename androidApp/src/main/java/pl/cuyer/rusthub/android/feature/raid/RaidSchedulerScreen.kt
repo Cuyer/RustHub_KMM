@@ -64,7 +64,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import pl.cuyer.rusthub.android.designsystem.shimmer
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import pl.cuyer.rusthub.util.formatLocalDateTime
 
 @Composable

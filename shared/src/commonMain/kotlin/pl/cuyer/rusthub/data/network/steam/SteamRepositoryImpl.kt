@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.data.network.steam
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -41,6 +42,7 @@ class SteamRepositoryImpl(
     private val httpClient: HttpClient,
     json: Json,
 ) : SteamRepository, BaseApiResponse(json) {
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun searchUsers(apiKey: String, queries: List<String>): Flow<Result<List<SteamUser>>> {
         return flow {
             val ids = mutableListOf<String>()
