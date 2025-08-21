@@ -35,6 +35,8 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.navigation.UiEvent.*
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.common.Result
+import pl.cuyer.rusthub.domain.exception.ConnectivityException
+import pl.cuyer.rusthub.domain.exception.ServiceUnavailableException
 import pl.cuyer.rusthub.util.AlarmScheduler
 import pl.cuyer.rusthub.util.ConnectivityObserver
 import pl.cuyer.rusthub.util.catchAndLog
@@ -245,14 +247,20 @@ class RaidSchedulerViewModel(
                         }
 
                         is Result.Error -> {
-                            _state.update { it.copy(isRefreshing = false, hasError = true) }
-                            snackbarController.sendEvent(
-                                SnackbarEvent(
-                                    message = result.exception.toUserMessage(stringProvider)
-                                        ?: stringProvider.get(SharedRes.strings.error_unknown),
-                                    duration = Duration.SHORT,
+                            if (result.exception is ConnectivityException ||
+                                result.exception is ServiceUnavailableException) {
+                                _state.update { it.copy(isRefreshing = false, hasError = false) }
+                                return@collectLatest
+                            } else {
+                                _state.update { it.copy(isRefreshing = false, hasError = true) }
+                                snackbarController.sendEvent(
+                                    SnackbarEvent(
+                                        message = result.exception.toUserMessage(stringProvider)
+                                            ?: stringProvider.get(SharedRes.strings.error_unknown),
+                                        duration = Duration.SHORT,
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 }
