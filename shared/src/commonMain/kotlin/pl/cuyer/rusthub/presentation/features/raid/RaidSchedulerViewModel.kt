@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.presentation.features.raid
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -161,13 +162,16 @@ class RaidSchedulerViewModel(
                                     recentlyDeleted = emptyList()
                                     loadRaids()
                                 }.onFailure { e ->
-                                    snackbarController.sendEvent(
-                                        SnackbarEvent(
-                                            message = e.toUserMessage(stringProvider)
-                                                ?: stringProvider.get(SharedRes.strings.error_unknown),
-                                            duration = Duration.SHORT,
+                                    val cause = (e as? CancellationException)?.cause ?: e
+                                    coroutineScope.launch {
+                                        snackbarController.sendEvent(
+                                            SnackbarEvent(
+                                                message = cause.toUserMessage(stringProvider)
+                                                    ?: stringProvider.get(SharedRes.strings.error_unknown),
+                                                duration = Duration.SHORT,
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             }
                         },
@@ -175,13 +179,16 @@ class RaidSchedulerViewModel(
                     )
                 )
             }.onFailure { e ->
-                snackbarController.sendEvent(
-                    SnackbarEvent(
-                        message = e.toUserMessage(stringProvider)
-                            ?: stringProvider.get(SharedRes.strings.error_unknown),
-                        duration = Duration.SHORT,
+                val cause = (e as? CancellationException)?.cause ?: e
+                coroutineScope.launch {
+                    snackbarController.sendEvent(
+                        SnackbarEvent(
+                            message = cause.toUserMessage(stringProvider)
+                                ?: stringProvider.get(SharedRes.strings.error_unknown),
+                            duration = Duration.SHORT,
+                        )
                     )
-                )
+                }
             }
         }
     }
