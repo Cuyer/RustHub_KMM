@@ -37,6 +37,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.flow.collect
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -48,6 +51,7 @@ import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.SteamUser
 import pl.cuyer.rusthub.presentation.features.raid.RaidFormAction
 import pl.cuyer.rusthub.presentation.features.raid.RaidFormState
+import pl.cuyer.rusthub.util.formatLocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -203,8 +207,11 @@ private fun SteamUserCard(user: SteamUser, onClick: () -> Unit) {
                     style = MaterialTheme.typography.bodyMedium
                 )
                 user.lastLogoff?.let {
+                    val formatted = formatLocalDateTime(
+                        Instant.fromEpochSeconds(it).toLocalDateTime(TimeZone.currentSystemDefault())
+                    )
                     Text(
-                        stringResource(SharedRes.strings.last_logoff, it),
+                        stringResource(SharedRes.strings.last_logoff, formatted),
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
