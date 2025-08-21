@@ -323,7 +323,8 @@ private fun RaidItem(
             Box(
                 Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.error, shape = RectangleShape)
+                    .clip( MaterialTheme.shapes.extraSmall)
+                    .background(MaterialTheme.colorScheme.error, shape = MaterialTheme.shapes.extraSmall)
                     .padding(end = spacing.medium),
                 contentAlignment = Alignment.CenterEnd
             ) {
@@ -360,9 +361,9 @@ private fun RaidItem(
                 }
             }
             ElevatedCard(
-                shape = RectangleShape,
+                shape = MaterialTheme.shapes.extraSmall,
                 colors = CardDefaults.elevatedCardColors().copy(
-                    containerColor = if (selected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainer
+                    containerColor = if (selected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainerLow
                 ),
                 modifier = modifier
                     .fillMaxWidth()
