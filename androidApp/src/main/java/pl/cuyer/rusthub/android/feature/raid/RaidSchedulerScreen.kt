@@ -218,7 +218,7 @@ private fun RaidItem(
                 val diff =
                     raid.dateTime.toInstant(TimeZone.currentSystemDefault()) - Clock.System.now()
                 val minutes = diff.inWholeMinutes
-                if (minutes <= 0) "0$minutesShort" else {
+                if (minutes <= 0) null else {
                     val days = minutes / (60 * 24)
                     val hours = (minutes % (60 * 24)) / 60
                     val mins = minutes % 60
@@ -273,7 +273,9 @@ private fun RaidItem(
                             style = MaterialTheme.typography.bodyMedium
                         )
                         Text(
-                            stringResource(SharedRes.strings.time_to_raid, timeLeft),
+                            text = timeLeft?.let {
+                                stringResource(SharedRes.strings.time_to_raid, it)
+                            } ?: stringResource(SharedRes.strings.its_time_to_raid),
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -307,7 +309,7 @@ private fun RaidItem(
 
                                     Column(horizontalAlignment = Alignment.Start) {
                                         Text(user.personaName, style = MaterialTheme.typography.bodyMedium)
-                                        val offline = "Offline"
+                                        val offline = stringResource(SharedRes.strings.offline)
                                         val online = stringResource(SharedRes.strings.online)
                                         val busy = stringResource(SharedRes.strings.busy)
                                         val away = stringResource(SharedRes.strings.away)
