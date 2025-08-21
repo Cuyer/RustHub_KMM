@@ -7,9 +7,7 @@ import android.content.Intent
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import pl.cuyer.rusthub.domain.model.Raid
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 actual class AlarmScheduler(private val context: Context) {
     actual fun schedule(raid: Raid) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -23,6 +21,7 @@ actual class AlarmScheduler(private val context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         val triggerAt = raid.dateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+        val alarmClockInfo = AlarmManager.AlarmClockInfo(triggerAt, pendingIntent)
+        alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
     }
 }
