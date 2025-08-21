@@ -247,6 +247,7 @@
     <string name="entities">Объекты</string>
     <string name="coming_soon">Скоро</string>
     <string name="search_items_check_details_how_to_craft_drop_and_raid_costs">Ищите предметы и смотрите их характеристики, крафт, выпадение и стоимость рейда.</string>
+    <string name="plan_raids_get_notified_and_see_targets_status">Планируйте рейды, получайте уведомления и смотрите онлайн-статус целей.</string>
     <string name="see_server_info_like_time_of_last_wipe_map_ranking_and_more">Смотрите инфо о сервере: время последнего вайпа, карта, рейтинг и т.д.</string>
     <string name="seed" translatable="false">Seed</string>
     <string name="send_email">Отправить e-mail</string>
@@ -392,7 +393,7 @@
     <string name="monument_query_cannot_be_empty">Введите название монумента.</string>
     <string name="error_network">Ошибка сети. Проверьте подключение.</string>
     <string name="offline_cached_servers_info">Нет сети. Отображаются кэшированные серверы.</string>
-    <string name="offline">Нет подключения к интернету.</string>
+    <string name="no_connection">Нет подключения к интернету.</string>
     <string name="offline_cached_items_info">Нет сети. Отображаются кэшированные предметы.</string>
     <string name="subscription_disabled">Подписки временно отключены.</string>
     <string name="connect_manage_subscription">Подключитесь к интернету, чтобы управлять подпиской.</string>
@@ -463,6 +464,7 @@
     <string name="raw_material_cost">Стоимость сырья</string>
     <string name="using_mixing_table">Используя смесительный стол x%1$d</string>
     <string name="time_to_raid">Время рейда: %1$s</string>
+    <string name="time_to_raid_now">Время рейда!</string>
     <string name="hp">HP</string>
     <string name="update_ready">Обновление готово к установке</string>
     <string name="error_image_emote">(×_×)</string>
@@ -507,21 +509,23 @@
     <string name="max_radiation_level">Макс. уровень радиации</string>
     <string name="radiation">Радиация</string>
     <string name="raids">Рейды</string>
-    <string name="raid_name">Name</string>
-    <string name="raid_date_time">Date and Time</string>
-    <string name="raid_target">Target Steam IDs</string>
-    <string name="steam_id">SteamIDs</string>
-    <string name="enter_steam_id_or_name">Enter Steam IDs</string>
-    <string name="search_players_info">Search up to 4 players separated by ","</string>
-    <string name="add">Add</string>
-    <string name="no_user_found">No user found</string>
-    <string name="new_raid">New Raid</string>
+    <string name="raid_name">Название</string>
+    <string name="raid_date_time">Дата и время</string>
+    <string name="raid_target">Целевые Steam ID</string>
+    <string name="steam_id">Steam ID</string>
+    <string name="enter_steam_id_or_name">Введите Steam ID</string>
+    <string name="search_players_info">Ищите до 4 игроков, разделённых ","</string>
+    <string name="raid_form_info">Заполните форму, чтобы получить уведомление о рейде и увидеть онлайн-статус целей.</string>
+    <string name="add">Добавить</string>
+    <string name="no_user_found">Пользователь не найден</string>
+    <string name="new_raid">Новый рейд</string>
+    <string name="edit_raid">Редактировать рейд</string>
     <string name="required">Required</string>
     <string name="save">Save</string>
     <string name="edit">Edit</string>
     <string name="undo">Undo</string>
-    <string name="raids_deleted">%1$d raids deleted</string>
-    <string name="estimated_raid_time">Estimated time: %1$s</string>
+    <string name="raids_deleted">Удалено %1$d рейдов</string>
+    <string name="estimated_raid_time">Примерное время: %1$s</string>
     <string name="ok">ОК</string>
     <string name="select_time">Выбрать время</string>
     <string name="busy">Занят</string>
@@ -535,4 +539,7 @@
     <string name="days_short">д</string>
     <string name="hours_short">ч</string>
     <string name="minutes_short">м</string>
+    <string name="raid_notification_scheduled">Вы получите уведомление о рейде в %1$s</string>
+    <string name="exact_alarm_permission_required">Включите точные будильники, чтобы сохранить рейд.</string>
+    <string name="raid_past_error">Нельзя запланировать рейд в прошлом.</string>
 </resources>
