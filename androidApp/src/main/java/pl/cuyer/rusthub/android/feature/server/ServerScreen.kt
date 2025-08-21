@@ -465,9 +465,6 @@ fun ServerScreen(
                     onDismiss = {
                         showSheet = false
                     },
-                    onDismissAndRefresh = {
-                        showSheet = false
-                    },
                     onAction = onAction
                 )
             }

@@ -59,7 +59,6 @@ import pl.cuyer.rusthub.presentation.model.FilterCheckboxOption
 import pl.cuyer.rusthub.presentation.model.FilterDropdownOption
 import pl.cuyer.rusthub.presentation.model.FilterRangeOption
 import pl.cuyer.rusthub.presentation.model.FilterUi
-import pl.cuyer.rusthub.presentation.model.toDomain
 import pl.cuyer.rusthub.util.StringProvider
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -70,7 +69,6 @@ fun FilterBottomSheet(
     isLoadingFilters: Boolean,
     sheetState: SheetState,
     onDismiss: () -> Unit,
-    onDismissAndRefresh: () -> Unit,
     onAction: (ServerAction) -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -145,8 +143,7 @@ fun FilterBottomSheet(
                         ButtonsSection(
                             modifier = Modifier.fillMaxWidth(),
                             onAction = onAction,
-                            onDismissAndRefresh = onDismissAndRefresh,
-                            filters = current
+                            onDismiss = onDismiss
                         )
                     }
                 }
@@ -310,8 +307,7 @@ private fun RangeFilters(
 fun ButtonsSection(
     modifier: Modifier = Modifier,
     onAction: (ServerAction) -> Unit,
-    onDismissAndRefresh: () -> Unit,
-    filters: FilterUi
+    onDismiss: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -320,27 +316,16 @@ fun ButtonsSection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
-        val stringProvider = koinInject<StringProvider>()
-        AppButton(
-            onClick = {
-                onAction(ServerAction.OnSaveFilters(filters.toDomain(stringProvider)))
-                onDismissAndRefresh()
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Text(stringResource(SharedRes.strings.apply_filters))
-        }
         AppOutlinedButton(
             colors = ButtonDefaults.outlinedButtonColors().copy(
                 contentColor = contentColorFor(BottomSheetDefaults.ContainerColor)
             ),
             onClick = {
                 onAction(ServerAction.OnClearFilters)
-                onDismissAndRefresh()
+                onDismiss()
             },
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
         ) {
             Text(
                 text = stringResource(SharedRes.strings.reset_filters),
@@ -391,8 +376,7 @@ private fun FilterBottomSheetPreview() {
                 },
                 filters = FilterUi(),
                 onAction = { },
-                isLoadingFilters = false,
-                onDismissAndRefresh = { }
+                isLoadingFilters = false
             )
         }
     }
