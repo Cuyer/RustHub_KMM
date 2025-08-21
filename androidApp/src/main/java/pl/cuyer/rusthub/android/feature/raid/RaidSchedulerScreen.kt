@@ -1,5 +1,6 @@
 @file:OptIn(
     ExperimentalFoundationApi::class,
+    ExperimentalLayoutApi::class,
     ExperimentalMaterial3Api::class,
     ExperimentalMaterial3ExpressiveApi::class,
     kotlin.time.ExperimentalTime::class
@@ -24,6 +25,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -155,7 +157,7 @@ fun RaidSchedulerScreen(
             itemsIndexed(raids, key = { _, raid -> raid.id }) { index, raid ->
                 RaidItem(
                     raid = raid,
-                    user = state.value.users[raid.steamId],
+                    users = state.value.users,
                     selected = raid.id in selectedIds,
                     selectionMode = selectionMode,
                     onLongClick = { onAction(RaidSchedulerAction.OnRaidLongClick(raid.id)) },
@@ -176,7 +178,7 @@ fun RaidSchedulerScreen(
 @Composable
 private fun RaidItem(
     raid: Raid,
-    user: SteamUser?,
+    users: Map<String, SteamUser?>,
     selected: Boolean,
     selectionMode: Boolean,
     onLongClick: () -> Unit,
@@ -275,77 +277,85 @@ private fun RaidItem(
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
-                    if (user != null) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(spacing.small),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(horizontalAlignment = Alignment.End) {
-                                Text(user.personaName, style = MaterialTheme.typography.bodyMedium)
-                                val offline = "Offline"
-                                val online = stringResource(SharedRes.strings.online)
-                                val busy = stringResource(SharedRes.strings.busy)
-                                val away = stringResource(SharedRes.strings.away)
-                                val snooze = stringResource(SharedRes.strings.snooze)
-                                val lookingToTrade = stringResource(SharedRes.strings.looking_to_trade)
-                                val lookingToPlay = stringResource(SharedRes.strings.looking_to_play)
-                                val unknown = stringResource(SharedRes.strings.unknown)
-                                Text(
-                                    text = when (user.personaState) {
-                                        0 -> offline
-                                        1 -> online
-                                        2 -> busy
-                                        3 -> away
-                                        4 -> snooze
-                                        5 -> lookingToTrade
-                                        6 -> lookingToPlay
-                                        else -> unknown
-                                    },
-                                    color = personaStateColor(user.personaState),
-                                    style = MaterialTheme.typography.bodySmall
-                                )
-                            }
-                            SubcomposeAsyncImage(
-                                modifier = Modifier.size(48.dp),
-                                model = ImageRequest.Builder(LocalContext.current)
-                                    .data(user.avatar)
-                                    .crossfade(true)
-                                    .build(),
-                                contentDescription = "User avatar",
-                                loading = {
-                                    Box(
-                                        modifier = Modifier
-                                            .matchParentSize()
-                                            .shimmer()
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(spacing.small),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        raid.steamIds.take(4).forEach { id ->
+                            val user = users[id]
+                            if (user != null) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(spacing.small),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(horizontalAlignment = Alignment.End) {
+                                        Text(user.personaName, style = MaterialTheme.typography.bodyMedium)
+                                        val offline = "Offline"
+                                        val online = stringResource(SharedRes.strings.online)
+                                        val busy = stringResource(SharedRes.strings.busy)
+                                        val away = stringResource(SharedRes.strings.away)
+                                        val snooze = stringResource(SharedRes.strings.snooze)
+                                        val lookingToTrade = stringResource(SharedRes.strings.looking_to_trade)
+                                        val lookingToPlay = stringResource(SharedRes.strings.looking_to_play)
+                                        val unknown = stringResource(SharedRes.strings.unknown)
+                                        Text(
+                                            text = when (user.personaState) {
+                                                0 -> offline
+                                                1 -> online
+                                                2 -> busy
+                                                3 -> away
+                                                4 -> snooze
+                                                5 -> lookingToTrade
+                                                6 -> lookingToPlay
+                                                else -> unknown
+                                            },
+                                            color = personaStateColor(user.personaState),
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                    SubcomposeAsyncImage(
+                                        modifier = Modifier.size(48.dp),
+                                        model = ImageRequest.Builder(LocalContext.current)
+                                            .data(user.avatar)
+                                            .crossfade(true)
+                                            .build(),
+                                        contentDescription = "User avatar",
+                                        loading = {
+                                            Box(
+                                                modifier = Modifier
+                                                    .matchParentSize()
+                                                    .shimmer()
+                                            )
+                                        }
                                     )
                                 }
-                            )
-                        }
-                    } else {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(spacing.small),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Column(horizontalAlignment = Alignment.End) {
-                                Box(
-                                    modifier = Modifier
-                                        .width(80.dp)
-                                        .height(16.dp)
-                                        .shimmer(),
-                                )
-                                Spacer(modifier = Modifier.height(spacing.xsmall))
-                                Box(
-                                    modifier = Modifier
-                                        .width(60.dp)
-                                        .height(12.dp)
-                                        .shimmer(),
-                                )
+                            } else {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(spacing.small),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Column(horizontalAlignment = Alignment.End) {
+                                        Box(
+                                            modifier = Modifier
+                                                .width(80.dp)
+                                                .height(16.dp)
+                                                .shimmer(),
+                                        )
+                                        Spacer(modifier = Modifier.height(spacing.xsmall))
+                                        Box(
+                                            modifier = Modifier
+                                                .width(60.dp)
+                                                .height(12.dp)
+                                                .shimmer(),
+                                        )
+                                    }
+                                    Box(
+                                        modifier = Modifier
+                                            .size(48.dp)
+                                            .shimmer(),
+                                    )
+                                }
                             }
-                            Box(
-                                modifier = Modifier
-                                    .size(48.dp)
-                                    .shimmer(),
-                            )
                         }
                     }
                 }

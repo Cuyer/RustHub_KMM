@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.android.feature.raid
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -83,11 +84,12 @@ fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Un
                     text = stringResource(SharedRes.strings.search),
                     fontWeight = FontWeight.SemiBold
                 )
+                Text(stringResource(SharedRes.strings.search_players_info))
                 AppTextField(
                     textFieldState = queryState,
                     labelText = stringResource(SharedRes.strings.steam_id),
                     placeholderText = stringResource(SharedRes.strings.enter_steam_id_or_name),
-                    keyboardType = KeyboardType.NumberPassword,
+                    keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Search,
                     onSubmit = { onAction(RaidFormAction.OnSearchUser) },
                     lineLimits = TextFieldLineLimits.SingleLine,
@@ -104,12 +106,16 @@ fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Un
                             CircularProgressIndicator()
                         }
                     }
-                    state.foundUser != null -> {
-                        SteamUserCard(user = state.foundUser!!) {
-                            onAction(RaidFormAction.OnUserSelected(state.foundUser!!))
+                    state.foundUsers.isNotEmpty() -> {
+                        Column(verticalArrangement = Arrangement.spacedBy(spacing.small)) {
+                            state.foundUsers.forEach { user ->
+                                val selected = user.steamId in state.selectedFoundIds
+                                SteamUserCard(user = user, selected = selected) {
+                                    onAction(RaidFormAction.OnToggleFoundUser(user.steamId))
+                                }
+                            }
                         }
                     }
-
                     state.searchNotFound -> {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -136,20 +142,20 @@ fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Un
                     ) {
                         Text(stringResource(SharedRes.strings.cancel))
                     }
-                    Button(
-                        modifier = Modifier
-                            .wrapContentWidth()
-                            .height(48.dp),
-                        shape = MaterialTheme.shapes.extraSmall,
-                        colors = ButtonDefaults.elevatedButtonColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                            contentColor = contentColorFor(MaterialTheme.colorScheme.surfaceContainer)
-                        ),
-                        onClick = {
-                            onAction(RaidFormAction.OnSearchUser)
+                    if (state.foundUsers.isNotEmpty()) {
+                        Button(
+                            modifier = Modifier
+                                .wrapContentWidth()
+                                .height(48.dp),
+                            shape = MaterialTheme.shapes.extraSmall,
+                            colors = ButtonDefaults.elevatedButtonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                contentColor = contentColorFor(MaterialTheme.colorScheme.surfaceContainer)
+                            ),
+                            onClick = { onAction(RaidFormAction.OnAddFoundUsers) }
+                        ) {
+                            Text(stringResource(SharedRes.strings.add))
                         }
-                    ) {
-                        Text(stringResource(SharedRes.strings.search))
                     }
                 }
             }
@@ -158,8 +164,11 @@ fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Un
 }
 
 @Composable
-private fun SteamUserCard(user: SteamUser, onClick: () -> Unit) {
-    ElevatedCard(onClick = onClick) {
+private fun SteamUserCard(user: SteamUser, selected: Boolean, onClick: () -> Unit) {
+    ElevatedCard(
+        onClick = onClick,
+        border = if (selected) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()

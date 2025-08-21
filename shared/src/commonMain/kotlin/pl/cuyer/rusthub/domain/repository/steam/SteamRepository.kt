@@ -5,6 +5,6 @@ import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.SteamUser
 
 interface SteamRepository {
-    fun searchUser(apiKey: String, query: String): Flow<Result<SteamUser?>>
+    fun searchUsers(apiKey: String, queries: List<String>): Flow<Result<List<SteamUser>>>
 }
 

@@ -10,6 +10,6 @@ data class Raid(
     val id: String,
     val name: String,
     val dateTime: LocalDateTime,
-    val steamId: String,
+    val steamIds: List<String>,
     val description: String?
 )

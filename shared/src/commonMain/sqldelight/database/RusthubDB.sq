@@ -863,17 +863,17 @@ CREATE TABLE raidEntity (
     id TEXT NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
     dateTime TEXT NOT NULL,
-    steamId TEXT NOT NULL,
+    steamIds TEXT NOT NULL,
     description TEXT
 );
 
 upsertRaid:
-INSERT INTO raidEntity(id, name, dateTime, steamId, description)
-VALUES (:id, :name, :dateTime, :steamId, :description)
+INSERT INTO raidEntity(id, name, dateTime, steamIds, description)
+VALUES (:id, :name, :dateTime, :steamIds, :description)
 ON CONFLICT(id) DO UPDATE SET
     name = excluded.name,
     dateTime = excluded.dateTime,
-    steamId = excluded.steamId,
+    steamIds = excluded.steamIds,
     description = excluded.description;
 
 getRaids:

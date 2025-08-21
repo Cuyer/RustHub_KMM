@@ -4,8 +4,8 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -41,15 +41,23 @@ class SteamRepositoryImpl(
     private val httpClient: HttpClient,
     json: Json,
 ) : SteamRepository, BaseApiResponse(json) {
-    override fun searchUser(apiKey: String, query: String): Flow<Result<SteamUser?>> {
-        return if (query.all { it.isDigit() }) {
-            getPlayer(apiKey, query)
-        } else {
-            resolveVanity(apiKey, query).flatMapLatest { result ->
-                when (result) {
-                    is Result.Success -> getPlayer(apiKey, result.data)
-                    is Result.Error -> flowOf(Result.Error(result.exception))
+    override fun searchUsers(apiKey: String, queries: List<String>): Flow<Result<List<SteamUser>>> {
+        return flow {
+            val ids = mutableListOf<String>()
+            for (query in queries) {
+                if (query.all { it.isDigit() }) {
+                    ids.add(query)
+                } else {
+                    when (val idResult = resolveVanity(apiKey, query).first()) {
+                        is Result.Success -> ids.add(idResult.data)
+                        is Result.Error -> Unit
+                    }
                 }
+            }
+            if (ids.isEmpty()) {
+                emit(Result.Success(emptyList()))
+            } else {
+                emit(getPlayers(apiKey, ids).first())
             }
         }
     }
@@ -72,17 +80,17 @@ class SteamRepositoryImpl(
         }
     }
 
-    private fun getPlayer(apiKey: String, steamId: String): Flow<Result<SteamUser?>> {
+    private fun getPlayers(apiKey: String, steamIds: List<String>): Flow<Result<List<SteamUser>>> {
         return safeApiCall<PlayerSummariesResponseDto> {
             httpClient.get("https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/") {
                 parameter("key", apiKey)
-                parameter("steamids", steamId)
+                parameter("steamids", steamIds.joinToString(","))
             }
         }.map { result ->
             when (result) {
                 is Result.Success -> {
-                    val player = result.data.response.players.firstOrNull()
-                    Result.Success(player?.toSteamUser())
+                    val players = result.data.response.players.map { it.toSteamUser() }
+                    Result.Success(players)
                 }
                 is Result.Error -> result
             }

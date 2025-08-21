@@ -259,7 +259,7 @@ fun RaidFormScreen(
                         }
                 )
                 OutlinedTextField(
-                    value = state.value.steamId,
+                    value = state.value.steamIds.joinToString(", "),
                     onValueChange = {},
                     label = { Text(stringResource(SharedRes.strings.raid_target)) },
                     readOnly = true,

@@ -56,18 +56,21 @@ class RaidSchedulerViewModel(
         observeRaidsUseCase()
             .onEach { raids ->
                 _state.update { it.copy(raids = raids) }
-                raids.forEach { raid ->
-                    if (_state.value.users[raid.steamId] == null) {
-                        searchSteamUserUseCase(raid.steamId)
-                            .onEach { result ->
-                                if (result is Result.Success) {
-                                    _state.update { state ->
-                                        state.copy(users = state.users + (raid.steamId to result.data))
-                                    }
+                val missing = raids.flatMap { it.steamIds }
+                    .filter { _state.value.users[it] == null }
+                    .distinct()
+                if (missing.isNotEmpty()) {
+                    searchSteamUserUseCase(missing)
+                        .onEach { result ->
+                            if (result is Result.Success) {
+                                _state.update { state ->
+                                    val fetched = result.data.associateBy { it.steamId }
+                                    val notFound = missing.filter { it !in fetched.keys }.associateWith { null }
+                                    state.copy(users = state.users + fetched + notFound)
                                 }
                             }
-                            .launchIn(coroutineScope)
-                    }
+                        }
+                        .launchIn(coroutineScope)
                 }
             }
             .catch { }

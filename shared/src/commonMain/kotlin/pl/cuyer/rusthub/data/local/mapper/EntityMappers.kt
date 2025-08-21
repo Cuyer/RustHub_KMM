@@ -284,7 +284,7 @@ fun RaidEntity.toRaid(): Raid {
         id = id,
         name = name,
         dateTime = LocalDateTime.parse(dateTime),
-        steamId = steamId,
+        steamIds = steamIds.split(",").filter { it.isNotBlank() },
         description = description
     )
 }
