@@ -202,7 +202,6 @@ class ServerViewModel(
         when (action) {
             is ServerAction.OnServerClick -> navigateToServer(action.id, action.name)
             is ServerAction.OnLongServerClick -> saveIpToClipboard(action.ipAddress)
-            is ServerAction.OnSaveFilters -> onSaveFilters(action.filters)
             is ServerAction.OnSearch -> handleSearch(query = action.query)
             is ServerAction.OnClearFilters -> clearFilters()
             is ServerAction.OnClearSearchQuery -> clearSearchQuery()
@@ -302,22 +301,6 @@ class ServerViewModel(
         }
 
     }
-
-    private fun onSaveFilters(filters: ServerQuery) {
-        coroutineScope.launch {
-            _state.update { it.copy(filter = filters.filter) }
-            runCatching {
-                saveFiltersUseCase(filters)
-                clearServerCache()
-            }.onFailure {
-                CrashReporter.recordException(it)
-                sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_filters))
-            }.onSuccess {
-                _uiEvent.send(UiEvent.RefreshList)
-            }
-        }
-    }
-
     private fun clearFilters() {
         coroutineScope.launch {
             _state.update { it.copy(filter = ServerFilter.ALL) }
@@ -409,6 +392,7 @@ class ServerViewModel(
             updatedLists[index] = option.copy(selectedIndex = selectedIndex)
             state.copy(filters = current.copy(lists = updatedLists))
         }
+        saveFilters()
     }
 
     private fun updateCheckbox(index: Int, isChecked: Boolean) {
@@ -419,6 +403,7 @@ class ServerViewModel(
             updated[index] = option.copy(isChecked = isChecked)
             state.copy(filters = current.copy(checkboxes = updated))
         }
+        saveFilters()
     }
 
     private fun updateRange(index: Int, value: Int?) {
@@ -428,6 +413,23 @@ class ServerViewModel(
             val option = updated.getOrNull(index) ?: return@update state
             updated[index] = option.copy(value = value)
             state.copy(filters = current.copy(ranges = updated))
+        }
+        saveFilters()
+    }
+
+    private fun saveFilters() {
+        coroutineScope.launch {
+            val current = state.value.filters?.toDomain(stringProvider) ?: return@launch
+            _state.update { it.copy(filter = current.filter) }
+            runCatching {
+                saveFiltersUseCase(current)
+                clearServerCache()
+            }.onFailure {
+                CrashReporter.recordException(it)
+                sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_filters))
+            }.onSuccess {
+                _uiEvent.send(UiEvent.RefreshList)
+            }
         }
     }
 
