@@ -23,13 +23,18 @@ actual class AlarmScheduler(private val context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         val triggerAt = raid.dateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
-        val alarmClockInfo = AlarmManager.AlarmClockInfo(triggerAt, pendingIntent)
-        alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            triggerAt,
+            pendingIntent
+        )
     }
 
     actual fun cancel(raid: Raid) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(context, RaidAlarmReceiver::class.java)
+        val intent = Intent(context, RaidAlarmReceiver::class.java).apply {
+            putExtra(RaidAlarmReceiver.EXTRA_NAME, raid.name)
+        }
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             raid.id.hashCode(),
