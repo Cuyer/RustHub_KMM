@@ -66,6 +66,10 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import java.util.Calendar
 import kotlinx.datetime.LocalDateTime
 import pl.cuyer.rusthub.util.formatLocalDateTime
+import dev.icerock.moko.permissions.PermissionsController
+import dev.icerock.moko.permissions.compose.BindEffect
+import org.koin.compose.koinInject
+import androidx.compose.material3.SelectableDates
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,6 +82,9 @@ fun RaidFormScreen(
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.NavigateUp) onNavigateUp()
     }
+
+    val permissionsController = koinInject<PermissionsController>()
+    BindEffect(permissionsController)
 
     val nameState = rememberSyncedTextFieldState(state.value.name)
     val descriptionState = rememberSyncedTextFieldState(state.value.description)
@@ -95,7 +102,19 @@ fun RaidFormScreen(
 
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState()
+    val todayUtc = remember {
+        Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC")).apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+    }
+    val datePickerState = rememberDatePickerState(
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis >= todayUtc
+        }
+    )
     val timePickerState = rememberTimePickerState(
         initialHour = calendar.get(Calendar.HOUR_OF_DAY),
         initialMinute = calendar.get(Calendar.MINUTE),
