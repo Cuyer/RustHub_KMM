@@ -11,8 +11,6 @@ package pl.cuyer.rusthub.android.feature.raid
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -49,13 +47,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -324,39 +320,19 @@ private fun RaidItem(
     SwipeToDismissBox(
         state = dismissState,
         backgroundContent = {
-            val density = LocalDensity.current
-            val offsetPx = dismissState.requireOffset()
-            val targetWidth = with(density) { (-offsetPx).toDp() }.coerceAtLeast(0.dp)
-            val trackWidth by animateDpAsState(targetWidth, label = "trackWidth")
-            val progress = dismissState.progress.fraction.coerceIn(0f, 1f)
-            val iconScale by animateFloatAsState(0.75f + 0.25f * progress, label = "iconScale")
-
             Box(
                 Modifier
                     .fillMaxSize()
                     .padding(horizontal = spacing.medium)
-                    .clip(MaterialTheme.shapes.extraSmall)
-                    .background(
-                        MaterialTheme.colorScheme.error,
-                        shape = MaterialTheme.shapes.extraSmall
-                    )
+                    .clip( MaterialTheme.shapes.extraSmall)
+                    .background(MaterialTheme.colorScheme.error, shape = MaterialTheme.shapes.extraSmall),
+                contentAlignment = Alignment.CenterEnd
             ) {
-                Box(
-                    Modifier
-                        .fillMaxHeight()
-                        .width(trackWidth)
-                        .align(Alignment.CenterEnd),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    Icon(
-                        Icons.Default.Delete,
-                        contentDescription = stringResource(SharedRes.strings.delete),
-                        tint = MaterialTheme.colorScheme.onError,
-                        modifier = Modifier
-                            .padding(start = spacing.medium)
-                            .scale(iconScale)
-                    )
-                }
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = stringResource(SharedRes.strings.delete),
+                    tint = MaterialTheme.colorScheme.onError
+                )
             }
         },
         onDismiss = {
