@@ -97,6 +97,7 @@ fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Un
                 )
                 Text(stringResource(SharedRes.strings.search_players_info))
                 AppTextField(
+                    modifier = Modifier.fillMaxWidth(),
                     textFieldState = queryState,
                     labelText = stringResource(SharedRes.strings.steam_id),
                     placeholderText = stringResource(SharedRes.strings.enter_steam_id_or_name),
