@@ -30,4 +30,10 @@ sealed interface ServerAction {
     data class OnFilterChange(val filter: ServerFilter): ServerAction
     @Immutable
     data class GatherConsent(val activity: Any, val onAdAvailable: () -> Unit) : ServerAction
+    @Immutable
+    data class OnDropdownChange(val index: Int, val selectedIndex: Int?) : ServerAction
+    @Immutable
+    data class OnCheckboxChange(val index: Int, val isChecked: Boolean) : ServerAction
+    @Immutable
+    data class OnRangeChange(val index: Int, val value: Int?) : ServerAction
 }
