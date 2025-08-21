@@ -231,7 +231,7 @@ fun SubscriptionScreen(
             ) {
                 Text(
                     textAlign = TextAlign.Center,
-                    text = stringResource(SharedRes.strings.offline),
+                    text = stringResource(SharedRes.strings.no_connection),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSecondary,
                     modifier = Modifier

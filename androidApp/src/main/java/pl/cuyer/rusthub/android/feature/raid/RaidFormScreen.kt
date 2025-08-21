@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.android.feature.raid
 
+import android.app.Activity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -34,6 +37,9 @@ import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -45,6 +51,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusEvent
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -78,7 +85,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalTime::class)
 @Composable
 fun RaidFormScreen(
     onNavigateUp: () -> Unit,
@@ -128,13 +135,21 @@ fun RaidFormScreen(
 
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
+    val context = LocalContext.current
+    val windowSizeClass = calculateWindowSizeClass(context as Activity)
+    val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
+                    val title = if (state.value.id == null) {
+                        stringResource(SharedRes.strings.new_raid)
+                    } else {
+                        stringResource(SharedRes.strings.edit_raid)
+                    }
                     Text(
-                        text = state.value.name.ifBlank { stringResource(SharedRes.strings.new_raid) },
+                        text = title,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         fontWeight = FontWeight.SemiBold
@@ -152,7 +167,6 @@ fun RaidFormScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding)
-                .padding(spacing.medium)
                 .fillMaxSize()
                 .clickable(interactionSource = interactionSource, indication = null) {
                     focusManager.clearFocus()
@@ -216,11 +230,19 @@ fun RaidFormScreen(
                 }
             }
 
+            val scrollModifier = if (!isTabletMode) Modifier.verticalScroll(rememberScrollState()) else Modifier
             Column(
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .padding(spacing.medium)
+                    .padding(bottom = if (isTabletMode) 0.dp else spacing.extraLarge)
+                    .then(scrollModifier),
                 verticalArrangement = Arrangement.spacedBy(spacing.medium)
             ) {
+                Text(
+                    text = stringResource(SharedRes.strings.raid_form_info),
+                    style = MaterialTheme.typography.bodyMedium
+                )
                 AppTextField(
                     modifier = Modifier.fillMaxWidth(),
                     textFieldState = nameState,

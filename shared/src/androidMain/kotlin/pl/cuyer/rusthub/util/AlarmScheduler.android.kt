@@ -23,6 +23,20 @@ actual class AlarmScheduler(private val context: Context) {
             putExtra(RaidAlarmReceiver.EXTRA_NAME, raid.name)
         }
 
+    fun canScheduleExactAlarms(): Boolean {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        return Build.VERSION.SDK_INT < 31 || alarmManager.canScheduleExactAlarms()
+    }
+
+    fun requestExactAlarmPermission() {
+        if (Build.VERSION.SDK_INT >= 31) {
+            context.startActivity(
+                Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        }
+    }
+
     actual fun schedule(raid: Raid) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -32,15 +46,6 @@ actual class AlarmScheduler(private val context: Context) {
 
         if (triggerAt <= System.currentTimeMillis()) {
             // Too late; avoid scheduling past alarms
-            return
-        }
-
-        // Android 12+ exact-alarm permission check
-        if (Build.VERSION.SDK_INT >= 31 && !alarmManager.canScheduleExactAlarms()) {
-            context.startActivity(
-                Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            )
             return
         }
 
