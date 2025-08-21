@@ -210,7 +210,6 @@ fun RaidSchedulerScreen(
                             RaidItemShimmer(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = spacing.medium)
                             )
                         }
                     }
@@ -534,6 +533,8 @@ private fun RaidItemShimmer(modifier: Modifier = Modifier) {
     ) {
         Column(
             modifier = Modifier
+                .padding(spacing.medium)
+                .height(300.dp)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(spacing.small),
         ) {
@@ -569,10 +570,13 @@ private fun RaidItemShimmer(modifier: Modifier = Modifier) {
                     .shimmer()
                     .clearAndSetSemantics {},
             )
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(spacing.small),
+            FlowRow(
+                maxItemsInEachRow = 3,
+                maxLines = 2,
+                horizontalArrangement = Arrangement.spacedBy(spacing.small, Alignment.CenterHorizontally),
+                verticalArrangement = Arrangement.spacedBy(spacing.small)
             ) {
-                repeat(3) {
+                repeat(6) {
                     Box(
                         modifier = Modifier
                             .size(48.dp)
