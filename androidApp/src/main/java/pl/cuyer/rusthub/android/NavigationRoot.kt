@@ -369,7 +369,7 @@ private fun AppScaffold(
                             },
                         )
                     }
-                    entry<RaidScheduler> {
+                    entry<RaidScheduler>(metadata = ListDetailSceneStrategy.listPane()) {
                         val viewModel = koinViewModel<RaidSchedulerViewModel>()
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         RaidSchedulerScreen(
@@ -379,13 +379,17 @@ private fun AppScaffold(
                             uiEvent = viewModel.uiEvent
                         )
                     }
-                    entry<RaidForm> { key ->
+                    entry<RaidForm>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
                         val viewModel: RaidFormViewModel = koinViewModel(
                             key = key.raid?.id ?: "new"
                         ) { parametersOf(key.raid) }
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         RaidFormScreen(
-                            onNavigateUp = { backStack.removeLastOrNull() },
+                            onNavigateUp = {
+                                while (backStack.lastOrNull() is RaidForm) {
+                                    backStack.removeLastOrNull()
+                                }
+                            },
                             state = state,
                             onAction = viewModel::onAction,
                             uiEvent = viewModel.uiEvent

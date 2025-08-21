@@ -17,6 +17,7 @@ import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.Settings as SettingsNav
 import pl.cuyer.rusthub.presentation.navigation.RaidScheduler
+import pl.cuyer.rusthub.presentation.navigation.RaidForm
 import dev.icerock.moko.resources.StringResource
 import androidx.navigation3.runtime.NavKey
 
@@ -58,7 +59,7 @@ internal sealed interface BottomNavKey {
         override val root = RaidScheduler
         override val icon = Icons.Filled.Event
         override val label = SharedRes.strings.raids
-        override val isInHierarchy: (NavKey?) -> Boolean = { it is RaidScheduler }
+        override val isInHierarchy: (NavKey?) -> Boolean = { it is RaidScheduler || it is RaidForm }
     }
 
     @Immutable
