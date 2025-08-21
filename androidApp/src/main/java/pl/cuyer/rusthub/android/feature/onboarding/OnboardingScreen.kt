@@ -40,6 +40,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Info
@@ -196,6 +197,11 @@ private val features = listOf(
         Icons.Default.Notifications,
         SharedRes.strings.notifications,
         SharedRes.strings.receive_notifications_about_map_and_full_wipes
+    ),
+    Feature(
+        Icons.Default.Alarm,
+        SharedRes.strings.raids,
+        SharedRes.strings.plan_raids_get_notified_and_see_targets_status
     ),
     Feature(
         Icons.Default.Favorite,

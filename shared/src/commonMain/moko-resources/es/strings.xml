@@ -247,6 +247,7 @@
     <string name="entities">Entidades</string>
     <string name="coming_soon">Muy pronto</string>
     <string name="search_items_check_details_how_to_craft_drop_and_raid_costs">Busque artículos y verifique sus detalles, elaboración, caídas y costos de redadas.</string>
+    <string name="plan_raids_get_notified_and_see_targets_status">Planifica incursiones, recibe notificaciones y ve el estado en línea de los objetivos.</string>
     <string name="see_server_info_like_time_of_last_wipe_map_ranking_and_more">Consulte la información del servidor como la hora de la última limpieza, mapa, clasificación y más.</string>
     <string name="seed" translatable="false">Semilla</string>
     <string name="send_email">Enviar correo electrónico</string>
@@ -393,7 +394,7 @@
     <string name="monument_query_cannot_be_empty">Ingrese el nombre del monumento.</string>
     <string name="error_network">Error de red. Verifique su conexión.</string>
     <string name="offline_cached_servers_info">Red no disponible. Mostrando servidores en caché.</string>
-    <string name="offline">Sin conexión a Internet.</string>
+    <string name="no_connection">Sin conexión a Internet.</string>
     <string name="offline_cached_items_info">Red no disponible. Mostrando artículos en caché.</string>
     <string name="subscription_disabled">Las suscripciones están actualmente deshabilitadas.</string>
     <string name="connect_manage_subscription">Conéctese a Internet para administrar su suscripción.</string>
@@ -464,6 +465,7 @@
     <string name="raw_material_cost">Costo de materia prima</string>
     <string name="using_mixing_table">Uso de la tabla de mezcla x%1 $ D</string>
     <string name="time_to_raid">Tiempo de atacar: %1$s</string>
+    <string name="time_to_raid_now">¡Es hora de raidear!</string>
     <string name="hp">HP</string>
     <string name="update_ready">Actualizar listo para instalar</string>
     <string name="error_image_emote">(×_×)</string>
@@ -508,21 +510,23 @@
     <string name="max_radiation_level">Nivel de radiación máxima</string>
     <string name="radiation">Radiación</string>
     <string name="raids">Incursiones</string>
-    <string name="raid_name">Name</string>
-    <string name="raid_date_time">Date and Time</string>
-    <string name="raid_target">Target Steam IDs</string>
-    <string name="steam_id">SteamIDs</string>
-    <string name="enter_steam_id_or_name">Enter Steam IDs</string>
-    <string name="search_players_info">Search up to 4 players separated by ","</string>
-    <string name="add">Add</string>
-    <string name="no_user_found">No user found</string>
-    <string name="new_raid">New Raid</string>
+    <string name="raid_name">Nombre</string>
+    <string name="raid_date_time">Fecha y hora</string>
+    <string name="raid_target">ID de Steam objetivo</string>
+    <string name="steam_id">ID de Steam</string>
+    <string name="enter_steam_id_or_name">Introduce IDs de Steam</string>
+    <string name="search_players_info">Busca hasta 4 jugadores separados por ","</string>
+    <string name="raid_form_info">Completa el formulario para recibir una notificación del raid y ver el estado en línea de los objetivos.</string>
+    <string name="add">Añadir</string>
+    <string name="no_user_found">No se encontró ningún usuario</string>
+    <string name="new_raid">Nueva incursión</string>
+    <string name="edit_raid">Editar incursión</string>
     <string name="required">Required</string>
     <string name="save">Save</string>
     <string name="edit">Edit</string>
     <string name="undo">Undo</string>
-    <string name="raids_deleted">%1$d raids deleted</string>
-    <string name="estimated_raid_time">Estimated time: %1$s</string>
+    <string name="raids_deleted">Se eliminaron %1$d incursiones</string>
+    <string name="estimated_raid_time">Tiempo estimado: %1$s</string>
     <string name="ok">OK</string>
     <string name="select_time">Seleccionar hora</string>
     <string name="busy">Ocupado</string>
@@ -536,4 +540,7 @@
     <string name="days_short">d</string>
     <string name="hours_short">h</string>
     <string name="minutes_short">m</string>
+    <string name="raid_notification_scheduled">Serás notificado de la incursión a las %1$s</string>
+    <string name="exact_alarm_permission_required">Activa las alarmas exactas para guardar la incursión.</string>
+    <string name="raid_past_error">No se puede programar una incursión en el pasado.</string>
 </resources>
