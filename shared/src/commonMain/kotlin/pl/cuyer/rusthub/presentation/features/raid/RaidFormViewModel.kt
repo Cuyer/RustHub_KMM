@@ -22,11 +22,6 @@ import pl.cuyer.rusthub.domain.usecase.SaveRaidUseCase
 import pl.cuyer.rusthub.domain.usecase.SearchSteamUserUseCase
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.AlarmScheduler
-import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
-import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
-import pl.cuyer.rusthub.presentation.snackbar.Duration
-import pl.cuyer.rusthub.util.StringProvider
-import pl.cuyer.rusthub.SharedRes
 import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.DeniedException
@@ -41,8 +36,6 @@ class RaidFormViewModel(
     private val searchSteamUserUseCase: SearchSteamUserUseCase,
     private val alarmScheduler: AlarmScheduler,
     private val permissionsController: PermissionsController,
-    private val snackbarController: SnackbarController,
-    private val stringProvider: StringProvider,
 ) : BaseViewModel() {
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
@@ -162,26 +155,6 @@ class RaidFormViewModel(
             LocalDateTime.parse("1970-01-01T00:00")
         }
         if (dateTime.toInstant(TimeZone.currentSystemDefault()) <= Clock.System.now()) {
-            coroutineScope.launch {
-                snackbarController.sendEvent(
-                    SnackbarEvent(
-                        message = stringProvider.get(SharedRes.strings.raid_past_error),
-                        duration = Duration.SHORT
-                    )
-                )
-            }
-            return
-        }
-        if (!alarmScheduler.canScheduleExactAlarms()) {
-            alarmScheduler.requestExactAlarmPermission()
-            coroutineScope.launch {
-                snackbarController.sendEvent(
-                    SnackbarEvent(
-                        message = stringProvider.get(SharedRes.strings.exact_alarm_permission_required),
-                        duration = Duration.SHORT
-                    )
-                )
-            }
             return
         }
         val raid = Raid(

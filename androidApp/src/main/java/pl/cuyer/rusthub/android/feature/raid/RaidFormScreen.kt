@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -135,13 +133,8 @@ fun RaidFormScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    val title = if (state.value.id == null) {
-                        stringResource(SharedRes.strings.new_raid)
-                    } else {
-                        stringResource(SharedRes.strings.edit_raid)
-                    }
                     Text(
-                        text = title,
+                        text = state.value.name.ifBlank { stringResource(SharedRes.strings.new_raid) },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         fontWeight = FontWeight.SemiBold
@@ -225,15 +218,9 @@ fun RaidFormScreen(
 
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(bottom = spacing.extraLarge),
+                    .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(spacing.medium)
             ) {
-                Text(
-                    text = stringResource(SharedRes.strings.raid_form_info),
-                    style = MaterialTheme.typography.bodyMedium
-                )
                 AppTextField(
                     modifier = Modifier.fillMaxWidth(),
                     textFieldState = nameState,

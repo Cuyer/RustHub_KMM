@@ -247,7 +247,6 @@
     <string name="entities">Entités</string>
     <string name="coming_soon">Bientôt disponible</string>
     <string name="search_items_check_details_how_to_craft_drop_and_raid_costs">Recherchez des objets et consultez leurs détails, fabrication, loot et coûts de raid.</string>
-    <string name="plan_raids_get_notified_and_see_targets_status">Planifiez des raids, recevez des notifications et voyez le statut en ligne des cibles.</string>
     <string name="see_server_info_like_time_of_last_wipe_map_ranking_and_more">Consultez les infos du serveur : date du dernier wipe, carte, classement, etc.</string>
     <string name="seed" translatable="false">Seed</string>
     <string name="send_email">Envoyer un e-mail</string>
@@ -392,7 +391,7 @@
     <string name="item_query_cannot_be_empty">Entrez le nom de l'objet.</string>
     <string name="error_network">Erreur réseau. Veuillez vérifier votre connexion.</string>
     <string name="offline_cached_servers_info">Réseau indisponible. Affichage des serveurs en cache.</string>
-    <string name="no_connection">Pas de connexion Internet.</string>
+    <string name="offline">Pas de connexion Internet.</string>
     <string name="offline_cached_items_info">Réseau indisponible. Affichage des objets en cache.</string>
     <string name="subscription_disabled">Les abonnements sont actuellement désactivés.</string>
     <string name="connect_manage_subscription">Connectez-vous à Internet pour gérer votre abonnement.</string>
@@ -463,7 +462,6 @@
     <string name="raw_material_cost">Coût des matières premières</string>
     <string name="using_mixing_table">Utilisation du table de mixage x%1$d</string>
     <string name="time_to_raid">Temps de raid : %1$s</string>
-    <string name="time_to_raid_now">C'est l'heure du raid !</string>
     <string name="hp">HP</string>
     <string name="update_ready">Mise à jour prête à être installée</string>
     <string name="error_image_emote">(×_×)</string>
@@ -508,23 +506,21 @@
     <string name="max_radiation_level">Niveau max de radiation</string>
     <string name="radiation">Radiation</string>
     <string name="raids">Raids</string>
-    <string name="raid_name">Nom</string>
-    <string name="raid_date_time">Date et heure</string>
-    <string name="raid_target">ID Steam cibles</string>
-    <string name="steam_id">ID Steam</string>
-    <string name="enter_steam_id_or_name">Entrez des ID Steam</string>
-    <string name="search_players_info">Recherchez jusqu'à 4 joueurs séparés par ","</string>
-    <string name="raid_form_info">Remplissez le formulaire pour recevoir une notification de raid et voir le statut en ligne des cibles.</string>
-    <string name="add">Ajouter</string>
-    <string name="no_user_found">Aucun utilisateur trouvé</string>
-    <string name="new_raid">Nouveau raid</string>
-    <string name="edit_raid">Modifier le raid</string>
+    <string name="raid_name">Name</string>
+    <string name="raid_date_time">Date and Time</string>
+    <string name="raid_target">Target Steam IDs</string>
+    <string name="steam_id">SteamIDs</string>
+    <string name="enter_steam_id_or_name">Enter Steam IDs</string>
+    <string name="search_players_info">Search up to 4 players separated by ","</string>
+    <string name="add">Add</string>
+    <string name="no_user_found">No user found</string>
+    <string name="new_raid">New Raid</string>
     <string name="required">Required</string>
     <string name="save">Save</string>
     <string name="edit">Edit</string>
     <string name="undo">Undo</string>
-    <string name="raids_deleted">%1$d raids supprimés</string>
-    <string name="estimated_raid_time">Temps estimé : %1$s</string>
+    <string name="raids_deleted">%1$d raids deleted</string>
+    <string name="estimated_raid_time">Estimated time: %1$s</string>
     <string name="ok">OK</string>
     <string name="select_time">Sélectionner l'heure</string>
     <string name="busy">Occupé</string>
@@ -538,7 +534,4 @@
     <string name="days_short">d</string>
     <string name="hours_short">h</string>
     <string name="minutes_short">m</string>
-    <string name="raid_notification_scheduled">Vous serez informé du raid à %1$s</string>
-    <string name="exact_alarm_permission_required">Activez les alarmes exactes pour enregistrer le raid.</string>
-    <string name="raid_past_error">Impossible de planifier un raid dans le passé.</string>
 </resources>

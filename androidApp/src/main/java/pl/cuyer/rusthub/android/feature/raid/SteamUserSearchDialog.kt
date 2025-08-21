@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -77,9 +75,7 @@ fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Un
             tonalElevation = 6.dp,
         ) {
             Column(
-                modifier = Modifier
-                    .padding(spacing.medium)
-                    .verticalScroll(rememberScrollState()),
+                modifier = Modifier.padding(spacing.medium),
                 verticalArrangement = Arrangement.spacedBy(spacing.medium)
             ) {
                 val queryState = rememberTextFieldState(state.searchQuery)

@@ -256,8 +256,6 @@ actual fun platformModule(passphrase: String): Module = module {
             searchSteamUserUseCase = get(),
             alarmScheduler = get(),
             permissionsController = get(),
-            snackbarController = get(),
-            stringProvider = get(),
         )
     }
     viewModel {
