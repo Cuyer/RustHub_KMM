@@ -5,10 +5,12 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -62,6 +64,7 @@ class RaidSchedulerViewModel(
 
     private var loadJob: Job? = null
     private var deleteJob: Job? = null
+    private var searchJob: Job? = null
 
     init {
         observeConnectivity()
@@ -180,53 +183,63 @@ class RaidSchedulerViewModel(
 
     private fun loadRaids() {
         loadJob?.cancel()
-        loadJob = getRaidsUseCase()
-            .onStart { _state.update { it.copy(isRefreshing = true, hasError = false) } }
-            .onEach { result ->
-                when (result) {
-                    is Result.Success -> {
-                        val raids = result.data
-                        _state.update { it.copy(raids = raids, isRefreshing = false, hasError = false) }
-                        val missing = raids.flatMap { it.steamIds }
-                            .filter { _state.value.users[it] == null }
-                            .distinct()
-                        if (missing.isNotEmpty()) {
-                            searchSteamUserUseCase(missing)
-                                .onEach { res ->
-                                    if (res is Result.Success) {
-                                        _state.update { state ->
-                                            val fetched = res.data.associateBy { it.steamId }
-                                            val notFound = missing.filter { it !in fetched.keys }.associateWith { null }
-                                            state.copy(users = state.users + fetched + notFound)
+        searchJob?.cancel()
+        loadJob = coroutineScope.launch {
+            getRaidsUseCase()
+                .onStart { _state.update { it.copy(isRefreshing = true, hasError = false) } }
+                .catch { e ->
+                    _state.update { it.copy(isRefreshing = false, hasError = true) }
+                    snackbarController.sendEvent(
+                        SnackbarEvent(
+                            message = e.toUserMessage(stringProvider)
+                                ?: stringProvider.get(SharedRes.strings.error_unknown),
+                            duration = Duration.SHORT,
+                        )
+                    )
+                }
+                .collectLatest { result ->
+                    ensureActive()
+                    when (result) {
+                        is Result.Success -> {
+                            val raids = result.data
+                            _state.update {
+                                it.copy(raids = raids, isRefreshing = false, hasError = false)
+                            }
+                            val missing = raids.flatMap { it.steamIds }
+                                .filter { _state.value.users[it] == null }
+                                .distinct()
+                            if (missing.isNotEmpty()) {
+                                searchJob?.cancel()
+                                searchJob = coroutineScope.launch {
+                                    searchSteamUserUseCase(missing)
+                                        .collectLatest { res ->
+                                            ensureActive()
+                                            if (res is Result.Success) {
+                                                _state.update { state ->
+                                                    val fetched = res.data.associateBy { it.steamId }
+                                                    val notFound = missing
+                                                        .filter { it !in fetched.keys }
+                                                        .associateWith { null }
+                                                    state.copy(users = state.users + fetched + notFound)
+                                                }
+                                            }
                                         }
-                                    }
                                 }
-                                .launchIn(coroutineScope)
+                            }
+                        }
+                        is Result.Error -> {
+                            _state.update { it.copy(isRefreshing = false, hasError = true) }
+                            snackbarController.sendEvent(
+                                SnackbarEvent(
+                                    message = result.exception.toUserMessage(stringProvider)
+                                        ?: stringProvider.get(SharedRes.strings.error_unknown),
+                                    duration = Duration.SHORT,
+                                )
+                            )
                         }
                     }
-                    is Result.Error -> {
-                        _state.update { it.copy(isRefreshing = false, hasError = true) }
-                        snackbarController.sendEvent(
-                            SnackbarEvent(
-                                message = result.exception.toUserMessage(stringProvider)
-                                    ?: stringProvider.get(SharedRes.strings.error_unknown),
-                                duration = Duration.SHORT
-                            )
-                        )
-                    }
                 }
-            }
-            .catch { e ->
-                _state.update { it.copy(isRefreshing = false, hasError = true) }
-                snackbarController.sendEvent(
-                    SnackbarEvent(
-                        message = e.toUserMessage(stringProvider)
-                            ?: stringProvider.get(SharedRes.strings.error_unknown),
-                        duration = Duration.SHORT
-                    )
-                )
-            }
-            .launchIn(coroutineScope)
+        }
     }
 
     private fun observeConnectivity() {
