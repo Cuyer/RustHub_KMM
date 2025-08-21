@@ -4,4 +4,5 @@ import pl.cuyer.rusthub.domain.model.Raid
 
 actual class AlarmScheduler {
     actual fun schedule(raid: Raid) {}
+    actual fun cancel(raid: Raid) {}
 }

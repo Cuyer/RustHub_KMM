@@ -26,4 +26,18 @@ actual class AlarmScheduler(private val context: Context) {
         val alarmClockInfo = AlarmManager.AlarmClockInfo(triggerAt, pendingIntent)
         alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
     }
+
+    actual fun cancel(raid: Raid) {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, RaidAlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            raid.id.hashCode(),
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE
+        )
+        if (pendingIntent != null) {
+            alarmManager.cancel(pendingIntent)
+        }
+    }
 }

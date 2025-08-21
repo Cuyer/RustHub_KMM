@@ -28,6 +28,7 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.navigation.UiEvent.*
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.common.Result
+import pl.cuyer.rusthub.util.AlarmScheduler
 
 class RaidSchedulerViewModel(
     observeRaidsUseCase: ObserveRaidsUseCase,
@@ -36,6 +37,7 @@ class RaidSchedulerViewModel(
     private val stringProvider: StringProvider,
     private val saveRaidUseCase: SaveRaidUseCase,
     private val searchSteamUserUseCase: SearchSteamUserUseCase,
+    private val alarmScheduler: AlarmScheduler,
 ) : BaseViewModel() {
 
     private var recentlyDeleted: List<Raid> = emptyList()
@@ -129,6 +131,7 @@ class RaidSchedulerViewModel(
         val raidsToDelete = _state.value.raids.filter { it.id in ids }
         coroutineScope.launch {
             recentlyDeleted = raidsToDelete
+            raidsToDelete.forEach { alarmScheduler.cancel(it) }
             deleteRaidsUseCase(ids)
             _state.update { it.copy(selectedIds = emptySet()) }
             snackbarController.sendEvent(
@@ -136,7 +139,11 @@ class RaidSchedulerViewModel(
                     message = stringProvider.get(SharedRes.strings.raids_deleted, ids.size),
                     action = SnackbarAction(stringProvider.get(SharedRes.strings.undo)) {
                         coroutineScope.launch {
-                            recentlyDeleted.forEach { saveRaidUseCase(it) }
+                            recentlyDeleted.forEach {
+                                saveRaidUseCase(it)
+                                alarmScheduler.cancel(it)
+                                alarmScheduler.schedule(it)
+                            }
                             recentlyDeleted = emptyList()
                         }
                     },
