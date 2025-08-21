@@ -215,58 +215,62 @@ fun RaidSchedulerScreen(
                     }
                 }
                 state.value.hasError -> {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        item("error") {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = "(×_×)",
-                                    style = MaterialTheme.typography.headlineLarge,
-                                    textAlign = TextAlign.Center,
-                                    fontSize = 96.sp
-                                )
-                                Text(
-                                    text = stringResource(SharedRes.strings.error_oops),
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    textAlign = TextAlign.Center
-                                )
+                    if (!state.value.isRefreshing) {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            item("error") {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = "(×_×)",
+                                        style = MaterialTheme.typography.headlineLarge,
+                                        textAlign = TextAlign.Center,
+                                        fontSize = 96.sp
+                                    )
+                                    Text(
+                                        text = stringResource(SharedRes.strings.error_oops),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
                             }
                         }
                     }
                 }
                 raids.isEmpty() -> {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        item("empty") {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = "( •_•)?",
-                                    style = MaterialTheme.typography.headlineLarge,
-                                    textAlign = TextAlign.Center,
-                                    fontSize = 96.sp
-                                )
-                                val message = if (!state.value.isConnected) {
-                                    stringResource(SharedRes.strings.no_raids_available_offline)
-                                } else {
-                                    stringResource(SharedRes.strings.no_raids_available)
+                    if (!state.value.isRefreshing) {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            item("empty") {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = "( •_•)?",
+                                        style = MaterialTheme.typography.headlineLarge,
+                                        textAlign = TextAlign.Center,
+                                        fontSize = 96.sp
+                                    )
+                                    val message = if (!state.value.isConnected) {
+                                        stringResource(SharedRes.strings.no_raids_available_offline)
+                                    } else {
+                                        stringResource(SharedRes.strings.no_raids_available)
+                                    }
+                                    Text(
+                                        text = message,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        textAlign = TextAlign.Center
+                                    )
                                 }
-                                Text(
-                                    text = message,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    textAlign = TextAlign.Center
-                                )
                             }
                         }
                     }
@@ -393,7 +397,11 @@ private fun RaidItem(
                         Checkbox(checked = selected, onCheckedChange = { onLongClick() })
                     }
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(stringResource(SharedRes.strings.raid_data), style = MaterialTheme.typography.titleSmall)
+                        Text(
+                            text = stringResource(SharedRes.strings.raid_data),
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Spacer(modifier = Modifier.height(spacing.small))
                         Text(raid.name, style = MaterialTheme.typography.titleMedium)
                         Text(
                             formatLocalDateTime(raid.dateTime),
@@ -405,11 +413,15 @@ private fun RaidItem(
                         )
                         if (raid.steamIds.isNotEmpty()) {
                             Spacer(modifier = Modifier.height(spacing.small))
-                            Text(stringResource(SharedRes.strings.targets), style = MaterialTheme.typography.titleSmall)
+                            Text(
+                                text = stringResource(SharedRes.strings.targets),
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                            Spacer(modifier = Modifier.height(spacing.small))
                             FlowRow(
                                 maxItemsInEachRow = 3,
                                 maxLines = 2,
-                                horizontalArrangement = Arrangement.spacedBy(spacing.small),
+                                horizontalArrangement = Arrangement.spacedBy(spacing.small, Alignment.CenterHorizontally),
                                 verticalArrangement = Arrangement.spacedBy(spacing.small)
                             ) {
                                 raid.steamIds.take(6).forEach { id ->
@@ -417,7 +429,9 @@ private fun RaidItem(
                                     if (user != null) {
                                         Column(
                                             horizontalAlignment = Alignment.CenterHorizontally,
-                                            modifier = Modifier.width(100.dp)
+                                            modifier = Modifier
+                                                .height(IntrinsicSize.Max)
+                                                .width(100.dp)
                                         ) {
                                             SubcomposeAsyncImage(
                                                 modifier = Modifier.size(48.dp),
