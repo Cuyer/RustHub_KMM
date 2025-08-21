@@ -4,28 +4,41 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.flow.collect
 import coil3.compose.SubcomposeAsyncImage
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.designsystem.AppButton
+import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import pl.cuyer.rusthub.android.designsystem.AppTextField
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
@@ -38,41 +51,99 @@ import pl.cuyer.rusthub.presentation.features.raid.RaidFormState
 fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Unit) {
     if (!state.searchDialogVisible) return
 
-    AlertDialog(onDismissRequest = { onAction(RaidFormAction.OnDismissSearch) }) {
-        Column(
-            modifier = Modifier.padding(spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(spacing.medium)
+    BasicAlertDialog(
+        onDismissRequest = { onAction(RaidFormAction.OnDismissSearch) },
+        properties = DialogProperties()
+    ) {
+        Surface(
+            shape = MaterialTheme.shapes.extraLarge,
+            color = MaterialTheme.colorScheme.surface,
+            tonalElevation = 6.dp,
         ) {
-            val queryState = rememberTextFieldState(state.searchQuery)
-            LaunchedEffect(state.searchQuery) {
-                queryState.setTextAndPlaceCursorAtEnd(state.searchQuery)
-            }
-            LaunchedEffect(queryState) {
-                snapshotFlow { queryState.text.toString() }
-                    .collect { onAction(RaidFormAction.OnSearchQueryChange(it)) }
-            }
-            AppTextField(
-                textFieldState = queryState,
-                labelText = stringResource(SharedRes.strings.steam_id),
-                placeholderText = stringResource(SharedRes.strings.enter_steam_id_or_name),
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Search,
-                onSubmit = { onAction(RaidFormAction.OnSearchUser) },
-                lineLimits = TextFieldLineLimits.SingleLine,
-                maxLength = 50,
-                showCharacterCounter = true
-            )
-            Button(onClick = { onAction(RaidFormAction.OnSearchUser) }) {
-                Text(stringResource(SharedRes.strings.search))
-            }
-            when {
-                state.searchLoading -> CircularProgressIndicator()
-                state.foundUser != null -> {
-                    SteamUserCard(user = state.foundUser!!) {
-                        onAction(RaidFormAction.OnUserSelected(state.foundUser!!))
+            Column(
+                modifier = Modifier.padding(spacing.medium),
+                verticalArrangement = Arrangement.spacedBy(spacing.medium)
+            ) {
+                val queryState = rememberTextFieldState(state.searchQuery)
+                LaunchedEffect(state.searchQuery) {
+                    queryState.setTextAndPlaceCursorAtEnd(state.searchQuery)
+                }
+                LaunchedEffect(queryState) {
+                    snapshotFlow { queryState.text.toString() }
+                        .collect { onAction(RaidFormAction.OnSearchQueryChange(it)) }
+                }
+                Text(
+                    text = "Search",
+                    fontWeight = FontWeight.SemiBold
+                )
+                AppTextField(
+                    textFieldState = queryState,
+                    labelText = stringResource(SharedRes.strings.steam_id),
+                    placeholderText = stringResource(SharedRes.strings.enter_steam_id_or_name),
+                    keyboardType = KeyboardType.NumberPassword,
+                    imeAction = ImeAction.Search,
+                    onSubmit = { onAction(RaidFormAction.OnSearchUser) },
+                    lineLimits = TextFieldLineLimits.SingleLine,
+                    maxLength = 50,
+                    showCharacterCounter = true
+                )
+                when {
+                    state.searchLoading -> {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+                    state.foundUser != null -> {
+                        SteamUserCard(user = state.foundUser!!) {
+                            onAction(RaidFormAction.OnUserSelected(state.foundUser!!))
+                        }
+                    }
+
+                    state.searchNotFound -> {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(stringResource(SharedRes.strings.no_user_found))
+                        }
                     }
                 }
-                state.searchNotFound -> Text(stringResource(SharedRes.strings.no_user_found))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(spacing.medium, Alignment.End)
+                ) {
+                    TextButton(
+                        modifier = Modifier
+                            .height(48.dp)
+                            .wrapContentWidth(),
+                        shape = MaterialTheme.shapes.extraSmall,
+                        onClick = {
+                            onAction(RaidFormAction.OnDismissSearch)
+                        }
+                    ) {
+                        Text(stringResource(SharedRes.strings.cancel))
+                    }
+                    Button(
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .height(48.dp),
+                        shape = MaterialTheme.shapes.extraSmall,
+                        colors = ButtonDefaults.elevatedButtonColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                            contentColor = contentColorFor(MaterialTheme.colorScheme.surfaceContainer)
+                        ),
+                        onClick = {
+                            onAction(RaidFormAction.OnSearchUser)
+                        }
+                    ) {
+                        Text(stringResource(SharedRes.strings.search))
+                    }
+                }
             }
         }
     }
@@ -94,10 +165,27 @@ private fun SteamUserCard(user: SteamUser, onClick: () -> Unit) {
                 contentScale = ContentScale.Crop
             )
             Column(verticalArrangement = Arrangement.spacedBy(spacing.small)) {
+                val offline = "Offline"
+                val online = stringResource(SharedRes.strings.online)
+                val busy = "Busy"
+                val away = "Away"
+                val snooze = "Snooze"
+                val lookingToTrade = "Looking to trade"
+                val lookingToPlay = "Looking to play"
+                val unknown = "Unknown"
                 Text(user.personaName, style = MaterialTheme.typography.titleMedium)
                 Text(user.steamId, style = MaterialTheme.typography.bodyMedium)
                 Text(
-                    "State: ${user.personaState}",
+                    text = when(user.personaState) {
+                        0 -> offline
+                        1 -> online
+                        2 -> busy
+                        3 -> away
+                        4 -> snooze
+                        5 -> lookingToTrade
+                        6 -> lookingToPlay
+                        else -> unknown
+                    },
                     color = personaStateColor(user.personaState),
                     style = MaterialTheme.typography.bodyMedium
                 )

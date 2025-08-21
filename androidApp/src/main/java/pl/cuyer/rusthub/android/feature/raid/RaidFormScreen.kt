@@ -1,7 +1,5 @@
 package pl.cuyer.rusthub.android.feature.raid
 
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,8 +15,11 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -27,16 +28,24 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -46,6 +55,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.AppButton
+import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import pl.cuyer.rusthub.android.designsystem.AppTextField
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
@@ -79,37 +89,17 @@ fun RaidFormScreen(
             .collect { onAction(RaidFormAction.OnDescriptionChange(it)) }
     }
 
-    SteamUserSearchDialog(state.value, onAction)
-
     val calendar = remember { Calendar.getInstance() }
-    val selectedDate = remember { mutableStateOf(state.value.dateTime.substringBefore(' ')) }
-    val timePicker = remember {
-        TimePickerDialog(
-            context,
-            { _, hour, minute ->
-                onAction(
-                    RaidFormAction.OnDateTimeChange(
-                        "${selectedDate.value} %02d:%02d".format(hour, minute)
-                    )
-                )
-            },
-            calendar.get(Calendar.HOUR_OF_DAY),
-            calendar.get(Calendar.MINUTE),
-            true
-        )
-    }
-    val datePicker = remember {
-        DatePickerDialog(
-            context,
-            { _, year, month, day ->
-                selectedDate.value = "%04d-%02d-%02d".format(year, month + 1, day)
-                timePicker.show()
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-    }
+    var selectedDate by remember { mutableStateOf(state.value.dateTime.substringBefore(' ')) }
+
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
+    val timePickerState = rememberTimePickerState(
+        initialHour = calendar.get(Calendar.HOUR_OF_DAY),
+        initialMinute = calendar.get(Calendar.MINUTE),
+        is24Hour = true
+    )
 
     Scaffold(
         topBar = {
@@ -137,11 +127,69 @@ fun RaidFormScreen(
                 .padding(spacing.medium)
                 .fillMaxSize()
         ) {
+            SteamUserSearchDialog(state.value, onAction)
+
+            if (showDatePicker) {
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    confirmButton = {
+                        AppTextButton(onClick = {
+                            val millis = datePickerState.selectedDateMillis
+                            if (millis != null) {
+                                val picked = Calendar.getInstance().apply { timeInMillis = millis }
+                                selectedDate = "%04d-%02d-%02d".format(
+                                    picked.get(Calendar.YEAR),
+                                    picked.get(Calendar.MONTH) + 1,
+                                    picked.get(Calendar.DAY_OF_MONTH)
+                                )
+                                showTimePicker = true
+                            }
+                            showDatePicker = false
+                        }) { Text("OK") }
+                    },
+                    dismissButton = {
+                        AppTextButton(onClick = { showDatePicker = false }) {
+                            Text(stringResource(SharedRes.strings.cancel))
+                        }
+                    }
+                ) {
+                    DatePicker(state = datePickerState)
+                }
+            }
+
+            if (showTimePicker) {
+                TimePickerDialog(
+                    onDismissRequest = { showTimePicker = false },
+                    confirmButton = {
+                        AppTextButton(onClick = {
+                            showTimePicker = false
+                            onAction(
+                                RaidFormAction.OnDateTimeChange(
+                                    "$selectedDate %02d:%02d".format(
+                                        timePickerState.hour,
+                                        timePickerState.minute
+                                    )
+                                )
+                            )
+                        }) { Text("OK") }
+                    },
+                    title = { Text("Select Time") },
+                    dismissButton = {
+                        AppTextButton(onClick = { showTimePicker = false }) {
+                            Text(stringResource(SharedRes.strings.cancel))
+                        }
+                    }
+                ) {
+                    TimePicker(state = timePickerState)
+                }
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(spacing.medium)
             ) {
+                val focusManager = LocalFocusManager.current
                 AppTextField(
                     modifier = Modifier.fillMaxWidth(),
                     textFieldState = nameState,
@@ -152,16 +200,23 @@ fun RaidFormScreen(
                     isError = state.value.nameError,
                     errorText = stringResource(SharedRes.strings.required),
                     maxLength = 50,
-                    showCharacterCounter = true
+                    showCharacterCounter = true,
+                    focusManager = focusManager
                 )
                 OutlinedTextField(
                     value = state.value.dateTime,
+                    trailingIcon = { Icon(Icons.Default.CalendarToday, contentDescription = null) },
                     onValueChange = {},
                     label = { Text(stringResource(SharedRes.strings.raid_date_time)) },
                     readOnly = true,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { datePicker.show() }
+                        .onFocusEvent {
+                            if (it.isFocused) {
+                                showDatePicker = true
+                                focusManager.clearFocus()
+                            }
+                        }
                 )
                 OutlinedTextField(
                     value = state.value.steamId,
@@ -170,9 +225,15 @@ fun RaidFormScreen(
                     readOnly = true,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onAction(RaidFormAction.OnSelectTargetClick) }
+                        .onFocusEvent {
+                            if (it.isFocused) {
+                                onAction(RaidFormAction.OnSelectTargetClick)
+                                focusManager.clearFocus()
+                            }
+                        }
                 )
                 AppTextField(
+                    focusManager = focusManager,
                     modifier = Modifier.fillMaxWidth(),
                     textFieldState = descriptionState,
                     labelText = stringResource(SharedRes.strings.description),

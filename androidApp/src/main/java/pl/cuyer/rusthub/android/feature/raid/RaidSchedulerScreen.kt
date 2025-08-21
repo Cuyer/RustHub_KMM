@@ -153,6 +153,8 @@ fun RaidSchedulerScreen(
                     onClick = {
                         if (selectionMode) {
                             onAction(RaidSchedulerAction.OnRaidLongClick(raid.id))
+                        } else {
+                            onAction(RaidSchedulerAction.OnNavigateToRaid(raid))
                         }
                     },
                     onDismiss = { onAction(RaidSchedulerAction.OnRaidSwiped(raid.id)) }

@@ -23,6 +23,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.presentation.navigation.RaidForm
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import pl.cuyer.rusthub.presentation.navigation.UiEvent.*
 import pl.cuyer.rusthub.util.StringProvider
 
 class RaidSchedulerViewModel(
@@ -55,18 +56,30 @@ class RaidSchedulerViewModel(
     fun onAction(action: RaidSchedulerAction) {
         when (action) {
             RaidSchedulerAction.OnAddClick -> coroutineScope.launch {
-                _uiEvent.send(UiEvent.Navigate(RaidForm()))
+                _uiEvent.send(Navigate(RaidForm()))
             }
             is RaidSchedulerAction.OnRaidLongClick -> toggleSelection(action.id)
             is RaidSchedulerAction.OnRaidSwiped -> deleteRaids(listOf(action.id))
             is RaidSchedulerAction.OnMoveRaid -> moveRaid(action.from, action.to)
             RaidSchedulerAction.OnDeleteSelected -> deleteRaids(_state.value.selectedIds.toList())
-            RaidSchedulerAction.OnEditSelected -> coroutineScope.launch {
-                val raid = _state.value.raids.firstOrNull { it.id in _state.value.selectedIds }
-                if (raid != null) {
-                    _uiEvent.send(UiEvent.Navigate(RaidForm(raid)))
-                }
+            RaidSchedulerAction.OnEditSelected -> editSelected()
+
+            is RaidSchedulerAction.OnNavigateToRaid -> navigateToRaid(raid = action.raid)
+        }
+    }
+
+    private fun editSelected() {
+        coroutineScope.launch {
+            val raid = _state.value.raids.firstOrNull { it.id in _state.value.selectedIds }
+            if (raid != null) {
+                _uiEvent.send(Navigate(RaidForm(raid)))
             }
+        }
+    }
+
+    private fun navigateToRaid(raid: Raid) {
+        coroutineScope.launch {
+            _uiEvent.send(Navigate(RaidForm(raid)))
         }
     }
 
