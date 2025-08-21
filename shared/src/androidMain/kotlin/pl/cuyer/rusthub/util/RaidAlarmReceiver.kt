@@ -15,9 +15,7 @@ class RaidAlarmReceiver : BroadcastReceiver() {
         val notification = NotificationCompat.Builder(context, NotificationPresenter.DEFAULT_CHANNEL_ID)
             .setSmallIcon(getImageByFileName("rusthub_notification_icon").drawableResId)
             .setContentTitle(SharedRes.strings.raid_notification_title.getString(context))
-            .setContentText(
-                SharedRes.strings.raid_notification_body.getString(context, name)
-            )
+            .setContentText(context.getString(SharedRes.strings.raid_notification_body.resourceId, name))
             .setAutoCancel(true)
             .build()
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

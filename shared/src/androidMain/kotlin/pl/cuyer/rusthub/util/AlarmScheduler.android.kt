@@ -7,7 +7,9 @@ import android.content.Intent
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import pl.cuyer.rusthub.domain.model.Raid
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 actual class AlarmScheduler(private val context: Context) {
     actual fun schedule(raid: Raid) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager

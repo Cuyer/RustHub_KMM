@@ -45,7 +45,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unuser.dp
+import androidx.compose.ui.unit.dp
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import pl.cuyer.rusthub.SharedRes
@@ -333,7 +333,7 @@ private fun RaidItem(
                                         .height(16.dp)
                                         .shimmer(),
                                 )
-                                Spacer(modifier = Modifier.height(spacing.extraSmall))
+                                Spacer(modifier = Modifier.height(spacing.xsmall))
                                 Box(
                                     modifier = Modifier
                                         .width(60.dp)
