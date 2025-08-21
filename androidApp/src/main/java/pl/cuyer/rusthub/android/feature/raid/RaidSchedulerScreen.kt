@@ -323,16 +323,19 @@ private fun RaidItem(
             Box(
                 Modifier
                     .fillMaxSize()
-                    .padding(horizontal = spacing.medium)
+                    .padding(horizontal = spacing.medium + 1.dp)
                     .clip( MaterialTheme.shapes.extraSmall)
                     .background(MaterialTheme.colorScheme.error, shape = MaterialTheme.shapes.extraSmall),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = stringResource(SharedRes.strings.delete),
-                    tint = MaterialTheme.colorScheme.onError
-                )
+                Row {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = stringResource(SharedRes.strings.delete),
+                        tint = MaterialTheme.colorScheme.onError
+                    )
+                    Spacer(modifier = Modifier.width(spacing.medium))
+                }
             }
         },
         onDismiss = {
