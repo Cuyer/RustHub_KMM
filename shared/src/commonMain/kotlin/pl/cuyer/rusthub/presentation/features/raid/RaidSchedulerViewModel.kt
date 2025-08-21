@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -188,7 +189,8 @@ class RaidSchedulerViewModel(
         loadJob = coroutineScope.launch {
             getRaidsUseCase()
                 .onStart { _state.update { it.copy(isRefreshing = true, hasError = false) } }
-                .catch { e ->
+                .onCompletion { _state.update { it.copy(isRefreshing = false, hasError = false) } }
+                .catchAndLog { e ->
                     _state.update { it.copy(isRefreshing = false, hasError = true) }
                     snackbarController.sendEvent(
                         SnackbarEvent(
@@ -217,7 +219,8 @@ class RaidSchedulerViewModel(
                                             ensureActive()
                                             if (res is Result.Success) {
                                                 _state.update { state ->
-                                                    val fetched = res.data.associateBy { it.steamId }
+                                                    val fetched =
+                                                        res.data.associateBy { it.steamId }
                                                     val notFound = missing
                                                         .filter { it !in fetched.keys }
                                                         .associateWith { null }
@@ -228,6 +231,7 @@ class RaidSchedulerViewModel(
                                 }
                             }
                         }
+
                         is Result.Error -> {
                             _state.update { it.copy(isRefreshing = false, hasError = true) }
                             snackbarController.sendEvent(
@@ -240,6 +244,7 @@ class RaidSchedulerViewModel(
                         }
                     }
                 }
+        }
     }
 
     private fun observeConnectivity() {
