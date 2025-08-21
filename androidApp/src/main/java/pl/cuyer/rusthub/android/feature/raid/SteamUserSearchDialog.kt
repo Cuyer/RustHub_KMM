@@ -23,6 +23,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -59,7 +60,7 @@ import pl.cuyer.rusthub.presentation.features.raid.RaidFormState
 import pl.cuyer.rusthub.util.formatLocalDateTime
 import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Unit) {
     if (!state.searchDialogVisible) return
@@ -87,6 +88,7 @@ fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Un
                 }
                 Text(
                     text = stringResource(SharedRes.strings.search),
+                    style = MaterialTheme.typography.titleLargeEmphasized,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(stringResource(SharedRes.strings.search_players_info))
@@ -98,7 +100,7 @@ fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Un
                     imeAction = ImeAction.Search,
                     onSubmit = { onAction(RaidFormAction.OnSearchUser) },
                     lineLimits = TextFieldLineLimits.SingleLine,
-                    maxLength = 300,
+                    maxLength = 120,
                     showCharacterCounter = true,
                     requestFocus = true
                 )
@@ -177,6 +179,7 @@ private fun SteamUserCard(user: SteamUser, selected: Boolean, onClick: () -> Uni
                 color = if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
                 shape = CardDefaults.elevatedShape
             ),
+        shape = MaterialTheme.shapes.extraSmall,
         onClick = onClick
     ) {
         Row(
