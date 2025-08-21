@@ -168,7 +168,7 @@ class RaidSchedulerViewModel(
                                 }
                             }
                         },
-                        duration = Duration.SHORT,
+                        duration = Duration.LONG,
                     )
                 )
             }.onFailure { e ->
