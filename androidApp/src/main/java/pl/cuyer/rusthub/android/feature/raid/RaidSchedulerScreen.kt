@@ -403,6 +403,14 @@ private fun RaidItem(
                         )
                         Spacer(modifier = Modifier.height(spacing.small))
                         Text(raid.name, style = MaterialTheme.typography.titleMedium)
+                        raid.description?.takeIf { it.isNotBlank() }?.let { desc ->
+                            Text(
+                                desc,
+                                style = MaterialTheme.typography.bodyMedium,
+                                maxLines = 3,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
                         Text(
                             formatLocalDateTime(raid.dateTime),
                             style = MaterialTheme.typography.bodyMedium
@@ -521,42 +529,58 @@ private fun RaidItem(
 private fun RaidItemShimmer(modifier: Modifier = Modifier) {
     ElevatedCard(
         shape = RectangleShape,
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(spacing.medium),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(spacing.medium)
+            verticalArrangement = Arrangement.spacedBy(spacing.small),
         ) {
             Box(
                 modifier = Modifier
-                    .size(48.dp)
+                    .fillMaxWidth(0.3f)
+                    .height(20.dp)
                     .clip(MaterialTheme.shapes.extraSmall)
                     .shimmer()
-                    .clearAndSetSemantics {}
+                    .clearAndSetSemantics {},
             )
-            Column(
-                verticalArrangement = Arrangement.spacedBy(spacing.small),
-                modifier = Modifier.fillMaxWidth()
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.6f)
+                    .height(16.dp)
+                    .clip(MaterialTheme.shapes.extraSmall)
+                    .shimmer()
+                    .clearAndSetSemantics {},
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.4f)
+                    .height(16.dp)
+                    .clip(MaterialTheme.shapes.extraSmall)
+                    .shimmer()
+                    .clearAndSetSemantics {},
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .height(16.dp)
+                    .clip(MaterialTheme.shapes.extraSmall)
+                    .shimmer()
+                    .clearAndSetSemantics {},
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(spacing.small),
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.6f)
-                        .height(20.dp)
-                        .clip(MaterialTheme.shapes.extraSmall)
-                        .shimmer()
-                        .clearAndSetSemantics {}
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.4f)
-                        .height(16.dp)
-                        .clip(MaterialTheme.shapes.extraSmall)
-                        .shimmer()
-                        .clearAndSetSemantics {}
-                )
+                repeat(3) {
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(MaterialTheme.shapes.extraSmall)
+                            .shimmer()
+                            .clearAndSetSemantics {},
+                    )
+                }
             }
         }
     }
