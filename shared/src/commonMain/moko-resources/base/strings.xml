@@ -248,6 +248,7 @@
     <string name="entities">Entities</string>
     <string name="coming_soon">Coming soon</string>
     <string name="search_items_check_details_how_to_craft_drop_and_raid_costs">Search items and check their details, crafting, drops and raid costs.</string>
+    <string name="plan_raids_get_notified_and_see_targets_status">Plan raids, get notified, and see targets' online status.</string>
     <string name="see_server_info_like_time_of_last_wipe_map_ranking_and_more">See server info like time of last wipe, map, ranking and more.</string>
     <string name="seed" translatable="false">Seed</string>
     <string name="send_email">Send email</string>
@@ -394,7 +395,7 @@
     <string name="monument_query_cannot_be_empty">Enter the monument name.</string>
     <string name="error_network">Network error. Please check your connection.</string>
     <string name="offline_cached_servers_info">Network unavailable. Showing cached servers.</string>
-    <string name="offline">No internet connection.</string>
+    <string name="no_connection">No internet connection.</string>
     <string name="offline_cached_items_info">Network unavailable. Showing cached items.</string>
     <string name="subscription_disabled">Subscriptions are currently disabled.</string>
     <string name="connect_manage_subscription">Connect to the internet to manage your subscription.</string>
@@ -465,6 +466,7 @@
     <string name="raw_material_cost">Raw Material Cost</string>
     <string name="using_mixing_table">Using mixing table x%1$d</string>
     <string name="time_to_raid">Time to Raid: %1$s</string>
+    <string name="time_to_raid_now">It's time to raid!</string>
     <string name="hp">HP</string>
     <string name="update_ready">Update ready to install</string>
     <string name="error_image_emote">(×_×)</string>
@@ -512,12 +514,14 @@
     <string name="raid_name">Name</string>
     <string name="raid_date_time">Date and Time</string>
     <string name="raid_target">Target Steam IDs</string>
-    <string name="steam_id">SteamIDs</string>
+    <string name="steam_id">Steam IDs</string>
     <string name="enter_steam_id_or_name">Enter Steam IDs</string>
     <string name="search_players_info">Search up to 4 players separated by ","</string>
+    <string name="raid_form_info">Fill in the form to get a raid notification and view targets' online status.</string>
     <string name="add">Add</string>
     <string name="no_user_found">No user found</string>
     <string name="new_raid">New Raid</string>
+    <string name="edit_raid">Edit Raid</string>
     <string name="required">Required</string>
     <string name="save">Save</string>
     <string name="edit">Edit</string>
@@ -538,6 +542,8 @@
     <string name="hours_short">h</string>
     <string name="minutes_short">m</string>
     <string name="raid_notification_scheduled">You will be notified about the raid at %1$s</string>
+    <string name="exact_alarm_permission_required">Enable exact alarms to save raid.</string>
+    <string name="raid_past_error">Cannot schedule raid in the past.</string>
     <string name="raid_notification_title">Raid reminder</string>
     <string name="raid_notification_body">%1$s raid is starting now</string>
     <string name="raid_date_in_past">Please select a future date</string>
