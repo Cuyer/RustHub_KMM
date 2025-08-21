@@ -58,8 +58,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.theme.RustHubTheme
@@ -78,6 +80,21 @@ import pl.cuyer.rusthub.domain.model.Region
 import pl.cuyer.rusthub.domain.model.CountryRegionMapper
 import pl.cuyer.rusthub.util.StringProvider
 
+private val filterDropdownSaver = Saver<List<FilterDropdownOption>, String>(
+    save = { Json.encodeToString(ListSerializer(FilterDropdownOption.serializer()), it) },
+    restore = { Json.decodeFromString(ListSerializer(FilterDropdownOption.serializer()), it) }
+)
+
+private val filterCheckboxSaver = Saver<List<FilterCheckboxOption>, String>(
+    save = { Json.encodeToString(ListSerializer(FilterCheckboxOption.serializer()), it) },
+    restore = { Json.decodeFromString(ListSerializer(FilterCheckboxOption.serializer()), it) }
+)
+
+private val filterRangeSaver = Saver<List<FilterRangeOption>, String>(
+    save = { Json.encodeToString(ListSerializer(FilterRangeOption.serializer()), it) },
+    restore = { Json.decodeFromString(ListSerializer(FilterRangeOption.serializer()), it) }
+)
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FilterBottomSheet(
@@ -89,14 +106,23 @@ fun FilterBottomSheet(
     onDismissAndRefresh: () -> Unit,
     onAction: (ServerAction) -> Unit
 ) {
-    // Use rememberSaveable with manual restoration for navigation or recomposition
-    var localLists by rememberSaveable(inputs = arrayOf(filters?.lists)) {
+    // Use rememberSaveable with custom savers to avoid parcel errors
+    var localLists by rememberSaveable(
+        saver = filterDropdownSaver,
+        inputs = arrayOf(filters?.lists)
+    ) {
         mutableStateOf(filters?.lists ?: emptyList())
     }
-    var localCheckboxes by rememberSaveable(inputs = arrayOf(filters?.checkboxes)) {
+    var localCheckboxes by rememberSaveable(
+        saver = filterCheckboxSaver,
+        inputs = arrayOf(filters?.checkboxes)
+    ) {
         mutableStateOf(filters?.checkboxes ?: emptyList())
     }
-    var localRanges by rememberSaveable(inputs = arrayOf(filters?.ranges)) {
+    var localRanges by rememberSaveable(
+        saver = filterRangeSaver,
+        inputs = arrayOf(filters?.ranges)
+    ) {
         mutableStateOf(filters?.ranges ?: emptyList())
     }
 
