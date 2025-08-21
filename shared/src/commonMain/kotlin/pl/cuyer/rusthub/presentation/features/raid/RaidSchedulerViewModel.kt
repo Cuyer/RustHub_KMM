@@ -6,6 +6,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -235,7 +236,6 @@ class RaidSchedulerViewModel(
         loadJob = coroutineScope.launch {
             getRaidsUseCase()
                 .onStart { _state.update { it.copy(isRefreshing = true, hasError = false) } }
-                .onCompletion { _state.update { it.copy(isRefreshing = false) } }
                 .catchAndLog { e ->
                     _state.update { it.copy(isRefreshing = false, hasError = true) }
                     snackbarController.sendEvent(
@@ -250,6 +250,7 @@ class RaidSchedulerViewModel(
                     ensureActive()
                     when (result) {
                         is Result.Success -> {
+                            delay(300)
                             _state.update { it.copy(isRefreshing = false, hasError = false) }
                         }
 
