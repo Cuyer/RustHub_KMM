@@ -13,7 +13,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Clock
+import kotlinx.datetime.Clock
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
@@ -31,9 +31,6 @@ import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.DeniedException
 import dev.icerock.moko.permissions.DeniedAlwaysException
 import dev.icerock.moko.permissions.notifications.REMOTE_NOTIFICATION
-import kotlin.time.ExperimentalTime
-
-@OptIn(ExperimentalTime::class)
 class RaidFormViewModel(
     raid: Raid?,
     private val saveRaidUseCase: SaveRaidUseCase,
@@ -145,9 +142,10 @@ class RaidFormViewModel(
         coroutineScope.launch {
             saveRaidUseCase(raid)
             if (dateTime != initialDateTime) {
-                try {
+                runCatching {
                     permissionsController.providePermission(Permission.REMOTE_NOTIFICATION)
                     alarmScheduler.schedule(raid)
+                }.onSuccess {
                     snackbarController.sendEvent(
                         SnackbarEvent(
                             message = stringProvider.get(
@@ -156,9 +154,11 @@ class RaidFormViewModel(
                             )
                         )
                     )
-                } catch (_: DeniedAlwaysException) {
-                    permissionsController.openAppSettings()
-                } catch (_: DeniedException) {
+                }.onFailure { error ->
+                    when (error) {
+                        is DeniedAlwaysException -> permissionsController.openAppSettings()
+                        is DeniedException -> Unit
+                    }
                 }
             }
             _uiEvent.send(UiEvent.NavigateUp)

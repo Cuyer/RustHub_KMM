@@ -63,8 +63,12 @@ import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.presentation.features.raid.RaidFormAction
 import pl.cuyer.rusthub.presentation.features.raid.RaidFormState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
-import java.util.Calendar
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.toLocalDateTime
 import pl.cuyer.rusthub.util.formatLocalDateTime
 import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.compose.BindEffect
@@ -97,18 +101,16 @@ fun RaidFormScreen(
             .collect { onAction(RaidFormAction.OnDescriptionChange(it)) }
     }
 
-    val calendar = remember { Calendar.getInstance() }
+    val now = remember { Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()) }
     var selectedDate by remember { mutableStateOf(state.value.dateTime.substringBefore(' ')) }
 
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
     val todayUtc = remember {
-        Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC")).apply {
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }.timeInMillis
+        Clock.System.now()
+            .toLocalDateTime(TimeZone.UTC).date
+            .atStartOfDayIn(TimeZone.UTC)
+            .toEpochMilliseconds()
     }
     val datePickerState = rememberDatePickerState(
         selectableDates = object : SelectableDates {
@@ -116,8 +118,8 @@ fun RaidFormScreen(
         }
     )
     val timePickerState = rememberTimePickerState(
-        initialHour = calendar.get(Calendar.HOUR_OF_DAY),
-        initialMinute = calendar.get(Calendar.MINUTE),
+        initialHour = now.hour,
+        initialMinute = now.minute,
         is24Hour = true
     )
 
@@ -162,11 +164,12 @@ fun RaidFormScreen(
                         AppTextButton(onClick = {
                             val millis = datePickerState.selectedDateMillis
                             if (millis != null) {
-                                val picked = Calendar.getInstance().apply { timeInMillis = millis }
+                                val picked = Instant.fromEpochMilliseconds(millis)
+                                    .toLocalDateTime(TimeZone.currentSystemDefault()).date
                                 selectedDate = "%04d-%02d-%02d".format(
-                                    picked.get(Calendar.YEAR),
-                                    picked.get(Calendar.MONTH) + 1,
-                                    picked.get(Calendar.DAY_OF_MONTH)
+                                    picked.year,
+                                    picked.monthNumber,
+                                    picked.dayOfMonth
                                 )
                                 showTimePicker = true
                             }
