@@ -1,11 +1,13 @@
 package pl.cuyer.rusthub.android.feature.raid
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -28,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -35,8 +38,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.flow.collect
 import coil3.compose.SubcomposeAsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.designsystem.AppTextField
+import pl.cuyer.rusthub.android.designsystem.shimmer
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.SteamUser
@@ -157,10 +163,19 @@ private fun SteamUserCard(user: SteamUser, onClick: () -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(spacing.medium)
         ) {
             SubcomposeAsyncImage(
-                model = user.avatar,
-                contentDescription = null,
-                modifier = Modifier,
-                contentScale = ContentScale.Crop
+                modifier = Modifier.size(48.dp),
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(user.avatar)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "User avatar",
+                loading = {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .shimmer()
+                    )
+                }
             )
             Column(verticalArrangement = Arrangement.spacedBy(spacing.small)) {
                 val offline = stringResource(SharedRes.strings.offline)

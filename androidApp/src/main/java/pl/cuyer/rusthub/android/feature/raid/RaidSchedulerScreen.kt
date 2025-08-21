@@ -43,8 +43,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
@@ -58,6 +61,7 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
+import pl.cuyer.rusthub.android.designsystem.shimmer
 import kotlin.time.Clock
 import pl.cuyer.rusthub.util.formatLocalDateTime
 
@@ -282,7 +286,7 @@ private fun RaidItem(
                         ) {
                             Column(horizontalAlignment = Alignment.End) {
                                 Text(it.personaName, style = MaterialTheme.typography.bodyMedium)
-                                val offline = stringResource(SharedRes.strings.offline)
+                                val offline = "Offline"
                                 val online = stringResource(SharedRes.strings.online)
                                 val busy = stringResource(SharedRes.strings.busy)
                                 val away = stringResource(SharedRes.strings.away)
@@ -306,10 +310,19 @@ private fun RaidItem(
                                 )
                             }
                             SubcomposeAsyncImage(
-                                model = it.avatar,
-                                contentDescription = null,
-                                modifier = Modifier.size(40.dp),
-                                contentScale = ContentScale.Crop
+                                modifier = Modifier.size(48.dp),
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(it.avatar)
+                                    .crossfade(true)
+                                    .build(),
+                                contentDescription = "User avatar",
+                                loading = {
+                                    Box(
+                                        modifier = Modifier
+                                            .matchParentSize()
+                                            .shimmer()
+                                    )
+                                }
                             )
                         }
                     }
