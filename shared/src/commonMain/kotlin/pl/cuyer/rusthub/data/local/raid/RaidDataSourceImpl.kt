@@ -36,7 +36,7 @@ class RaidDataSourceImpl(
                     id = raid.id,
                     name = raid.name,
                     dateTime = raid.dateTime.toString(),
-                    target = raid.target,
+                    steamId = raid.steamId,
                     description = raid.description
                 )
             }

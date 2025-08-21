@@ -1,15 +1,16 @@
 package pl.cuyer.rusthub.domain.model
 
 import androidx.compose.runtime.Immutable
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
 @Serializable
 @Immutable
-data class Raid(
-    val id: String,
-    val name: String,
-    val dateTime: LocalDateTime,
+data class SteamUser(
     val steamId: String,
-    val description: String?
+    val avatar: String,
+    val personaName: String,
+    val personaState: Int,
+    val lastLogoff: Long?,
+    val gameId: String?
 )
+

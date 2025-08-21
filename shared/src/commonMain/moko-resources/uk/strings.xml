@@ -510,7 +510,12 @@
     <string name="raids">Raids</string>
     <string name="raid_name">Name</string>
     <string name="raid_date_time">Date and Time</string>
-    <string name="raid_target">Target</string>
+    <string name="raid_target">Target Steam ID</string>
+    <string name="steam_id">Steam ID</string>
+    <string name="enter_steam_id_or_name">Enter Steam ID or name</string>
+    <string name="no_user_found">No user found</string>
+    <string name="new_raid">New Raid</string>
+    <string name="required">Required</string>
     <string name="save">Save</string>
     <string name="edit">Edit</string>
     <string name="undo">Undo</string>

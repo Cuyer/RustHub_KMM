@@ -61,6 +61,8 @@ fun AppTextField(
     isError: Boolean = false,
     errorText: String? = null,
     maxLength: Int? = null,
+    lineLimits: TextFieldLineLimits = TextFieldLineLimits.SingleLine,
+    showCharacterCounter: Boolean = false,
     keyboardState: State<Boolean>? = null,
     focusManager: FocusManager? = null
 ) {
@@ -113,7 +115,7 @@ fun AppTextField(
     OutlinedTextField(
         modifier = if (requestFocus) modifier.focusRequester(focusRequester!!) else modifier,
         state = textFieldState,
-        lineLimits = TextFieldLineLimits.SingleLine,
+        lineLimits = lineLimits,
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.None,
             keyboardType = keyboardType,
@@ -142,9 +144,15 @@ fun AppTextField(
         inputTransformation = maxLength?.let { InputTransformation.maxLength(it) },
         suffix = suffix,
         isError = isError,
-        supportingText = if (isError && errorText != null) {
-            { Text(errorText) }
-        } else null
+        supportingText = when {
+            isError && errorText != null -> {
+                { Text(errorText) }
+            }
+            showCharacterCounter && maxLength != null -> {
+                { Text("${textFieldState.text.length}/$maxLength") }
+            }
+            else -> null
+        }
     )
 }
 

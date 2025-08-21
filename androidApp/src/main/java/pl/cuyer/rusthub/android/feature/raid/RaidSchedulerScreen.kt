@@ -7,13 +7,8 @@
 
 package pl.cuyer.rusthub.android.feature.raid
 
-import android.content.ClipData
-import android.view.DragAndDropPermissions
-import android.view.View
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -27,15 +22,12 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.draganddrop.dragAndDropSource
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -44,9 +36,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draganddrop.DragAndDropEvent
-import androidx.compose.ui.draganddrop.DragAndDropTarget
-import androidx.compose.ui.draganddrop.DragAndDropTransferData
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -54,40 +43,32 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import kotlin.time.Clock
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
 import pl.cuyer.rusthub.SharedRes
-import pl.cuyer.rusthub.android.designsystem.defaultFadeTransition
+import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.Raid
 import pl.cuyer.rusthub.presentation.features.raid.RaidSchedulerAction
 import pl.cuyer.rusthub.presentation.features.raid.RaidSchedulerState
+import pl.cuyer.rusthub.presentation.navigation.NavKey
+import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun RaidSchedulerScreen(
+    onNavigate: (NavKey) -> Unit,
     state: State<RaidSchedulerState>,
     onAction: (RaidSchedulerAction) -> Unit,
+    uiEvent: Flow<UiEvent>,
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ObserveAsEvents(uiEvent) { event ->
+        if (event is UiEvent.Navigate) onNavigate(event.destination)
+    }
+
     val listState = rememberLazyListState()
     val raids = state.value.raids
     val selectedIds = state.value.selectedIds
     val selectionMode = selectedIds.isNotEmpty()
-
-    if (state.value.showForm) {
-        ModalBottomSheet(
-            onDismissRequest = { onAction(RaidSchedulerAction.OnDismissForm) },
-            sheetState = sheetState
-        ) {
-            RaidForm(
-                raid = state.value.editingRaid,
-                onSave = { onAction(RaidSchedulerAction.OnSaveRaid(it)) }
-            )
-        }
-    }
 
     Scaffold(
         floatingActionButton = {
@@ -268,7 +249,7 @@ private fun RaidItem(
                     Column {
                         Text(raid.name, style = MaterialTheme.typography.titleMedium)
                         Text(raid.dateTime.toString(), style = MaterialTheme.typography.bodyMedium)
-                        Text(raid.target, style = MaterialTheme.typography.bodyMedium)
+                        Text(raid.steamId, style = MaterialTheme.typography.bodyMedium)
                         Text(
                             stringResource(SharedRes.strings.time_to_raid, timeLeft),
                             style = MaterialTheme.typography.bodyMedium
@@ -284,58 +265,3 @@ private fun RaidItem(
     )
 }
 
-@Composable
-private fun RaidForm(
-    raid: Raid?,
-    onSave: (Raid) -> Unit,
-) {
-    var name by remember { mutableStateOf(raid?.name.orEmpty()) }
-    var date by remember { mutableStateOf(raid?.dateTime.toString()) }
-    var target by remember { mutableStateOf(raid?.target.orEmpty()) }
-    var description by remember { mutableStateOf(raid?.description.orEmpty()) }
-
-    Column(modifier = Modifier.padding(16.dp)) {
-        OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text(stringResource(SharedRes.strings.raid_name)) }
-        )
-        OutlinedTextField(
-            value = date,
-            onValueChange = { date = it },
-            label = { Text(stringResource(SharedRes.strings.raid_date_time)) }
-        )
-        OutlinedTextField(
-            value = target,
-            onValueChange = { target = it },
-            label = { Text(stringResource(SharedRes.strings.raid_target)) }
-        )
-        OutlinedTextField(
-            value = description,
-            onValueChange = { description = it },
-            label = { Text(stringResource(SharedRes.strings.description)) }
-        )
-        Button(
-            onClick = {
-                val id = raid?.id ?: Clock.System.now().toEpochMilliseconds().toString()
-                val dateTime = try {
-                    LocalDateTime.parse(date)
-                } catch (e: Exception) {
-                    LocalDateTime.parse("1970-01-01T00:00")
-                }
-                onSave(
-                    Raid(
-                        id = id,
-                        name = name,
-                        dateTime = dateTime,
-                        target = target,
-                        description = description.ifBlank { null }
-                    )
-                )
-            },
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            Text(stringResource(SharedRes.strings.save))
-        }
-    }
-}

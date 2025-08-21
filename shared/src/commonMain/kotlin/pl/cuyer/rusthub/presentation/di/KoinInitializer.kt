@@ -33,6 +33,7 @@ import pl.cuyer.rusthub.data.network.notification.MessagingTokenClientImpl
 import pl.cuyer.rusthub.data.network.server.ServerClientImpl
 import pl.cuyer.rusthub.data.network.subscription.SubscriptionClientImpl
 import pl.cuyer.rusthub.data.network.user.UserRepositoryImpl
+import pl.cuyer.rusthub.data.network.steam.SteamRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.repository.auth.AuthRepository
 import pl.cuyer.rusthub.domain.repository.config.ConfigRepository
@@ -57,6 +58,7 @@ import pl.cuyer.rusthub.domain.repository.server.ServerRepository
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
 import pl.cuyer.rusthub.domain.repository.user.UserRepository
+import pl.cuyer.rusthub.domain.repository.steam.SteamRepository
 import pl.cuyer.rusthub.domain.usecase.AuthAnonymouslyUseCase
 import pl.cuyer.rusthub.domain.usecase.ChangePasswordUseCase
 import pl.cuyer.rusthub.domain.usecase.CheckEmailConfirmedUseCase
@@ -80,6 +82,7 @@ import pl.cuyer.rusthub.domain.usecase.GetItemDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetMonumentDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserPreferencesUseCase
+import pl.cuyer.rusthub.domain.usecase.GetSteamApiKeyUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
@@ -103,6 +106,7 @@ import pl.cuyer.rusthub.domain.usecase.ClearServerCacheUseCase
 import pl.cuyer.rusthub.domain.usecase.ObserveRaidsUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveRaidUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteRaidsUseCase
+import pl.cuyer.rusthub.domain.usecase.SearchSteamUserUseCase
 import pl.cuyer.rusthub.data.raid.RaidRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.server.ServerCacheDataSource
 import pl.cuyer.rusthub.data.local.cache.ServerCacheDataSourceImpl
@@ -160,6 +164,7 @@ val appModule = module {
     singleOf(::UserRepositoryImpl) bind UserRepository::class
     singleOf(::ConfigRepositoryImpl) bind ConfigRepository::class
     singleOf(::RaidRepositoryImpl) bind RaidRepository::class
+    singleOf(::SteamRepositoryImpl) bind SteamRepository::class
     single { EmailValidator(get()) }
     single { PasswordValidator(get()) }
     single { UsernameValidator(get()) }
@@ -169,6 +174,8 @@ val appModule = module {
     single { ObserveRaidsUseCase(get()) }
     single { SaveRaidUseCase(get()) }
     single { DeleteRaidsUseCase(get()) }
+    single { GetSteamApiKeyUseCase(get()) }
+    single { SearchSteamUserUseCase(get(), get()) }
     single { GetFiltersUseCase(get()) }
     single { SaveFiltersUseCase(get()) }
     single { SaveSearchQueryUseCase(get()) }

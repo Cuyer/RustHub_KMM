@@ -1,12 +1,15 @@
 package pl.cuyer.rusthub.presentation.features.raid
 
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
@@ -18,25 +21,29 @@ import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.presentation.navigation.RaidForm
+import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.StringProvider
 
 class RaidSchedulerViewModel(
     observeRaidsUseCase: ObserveRaidsUseCase,
-    private val saveRaidUseCase: SaveRaidUseCase,
     private val deleteRaidsUseCase: DeleteRaidsUseCase,
     private val snackbarController: SnackbarController,
     private val stringProvider: StringProvider,
+    private val saveRaidUseCase: SaveRaidUseCase,
 ) : BaseViewModel() {
 
     private var recentlyDeleted: List<Raid> = emptyList()
 
+    private val _uiEvent = Channel<UiEvent>(UNLIMITED)
+    val uiEvent = _uiEvent.receiveAsFlow()
+
     private val _state = MutableStateFlow(RaidSchedulerState())
-    val state = _state
-        .stateIn(
-            scope = coroutineScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = RaidSchedulerState()
-        )
+    val state = _state.stateIn(
+        scope = coroutineScope,
+        started = SharingStarted.WhileSubscribed(5_000L),
+        initialValue = RaidSchedulerState()
+    )
 
     init {
         observeRaidsUseCase()
@@ -47,19 +54,19 @@ class RaidSchedulerViewModel(
 
     fun onAction(action: RaidSchedulerAction) {
         when (action) {
-            RaidSchedulerAction.OnAddClick -> _state.update {
-                it.copy(showForm = true, editingRaid = null)
+            RaidSchedulerAction.OnAddClick -> coroutineScope.launch {
+                _uiEvent.send(UiEvent.Navigate(RaidForm()))
             }
             is RaidSchedulerAction.OnRaidLongClick -> toggleSelection(action.id)
             is RaidSchedulerAction.OnRaidSwiped -> deleteRaids(listOf(action.id))
             is RaidSchedulerAction.OnMoveRaid -> moveRaid(action.from, action.to)
             RaidSchedulerAction.OnDeleteSelected -> deleteRaids(_state.value.selectedIds.toList())
-            RaidSchedulerAction.OnEditSelected -> {
+            RaidSchedulerAction.OnEditSelected -> coroutineScope.launch {
                 val raid = _state.value.raids.firstOrNull { it.id in _state.value.selectedIds }
-                _state.update { it.copy(showForm = true, editingRaid = raid) }
+                if (raid != null) {
+                    _uiEvent.send(UiEvent.Navigate(RaidForm(raid)))
+                }
             }
-            is RaidSchedulerAction.OnSaveRaid -> saveRaid(action.raid)
-            RaidSchedulerAction.OnDismissForm -> _state.update { it.copy(showForm = false, editingRaid = null) }
         }
     }
 
@@ -70,13 +77,6 @@ class RaidSchedulerViewModel(
                 new.remove(id)
             }
             state.copy(selectedIds = new.toSet())
-        }
-    }
-
-    private fun saveRaid(raid: Raid) {
-        coroutineScope.launch {
-            saveRaidUseCase(raid)
-            _state.update { it.copy(showForm = false, editingRaid = null) }
         }
     }
 
