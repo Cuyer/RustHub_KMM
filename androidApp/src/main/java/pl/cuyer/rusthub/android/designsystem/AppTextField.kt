@@ -102,6 +102,10 @@ fun AppTextField(
                     resolvedFocusManager.clearFocus()
                 }
 
+                ImeAction.Search -> {
+                    onSubmit()
+                }
+
                 ImeAction.Send -> {
                     resolvedFocusManager.clearFocus()
                     onSubmit()

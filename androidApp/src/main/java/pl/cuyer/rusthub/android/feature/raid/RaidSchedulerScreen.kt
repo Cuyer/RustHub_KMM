@@ -277,9 +277,10 @@ private fun RaidItem(
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(spacing.small),
-                        verticalArrangement = Arrangement.Center
+                    FlowColumn(
+                        maxItemsInEachColumn = 2,
+                        verticalArrangement = Arrangement.spacedBy(spacing.small),
+                        horizontalArrangement = Arrangement.spacedBy(spacing.small)
                     ) {
                         raid.steamIds.take(4).forEach { id ->
                             val user = users[id]
@@ -288,7 +289,23 @@ private fun RaidItem(
                                     horizontalArrangement = Arrangement.spacedBy(spacing.small),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Column(horizontalAlignment = Alignment.End) {
+                                    SubcomposeAsyncImage(
+                                        modifier = Modifier.size(48.dp),
+                                        model = ImageRequest.Builder(LocalContext.current)
+                                            .data(user.avatar)
+                                            .crossfade(true)
+                                            .build(),
+                                        contentDescription = "User avatar",
+                                        loading = {
+                                            Box(
+                                                modifier = Modifier
+                                                    .matchParentSize()
+                                                    .shimmer()
+                                            )
+                                        }
+                                    )
+
+                                    Column(horizontalAlignment = Alignment.Start) {
                                         Text(user.personaName, style = MaterialTheme.typography.bodyMedium)
                                         val offline = "Offline"
                                         val online = stringResource(SharedRes.strings.online)
@@ -313,47 +330,33 @@ private fun RaidItem(
                                             style = MaterialTheme.typography.bodySmall
                                         )
                                     }
-                                    SubcomposeAsyncImage(
-                                        modifier = Modifier.size(48.dp),
-                                        model = ImageRequest.Builder(LocalContext.current)
-                                            .data(user.avatar)
-                                            .crossfade(true)
-                                            .build(),
-                                        contentDescription = "User avatar",
-                                        loading = {
-                                            Box(
-                                                modifier = Modifier
-                                                    .matchParentSize()
-                                                    .shimmer()
-                                            )
-                                        }
-                                    )
                                 }
                             } else {
                                 Row(
                                     horizontalArrangement = Arrangement.spacedBy(spacing.small),
                                     verticalAlignment = Alignment.CenterVertically,
                                 ) {
-                                    Column(horizontalAlignment = Alignment.End) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(48.dp)
+                                            .shimmer(),
+                                    )
+
+                                    Column(horizontalAlignment = Alignment.Start) {
                                         Box(
                                             modifier = Modifier
-                                                .width(80.dp)
+                                                .width(50.dp)
                                                 .height(16.dp)
                                                 .shimmer(),
                                         )
                                         Spacer(modifier = Modifier.height(spacing.xsmall))
                                         Box(
                                             modifier = Modifier
-                                                .width(60.dp)
+                                                .width(30.dp)
                                                 .height(12.dp)
                                                 .shimmer(),
                                         )
                                     }
-                                    Box(
-                                        modifier = Modifier
-                                            .size(48.dp)
-                                            .shimmer(),
-                                    )
                                 }
                             }
                         }

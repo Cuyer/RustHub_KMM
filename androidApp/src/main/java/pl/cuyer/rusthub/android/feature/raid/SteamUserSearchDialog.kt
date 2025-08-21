@@ -1,6 +1,9 @@
+@file:OptIn(ExperimentalTime::class)
+
 package pl.cuyer.rusthub.android.feature.raid
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +19,7 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,7 +42,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.flow.collect
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import coil3.compose.SubcomposeAsyncImage
@@ -53,6 +57,7 @@ import pl.cuyer.rusthub.domain.model.SteamUser
 import pl.cuyer.rusthub.presentation.features.raid.RaidFormAction
 import pl.cuyer.rusthub.presentation.features.raid.RaidFormState
 import pl.cuyer.rusthub.util.formatLocalDateTime
+import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -93,7 +98,7 @@ fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Un
                     imeAction = ImeAction.Search,
                     onSubmit = { onAction(RaidFormAction.OnSearchUser) },
                     lineLimits = TextFieldLineLimits.SingleLine,
-                    maxLength = 50,
+                    maxLength = 300,
                     showCharacterCounter = true,
                     requestFocus = true
                 )
@@ -166,8 +171,13 @@ fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Un
 @Composable
 private fun SteamUserCard(user: SteamUser, selected: Boolean, onClick: () -> Unit) {
     ElevatedCard(
-        onClick = onClick,
-        border = if (selected) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null
+        modifier = Modifier
+            .border(
+                width = 1.dp,
+                color = if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                shape = CardDefaults.elevatedShape
+            ),
+        onClick = onClick
     ) {
         Row(
             modifier = Modifier
