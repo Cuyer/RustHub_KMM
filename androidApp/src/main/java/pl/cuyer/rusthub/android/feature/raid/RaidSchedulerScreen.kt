@@ -427,6 +427,7 @@ private fun RaidItem(
                             )
                             Spacer(modifier = Modifier.height(spacing.small))
                             FlowRow(
+                                modifier = Modifier.fillMaxWidth(),
                                 maxItemsInEachRow = 3,
                                 maxLines = 2,
                                 horizontalArrangement = Arrangement.spacedBy(spacing.small, Alignment.CenterHorizontally),
