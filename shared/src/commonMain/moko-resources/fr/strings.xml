@@ -523,11 +523,11 @@
     <string name="no_user_found">Aucun utilisateur trouvé</string>
     <string name="new_raid">Nouveau raid</string>
     <string name="edit_raid">Modifier le raid</string>
-    <string name="required">Required</string>
-    <string name="save">Save</string>
-    <string name="update">Update</string>
-    <string name="edit">Edit</string>
-    <string name="undo">Undo</string>
+    <string name="required">Obligatoire</string>
+    <string name="save">Enregistrer</string>
+    <string name="update">Mettre à jour</string>
+    <string name="edit">Modifier</string>
+    <string name="undo">Annuler</string>
     <string name="raids_deleted">%1$d raids supprimés</string>
     <string name="estimated_raid_time">Temps estimé : %1$s</string>
     <string name="ok">OK</string>
