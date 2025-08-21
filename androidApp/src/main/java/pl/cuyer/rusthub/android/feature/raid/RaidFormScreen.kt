@@ -4,9 +4,12 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
@@ -15,27 +18,33 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.designsystem.AppButton
 import pl.cuyer.rusthub.android.designsystem.AppTextField
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
@@ -119,53 +128,71 @@ fun RaidFormScreen(
             )
         }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
                 .padding(spacing.medium)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(spacing.medium)
+                .fillMaxSize()
         ) {
-            AppTextField(
-                textFieldState = nameState,
-                labelText = stringResource(SharedRes.strings.raid_name),
-                placeholderText = "",
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next,
-                isError = state.value.nameError,
-                errorText = stringResource(SharedRes.strings.required),
-                maxLength = 50,
-                showCharacterCounter = true
-            )
-            OutlinedTextField(
-                value = state.value.dateTime,
-                onValueChange = {},
-                label = { Text(stringResource(SharedRes.strings.raid_date_time)) },
-                readOnly = true,
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(spacing.medium)
+            ) {
+                AppTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    textFieldState = nameState,
+                    labelText = stringResource(SharedRes.strings.raid_name),
+                    placeholderText = "",
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next,
+                    isError = state.value.nameError,
+                    errorText = stringResource(SharedRes.strings.required),
+                    maxLength = 50,
+                    showCharacterCounter = true
+                )
+                OutlinedTextField(
+                    value = state.value.dateTime,
+                    onValueChange = {},
+                    label = { Text(stringResource(SharedRes.strings.raid_date_time)) },
+                    readOnly = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { datePicker.show() }
+                )
+                OutlinedTextField(
+                    value = state.value.steamId,
+                    onValueChange = {},
+                    label = { Text(stringResource(SharedRes.strings.raid_target)) },
+                    readOnly = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onAction(RaidFormAction.OnSelectTargetClick) }
+                )
+                AppTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    textFieldState = descriptionState,
+                    labelText = stringResource(SharedRes.strings.description),
+                    placeholderText = "",
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Done,
+                    maxLength = 200,
+                    lineLimits = TextFieldLineLimits.MultiLine(),
+                    showCharacterCounter = true
+                )
+            }
+            AppButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { datePicker.show() }
-            )
-            OutlinedTextField(
-                value = state.value.steamId,
-                onValueChange = {},
-                label = { Text(stringResource(SharedRes.strings.raid_target)) },
-                readOnly = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onAction(RaidFormAction.OnSelectTargetClick) }
-            )
-            AppTextField(
-                textFieldState = descriptionState,
-                labelText = stringResource(SharedRes.strings.description),
-                placeholderText = "",
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Done,
-                maxLength = 200,
-                lineLimits = TextFieldLineLimits.MultiLine(),
-                showCharacterCounter = true
-            )
-            Button(onClick = { onAction(RaidFormAction.OnSave) }) {
+                    .height(48.dp)
+                    .align(Alignment.BottomCenter),
+                onClick = { onAction(RaidFormAction.OnSave) },
+                colors = ButtonDefaults.elevatedButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    contentColor = contentColorFor(MaterialTheme.colorScheme.surfaceContainer)
+                ),
+            ) {
                 Text(stringResource(SharedRes.strings.save))
             }
         }

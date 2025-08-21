@@ -19,7 +19,9 @@ import pl.cuyer.rusthub.domain.model.Raid
 import pl.cuyer.rusthub.domain.usecase.SaveRaidUseCase
 import pl.cuyer.rusthub.domain.usecase.SearchSteamUserUseCase
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class RaidFormViewModel(
     raid: Raid?,
     private val saveRaidUseCase: SaveRaidUseCase,

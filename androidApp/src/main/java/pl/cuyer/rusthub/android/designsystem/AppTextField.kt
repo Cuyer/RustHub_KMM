@@ -35,6 +35,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -148,9 +149,17 @@ fun AppTextField(
             isError && errorText != null -> {
                 { Text(errorText) }
             }
+
             showCharacterCounter && maxLength != null -> {
-                { Text("${textFieldState.text.length}/$maxLength") }
+                {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.End,
+                        text = "${textFieldState.text.length}/$maxLength"
+                    )
+                }
             }
+
             else -> null
         }
     )

@@ -12,6 +12,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +33,7 @@ import pl.cuyer.rusthub.domain.model.SteamUser
 import pl.cuyer.rusthub.presentation.features.raid.RaidFormAction
 import pl.cuyer.rusthub.presentation.features.raid.RaidFormState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Unit) {
     if (!state.searchDialogVisible) return
@@ -66,8 +68,8 @@ fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Un
             when {
                 state.searchLoading -> CircularProgressIndicator()
                 state.foundUser != null -> {
-                    SteamUserCard(user = state.foundUser) {
-                        onAction(RaidFormAction.OnUserSelected(state.foundUser))
+                    SteamUserCard(user = state.foundUser!!) {
+                        onAction(RaidFormAction.OnUserSelected(state.foundUser!!))
                     }
                 }
                 state.searchNotFound -> Text(stringResource(SharedRes.strings.no_user_found))
