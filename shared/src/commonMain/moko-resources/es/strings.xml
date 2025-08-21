@@ -396,6 +396,7 @@
     <string name="offline_cached_servers_info">Red no disponible. Mostrando servidores en caché.</string>
     <string name="no_connection">Sin conexión a Internet.</string>
     <string name="offline_cached_items_info">Red no disponible. Mostrando artículos en caché.</string>
+    <string name="offline_cached_raids_info">Red no disponible. Mostrando incursiones en caché.</string>
     <string name="subscription_disabled">Las suscripciones están actualmente deshabilitadas.</string>
     <string name="connect_manage_subscription">Conéctese a Internet para administrar su suscripción.</string>
     <string name="no_servers_available_offline">No hay servidores disponibles fuera de línea.</string>
@@ -403,6 +404,8 @@
     <string name="no_items_available_offline">No hay artículos disponibles fuera de línea.</string>
     <string name="no_items_available">No hay artículos disponibles.</string>
     <string name="no_monuments_available">No hay monumentos disponibles.</string>
+    <string name="no_raids_available_offline">No hay incursiones disponibles sin conexión.</string>
+    <string name="no_raids_available">No hay incursiones disponibles.</string>
     <string name="error_timeout">Solicitar tiempo fuera. Por favor intente de nuevo.</string>
     <string name="error_service_unavailable">Servicio temporalmente no disponible. Inténtalo de nuevo más tarde.</string>
     <string name="error_bad_request">Solicitud incorrecta.</string>
@@ -522,10 +525,11 @@
     <string name="no_user_found">No se encontró ningún usuario</string>
     <string name="new_raid">Nueva incursión</string>
     <string name="edit_raid">Editar incursión</string>
-    <string name="required">Required</string>
-    <string name="save">Save</string>
-    <string name="edit">Edit</string>
-    <string name="undo">Undo</string>
+    <string name="required">Obligatorio</string>
+    <string name="save">Guardar</string>
+    <string name="update">Actualizar</string>
+    <string name="edit">Editar</string>
+    <string name="undo">Deshacer</string>
     <string name="raids_deleted">Se eliminaron %1$d incursiones</string>
     <string name="estimated_raid_time">Tiempo estimado: %1$s</string>
     <string name="ok">OK</string>

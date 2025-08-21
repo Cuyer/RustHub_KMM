@@ -396,6 +396,7 @@
     <string name="offline_cached_servers_info">Мережа недоступна. Показати кешовані сервери.</string>
     <string name="no_connection">Немає підключення до Інтернету.</string>
     <string name="offline_cached_items_info">Мережа недоступна. Показуються кешовані предмети.</string>
+    <string name="offline_cached_raids_info">Мережа недоступна. Показуємо кешовані рейди.</string>
     <string name="subscription_disabled">Підписки в даний час відключені.</string>
     <string name="connect_manage_subscription">Підключіться до Інтернету, щоб керувати підпискою.</string>
     <string name="no_servers_available_offline">Немає серверів в режимі офлайн.</string>
@@ -403,6 +404,8 @@
     <string name="no_items_available_offline">Немає предметів в режимі офлайн.</string>
     <string name="no_items_available">Немає предметів.</string>
     <string name="no_monuments_available">Немає пам’яток.</string>
+    <string name="no_raids_available_offline">Немає рейдів офлайн.</string>
+    <string name="no_raids_available">Немає доступних рейдів.</string>
     <string name="error_timeout">Запит приурочений. Будь ласка, спробуйте ще раз.</string>
     <string name="error_service_unavailable">Сервіс тимчасово недоступний. Спробуйте пізніше.</string>
     <string name="error_bad_request">Поганий запит.</string>
@@ -522,10 +525,11 @@
     <string name="no_user_found">Користувача не знайдено</string>
     <string name="new_raid">Новий рейд</string>
     <string name="edit_raid">Редагувати рейд</string>
-    <string name="required">Required</string>
-    <string name="save">Save</string>
-    <string name="edit">Edit</string>
-    <string name="undo">Undo</string>
+    <string name="required">Обов'язково</string>
+    <string name="save">Зберегти</string>
+    <string name="update">Оновити</string>
+    <string name="edit">Редагувати</string>
+    <string name="undo">Скасувати</string>
     <string name="raids_deleted">Видалено %1$d рейдів</string>
     <string name="estimated_raid_time">Приблизний час: %1$s</string>
     <string name="ok">ОК</string>
