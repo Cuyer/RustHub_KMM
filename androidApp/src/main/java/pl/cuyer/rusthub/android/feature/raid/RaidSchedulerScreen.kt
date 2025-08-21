@@ -533,8 +533,7 @@ private fun RaidItemShimmer(modifier: Modifier = Modifier) {
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(spacing.medium),
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(spacing.small),
         ) {
             Box(

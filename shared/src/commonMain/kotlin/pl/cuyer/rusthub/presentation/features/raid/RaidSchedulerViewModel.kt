@@ -208,28 +208,6 @@ class RaidSchedulerViewModel(
                             _state.update {
                                 it.copy(raids = raids, isRefreshing = false, hasError = false)
                             }
-                            val missing = raids.flatMap { it.steamIds }
-                                .filter { _state.value.users[it] == null }
-                                .distinct()
-                            if (missing.isNotEmpty()) {
-                                searchJob?.cancel()
-                                searchJob = coroutineScope.launch {
-                                    searchSteamUserUseCase(missing)
-                                        .collectLatest { res ->
-                                            ensureActive()
-                                            if (res is Result.Success) {
-                                                _state.update { state ->
-                                                    val fetched =
-                                                        res.data.associateBy { it.steamId }
-                                                    val notFound = missing
-                                                        .filter { it !in fetched.keys }
-                                                        .associateWith { null }
-                                                    state.copy(users = state.users + fetched + notFound)
-                                                }
-                                            }
-                                        }
-                                }
-                            }
                         }
 
                         is Result.Error -> {
@@ -250,11 +228,7 @@ class RaidSchedulerViewModel(
     private fun observeConnectivity() {
         connectivityObserver.isConnected
             .onEach { connected ->
-                val wasDisconnected = state.value.isConnected.not() && connected
                 _state.update { it.copy(isConnected = connected) }
-                if (wasDisconnected) {
-                    loadRaids()
-                }
             }
             .launchIn(coroutineScope)
     }
