@@ -589,6 +589,7 @@ private fun RaidItemShimmer(modifier: Modifier = Modifier) {
                     .clearAndSetSemantics {},
             )
             FlowRow(
+                modifier = Modifier.fillMaxWidth(),
                 maxItemsInEachRow = 3,
                 maxLines = 2,
                 horizontalArrangement = Arrangement.spacedBy(spacing.small, Alignment.CenterHorizontally),
