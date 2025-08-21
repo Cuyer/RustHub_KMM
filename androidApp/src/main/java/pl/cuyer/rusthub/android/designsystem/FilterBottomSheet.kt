@@ -12,10 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.InputTransformation
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
@@ -24,12 +20,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
-import pl.cuyer.rusthub.android.designsystem.shimmer
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,17 +29,11 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -58,24 +44,22 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.builtins.ListSerializer
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
+import pl.cuyer.rusthub.android.designsystem.shimmer
+import pl.cuyer.rusthub.domain.model.CountryRegionMapper
+import pl.cuyer.rusthub.domain.model.Flag
+import pl.cuyer.rusthub.domain.model.Region
 import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.model.FilterCheckboxOption
 import pl.cuyer.rusthub.presentation.model.FilterDropdownOption
 import pl.cuyer.rusthub.presentation.model.FilterRangeOption
 import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.presentation.model.toDomain
-import pl.cuyer.rusthub.domain.model.ServerFilter
-import pl.cuyer.rusthub.domain.model.Flag
-import pl.cuyer.rusthub.domain.model.Region
-import pl.cuyer.rusthub.domain.model.CountryRegionMapper
 import pl.cuyer.rusthub.util.StringProvider
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -89,26 +73,6 @@ fun FilterBottomSheet(
     onDismissAndRefresh: () -> Unit,
     onAction: (ServerAction) -> Unit
 ) {
-    // Use rememberSaveable with manual restoration for navigation or recomposition
-    var localLists by rememberSaveable(inputs = arrayOf(filters?.lists)) {
-        mutableStateOf(filters?.lists ?: emptyList())
-    }
-    var localCheckboxes by rememberSaveable(inputs = arrayOf(filters?.checkboxes)) {
-        mutableStateOf(filters?.checkboxes ?: emptyList())
-    }
-    var localRanges by rememberSaveable(inputs = arrayOf(filters?.ranges)) {
-        mutableStateOf(filters?.ranges ?: emptyList())
-    }
-
-    // When filters are loaded/reset, update local state (but do not reset on every parent recomposition!)
-    LaunchedEffect(filters) {
-        if (filters != null) {
-            localLists = filters.lists
-            localCheckboxes = filters.checkboxes
-            localRanges = filters.ranges
-        }
-    }
-
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -142,7 +106,10 @@ fun FilterBottomSheet(
                     modifier = Modifier.fillMaxHeight(0.85f)
                 )
             } else {
-                if (localLists.isEmpty() && localCheckboxes.isEmpty() && localRanges.isEmpty()) {
+                val current = filters
+                if (current == null || (current.lists.isEmpty() &&
+                        current.checkboxes.isEmpty() &&
+                        current.ranges.isEmpty())) {
                     Box(
                         modifier = Modifier
                             .fillMaxHeight(0.85f)
@@ -160,28 +127,26 @@ fun FilterBottomSheet(
                             .fillMaxHeight(0.85f)
                             .verticalScroll(scrollState)
                     ) {
-                        // Pass local state and their updaters
                         FilterBottomSheetContent(
-                            lists = { localLists },
-                            onListsChange = { localLists = it },
-                            checkboxes = { localCheckboxes },
-                            onCheckboxesChange = { localCheckboxes = it },
-                            ranges = { localRanges },
-                            onRangesChange = { localRanges = it }
+                            lists = current.lists,
+                            onListChange = { index, selected ->
+                                onAction(ServerAction.OnDropdownChange(index, selected))
+                            },
+                            checkboxes = current.checkboxes,
+                            onCheckboxChange = { index, checked ->
+                                onAction(ServerAction.OnCheckboxChange(index, checked))
+                            },
+                            ranges = current.ranges,
+                            onRangeChange = { index, value ->
+                                onAction(ServerAction.OnRangeChange(index, value))
+                            }
                         )
                         Spacer(Modifier.height(spacing.medium))
                         ButtonsSection(
                             modifier = Modifier.fillMaxWidth(),
                             onAction = onAction,
                             onDismissAndRefresh = onDismissAndRefresh,
-                            filters = {
-                                FilterUi(
-                                    localLists,
-                                    localCheckboxes,
-                                    localRanges,
-                                    filters?.filter ?: ServerFilter.ALL
-                                )
-                            }
+                            filters = current
                         )
                     }
                 }
@@ -192,12 +157,12 @@ fun FilterBottomSheet(
 
 @Composable
 fun FilterBottomSheetContent(
-    lists: () -> List<FilterDropdownOption>,
-    onListsChange: (List<FilterDropdownOption>) -> Unit,
-    checkboxes: () -> List<FilterCheckboxOption>,
-    onCheckboxesChange: (List<FilterCheckboxOption>) -> Unit,
-    ranges: () -> List<FilterRangeOption>,
-    onRangesChange: (List<FilterRangeOption>) -> Unit
+    lists: List<FilterDropdownOption>,
+    onListChange: (Int, Int?) -> Unit,
+    checkboxes: List<FilterCheckboxOption>,
+    onCheckboxChange: (Int, Boolean) -> Unit,
+    ranges: List<FilterRangeOption>,
+    onRangeChange: (Int, Int?) -> Unit
 ) {
     Column(
         modifier = Modifier.padding(spacing.medium),
@@ -206,36 +171,36 @@ fun FilterBottomSheetContent(
     ) {
         DropdownFilters(
             options = lists,
-            onOptionsChange = onListsChange
+            onOptionChange = onListChange
         )
         CheckboxFilters(
             options = checkboxes,
-            onOptionsChange = onCheckboxesChange
+            onOptionChange = onCheckboxChange
         )
         RangeFilters(
             options = ranges,
-            onOptionsChange = onRangesChange
+            onOptionsChange = onRangeChange
         )
     }
 }
 
 @Composable
 private fun DropdownFilters(
-    options: () -> List<FilterDropdownOption>,
-    onOptionsChange: (List<FilterDropdownOption>) -> Unit
+    options: List<FilterDropdownOption>,
+    onOptionChange: (Int, Int?) -> Unit
 ) {
     val stringProvider = koinInject<StringProvider>()
-    val selectedCountry = options().getOrNull(1)?.let { opt ->
+    val selectedCountry = options.getOrNull(1)?.let { opt ->
         opt.selectedIndex?.let { idx ->
             opt.options.getOrNull(idx)?.let { Flag.fromDisplayName(it) }
         }
     }
-    val selectedRegion = options().getOrNull(2)?.let { opt ->
+    val selectedRegion = options.getOrNull(2)?.let { opt ->
         opt.selectedIndex?.let { idx ->
             opt.options.getOrNull(idx)?.let { Region.fromDisplayName(it, stringProvider) }
         }
     }
-    options().forEachIndexed { index, option ->
+    options.forEachIndexed { index, option ->
         key(option.label) {
             val enabledForIndex: (Int) -> Boolean = when (index) {
                 1 -> { idx ->
@@ -259,31 +224,7 @@ private fun DropdownFilters(
                 options = option.options,
                 selectedValue = option.selectedIndex,
                 onSelectionChanged = { selected ->
-                    val updated = options().toMutableList()
-                    if (index == 1) {
-                        val regionOpt = options().getOrNull(2)
-                        val newFlag = selected?.let { Flag.fromDisplayName(option.options[it]) }
-                        val region = regionOpt?.selectedIndex?.let { idx ->
-                            regionOpt.options.getOrNull(idx)?.let { Region.fromDisplayName(it, stringProvider) }
-                        }
-                        val countryRegion = newFlag?.let { CountryRegionMapper.regionForFlag(it) }
-                        if (region != null && countryRegion != region) {
-                            regionOpt?.let { updated[2] = it.copy(selectedIndex = null) }
-                        }
-                    }
-                    if (index == 2) {
-                        val countryOpt = options().getOrNull(1)
-                        val newRegion = selected?.let { Region.fromDisplayName(option.options[it], stringProvider) }
-                        val flag = countryOpt?.selectedIndex?.let { idx ->
-                            countryOpt.options.getOrNull(idx)?.let { Flag.fromDisplayName(it) }
-                        }
-                        val flagRegion = flag?.let { CountryRegionMapper.regionForFlag(it) }
-                        if (newRegion != null && flagRegion != null && flagRegion != newRegion) {
-                            countryOpt?.let { updated[1] = it.copy(selectedIndex = null) }
-                        }
-                    }
-                    updated[index] = option.copy(selectedIndex = selected)
-                    onOptionsChange(updated)
+                    onOptionChange(index, selected)
                 },
                 allowEmptySelection = true,
                 enabledForIndex = enabledForIndex
@@ -294,28 +235,24 @@ private fun DropdownFilters(
 
 @Composable
 private fun CheckboxFilters(
-    options: () -> List<FilterCheckboxOption>,
-    onOptionsChange: (List<FilterCheckboxOption>) -> Unit
+    options: List<FilterCheckboxOption>,
+    onOptionChange: (Int, Boolean) -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        options().forEachIndexed { index, option ->
+        options.forEachIndexed { index, option ->
             key(option.label) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    var checked by rememberSaveable(option.label) { mutableStateOf(option.isChecked) }
                     SwitchWithText(
                         text = option.label,
-                        isChecked = { checked },
+                        isChecked = { option.isChecked },
                         onCheckedChange = { newChecked ->
-                            checked = newChecked
-                            val updated = options().toMutableList()
-                            updated[index] = option.copy(isChecked = newChecked)
-                            onOptionsChange(updated)
+                            onOptionChange(index, newChecked)
                         }
                     )
                 }
@@ -326,19 +263,18 @@ private fun CheckboxFilters(
 
 @Composable
 private fun RangeFilters(
-    options: () -> List<FilterRangeOption>,
-    onOptionsChange: (List<FilterRangeOption>) -> Unit
+    options: List<FilterRangeOption>,
+    onOptionsChange: (Int, Int?) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardState = keyboardAsState()
     Column(verticalArrangement = Arrangement.spacedBy(spacing.small)) {
-        options().forEachIndexed { index, option ->
+        options.forEachIndexed { index, option ->
             key(option.label) {
                 val textFieldState = rememberTextFieldState(
                     initialText = option.value?.toString() ?: ""
                 )
 
-                // Keep TextFieldState in sync with option.value changes (if they come from parent)
                 LaunchedEffect(option.value) {
                     val text = option.value?.toString() ?: ""
                     if (text != textFieldState.text.toString()) {
@@ -346,14 +282,10 @@ private fun RangeFilters(
                     }
                 }
 
-                // Propagate changes to parent state only when text changes
-                // (You can also validate here or debounce if needed)
                 LaunchedEffect(textFieldState.text) {
                     val newValue = textFieldState.text.toString().toIntOrNull()
                     if (newValue != option.value) {
-                        val updated = options().toMutableList()
-                        updated[index] = option.copy(value = newValue)
-                        onOptionsChange(updated)
+                        onOptionsChange(index, newValue)
                     }
                 }
 
@@ -379,7 +311,7 @@ fun ButtonsSection(
     modifier: Modifier = Modifier,
     onAction: (ServerAction) -> Unit,
     onDismissAndRefresh: () -> Unit,
-    filters: () -> FilterUi
+    filters: FilterUi
 ) {
     Column(
         modifier = modifier
@@ -391,7 +323,7 @@ fun ButtonsSection(
         val stringProvider = koinInject<StringProvider>()
         AppButton(
             onClick = {
-                onAction(ServerAction.OnSaveFilters(filters = filters().toDomain(stringProvider)))
+                onAction(ServerAction.OnSaveFilters(filters.toDomain(stringProvider)))
                 onDismissAndRefresh()
             },
             modifier = Modifier
@@ -438,8 +370,6 @@ private fun FilterBottomSheetShimmer(modifier: Modifier = Modifier) {
     }
 }
 
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
@@ -459,7 +389,7 @@ private fun FilterBottomSheetPreview() {
                         sheetState.hide()
                     }
                 },
-                filters = null,
+                filters = FilterUi(),
                 onAction = { },
                 isLoadingFilters = false,
                 onDismissAndRefresh = { }
@@ -467,3 +397,4 @@ private fun FilterBottomSheetPreview() {
         }
     }
 }
+
