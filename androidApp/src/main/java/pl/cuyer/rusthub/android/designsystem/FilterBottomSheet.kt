@@ -316,7 +316,7 @@ fun ButtonsSection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.small)
     ) {
-        AppOutlinedButton(
+        AppButton(
             colors = ButtonDefaults.outlinedButtonColors().copy(
                 contentColor = contentColorFor(BottomSheetDefaults.ContainerColor)
             ),
