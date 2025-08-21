@@ -71,6 +71,11 @@ actual class HttpClientFactory actual constructor(
                     addNetworkInterceptor(certificateTransparencyInterceptor())
                 }
             }
+            install(ContentEncoding) {
+                gzip(1.0f)
+                deflate(0.9f)
+            }
+
             install(ContentNegotiation) {
                 json(json)
             }
@@ -88,6 +93,13 @@ actual class HttpClientFactory actual constructor(
                             if (user?.provider == AuthProvider.ANONYMOUS || oldRefresh.isNullOrBlank()) {
                                 logoutOnce()
                                 return@run null
+                            }
+
+                            val currentRefresh = user?.refreshToken
+                            if (currentRefresh != oldRefresh) {
+                                return@run user?.let {
+                                    BearerTokens(it.accessToken, currentRefresh ?: "")
+                                }
                             }
 
                             val response = client.post("${NetworkConstants.BASE_URL}auth/refresh") {
