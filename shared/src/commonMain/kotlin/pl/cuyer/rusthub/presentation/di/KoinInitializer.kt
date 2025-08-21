@@ -106,7 +106,10 @@ import pl.cuyer.rusthub.domain.usecase.CreateRaidUseCase
 import pl.cuyer.rusthub.domain.usecase.UpdateRaidUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteRaidUseCase
 import pl.cuyer.rusthub.domain.usecase.SearchSteamUserUseCase
+import pl.cuyer.rusthub.domain.usecase.ObserveRaidsUseCase
 import pl.cuyer.rusthub.data.network.raid.RaidClientImpl
+import pl.cuyer.rusthub.data.local.raid.RaidDataSourceImpl
+import pl.cuyer.rusthub.domain.repository.raid.local.RaidDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerCacheDataSource
 import pl.cuyer.rusthub.data.local.cache.ServerCacheDataSourceImpl
 import pl.cuyer.rusthub.domain.usecase.SetThemeConfigUseCase
@@ -161,6 +164,7 @@ val appModule = module {
     singleOf(::AuthDataSourceImpl) bind AuthDataSource::class
     singleOf(::UserRepositoryImpl) bind UserRepository::class
     singleOf(::ConfigRepositoryImpl) bind ConfigRepository::class
+    singleOf(::RaidDataSourceImpl) bind RaidDataSource::class
     singleOf(::RaidClientImpl) bind RaidRepository::class
     singleOf(::SteamRepositoryImpl) bind SteamRepository::class
     single { EmailValidator(get()) }
@@ -170,6 +174,7 @@ val appModule = module {
     single { GetPagedItemsUseCase(get(), get(), get()) }
     single { GetPagedMonumentsUseCase(get(), get()) }
     single { GetRaidsUseCase(get()) }
+    single { ObserveRaidsUseCase(get()) }
     single { CreateRaidUseCase(get()) }
     single { UpdateRaidUseCase(get()) }
     single { DeleteRaidUseCase(get()) }
