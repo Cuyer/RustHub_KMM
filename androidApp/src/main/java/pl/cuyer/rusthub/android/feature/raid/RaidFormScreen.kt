@@ -135,9 +135,6 @@ fun RaidFormScreen(
 
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
-    val context = LocalContext.current
-    val windowSizeClass = calculateWindowSizeClass(context as Activity)
-    val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
 
     Scaffold(
         topBar = {
@@ -230,12 +227,11 @@ fun RaidFormScreen(
                 }
             }
 
-            val scrollModifier = if (!isTabletMode) Modifier.verticalScroll(rememberScrollState()) else Modifier
+            val scrollModifier = Modifier.verticalScroll(rememberScrollState())
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(spacing.medium)
-                    .padding(bottom = if (isTabletMode) 0.dp else spacing.extraLarge)
                     .then(scrollModifier),
                 verticalArrangement = Arrangement.spacedBy(spacing.medium)
             ) {
@@ -249,7 +245,7 @@ fun RaidFormScreen(
                     labelText = stringResource(SharedRes.strings.raid_name),
                     placeholderText = "",
                     keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next,
+                    imeAction = ImeAction.Done,
                     isError = state.value.nameError,
                     errorText = stringResource(SharedRes.strings.required),
                     maxLength = 50,
@@ -306,19 +302,19 @@ fun RaidFormScreen(
                     lineLimits = TextFieldLineLimits.MultiLine(),
                     showCharacterCounter = true
                 )
-            }
-            AppButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-                    .align(Alignment.BottomCenter),
-                onClick = { onAction(RaidFormAction.OnSave) },
-                colors = ButtonDefaults.elevatedButtonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    contentColor = contentColorFor(MaterialTheme.colorScheme.surfaceContainer)
-                ),
-            ) {
-                Text(stringResource(SharedRes.strings.save))
+
+                AppButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    onClick = { onAction(RaidFormAction.OnSave) },
+                    colors = ButtonDefaults.elevatedButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                        contentColor = contentColorFor(MaterialTheme.colorScheme.surfaceContainer)
+                    ),
+                ) {
+                    Text(stringResource(SharedRes.strings.save))
+                }
             }
         }
     }

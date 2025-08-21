@@ -165,7 +165,7 @@ class RaidFormViewModel(
             coroutineScope.launch {
                 snackbarController.sendEvent(
                     SnackbarEvent(
-                        message = stringProvider.get(SharedRes.strings.its_time_to_raid),
+                        message = stringProvider.get(SharedRes.strings.raid_date_in_past),
                         duration = Duration.SHORT
                     )
                 )
