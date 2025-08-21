@@ -23,12 +23,12 @@ actual class AlarmScheduler(private val context: Context) {
             putExtra(RaidAlarmReceiver.EXTRA_NAME, raid.name)
         }
 
-    fun canScheduleExactAlarms(): Boolean {
+    actual fun canScheduleExactAlarms(): Boolean {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         return Build.VERSION.SDK_INT < 31 || alarmManager.canScheduleExactAlarms()
     }
 
-    fun requestExactAlarmPermission() {
+    actual fun requestExactAlarmPermission() {
         if (Build.VERSION.SDK_INT >= 31) {
             context.startActivity(
                 Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
