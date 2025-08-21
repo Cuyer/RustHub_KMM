@@ -395,6 +395,7 @@
     <string name="offline_cached_servers_info">Нет сети. Отображаются кэшированные серверы.</string>
     <string name="no_connection">Нет подключения к интернету.</string>
     <string name="offline_cached_items_info">Нет сети. Отображаются кэшированные предметы.</string>
+    <string name="offline_cached_raids_info">Сеть недоступна. Показаны кешированные рейды.</string>
     <string name="subscription_disabled">Подписки временно отключены.</string>
     <string name="connect_manage_subscription">Подключитесь к интернету, чтобы управлять подпиской.</string>
     <string name="no_servers_available_offline">Нет серверов в автономном режиме.</string>
@@ -402,6 +403,8 @@
     <string name="no_items_available_offline">Нет предметов в автономном режиме.</string>
     <string name="no_items_available">Нет доступных предметов.</string>
     <string name="no_monuments_available">Нет доступных монументов.</string>
+    <string name="no_raids_available_offline">Нет рейдов в офлайн-режиме.</string>
+    <string name="no_raids_available">Нет доступных рейдов.</string>
     <string name="error_timeout">Превышено время ожидания. Попробуйте ещё раз.</string>
     <string name="error_service_unavailable">Сервис временно недоступен. Попробуйте позже.</string>
     <string name="error_bad_request">Неверный запрос.</string>
@@ -521,10 +524,11 @@
     <string name="no_user_found">Пользователь не найден</string>
     <string name="new_raid">Новый рейд</string>
     <string name="edit_raid">Редактировать рейд</string>
-    <string name="required">Required</string>
-    <string name="save">Save</string>
-    <string name="edit">Edit</string>
-    <string name="undo">Undo</string>
+    <string name="required">Обязательно</string>
+    <string name="save">Сохранить</string>
+    <string name="update">Обновить</string>
+    <string name="edit">Редактировать</string>
+    <string name="undo">Отменить</string>
     <string name="raids_deleted">Удалено %1$d рейдов</string>
     <string name="estimated_raid_time">Примерное время: %1$s</string>
     <string name="ok">ОК</string>

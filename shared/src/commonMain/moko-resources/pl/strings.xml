@@ -395,6 +395,7 @@
     <string name="offline_cached_servers_info">Brak sieci. Wyświetlana jest zapisana lista serwerów.</string>
     <string name="no_connection">Brak połączenia z internetem.</string>
     <string name="offline_cached_items_info">Brak sieci. Wyświetlana jest zapisana lista przedmiotów.</string>
+    <string name="offline_cached_raids_info">Brak dostępu do sieci. Wyświetlanie zapisanych rajdów.</string>
     <string name="subscription_disabled">Subskrypcje są obecnie wyłączone.</string>
     <string name="connect_manage_subscription">Połącz się z internetem, aby zarządzać subskrypcją.</string>
     <string name="no_servers_available_offline">Brak dostępnych serwerów offline.</string>
@@ -402,6 +403,8 @@
     <string name="no_items_available_offline">Brak dostępnych przedmiotów offline.</string>
     <string name="no_items_available">Brak dostępnych przedmiotów.</string>
     <string name="no_monuments_available">Brak dostępnych monumentów.</string>
+    <string name="no_raids_available_offline">Brak rajdów dostępnych offline.</string>
+    <string name="no_raids_available">Brak dostępnych rajdów.</string>
     <string name="error_timeout">Przekroczono czas oczekiwania. Spróbuj ponownie.</string>
     <string name="error_service_unavailable">Serwis chwilowo niedostępny. Spróbuj później.</string>
     <string name="error_bad_request">Błędne żądanie.</string>
@@ -521,10 +524,11 @@
     <string name="no_user_found">Nie znaleziono użytkownika</string>
     <string name="new_raid">Nowy rajd</string>
     <string name="edit_raid">Edytuj rajd</string>
-    <string name="required">Required</string>
-    <string name="save">Save</string>
-    <string name="edit">Edit</string>
-    <string name="undo">Undo</string>
+    <string name="required">Wymagane</string>
+    <string name="save">Zapisz</string>
+    <string name="update">Aktualizuj</string>
+    <string name="edit">Edytuj</string>
+    <string name="undo">Cofnij</string>
     <string name="raids_deleted">Usunięto %1$d rajdów</string>
     <string name="estimated_raid_time">Szacowany czas: %1$s</string>
     <string name="ok">OK</string>

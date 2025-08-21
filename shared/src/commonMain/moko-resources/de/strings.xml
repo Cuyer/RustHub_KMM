@@ -524,11 +524,11 @@
     <string name="no_user_found">Kein Benutzer gefunden</string>
     <string name="new_raid">Neuer Überfall</string>
     <string name="edit_raid">Überfall bearbeiten</string>
-    <string name="required">Required</string>
-    <string name="save">Save</string>
-    <string name="update">Update</string>
-    <string name="edit">Edit</string>
-    <string name="undo">Undo</string>
+    <string name="required">Erforderlich</string>
+    <string name="save">Speichern</string>
+    <string name="update">Aktualisieren</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="undo">Rückgängig</string>
     <string name="raids_deleted">%1$d Überfälle gelöscht</string>
     <string name="estimated_raid_time">Geschätzte Zeit: %1$s</string>
     <string name="ok">OK</string>
