@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -37,8 +36,6 @@ import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.flow.collect
 import coil3.compose.SubcomposeAsyncImage
 import pl.cuyer.rusthub.SharedRes
-import pl.cuyer.rusthub.android.designsystem.AppButton
-import pl.cuyer.rusthub.android.designsystem.AppTextButton
 import pl.cuyer.rusthub.android.designsystem.AppTextField
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
@@ -73,7 +70,7 @@ fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Un
                         .collect { onAction(RaidFormAction.OnSearchQueryChange(it)) }
                 }
                 Text(
-                    text = "Search",
+                    text = stringResource(SharedRes.strings.search),
                     fontWeight = FontWeight.SemiBold
                 )
                 AppTextField(
@@ -85,7 +82,8 @@ fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Un
                     onSubmit = { onAction(RaidFormAction.OnSearchUser) },
                     lineLimits = TextFieldLineLimits.SingleLine,
                     maxLength = 50,
-                    showCharacterCounter = true
+                    showCharacterCounter = true,
+                    requestFocus = true
                 )
                 when {
                     state.searchLoading -> {
@@ -165,14 +163,14 @@ private fun SteamUserCard(user: SteamUser, onClick: () -> Unit) {
                 contentScale = ContentScale.Crop
             )
             Column(verticalArrangement = Arrangement.spacedBy(spacing.small)) {
-                val offline = "Offline"
+                val offline = stringResource(SharedRes.strings.offline)
                 val online = stringResource(SharedRes.strings.online)
-                val busy = "Busy"
-                val away = "Away"
-                val snooze = "Snooze"
-                val lookingToTrade = "Looking to trade"
-                val lookingToPlay = "Looking to play"
-                val unknown = "Unknown"
+                val busy = stringResource(SharedRes.strings.busy)
+                val away = stringResource(SharedRes.strings.away)
+                val snooze = stringResource(SharedRes.strings.snooze)
+                val lookingToTrade = stringResource(SharedRes.strings.looking_to_trade)
+                val lookingToPlay = stringResource(SharedRes.strings.looking_to_play)
+                val unknown = stringResource(SharedRes.strings.unknown)
                 Text(user.personaName, style = MaterialTheme.typography.titleMedium)
                 Text(user.steamId, style = MaterialTheme.typography.bodyMedium)
                 Text(
@@ -190,10 +188,16 @@ private fun SteamUserCard(user: SteamUser, onClick: () -> Unit) {
                     style = MaterialTheme.typography.bodyMedium
                 )
                 user.lastLogoff?.let {
-                    Text("Last logoff: $it", style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        stringResource(SharedRes.strings.last_logoff, it),
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
                 user.gameId?.let {
-                    Text("Game: $it", style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        stringResource(SharedRes.strings.game, it),
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
         }

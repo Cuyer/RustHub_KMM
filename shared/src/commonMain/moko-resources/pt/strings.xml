@@ -506,7 +506,7 @@
     <string name="median_radiation_level">Nível médio de radiação</string>
     <string name="max_radiation_level">Nível de radiação máxima</string>
     <string name="radiation">Radiação</string>
-    <string name="raids">Raids</string>
+    <string name="raids">Incursões</string>
     <string name="raid_name">Name</string>
     <string name="raid_date_time">Date and Time</string>
     <string name="raid_target">Target Steam ID</string>
@@ -520,4 +520,17 @@
     <string name="undo">Undo</string>
     <string name="raids_deleted">%1$d raids deleted</string>
     <string name="estimated_raid_time">Estimated time: %1$s</string>
+    <string name="ok">OK</string>
+    <string name="select_time">Selecionar hora</string>
+    <string name="busy">Ocupado</string>
+    <string name="away">Ausente</string>
+    <string name="snooze">Soneca</string>
+    <string name="looking_to_trade">Procurando trocar</string>
+    <string name="looking_to_play">Procurando jogar</string>
+    <string name="unknown">Desconhecido</string>
+    <string name="last_logoff">Última saída: %1$s</string>
+    <string name="game">Jogo: %1$s</string>
+    <string name="days_short">d</string>
+    <string name="hours_short">h</string>
+    <string name="minutes_short">m</string>
 </resources>

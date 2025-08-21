@@ -506,7 +506,7 @@
     <string name="median_radiation_level">Mittlere Strahlenbelastung</string>
     <string name="max_radiation_level">Maximale Strahlenbelastung</string>
     <string name="radiation">Strahlung</string>
-    <string name="raids">Raids</string>
+    <string name="raids">Überfälle</string>
     <string name="raid_name">Name</string>
     <string name="raid_date_time">Date and Time</string>
     <string name="raid_target">Target Steam ID</string>
@@ -520,4 +520,17 @@
     <string name="undo">Undo</string>
     <string name="raids_deleted">%1$d raids deleted</string>
     <string name="estimated_raid_time">Estimated time: %1$s</string>
+    <string name="ok">OK</string>
+    <string name="select_time">Uhrzeit wählen</string>
+    <string name="busy">Beschäftigt</string>
+    <string name="away">Abwesend</string>
+    <string name="snooze">Schlummern</string>
+    <string name="looking_to_trade">Möchte handeln</string>
+    <string name="looking_to_play">Möchte spielen</string>
+    <string name="unknown">Unbekannt</string>
+    <string name="last_logoff">Letzte Abmeldung: %1$s</string>
+    <string name="game">Spiel: %1$s</string>
+    <string name="days_short">d</string>
+    <string name="hours_short">h</string>
+    <string name="minutes_short">m</string>
 </resources>
