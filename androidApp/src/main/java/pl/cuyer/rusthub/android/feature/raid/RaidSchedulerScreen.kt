@@ -535,7 +535,6 @@ private fun RaidItemShimmer(modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier
                 .padding(spacing.medium)
-                .height(300.dp)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(spacing.small),
         ) {
@@ -547,10 +546,19 @@ private fun RaidItemShimmer(modifier: Modifier = Modifier) {
                     .shimmer()
                     .clearAndSetSemantics {},
             )
+            Spacer(modifier = Modifier.height(spacing.small))
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
-                    .height(16.dp)
+                    .height(20.dp)
+                    .clip(MaterialTheme.shapes.extraSmall)
+                    .shimmer()
+                    .clearAndSetSemantics {},
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
                     .clip(MaterialTheme.shapes.extraSmall)
                     .shimmer()
                     .clearAndSetSemantics {},
@@ -571,6 +579,15 @@ private fun RaidItemShimmer(modifier: Modifier = Modifier) {
                     .shimmer()
                     .clearAndSetSemantics {},
             )
+            Spacer(modifier = Modifier.height(spacing.small))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.4f)
+                    .height(20.dp)
+                    .clip(MaterialTheme.shapes.extraSmall)
+                    .shimmer()
+                    .clearAndSetSemantics {},
+            )
             FlowRow(
                 maxItemsInEachRow = 3,
                 maxLines = 2,
@@ -578,13 +595,36 @@ private fun RaidItemShimmer(modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.spacedBy(spacing.small)
             ) {
                 repeat(6) {
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(MaterialTheme.shapes.extraSmall)
-                            .shimmer()
-                            .clearAndSetSemantics {},
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.width(100.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(MaterialTheme.shapes.extraSmall)
+                                .shimmer()
+                                .clearAndSetSemantics {},
+                        )
+                        Spacer(modifier = Modifier.height(spacing.xsmall))
+                        Box(
+                            modifier = Modifier
+                                .width(64.dp)
+                                .height(16.dp)
+                                .clip(MaterialTheme.shapes.extraSmall)
+                                .shimmer()
+                                .clearAndSetSemantics {},
+                        )
+                        Spacer(modifier = Modifier.height(spacing.xsmall))
+                        Box(
+                            modifier = Modifier
+                                .width(32.dp)
+                                .height(12.dp)
+                                .clip(MaterialTheme.shapes.extraSmall)
+                                .shimmer()
+                                .clearAndSetSemantics {},
+                        )
+                    }
                 }
             }
         }
