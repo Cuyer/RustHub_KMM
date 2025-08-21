@@ -8,5 +8,8 @@ import pl.cuyer.rusthub.domain.model.SteamUser
 data class RaidSchedulerState(
     val raids: List<Raid> = emptyList(),
     val selectedIds: Set<String> = emptySet(),
-    val users: Map<String, SteamUser?> = emptyMap()
+    val users: Map<String, SteamUser?> = emptyMap(),
+    val isRefreshing: Boolean = true,
+    val isConnected: Boolean = true,
+    val hasError: Boolean = false,
 )

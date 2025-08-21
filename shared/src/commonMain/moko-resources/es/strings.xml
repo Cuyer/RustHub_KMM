@@ -512,9 +512,11 @@
     <string name="raid_name">Nombre</string>
     <string name="raid_date_time">Fecha y hora</string>
     <string name="raid_target">ID de Steam objetivo</string>
+    <string name="raid_data">Datos del raid</string>
+    <string name="targets">Objetivos</string>
     <string name="steam_id">ID de Steam</string>
     <string name="enter_steam_id_or_name">Introduce IDs de Steam</string>
-    <string name="search_players_info">Busca hasta 4 jugadores separados por ","</string>
+    <string name="search_players_info">Busca hasta 6 jugadores separados por ","</string>
     <string name="raid_form_info">Completa el formulario para programar una incursión. Recibirás una notificación y podrás ver el estado en línea de tus objetivos.</string>
     <string name="add">Añadir</string>
     <string name="no_user_found">No se encontró ningún usuario</string>

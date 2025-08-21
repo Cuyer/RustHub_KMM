@@ -240,19 +240,21 @@ actual fun platformModule(passphrase: String): Module = module {
     }
     viewModel {
         RaidSchedulerViewModel(
-            observeRaidsUseCase = get(),
-            deleteRaidsUseCase = get(),
+            getRaidsUseCase = get(),
+            deleteRaidUseCase = get(),
             snackbarController = get(),
             stringProvider = get(),
-            saveRaidUseCase = get(),
+            createRaidUseCase = get(),
             searchSteamUserUseCase = get(),
-            alarmScheduler = get()
+            alarmScheduler = get(),
+            connectivityObserver = get()
         )
     }
     viewModel { (raid: Raid?) ->
         RaidFormViewModel(
             raid = raid,
-            saveRaidUseCase = get(),
+            createRaidUseCase = get(),
+            updateRaidUseCase = get(),
             searchSteamUserUseCase = get(),
             alarmScheduler = get(),
             permissionsController = get(),

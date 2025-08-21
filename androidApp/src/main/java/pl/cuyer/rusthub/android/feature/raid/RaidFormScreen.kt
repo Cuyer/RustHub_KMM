@@ -20,7 +20,6 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -312,8 +311,14 @@ fun RaidFormScreen(
                         containerColor = MaterialTheme.colorScheme.surfaceContainer,
                         contentColor = contentColorFor(MaterialTheme.colorScheme.surfaceContainer)
                     ),
+                    isLoading = state.value.isSaving,
                 ) {
-                    Text(stringResource(SharedRes.strings.save))
+                    val textRes = if (state.value.id == null) {
+                        SharedRes.strings.save
+                    } else {
+                        SharedRes.strings.update
+                    }
+                    Text(stringResource(textRes))
                 }
             }
         }

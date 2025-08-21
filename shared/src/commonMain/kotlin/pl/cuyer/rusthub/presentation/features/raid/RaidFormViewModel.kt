@@ -1,10 +1,15 @@
 package pl.cuyer.rusthub.presentation.features.raid
 
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -18,7 +23,8 @@ import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.Raid
 import pl.cuyer.rusthub.domain.model.SteamUser
-import pl.cuyer.rusthub.domain.usecase.SaveRaidUseCase
+import pl.cuyer.rusthub.domain.usecase.CreateRaidUseCase
+import pl.cuyer.rusthub.domain.usecase.UpdateRaidUseCase
 import pl.cuyer.rusthub.domain.usecase.SearchSteamUserUseCase
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.AlarmScheduler
@@ -27,6 +33,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.util.toUserMessage
 import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.DeniedException
@@ -37,7 +44,8 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 class RaidFormViewModel(
     raid: Raid?,
-    private val saveRaidUseCase: SaveRaidUseCase,
+    private val createRaidUseCase: CreateRaidUseCase,
+    private val updateRaidUseCase: UpdateRaidUseCase,
     private val searchSteamUserUseCase: SearchSteamUserUseCase,
     private val alarmScheduler: AlarmScheduler,
     private val permissionsController: PermissionsController,
@@ -64,6 +72,8 @@ class RaidFormViewModel(
         started = SharingStarted.WhileSubscribed(5_000L),
         initialValue = _state.value
     )
+
+    private var saveJob: Job? = null
 
     fun onAction(action: RaidFormAction) {
         when (action) {
@@ -98,7 +108,7 @@ class RaidFormViewModel(
         val queries = rawQuery.split(",")
             .map { it.trim() }
             .filter { it.isNotBlank() }
-            .take(4 - existing)
+            .take(6 - existing)
         if (queries.isEmpty()) {
             _state.update {
                 it.copy(searchNotFound = true, selectedFoundIds = emptySet())
@@ -136,7 +146,7 @@ class RaidFormViewModel(
         } else {
             current.foundUsers
         }
-        val newIds = (current.steamIds + toAdd.map { it.steamId }).distinct().take(4)
+        val newIds = (current.steamIds + toAdd.map { it.steamId }).distinct().take(6)
         _state.update {
             it.copy(
                 steamIds = newIds,
@@ -191,19 +201,49 @@ class RaidFormViewModel(
             steamIds = current.steamIds,
             description = current.description.ifBlank { null }
         )
-        coroutineScope.launch {
-            saveRaidUseCase(raid)
-            runCatching {
-                permissionsController.providePermission(Permission.REMOTE_NOTIFICATION)
-                alarmScheduler.cancel(raid)
-                alarmScheduler.schedule(raid)
-            }.onFailure { error ->
-                when (error) {
-                    is DeniedAlwaysException -> permissionsController.openAppSettings()
-                    is DeniedException -> Unit
-                }
+        saveJob?.cancel()
+        saveJob = coroutineScope.launch {
+            val flow = if (current.id == null) {
+                createRaidUseCase(raid)
+            } else {
+                updateRaidUseCase(raid)
             }
-            _uiEvent.send(UiEvent.NavigateUp)
+            flow
+                .onStart { _state.update { it.copy(isSaving = true) } }
+                .onCompletion { _state.update { it.copy(isSaving = false) } }
+                .catch { e ->
+                    snackbarController.sendEvent(
+                        SnackbarEvent(
+                            message = e.toUserMessage(stringProvider)
+                                ?: stringProvider.get(SharedRes.strings.error_unknown),
+                            duration = Duration.SHORT
+                        )
+                    )
+                }
+                .collectLatest { result ->
+                    when (result) {
+                        is Result.Success -> {
+                            runCatching {
+                                permissionsController.providePermission(Permission.REMOTE_NOTIFICATION)
+                                alarmScheduler.cancel(raid)
+                                alarmScheduler.schedule(raid)
+                            }.onFailure { error ->
+                                when (error) {
+                                    is DeniedAlwaysException -> permissionsController.openAppSettings()
+                                    is DeniedException -> Unit
+                                }
+                            }
+                            _uiEvent.send(UiEvent.NavigateUp)
+                        }
+                        is Result.Error -> snackbarController.sendEvent(
+                            SnackbarEvent(
+                                message = result.exception.toUserMessage(stringProvider)
+                                    ?: stringProvider.get(SharedRes.strings.error_unknown),
+                                duration = Duration.SHORT
+                            )
+                        )
+                    }
+                }
         }
     }
 }

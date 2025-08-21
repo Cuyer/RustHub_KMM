@@ -397,6 +397,7 @@
     <string name="offline_cached_servers_info">Network unavailable. Showing cached servers.</string>
     <string name="no_connection">No internet connection.</string>
     <string name="offline_cached_items_info">Network unavailable. Showing cached items.</string>
+    <string name="offline_cached_raids_info">Network unavailable. Showing cached raids.</string>
     <string name="subscription_disabled">Subscriptions are currently disabled.</string>
     <string name="connect_manage_subscription">Connect to the internet to manage your subscription.</string>
     <string name="no_servers_available_offline">No servers available offline.</string>
@@ -404,6 +405,8 @@
     <string name="no_items_available_offline">No items available offline.</string>
     <string name="no_items_available">No items available.</string>
     <string name="no_monuments_available">No monuments available.</string>
+    <string name="no_raids_available_offline">No raids available offline.</string>
+    <string name="no_raids_available">No raids available.</string>
     <string name="error_timeout">Request timed out. Please try again.</string>
     <string name="error_service_unavailable">Service temporarily unavailable. Try again later.</string>
     <string name="error_bad_request">Bad request.</string>
@@ -513,9 +516,11 @@
     <string name="raid_name">Name</string>
     <string name="raid_date_time">Date and Time</string>
     <string name="raid_target">Target Steam IDs</string>
+    <string name="raid_data">Raid data</string>
+    <string name="targets">Targets</string>
     <string name="steam_id">Steam IDs</string>
     <string name="enter_steam_id_or_name">Enter Steam IDs</string>
-    <string name="search_players_info">Search up to 4 players separated by ","</string>
+    <string name="search_players_info">Search up to 6 players separated by ","</string>
     <string name="raid_form_info">Complete the form to schedule a raid. You'll receive a notification and can track targets' online status.</string>
     <string name="add">Add</string>
     <string name="no_user_found">No user found</string>
@@ -523,6 +528,7 @@
     <string name="edit_raid">Edit Raid</string>
     <string name="required">Required</string>
     <string name="save">Save</string>
+    <string name="update">Update</string>
     <string name="edit">Edit</string>
     <string name="undo">Undo</string>
     <string name="raids_deleted">%1$d raids deleted</string>

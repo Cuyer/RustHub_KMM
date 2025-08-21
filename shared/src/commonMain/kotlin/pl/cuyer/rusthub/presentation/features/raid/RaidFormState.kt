@@ -16,5 +16,6 @@ data class RaidFormState(
     val searchLoading: Boolean = false,
     val foundUsers: List<SteamUser> = emptyList(),
     val selectedFoundIds: Set<String> = emptySet(),
-    val searchNotFound: Boolean = false
+    val searchNotFound: Boolean = false,
+    val isSaving: Boolean = false
 )

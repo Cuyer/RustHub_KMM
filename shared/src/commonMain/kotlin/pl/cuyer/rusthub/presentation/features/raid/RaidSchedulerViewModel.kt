@@ -1,12 +1,17 @@
 package pl.cuyer.rusthub.presentation.features.raid
 
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -15,9 +20,9 @@ import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.domain.model.Raid
 import pl.cuyer.rusthub.domain.model.SteamUser
-import pl.cuyer.rusthub.domain.usecase.DeleteRaidsUseCase
-import pl.cuyer.rusthub.domain.usecase.ObserveRaidsUseCase
-import pl.cuyer.rusthub.domain.usecase.SaveRaidUseCase
+import pl.cuyer.rusthub.domain.usecase.DeleteRaidUseCase
+import pl.cuyer.rusthub.domain.usecase.GetRaidsUseCase
+import pl.cuyer.rusthub.domain.usecase.CreateRaidUseCase
 import pl.cuyer.rusthub.domain.usecase.SearchSteamUserUseCase
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
@@ -29,15 +34,18 @@ import pl.cuyer.rusthub.presentation.navigation.UiEvent.*
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.util.AlarmScheduler
+import pl.cuyer.rusthub.util.ConnectivityObserver
+import pl.cuyer.rusthub.util.toUserMessage
 
 class RaidSchedulerViewModel(
-    observeRaidsUseCase: ObserveRaidsUseCase,
-    private val deleteRaidsUseCase: DeleteRaidsUseCase,
+    private val getRaidsUseCase: GetRaidsUseCase,
+    private val deleteRaidUseCase: DeleteRaidUseCase,
     private val snackbarController: SnackbarController,
     private val stringProvider: StringProvider,
-    private val saveRaidUseCase: SaveRaidUseCase,
+    private val createRaidUseCase: CreateRaidUseCase,
     private val searchSteamUserUseCase: SearchSteamUserUseCase,
     private val alarmScheduler: AlarmScheduler,
+    private val connectivityObserver: ConnectivityObserver,
 ) : BaseViewModel() {
 
     private var recentlyDeleted: List<Raid> = emptyList()
@@ -52,29 +60,11 @@ class RaidSchedulerViewModel(
         initialValue = RaidSchedulerState()
     )
 
+    private var loadJob: Job? = null
+    private var deleteJob: Job? = null
+
     init {
-        observeRaidsUseCase()
-            .onEach { raids ->
-                _state.update { it.copy(raids = raids) }
-                val missing = raids.flatMap { it.steamIds }
-                    .filter { _state.value.users[it] == null }
-                    .distinct()
-                if (missing.isNotEmpty()) {
-                    searchSteamUserUseCase(missing)
-                        .onEach { result ->
-                            if (result is Result.Success) {
-                                _state.update { state ->
-                                    val fetched = result.data.associateBy { it.steamId }
-                                    val notFound = missing.filter { it !in fetched.keys }.associateWith { null }
-                                    state.copy(users = state.users + fetched + notFound)
-                                }
-                            }
-                        }
-                        .launchIn(coroutineScope)
-                }
-            }
-            .catch { }
-            .launchIn(coroutineScope)
+        observeConnectivity()
     }
 
     fun onAction(action: RaidSchedulerAction) {
@@ -87,7 +77,7 @@ class RaidSchedulerViewModel(
             is RaidSchedulerAction.OnMoveRaid -> moveRaid(action.from, action.to)
             RaidSchedulerAction.OnDeleteSelected -> deleteRaids(_state.value.selectedIds.toList())
             RaidSchedulerAction.OnEditSelected -> editSelected()
-
+            RaidSchedulerAction.OnRefresh -> loadRaids()
             is RaidSchedulerAction.OnNavigateToRaid -> navigateToRaid(raid = action.raid)
         }
     }
@@ -132,27 +122,122 @@ class RaidSchedulerViewModel(
     private fun deleteRaids(ids: List<String>) {
         if (ids.isEmpty()) return
         val raidsToDelete = _state.value.raids.filter { it.id in ids }
-        coroutineScope.launch {
+        deleteJob?.cancel()
+        deleteJob = coroutineScope.launch {
             recentlyDeleted = raidsToDelete
             raidsToDelete.forEach { alarmScheduler.cancel(it) }
-            deleteRaidsUseCase(ids)
-            _state.update { it.copy(selectedIds = emptySet()) }
-            snackbarController.sendEvent(
-                SnackbarEvent(
-                    message = stringProvider.get(SharedRes.strings.raids_deleted, ids.size),
-                    action = SnackbarAction(stringProvider.get(SharedRes.strings.undo)) {
-                        coroutineScope.launch {
-                            recentlyDeleted.forEach {
-                                saveRaidUseCase(it)
-                                alarmScheduler.cancel(it)
-                                alarmScheduler.schedule(it)
-                            }
-                            recentlyDeleted = emptyList()
+            runCatching {
+                ids.map { id ->
+                    async {
+                        deleteRaidUseCase(id).collect { result ->
+                            if (result is Result.Error) throw result.exception
                         }
-                    },
-                    duration = Duration.SHORT
+                    }
+                }.awaitAll()
+                _state.update { it.copy(selectedIds = emptySet(), raids = it.raids.filterNot { raid -> raid.id in ids }) }
+                snackbarController.sendEvent(
+                    SnackbarEvent(
+                        message = stringProvider.get(SharedRes.strings.raids_deleted, ids.size),
+                        action = SnackbarAction(stringProvider.get(SharedRes.strings.undo)) {
+                            coroutineScope.launch {
+                                runCatching {
+                                    recentlyDeleted.map { raid ->
+                                        async {
+                                            createRaidUseCase(raid).collect { res ->
+                                                if (res is Result.Error) throw res.exception
+                                            }
+                                            alarmScheduler.cancel(raid)
+                                            alarmScheduler.schedule(raid)
+                                        }
+                                    }.awaitAll()
+                                    recentlyDeleted = emptyList()
+                                    loadRaids()
+                                }.onFailure { e ->
+                                    snackbarController.sendEvent(
+                                        SnackbarEvent(
+                                            message = e.toUserMessage(stringProvider)
+                                                ?: stringProvider.get(SharedRes.strings.error_unknown),
+                                            duration = Duration.SHORT,
+                                        )
+                                    )
+                                }
+                            }
+                        },
+                        duration = Duration.SHORT,
+                    )
                 )
-            )
+            }.onFailure { e ->
+                snackbarController.sendEvent(
+                    SnackbarEvent(
+                        message = e.toUserMessage(stringProvider)
+                            ?: stringProvider.get(SharedRes.strings.error_unknown),
+                        duration = Duration.SHORT,
+                    )
+                )
+            }
         }
+    }
+
+    private fun loadRaids() {
+        loadJob?.cancel()
+        loadJob = getRaidsUseCase()
+            .onStart { _state.update { it.copy(isRefreshing = true, hasError = false) } }
+            .onEach { result ->
+                when (result) {
+                    is Result.Success -> {
+                        val raids = result.data
+                        _state.update { it.copy(raids = raids, isRefreshing = false, hasError = false) }
+                        val missing = raids.flatMap { it.steamIds }
+                            .filter { _state.value.users[it] == null }
+                            .distinct()
+                        if (missing.isNotEmpty()) {
+                            searchSteamUserUseCase(missing)
+                                .onEach { res ->
+                                    if (res is Result.Success) {
+                                        _state.update { state ->
+                                            val fetched = res.data.associateBy { it.steamId }
+                                            val notFound = missing.filter { it !in fetched.keys }.associateWith { null }
+                                            state.copy(users = state.users + fetched + notFound)
+                                        }
+                                    }
+                                }
+                                .launchIn(coroutineScope)
+                        }
+                    }
+                    is Result.Error -> {
+                        _state.update { it.copy(isRefreshing = false, hasError = true) }
+                        snackbarController.sendEvent(
+                            SnackbarEvent(
+                                message = result.exception.toUserMessage(stringProvider)
+                                    ?: stringProvider.get(SharedRes.strings.error_unknown),
+                                duration = Duration.SHORT
+                            )
+                        )
+                    }
+                }
+            }
+            .catch { e ->
+                _state.update { it.copy(isRefreshing = false, hasError = true) }
+                snackbarController.sendEvent(
+                    SnackbarEvent(
+                        message = e.toUserMessage(stringProvider)
+                            ?: stringProvider.get(SharedRes.strings.error_unknown),
+                        duration = Duration.SHORT
+                    )
+                )
+            }
+            .launchIn(coroutineScope)
+    }
+
+    private fun observeConnectivity() {
+        connectivityObserver.isConnected
+            .onEach { connected ->
+                val wasDisconnected = state.value.isConnected.not() && connected
+                _state.update { it.copy(isConnected = connected) }
+                if (wasDisconnected) {
+                    loadRaids()
+                }
+            }
+            .launchIn(coroutineScope)
     }
 }
