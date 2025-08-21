@@ -242,7 +242,8 @@ actual fun platformModule(passphrase: String): Module = module {
             deleteRaidsUseCase = get(),
             snackbarController = get(),
             stringProvider = get(),
-            saveRaidUseCase = get()
+            saveRaidUseCase = get(),
+            searchSteamUserUseCase = get()
         )
     }
     viewModel { (raid: Raid?) ->

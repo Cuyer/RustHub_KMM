@@ -27,6 +27,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import coil3.compose.SubcomposeAsyncImage
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -48,6 +50,7 @@ import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.Raid
+import pl.cuyer.rusthub.domain.model.SteamUser
 import pl.cuyer.rusthub.presentation.features.raid.RaidSchedulerAction
 import pl.cuyer.rusthub.presentation.features.raid.RaidSchedulerState
 import pl.cuyer.rusthub.presentation.navigation.NavKey
@@ -56,6 +59,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlin.time.Clock
+import pl.cuyer.rusthub.util.formatLocalDateTime
 
 @Composable
 fun RaidSchedulerScreen(
@@ -147,6 +151,7 @@ fun RaidSchedulerScreen(
             itemsIndexed(raids, key = { _, raid -> raid.id }) { index, raid ->
                 RaidItem(
                     raid = raid,
+                    user = state.value.users[raid.steamId],
                     selected = raid.id in selectedIds,
                     selectionMode = selectionMode,
                     onLongClick = { onAction(RaidSchedulerAction.OnRaidLongClick(raid.id)) },
@@ -167,6 +172,7 @@ fun RaidSchedulerScreen(
 @Composable
 private fun RaidItem(
     raid: Raid,
+    user: SteamUser?,
     selected: Boolean,
     selectionMode: Boolean,
     onLongClick: () -> Unit,
@@ -199,18 +205,21 @@ private fun RaidItem(
         },
         enableDismissFromStartToEnd = false,
         content = {
-            val timeLeft = remember(raid.dateTime) {
+            val daysShort = stringResource(SharedRes.strings.days_short)
+            val hoursShort = stringResource(SharedRes.strings.hours_short)
+            val minutesShort = stringResource(SharedRes.strings.minutes_short)
+            val timeLeft = remember(raid.dateTime, daysShort, hoursShort, minutesShort) {
                 val diff =
                     raid.dateTime.toInstant(TimeZone.currentSystemDefault()) - Clock.System.now()
                 val minutes = diff.inWholeMinutes
-                if (minutes <= 0) "0m" else {
+                if (minutes <= 0) "0$minutesShort" else {
                     val days = minutes / (60 * 24)
                     val hours = (minutes % (60 * 24)) / 60
                     val mins = minutes % 60
                     buildString {
-                        if (days > 0) append("${days}d ")
-                        if (hours > 0) append("${hours}h ")
-                        append("${mins}m")
+                        if (days > 0) append("${days}$daysShort ")
+                        if (hours > 0) append("${hours}$hoursShort ")
+                        append("${mins}$minutesShort")
                     }
                 }
             }
@@ -251,22 +260,69 @@ private fun RaidItem(
                     ) {
                         Checkbox(checked = selected, onCheckedChange = { onLongClick() })
                     }
-                    Column {
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(raid.name, style = MaterialTheme.typography.titleMedium)
-                        Text(raid.dateTime.toString(), style = MaterialTheme.typography.bodyMedium)
-                        Text(raid.steamId, style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            formatLocalDateTime(raid.dateTime),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                         Text(
                             stringResource(SharedRes.strings.time_to_raid, timeLeft),
                             style = MaterialTheme.typography.bodyMedium
                         )
                         Text(
-                            stringResource(SharedRes.strings.estimated_raid_time, "1h"),
+                            stringResource(SharedRes.strings.estimated_raid_time, "1$hoursShort"),
                             style = MaterialTheme.typography.bodyMedium
                         )
+                    }
+                    user?.let {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(spacing.small),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(horizontalAlignment = Alignment.End) {
+                                Text(it.personaName, style = MaterialTheme.typography.bodyMedium)
+                                val offline = stringResource(SharedRes.strings.offline)
+                                val online = stringResource(SharedRes.strings.online)
+                                val busy = stringResource(SharedRes.strings.busy)
+                                val away = stringResource(SharedRes.strings.away)
+                                val snooze = stringResource(SharedRes.strings.snooze)
+                                val lookingToTrade = stringResource(SharedRes.strings.looking_to_trade)
+                                val lookingToPlay = stringResource(SharedRes.strings.looking_to_play)
+                                val unknown = stringResource(SharedRes.strings.unknown)
+                                Text(
+                                    text = when (it.personaState) {
+                                        0 -> offline
+                                        1 -> online
+                                        2 -> busy
+                                        3 -> away
+                                        4 -> snooze
+                                        5 -> lookingToTrade
+                                        6 -> lookingToPlay
+                                        else -> unknown
+                                    },
+                                    color = personaStateColor(it.personaState),
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                            SubcomposeAsyncImage(
+                                model = it.avatar,
+                                contentDescription = null,
+                                modifier = Modifier.size(40.dp),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
                     }
                 }
             }
         }
     )
+}
+
+private fun personaStateColor(state: Int): Color = when (state) {
+    1 -> Color(0xFF4CAF50)
+    2 -> Color(0xFFF44336)
+    3 -> Color(0xFFFFC107)
+    else -> Color.Gray
 }
 

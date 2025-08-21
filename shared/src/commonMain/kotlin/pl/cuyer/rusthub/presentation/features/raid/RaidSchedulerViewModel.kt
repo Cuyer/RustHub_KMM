@@ -14,9 +14,11 @@ import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.domain.model.Raid
+import pl.cuyer.rusthub.domain.model.SteamUser
 import pl.cuyer.rusthub.domain.usecase.DeleteRaidsUseCase
 import pl.cuyer.rusthub.domain.usecase.ObserveRaidsUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveRaidUseCase
+import pl.cuyer.rusthub.domain.usecase.SearchSteamUserUseCase
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarAction
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
@@ -25,6 +27,7 @@ import pl.cuyer.rusthub.presentation.navigation.RaidForm
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.presentation.navigation.UiEvent.*
 import pl.cuyer.rusthub.util.StringProvider
+import pl.cuyer.rusthub.common.Result
 
 class RaidSchedulerViewModel(
     observeRaidsUseCase: ObserveRaidsUseCase,
@@ -32,6 +35,7 @@ class RaidSchedulerViewModel(
     private val snackbarController: SnackbarController,
     private val stringProvider: StringProvider,
     private val saveRaidUseCase: SaveRaidUseCase,
+    private val searchSteamUserUseCase: SearchSteamUserUseCase,
 ) : BaseViewModel() {
 
     private var recentlyDeleted: List<Raid> = emptyList()
@@ -48,7 +52,22 @@ class RaidSchedulerViewModel(
 
     init {
         observeRaidsUseCase()
-            .onEach { raids -> _state.update { it.copy(raids = raids) } }
+            .onEach { raids ->
+                _state.update { it.copy(raids = raids) }
+                raids.forEach { raid ->
+                    if (_state.value.users[raid.steamId] == null) {
+                        searchSteamUserUseCase(raid.steamId)
+                            .onEach { result ->
+                                if (result is Result.Success) {
+                                    _state.update { state ->
+                                        state.copy(users = state.users + (raid.steamId to result.data))
+                                    }
+                                }
+                            }
+                            .launchIn(coroutineScope)
+                    }
+                }
+            }
             .catch { }
             .launchIn(coroutineScope)
     }

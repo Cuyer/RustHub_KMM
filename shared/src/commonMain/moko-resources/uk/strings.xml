@@ -507,7 +507,7 @@
     <string name="median_radiation_level">Середній рівень випромінювання</string>
     <string name="max_radiation_level">Максимальний рівень випромінювання</string>
     <string name="radiation">Випромінювання</string>
-    <string name="raids">Raids</string>
+    <string name="raids">Рейди</string>
     <string name="raid_name">Name</string>
     <string name="raid_date_time">Date and Time</string>
     <string name="raid_target">Target Steam ID</string>
@@ -521,4 +521,17 @@
     <string name="undo">Undo</string>
     <string name="raids_deleted">%1$d raids deleted</string>
     <string name="estimated_raid_time">Estimated time: %1$s</string>
+    <string name="ok">ОК</string>
+    <string name="select_time">Вибрати час</string>
+    <string name="busy">Зайнятий</string>
+    <string name="away">Відійшов</string>
+    <string name="snooze">Призупинено</string>
+    <string name="looking_to_trade">Хоче обмінятися</string>
+    <string name="looking_to_play">Хоче грати</string>
+    <string name="unknown">Невідомо</string>
+    <string name="last_logoff">Останній вихід: %1$s</string>
+    <string name="game">Гра: %1$s</string>
+    <string name="days_short">д</string>
+    <string name="hours_short">г</string>
+    <string name="minutes_short">хв</string>
 </resources>

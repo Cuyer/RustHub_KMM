@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.android.feature.raid
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,7 +45,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusEvent
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -64,6 +64,8 @@ import pl.cuyer.rusthub.presentation.features.raid.RaidFormAction
 import pl.cuyer.rusthub.presentation.features.raid.RaidFormState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import java.util.Calendar
+import kotlinx.datetime.LocalDateTime
+import pl.cuyer.rusthub.util.formatLocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,7 +79,6 @@ fun RaidFormScreen(
         if (event is UiEvent.NavigateUp) onNavigateUp()
     }
 
-    val context = LocalContext.current
     val nameState = rememberSyncedTextFieldState(state.value.name)
     val descriptionState = rememberSyncedTextFieldState(state.value.description)
 
@@ -100,6 +101,9 @@ fun RaidFormScreen(
         initialMinute = calendar.get(Calendar.MINUTE),
         is24Hour = true
     )
+
+    val focusManager = LocalFocusManager.current
+    val interactionSource = remember { MutableInteractionSource() }
 
     Scaffold(
         topBar = {
@@ -126,6 +130,9 @@ fun RaidFormScreen(
                 .consumeWindowInsets(innerPadding)
                 .padding(spacing.medium)
                 .fillMaxSize()
+                .clickable(interactionSource = interactionSource, indication = null) {
+                    focusManager.clearFocus()
+                }
         ) {
             SteamUserSearchDialog(state.value, onAction)
 
@@ -145,7 +152,7 @@ fun RaidFormScreen(
                                 showTimePicker = true
                             }
                             showDatePicker = false
-                        }) { Text("OK") }
+                        }) { Text(stringResource(SharedRes.strings.ok)) }
                     },
                     dismissButton = {
                         AppTextButton(onClick = { showDatePicker = false }) {
@@ -171,9 +178,9 @@ fun RaidFormScreen(
                                     )
                                 )
                             )
-                        }) { Text("OK") }
+                        }) { Text(stringResource(SharedRes.strings.ok)) }
                     },
-                    title = { Text("Select Time") },
+                    title = { Text(stringResource(SharedRes.strings.select_time)) },
                     dismissButton = {
                         AppTextButton(onClick = { showTimePicker = false }) {
                             Text(stringResource(SharedRes.strings.cancel))
@@ -189,7 +196,6 @@ fun RaidFormScreen(
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(spacing.medium)
             ) {
-                val focusManager = LocalFocusManager.current
                 AppTextField(
                     modifier = Modifier.fillMaxWidth(),
                     textFieldState = nameState,
@@ -203,8 +209,17 @@ fun RaidFormScreen(
                     showCharacterCounter = true,
                     focusManager = focusManager
                 )
+                val formattedDate = remember(state.value.dateTime) {
+                    try {
+                        formatLocalDateTime(
+                            LocalDateTime.parse(state.value.dateTime.replace(' ', 'T'))
+                        )
+                    } catch (e: Exception) {
+                        state.value.dateTime
+                    }
+                }
                 OutlinedTextField(
-                    value = state.value.dateTime,
+                    value = formattedDate,
                     trailingIcon = { Icon(Icons.Default.CalendarToday, contentDescription = null) },
                     onValueChange = {},
                     label = { Text(stringResource(SharedRes.strings.raid_date_time)) },
