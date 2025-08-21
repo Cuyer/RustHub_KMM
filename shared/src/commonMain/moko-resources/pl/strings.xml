@@ -510,7 +510,7 @@
     <string name="raids">Rajdy</string>
     <string name="raid_name">Nazwa</string>
     <string name="raid_date_time">Data i godzina</string>
-    <string name="raid_target">Docelowe identyfikatory Steam</string>
+    <string name="raid_target">Identyfikatory Steam</string>
     <string name="raid_data">Dane rajdu</string>
     <string name="targets">Cele</string>
     <string name="steam_id">Identyfikatory Steam</string>
