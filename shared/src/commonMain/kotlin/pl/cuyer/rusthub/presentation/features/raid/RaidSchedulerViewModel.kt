@@ -278,7 +278,11 @@ class RaidSchedulerViewModel(
     private fun observeConnectivity() {
         connectivityObserver.isConnected
             .onEach { connected ->
+                val wasDisconnected = state.value.isConnected.not() && connected
                 _state.update { it.copy(isConnected = connected) }
+                if (wasDisconnected) {
+                    loadRaids()
+                }
             }
             .launchIn(coroutineScope)
     }
