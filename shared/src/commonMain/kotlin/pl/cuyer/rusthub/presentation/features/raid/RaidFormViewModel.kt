@@ -105,11 +105,11 @@ class RaidFormViewModel(
 
     private fun searchUser() {
         val rawQuery = _state.value.searchQuery
-        val existing = _state.value.steamIds.size
+
         val queries = rawQuery.split(",")
             .map { it.trim() }
             .filter { it.isNotBlank() }
-            .take(6 - existing)
+            .take(6)
         if (queries.isEmpty()) {
             _state.update {
                 it.copy(searchNotFound = true, selectedFoundIds = emptySet())
