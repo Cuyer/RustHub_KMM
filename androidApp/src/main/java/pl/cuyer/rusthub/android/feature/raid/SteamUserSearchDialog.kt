@@ -122,7 +122,7 @@ fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Un
                     state.foundUsers.isNotEmpty() -> {
                         Column(
                             modifier = Modifier
-                                .heightIn(max = 400.dp)
+                                .heightIn(max = 300.dp)
                                 .verticalScroll(rememberScrollState()),
                             verticalArrangement = Arrangement.spacedBy(spacing.small)
                         ) {
