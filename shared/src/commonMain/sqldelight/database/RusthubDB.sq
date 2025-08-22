@@ -759,12 +759,43 @@ WHERE (:category IS NULL OR categories LIKE '%' || :category || '%')
 ORDER BY name
 LIMIT :limit OFFSET :offset;
 
+-- Returns a page of items filtered by query and category across English and selected language
+findItemsPagedFilteredMultiLanguage:
+SELECT *
+FROM itemEntity
+WHERE language = :language
+  AND (:category IS NULL OR categories LIKE '%' || :category || '%')
+  AND short_name IN (
+    SELECT short_name
+    FROM itemEntity
+    WHERE short_name IS NOT NULL
+      AND language IN (:language, 'ENGLISH')
+      AND (:category IS NULL OR categories LIKE '%' || :category || '%')
+      AND name LIKE '%' || :name || '%' COLLATE NOCASE
+  )
+ORDER BY name
+LIMIT :limit OFFSET :offset;
+
 countPagedItemsFiltered:
 SELECT COUNT(*)
 FROM itemEntity
 WHERE (:category IS NULL OR categories LIKE '%' || :category || '%')
   AND (name LIKE '%' || :name || '%' COLLATE NOCASE)
   AND language = :language;
+
+countPagedItemsFilteredMultiLanguage:
+SELECT COUNT(*)
+FROM itemEntity
+WHERE language = :language
+  AND (:category IS NULL OR categories LIKE '%' || :category || '%')
+  AND short_name IN (
+    SELECT short_name
+    FROM itemEntity
+    WHERE short_name IS NOT NULL
+      AND language IN (:language, 'ENGLISH')
+      AND (:category IS NULL OR categories LIKE '%' || :category || '%')
+      AND name LIKE '%' || :name || '%' COLLATE NOCASE
+  );
 
 CREATE TABLE monumentEntity (
     slug TEXT NOT NULL,
