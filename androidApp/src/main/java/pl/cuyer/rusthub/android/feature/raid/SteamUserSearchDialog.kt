@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -78,8 +79,7 @@ fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Un
         ) {
             Column(
                 modifier = Modifier
-                    .padding(spacing.medium)
-                    .verticalScroll(rememberScrollState()),
+                    .padding(spacing.medium),
                 verticalArrangement = Arrangement.spacedBy(spacing.medium)
             ) {
                 val queryState = rememberTextFieldState()
@@ -120,7 +120,12 @@ fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Un
                         }
                     }
                     state.foundUsers.isNotEmpty() -> {
-                        Column(verticalArrangement = Arrangement.spacedBy(spacing.small)) {
+                        Column(
+                            modifier = Modifier
+                                .heightIn(max = 300.dp)
+                                .verticalScroll(rememberScrollState()),
+                            verticalArrangement = Arrangement.spacedBy(spacing.small)
+                        ) {
                             state.foundUsers.forEach { user ->
                                 val selected = user.steamId in state.selectedFoundIds
                                 SteamUserCard(user = user, selected = selected) {
