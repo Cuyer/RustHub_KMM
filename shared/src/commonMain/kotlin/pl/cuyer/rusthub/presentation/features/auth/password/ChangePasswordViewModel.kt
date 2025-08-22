@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.presentation.features.auth.password
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import pl.cuyer.rusthub.util.catchAndLog
@@ -86,6 +87,7 @@ class ChangePasswordViewModel(
                     showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
+                    ensureActive()
                     when (result) {
                         is Result.Success -> {
                             snackbarController.sendEvent(

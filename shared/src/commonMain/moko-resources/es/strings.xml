@@ -247,6 +247,7 @@
     <string name="entities">Entidades</string>
     <string name="coming_soon">Muy pronto</string>
     <string name="search_items_check_details_how_to_craft_drop_and_raid_costs">Busque artículos y verifique sus detalles, elaboración, caídas y costos de redadas.</string>
+    <string name="schedule_raids_get_notified_and_track_targets_online_status">Programa incursiones, recibe notificaciones y controla el estado en línea de tus objetivos.</string>
     <string name="see_server_info_like_time_of_last_wipe_map_ranking_and_more">Consulte la información del servidor como la hora de la última limpieza, mapa, clasificación y más.</string>
     <string name="seed" translatable="false">Semilla</string>
     <string name="send_email">Enviar correo electrónico</string>
@@ -393,8 +394,9 @@
     <string name="monument_query_cannot_be_empty">Ingrese el nombre del monumento.</string>
     <string name="error_network">Error de red. Verifique su conexión.</string>
     <string name="offline_cached_servers_info">Red no disponible. Mostrando servidores en caché.</string>
-    <string name="offline">Sin conexión a Internet.</string>
+    <string name="no_connection">Sin conexión a Internet.</string>
     <string name="offline_cached_items_info">Red no disponible. Mostrando artículos en caché.</string>
+    <string name="offline_cached_raids_info">Red no disponible. Mostrando incursiones en caché.</string>
     <string name="subscription_disabled">Las suscripciones están actualmente deshabilitadas.</string>
     <string name="connect_manage_subscription">Conéctese a Internet para administrar su suscripción.</string>
     <string name="no_servers_available_offline">No hay servidores disponibles fuera de línea.</string>
@@ -402,6 +404,8 @@
     <string name="no_items_available_offline">No hay artículos disponibles fuera de línea.</string>
     <string name="no_items_available">No hay artículos disponibles.</string>
     <string name="no_monuments_available">No hay monumentos disponibles.</string>
+    <string name="no_raids_available_offline">No hay incursiones disponibles sin conexión.</string>
+    <string name="no_raids_available">No hay incursiones disponibles.</string>
     <string name="error_timeout">Solicitar tiempo fuera. Por favor intente de nuevo.</string>
     <string name="error_service_unavailable">Servicio temporalmente no disponible. Inténtalo de nuevo más tarde.</string>
     <string name="error_bad_request">Solicitud incorrecta.</string>
@@ -507,4 +511,42 @@
     <string name="median_radiation_level">Nivel medio de radiación</string>
     <string name="max_radiation_level">Nivel de radiación máxima</string>
     <string name="radiation">Radiación</string>
-    </resources>
+    <string name="raids">Incursiones</string>
+    <string name="raid_name">Nombre</string>
+    <string name="raid_date_time">Fecha y hora</string>
+    <string name="raid_target">IDs de Steam objetivo o URL personalizadas</string>
+    <string name="raid_data">Datos del raid</string>
+    <string name="targets">Objetivos</string>
+    <string name="steam_id">ID de Steam o URL personalizada</string>
+    <string name="enter_steam_id_or_name">Introduce IDs de Steam o URL personalizadas</string>
+    <string name="search_players_info">Busca hasta 6 jugadores por ID de Steam o URL personalizada separados por ","</string>
+    <string name="raid_form_info">Completa el formulario para programar una incursión. Recibirás una notificación y podrás ver el estado en línea de tus objetivos.</string>
+    <string name="raid_target_hint">Los objetivos pueden encontrarse por ID de Steam (ID numérica) o URL personalizada (nombre de perfil).</string>
+    <string name="add">Añadir</string>
+    <string name="no_user_found">No se encontró ningún usuario</string>
+    <string name="new_raid">Nueva incursión</string>
+    <string name="edit_raid">Editar incursión</string>
+    <string name="required">Obligatorio</string>
+    <string name="save">Guardar</string>
+    <string name="update">Actualizar</string>
+    <string name="edit">Editar</string>
+    <string name="undo">Deshacer</string>
+    <string name="raids_deleted">Se eliminaron %1$d incursiones</string>
+    <string name="estimated_raid_time">Tiempo estimado: %1$s</string>
+    <string name="ok">OK</string>
+    <string name="select_time">Seleccionar hora</string>
+    <string name="busy">Ocupado</string>
+    <string name="away">Ausente</string>
+    <string name="snooze">Durmiendo</string>
+    <string name="looking_to_trade">Buscando intercambiar</string>
+    <string name="looking_to_play">Buscando jugar</string>
+    <string name="unknown">Desconocido</string>
+    <string name="last_logoff">Última desconexión: %1$s</string>
+    <string name="game">Juego: %1$s</string>
+    <string name="days_short">d</string>
+    <string name="hours_short">h</string>
+    <string name="minutes_short">m</string>
+    <string name="raid_notification_scheduled">Serás notificado de la incursión a las %1$s</string>
+    <string name="exact_alarm_permission_required">Activa las alarmas exactas para guardar la incursión.</string>
+    <string name="its_time_to_raid">¡Es hora de atacar!</string>
+</resources>

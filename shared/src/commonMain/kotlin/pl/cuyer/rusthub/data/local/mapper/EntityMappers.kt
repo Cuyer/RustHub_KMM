@@ -16,7 +16,10 @@ import database.ItemEntity
 import database.ItemSearchQueryEntity
 import database.MonumentSearchQueryEntity
 import database.MonumentEntity
+import database.RaidEntity
+import kotlinx.datetime.LocalDateTime
 import pl.cuyer.rusthub.data.local.model.DifficultyEntity
+import kotlinx.datetime.toLocalDateTime
 import pl.cuyer.rusthub.data.local.model.FlagEntity
 import pl.cuyer.rusthub.data.local.model.MapsEntity
 import pl.cuyer.rusthub.data.local.model.OrderEntity
@@ -57,6 +60,7 @@ import pl.cuyer.rusthub.domain.model.ItemAttribute
 import pl.cuyer.rusthub.domain.model.Monument
 import pl.cuyer.rusthub.domain.model.MonumentAttributes
 import pl.cuyer.rusthub.domain.model.MonumentSpawns
+import pl.cuyer.rusthub.domain.model.Raid
 import pl.cuyer.rusthub.domain.model.MonumentPuzzle
 import pl.cuyer.rusthub.domain.model.UsableEntity
 import pl.cuyer.rusthub.domain.model.Mining
@@ -272,6 +276,16 @@ fun MonumentEntity.toMonument(json: Json): Monument {
             json.decodeFromString(ListSerializer(MonumentPuzzle.serializer()), it)
         },
         language = language.toDomain(),
+    )
+}
+
+fun RaidEntity.toRaid(): Raid {
+    return Raid(
+        id = id,
+        name = name,
+        dateTime = LocalDateTime.parse(dateTime),
+        steamIds = steamIds.split(",").filter { it.isNotBlank() },
+        description = description
     )
 }
 

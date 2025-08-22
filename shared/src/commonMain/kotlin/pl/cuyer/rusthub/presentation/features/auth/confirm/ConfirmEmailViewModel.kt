@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.presentation.features.auth.confirm
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import pl.cuyer.rusthub.util.catchAndLog
@@ -82,6 +83,7 @@ class ConfirmEmailViewModel(
                     showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
+                    ensureActive()
                     when (result) {
                         is Result.Success -> {
                             if (result.data.emailConfirmed) {
@@ -109,6 +111,7 @@ class ConfirmEmailViewModel(
                 .onCompletion { updateResendLoading(false) }
                 .catchAndLog { e -> showErrorSnackbar(e.toUserMessage(stringProvider)) }
                 .collectLatest { result ->
+                    ensureActive()
                     when (result) {
                         is Result.Success -> snackbarController.sendEvent(
                             SnackbarEvent(

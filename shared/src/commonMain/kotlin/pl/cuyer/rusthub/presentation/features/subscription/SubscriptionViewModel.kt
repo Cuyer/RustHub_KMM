@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ensureActive
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
@@ -200,6 +201,7 @@ class SubscriptionViewModel(
                     showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
+                    ensureActive()
                     when (result) {
                         is Result.Success -> refreshUser()
                         is Result.Error -> showErrorSnackbar(result.exception.toUserMessage(stringProvider))
@@ -215,6 +217,7 @@ class SubscriptionViewModel(
                 .onStart { _state.update { it.copy(isLoading = true, hasError = false) } }
                 .onCompletion { _state.update { it.copy(isLoading = false) } }
                 .collectLatest { result ->
+                    ensureActive()
                     when (result) {
                         is Result.Success -> _state.update {
                             it.copy(currentPlan = result.data?.plan, hasError = false)

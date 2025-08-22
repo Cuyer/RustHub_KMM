@@ -25,6 +25,9 @@ import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
+import pl.cuyer.rusthub.presentation.features.raid.RaidSchedulerViewModel
+import pl.cuyer.rusthub.presentation.features.raid.RaidFormViewModel
+import pl.cuyer.rusthub.domain.model.Raid
 import pl.cuyer.rusthub.common.user.UserEventController
 import pl.cuyer.rusthub.domain.usecase.ClearServerCacheUseCase
 import pl.cuyer.rusthub.util.AppCheckTokenProvider
@@ -48,6 +51,7 @@ import pl.cuyer.rusthub.presentation.features.ads.NativeAdViewModel
 import pl.cuyer.rusthub.util.ActivityProvider
 import pl.cuyer.rusthub.util.PurchaseSyncScheduler
 import pl.cuyer.rusthub.util.UserSyncScheduler
+import pl.cuyer.rusthub.util.AlarmScheduler
 import pl.cuyer.rusthub.domain.usecase.SetSubscribedUseCase
 import pl.cuyer.rusthub.data.local.purchase.PurchaseSyncDataSourceImpl
 import pl.cuyer.rusthub.domain.repository.purchase.PurchaseSyncDataSource
@@ -89,6 +93,7 @@ actual fun platformModule(passphrase: String): Module = module {
     single { MonumentsScheduler(get()) }
     single { PurchaseSyncScheduler(get()) }
     single { UserSyncScheduler(get()) }
+    single { AlarmScheduler(get()) }
     single { BillingRepositoryImpl(androidContext()) } bind BillingRepository::class
     single { MonumentSyncDataSourceImpl(get()) } bind MonumentSyncDataSource::class
     single { PurchaseSyncDataSourceImpl(get()) } bind PurchaseSyncDataSource::class
@@ -231,6 +236,31 @@ actual fun platformModule(passphrase: String): Module = module {
             remoteConfig = get(),
             connectivityObserver = get(),
             adsConsentManager = get(),
+        )
+    }
+    viewModel {
+        RaidSchedulerViewModel(
+            getRaidsUseCase = get(),
+            observeRaidsUseCase = get(),
+            deleteRaidUseCase = get(),
+            snackbarController = get(),
+            stringProvider = get(),
+            createRaidUseCase = get(),
+            searchSteamUserUseCase = get(),
+            alarmScheduler = get(),
+            connectivityObserver = get()
+        )
+    }
+    viewModel { (raid: Raid?) ->
+        RaidFormViewModel(
+            raid = raid,
+            createRaidUseCase = get(),
+            updateRaidUseCase = get(),
+            searchSteamUserUseCase = get(),
+            alarmScheduler = get(),
+            permissionsController = get(),
+            snackbarController = get(),
+            stringProvider = get(),
         )
     }
     viewModel {
