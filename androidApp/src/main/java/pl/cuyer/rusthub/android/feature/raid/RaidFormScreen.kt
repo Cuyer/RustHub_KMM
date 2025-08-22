@@ -279,6 +279,9 @@ fun RaidFormScreen(
                     value = state.value.steamIds.joinToString(", "),
                     onValueChange = {},
                     label = { Text(stringResource(SharedRes.strings.raid_target)) },
+                    supportingText = {
+                        Text(stringResource(SharedRes.strings.raid_target_hint))
+                    },
                     readOnly = true,
                     modifier = Modifier
                         .fillMaxWidth()

@@ -8,6 +8,12 @@ import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.model.SteamUser
 import pl.cuyer.rusthub.domain.repository.steam.SteamRepository
 
+/**
+ * Searches for Steam users using either a Steam ID or a vanity URL.
+ *
+ * A Steam ID is the numeric identifier for an account, while a vanity URL is
+ * the custom profile address chosen by the user.
+ */
 class SearchSteamUserUseCase(
     private val getSteamApiKeyUseCase: GetSteamApiKeyUseCase,
     private val steamRepository: SteamRepository,
