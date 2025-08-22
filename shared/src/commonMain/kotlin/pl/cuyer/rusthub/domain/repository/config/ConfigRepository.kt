@@ -5,4 +5,5 @@ import pl.cuyer.rusthub.common.Result
 
 interface ConfigRepository {
     fun getGoogleClientId(): Flow<Result<String>>
+    fun getSteamApiKey(): Flow<Result<String>>
 }

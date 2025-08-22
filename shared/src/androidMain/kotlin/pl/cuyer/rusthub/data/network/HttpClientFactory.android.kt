@@ -71,6 +71,11 @@ actual class HttpClientFactory actual constructor(
                     addNetworkInterceptor(certificateTransparencyInterceptor())
                 }
             }
+            install(ContentEncoding) {
+                gzip(1.0f)
+                deflate(0.9f)
+            }
+
             install(ContentNegotiation) {
                 json(json)
             }

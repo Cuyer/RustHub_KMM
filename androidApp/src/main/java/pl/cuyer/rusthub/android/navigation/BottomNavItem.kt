@@ -5,6 +5,7 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.Event
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
 import pl.cuyer.rusthub.SharedRes
@@ -15,6 +16,8 @@ import pl.cuyer.rusthub.presentation.navigation.MonumentList
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.Settings as SettingsNav
+import pl.cuyer.rusthub.presentation.navigation.RaidScheduler
+import pl.cuyer.rusthub.presentation.navigation.RaidForm
 import dev.icerock.moko.resources.StringResource
 import androidx.navigation3.runtime.NavKey
 
@@ -52,6 +55,14 @@ internal sealed interface BottomNavKey {
     }
 
     @Immutable
+    data object Raids : BottomNavKey {
+        override val root = RaidScheduler
+        override val icon = Icons.Filled.Event
+        override val label = SharedRes.strings.raids
+        override val isInHierarchy: (NavKey?) -> Boolean = { it is RaidScheduler || it is RaidForm }
+    }
+
+    @Immutable
     data object Settings : BottomNavKey {
         override val root = SettingsNav
         override val icon = Icons.Filled.Settings
@@ -64,5 +75,6 @@ internal val bottomNavItems: List<BottomNavKey> = listOf(
     BottomNavKey.Servers,
     BottomNavKey.Items,
     BottomNavKey.Monuments,
+    BottomNavKey.Raids,
     BottomNavKey.Settings
 )

@@ -143,6 +143,42 @@ fun ItemScreen(
     Scaffold(
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onBackground,
+        floatingActionButton = {
+            AnimatedVisibility(
+                visible = !isAtTop,
+                enter = slideInVertically(
+                    initialOffsetY = { it },
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioLowBouncy,
+                        stiffness = Spring.StiffnessVeryLow
+                    )
+                ) + scaleIn(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioLowBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
+                ),
+                exit = slideOutVertically(
+                    targetOffsetY = { it },
+                    animationSpec = tween(durationMillis = 150)
+                ),
+            ) {
+                FloatingActionButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            lazyListState.animateScrollToItem(0)
+                            scrollBehavior.scrollOffset = 1f
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowUpward,
+                        contentDescription = stringResource(SharedRes.strings.scroll_to_top),
+                        tint = contentColorFor(FloatingActionButtonDefaults.containerColor)
+                    )
+                }
+            }
+        },
         topBar = {
             LookaheadScope {
                 Column(
@@ -357,43 +393,6 @@ fun ItemScreen(
                             }
                         )
                     }
-                }
-            }
-            AnimatedVisibility(
-                visible = !isAtTop,
-                enter = slideInVertically(
-                    initialOffsetY = { it },
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioLowBouncy,
-                        stiffness = Spring.StiffnessVeryLow
-                    )
-                ) + scaleIn(
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioLowBouncy,
-                        stiffness = Spring.StiffnessLow
-                    )
-                ),
-                exit = slideOutVertically(
-                    targetOffsetY = { it },
-                    animationSpec = tween(durationMillis = 150)
-                ),
-                modifier = Modifier
-                    .padding(spacing.medium)
-                    .align(Alignment.BottomEnd)
-            ) {
-                FloatingActionButton(
-                    onClick = {
-                        coroutineScope.launch {
-                            lazyListState.animateScrollToItem(0)
-                            scrollBehavior.scrollOffset = 1f
-                        }
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowUpward,
-                        contentDescription = stringResource(SharedRes.strings.scroll_to_top),
-                        tint = contentColorFor(FloatingActionButtonDefaults.containerColor)
-                    )
                 }
             }
         }

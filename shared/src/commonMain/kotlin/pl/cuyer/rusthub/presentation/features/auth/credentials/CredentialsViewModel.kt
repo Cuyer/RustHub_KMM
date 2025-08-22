@@ -153,6 +153,7 @@ class CredentialsViewModel(
                     showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
+                    ensureActive()
                     when (result) {
                         is Result.Success -> {
                             val token = googleAuthClient.getIdToken(result.data)

@@ -858,3 +858,26 @@ SELECT * FROM monumentSyncEntity WHERE id = :id;
 
 clearMonumentSync:
 DELETE FROM monumentSyncEntity;
+
+CREATE TABLE raidEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    dateTime TEXT NOT NULL,
+    steamIds TEXT NOT NULL,
+    description TEXT
+);
+
+upsertRaid:
+INSERT INTO raidEntity(id, name, dateTime, steamIds, description)
+VALUES (:id, :name, :dateTime, :steamIds, :description)
+ON CONFLICT(id) DO UPDATE SET
+    name = excluded.name,
+    dateTime = excluded.dateTime,
+    steamIds = excluded.steamIds,
+    description = excluded.description;
+
+getRaids:
+SELECT * FROM raidEntity ORDER BY dateTime ASC;
+
+deleteRaid:
+DELETE FROM raidEntity WHERE id = :id;

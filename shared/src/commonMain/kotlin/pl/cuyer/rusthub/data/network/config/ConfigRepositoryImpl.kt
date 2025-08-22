@@ -13,6 +13,8 @@ import pl.cuyer.rusthub.domain.repository.config.ConfigRepository
 
 @Serializable
 private data class GoogleClientIdDto(val googleClientId: String)
+@Serializable
+private data class SteamApiKeyDto(val steamApiKey: String)
 
 class ConfigRepositoryImpl(
     private val httpClient: HttpClient,
@@ -24,6 +26,17 @@ class ConfigRepositoryImpl(
         }.map { result ->
             when (result) {
                 is Result.Success -> Result.Success(result.data.googleClientId)
+                is Result.Error -> result
+            }
+        }
+    }
+
+    override fun getSteamApiKey(): Flow<Result<String>> {
+        return safeApiCall<SteamApiKeyDto> {
+            httpClient.get(NetworkConstants.BASE_URL + "steam-api-key")
+        }.map { result ->
+            when (result) {
+                is Result.Success -> Result.Success(result.data.steamApiKey)
                 is Result.Error -> result
             }
         }

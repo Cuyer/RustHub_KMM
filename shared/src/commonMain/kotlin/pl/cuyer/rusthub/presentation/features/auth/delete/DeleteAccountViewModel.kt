@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.presentation.features.auth.delete
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import pl.cuyer.rusthub.util.catchAndLog
@@ -103,6 +104,7 @@ class DeleteAccountViewModel(
                         showErrorSnackbar(e.toUserMessage(stringProvider))
                     }
                     .collectLatest { result ->
+                        ensureActive()
                         when (result) {
                             is Result.Success -> {
                                 snackbarController.sendEvent(
@@ -142,6 +144,7 @@ class DeleteAccountViewModel(
                     showErrorSnackbar(e.toUserMessage(stringProvider))
                 }
                 .collectLatest { result ->
+                    ensureActive()
                     when (result) {
                         is Result.Success -> {
                             snackbarController.sendEvent(

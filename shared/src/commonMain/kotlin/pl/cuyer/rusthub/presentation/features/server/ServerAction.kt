@@ -1,15 +1,12 @@
 package pl.cuyer.rusthub.presentation.features.server
 
 import androidx.compose.runtime.Immutable
-import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.model.ServerFilter
 
 @Immutable
 sealed interface ServerAction {
     @Immutable
     data class OnServerClick(val id: Long, val name: String) : ServerAction
-    @Immutable
-    data class OnSaveFilters(val filters: ServerQuery): ServerAction
     @Immutable
     data class OnLongServerClick(val ipAddress: String?) : ServerAction
     @Immutable
@@ -30,4 +27,10 @@ sealed interface ServerAction {
     data class OnFilterChange(val filter: ServerFilter): ServerAction
     @Immutable
     data class GatherConsent(val activity: Any, val onAdAvailable: () -> Unit) : ServerAction
+    @Immutable
+    data class OnDropdownChange(val index: Int, val selectedIndex: Int?) : ServerAction
+    @Immutable
+    data class OnCheckboxChange(val index: Int, val isChecked: Boolean) : ServerAction
+    @Immutable
+    data class OnRangeChange(val index: Int, val value: Int?) : ServerAction
 }

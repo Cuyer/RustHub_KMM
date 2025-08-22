@@ -47,6 +47,7 @@ import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -206,6 +207,11 @@ private val features = listOf(
         Icons.Default.Inventory,
         SharedRes.strings.items,
         SharedRes.strings.search_items_check_details_how_to_craft_drop_and_raid_costs
+    ),
+    Feature(
+        Icons.Default.Alarm,
+        SharedRes.strings.raids,
+        SharedRes.strings.schedule_raids_get_notified_and_track_targets_online_status
     )
 )
 

@@ -35,6 +35,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -61,6 +62,8 @@ fun AppTextField(
     isError: Boolean = false,
     errorText: String? = null,
     maxLength: Int? = null,
+    lineLimits: TextFieldLineLimits = TextFieldLineLimits.SingleLine,
+    showCharacterCounter: Boolean = false,
     keyboardState: State<Boolean>? = null,
     focusManager: FocusManager? = null
 ) {
@@ -99,6 +102,11 @@ fun AppTextField(
                     resolvedFocusManager.clearFocus()
                 }
 
+                ImeAction.Search -> {
+                    resolvedFocusManager.clearFocus()
+                    onSubmit()
+                }
+
                 ImeAction.Send -> {
                     resolvedFocusManager.clearFocus()
                     onSubmit()
@@ -113,7 +121,7 @@ fun AppTextField(
     OutlinedTextField(
         modifier = if (requestFocus) modifier.focusRequester(focusRequester!!) else modifier,
         state = textFieldState,
-        lineLimits = TextFieldLineLimits.SingleLine,
+        lineLimits = lineLimits,
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.None,
             keyboardType = keyboardType,
@@ -142,9 +150,23 @@ fun AppTextField(
         inputTransformation = maxLength?.let { InputTransformation.maxLength(it) },
         suffix = suffix,
         isError = isError,
-        supportingText = if (isError && errorText != null) {
-            { Text(errorText) }
-        } else null
+        supportingText = when {
+            isError && errorText != null -> {
+                { Text(errorText) }
+            }
+
+            showCharacterCounter && maxLength != null -> {
+                {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.End,
+                        text = "${textFieldState.text.length}/$maxLength"
+                    )
+                }
+            }
+
+            else -> null
+        }
     )
 }
 

@@ -31,6 +31,9 @@ import pl.cuyer.rusthub.domain.model.SearchQuery
 import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.model.displayName
+import pl.cuyer.rusthub.domain.model.Flag
+import pl.cuyer.rusthub.domain.model.Region
+import pl.cuyer.rusthub.domain.model.CountryRegionMapper
 import pl.cuyer.rusthub.domain.usecase.ClearFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.GetFiltersOptionsUseCase
@@ -139,7 +142,9 @@ class ServerViewModel(
             }
             .onStart { updateIsLoadingSearchHistory(true) }
             .catchAndLog {
-                sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_fetching_search_history))
+                sendSnackbarEvent(
+                    stringProvider.get(SharedRes.strings.error_fetching_search_history)
+                )
             }
             .launchIn(coroutineScope)
     }
@@ -197,7 +202,6 @@ class ServerViewModel(
         when (action) {
             is ServerAction.OnServerClick -> navigateToServer(action.id, action.name)
             is ServerAction.OnLongServerClick -> saveIpToClipboard(action.ipAddress)
-            is ServerAction.OnSaveFilters -> onSaveFilters(action.filters)
             is ServerAction.OnSearch -> handleSearch(query = action.query)
             is ServerAction.OnClearFilters -> clearFilters()
             is ServerAction.OnClearSearchQuery -> clearSearchQuery()
@@ -212,6 +216,9 @@ class ServerViewModel(
             is ServerAction.OnChangeLoadMoreState -> updateLoadingMore(action.isLoadingMore)
             is ServerAction.OnFilterChange -> updateFilter(action.filter)
             is ServerAction.GatherConsent -> gatherConsent(action.activity, action.onAdAvailable)
+            is ServerAction.OnDropdownChange -> updateDropdown(action.index, action.selectedIndex)
+            is ServerAction.OnCheckboxChange -> updateCheckbox(action.index, action.isChecked)
+            is ServerAction.OnRangeChange -> updateRange(action.index, action.value)
         }
     }
 
@@ -294,22 +301,6 @@ class ServerViewModel(
         }
 
     }
-
-    private fun onSaveFilters(filters: ServerQuery) {
-        coroutineScope.launch {
-            _state.update { it.copy(filter = filters.filter) }
-            runCatching {
-                saveFiltersUseCase(filters)
-                clearServerCache()
-            }.onFailure {
-                CrashReporter.recordException(it)
-                sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_filters))
-            }.onSuccess {
-                _uiEvent.send(UiEvent.RefreshList)
-            }
-        }
-    }
-
     private fun clearFilters() {
         coroutineScope.launch {
             _state.update { it.copy(filter = ServerFilter.ALL) }
@@ -365,6 +356,81 @@ class ServerViewModel(
     }
     private fun updateLoadingMore(loading: Boolean) {
         _state.update { it.copy(loadingMore = loading) }
+    }
+
+    private fun updateDropdown(index: Int, selectedIndex: Int?) {
+        _state.update { state ->
+            val current = state.filters ?: return@update state
+            val updatedLists = current.lists.toMutableList()
+            val option = updatedLists.getOrNull(index) ?: return@update state
+            if (index == 1) {
+                val regionOpt = updatedLists.getOrNull(2)
+                val newFlag = selectedIndex?.let { Flag.fromDisplayName(option.options[it]) }
+                val region = regionOpt?.selectedIndex?.let { idx ->
+                    regionOpt.options.getOrNull(idx)?.let {
+                        Region.fromDisplayName(it, stringProvider)
+                    }
+                }
+                val countryRegion = newFlag?.let { CountryRegionMapper.regionForFlag(it) }
+                if (region != null && countryRegion != region) {
+                    regionOpt?.let { updatedLists[2] = it.copy(selectedIndex = null) }
+                }
+            }
+            if (index == 2) {
+                val countryOpt = updatedLists.getOrNull(1)
+                val newRegion = selectedIndex?.let {
+                    Region.fromDisplayName(option.options[it], stringProvider)
+                }
+                val flag = countryOpt?.selectedIndex?.let { idx ->
+                    countryOpt.options.getOrNull(idx)?.let { Flag.fromDisplayName(it) }
+                }
+                val flagRegion = flag?.let { CountryRegionMapper.regionForFlag(it) }
+                if (newRegion != null && flagRegion != null && flagRegion != newRegion) {
+                    countryOpt?.let { updatedLists[1] = it.copy(selectedIndex = null) }
+                }
+            }
+            updatedLists[index] = option.copy(selectedIndex = selectedIndex)
+            state.copy(filters = current.copy(lists = updatedLists))
+        }
+        saveFilters()
+    }
+
+    private fun updateCheckbox(index: Int, isChecked: Boolean) {
+        _state.update { state ->
+            val current = state.filters ?: return@update state
+            val updated = current.checkboxes.toMutableList()
+            val option = updated.getOrNull(index) ?: return@update state
+            updated[index] = option.copy(isChecked = isChecked)
+            state.copy(filters = current.copy(checkboxes = updated))
+        }
+        saveFilters()
+    }
+
+    private fun updateRange(index: Int, value: Int?) {
+        _state.update { state ->
+            val current = state.filters ?: return@update state
+            val updated = current.ranges.toMutableList()
+            val option = updated.getOrNull(index) ?: return@update state
+            updated[index] = option.copy(value = value)
+            state.copy(filters = current.copy(ranges = updated))
+        }
+        saveFilters()
+    }
+
+    private fun saveFilters() {
+        coroutineScope.launch {
+            val current = state.value.filters?.toDomain(stringProvider) ?: return@launch
+            _state.update { it.copy(filter = current.filter) }
+            runCatching {
+                saveFiltersUseCase(current)
+                clearServerCache()
+            }.onFailure {
+                CrashReporter.recordException(it)
+                sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_filters))
+            }.onSuccess {
+                _uiEvent.send(UiEvent.RefreshList)
+            }
+        }
     }
 
     private suspend fun clearServerCache() {

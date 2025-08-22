@@ -32,6 +32,7 @@ import pl.cuyer.rusthub.data.network.notification.MessagingTokenClientImpl
 import pl.cuyer.rusthub.data.network.server.ServerClientImpl
 import pl.cuyer.rusthub.data.network.subscription.SubscriptionClientImpl
 import pl.cuyer.rusthub.data.network.user.UserRepositoryImpl
+import pl.cuyer.rusthub.data.network.steam.SteamRepositoryImpl
 import pl.cuyer.rusthub.domain.repository.auth.AuthDataSource
 import pl.cuyer.rusthub.domain.repository.auth.AuthRepository
 import pl.cuyer.rusthub.domain.repository.config.ConfigRepository
@@ -46,6 +47,7 @@ import pl.cuyer.rusthub.domain.repository.monument.MonumentRepository
 import pl.cuyer.rusthub.domain.repository.monument.local.MonumentDataSource
 import pl.cuyer.rusthub.domain.repository.monument.local.MonumentSyncDataSource
 import pl.cuyer.rusthub.domain.repository.notification.MessagingTokenRepository
+import pl.cuyer.rusthub.domain.repository.raid.RaidRepository
 import pl.cuyer.rusthub.domain.repository.search.SearchQueryDataSource
 import pl.cuyer.rusthub.domain.repository.search.ItemSearchQueryDataSource
 import pl.cuyer.rusthub.domain.repository.search.MonumentSearchQueryDataSource
@@ -54,6 +56,7 @@ import pl.cuyer.rusthub.domain.repository.server.ServerRepository
 import pl.cuyer.rusthub.domain.repository.subscription.SubscriptionSyncDataSource
 import pl.cuyer.rusthub.domain.repository.subscription.network.SubscriptionRepository
 import pl.cuyer.rusthub.domain.repository.user.UserRepository
+import pl.cuyer.rusthub.domain.repository.steam.SteamRepository
 import pl.cuyer.rusthub.domain.usecase.AuthAnonymouslyUseCase
 import pl.cuyer.rusthub.domain.usecase.ChangePasswordUseCase
 import pl.cuyer.rusthub.domain.usecase.CheckEmailConfirmedUseCase
@@ -77,6 +80,7 @@ import pl.cuyer.rusthub.domain.usecase.GetItemDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetMonumentDetailsUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserUseCase
 import pl.cuyer.rusthub.domain.usecase.GetUserPreferencesUseCase
+import pl.cuyer.rusthub.domain.usecase.GetSteamApiKeyUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginUserUseCase
 import pl.cuyer.rusthub.domain.usecase.LoginWithGoogleUseCase
 import pl.cuyer.rusthub.domain.usecase.LogoutUserUseCase
@@ -97,6 +101,15 @@ import pl.cuyer.rusthub.domain.usecase.GetActiveSubscriptionUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeWithGoogleUseCase
 import pl.cuyer.rusthub.domain.usecase.ClearServerCacheUseCase
+import pl.cuyer.rusthub.domain.usecase.GetRaidsUseCase
+import pl.cuyer.rusthub.domain.usecase.CreateRaidUseCase
+import pl.cuyer.rusthub.domain.usecase.UpdateRaidUseCase
+import pl.cuyer.rusthub.domain.usecase.DeleteRaidUseCase
+import pl.cuyer.rusthub.domain.usecase.SearchSteamUserUseCase
+import pl.cuyer.rusthub.domain.usecase.ObserveRaidsUseCase
+import pl.cuyer.rusthub.data.network.raid.RaidClientImpl
+import pl.cuyer.rusthub.data.local.raid.RaidDataSourceImpl
+import pl.cuyer.rusthub.domain.repository.raid.local.RaidDataSource
 import pl.cuyer.rusthub.domain.repository.server.ServerCacheDataSource
 import pl.cuyer.rusthub.data.local.cache.ServerCacheDataSourceImpl
 import pl.cuyer.rusthub.domain.usecase.SetThemeConfigUseCase
@@ -151,12 +164,22 @@ val appModule = module {
     singleOf(::AuthDataSourceImpl) bind AuthDataSource::class
     singleOf(::UserRepositoryImpl) bind UserRepository::class
     singleOf(::ConfigRepositoryImpl) bind ConfigRepository::class
+    singleOf(::RaidDataSourceImpl) bind RaidDataSource::class
+    singleOf(::RaidClientImpl) bind RaidRepository::class
+    singleOf(::SteamRepositoryImpl) bind SteamRepository::class
     single { EmailValidator(get()) }
     single { PasswordValidator(get()) }
     single { UsernameValidator(get()) }
     single { GetPagedServersUseCase(get(), get(), get(), get()) }
     single { GetPagedItemsUseCase(get(), get(), get()) }
     single { GetPagedMonumentsUseCase(get(), get()) }
+    single { GetRaidsUseCase(get()) }
+    single { ObserveRaidsUseCase(get()) }
+    single { CreateRaidUseCase(get()) }
+    single { UpdateRaidUseCase(get()) }
+    single { DeleteRaidUseCase(get()) }
+    single { GetSteamApiKeyUseCase(get()) }
+    single { SearchSteamUserUseCase(get(), get()) }
     single { GetFiltersUseCase(get()) }
     single { SaveFiltersUseCase(get()) }
     single { SaveSearchQueryUseCase(get()) }
