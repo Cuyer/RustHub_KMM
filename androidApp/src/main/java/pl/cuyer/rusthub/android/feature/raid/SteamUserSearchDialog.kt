@@ -82,9 +82,10 @@ fun SteamUserSearchDialog(state: RaidFormState, onAction: (RaidFormAction) -> Un
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(spacing.medium)
             ) {
-                val queryState = rememberTextFieldState(state.searchQuery)
-                LaunchedEffect(state.searchQuery) {
-                    queryState.setTextAndPlaceCursorAtEnd(state.searchQuery)
+                val queryState = rememberTextFieldState()
+                LaunchedEffect(Unit) {
+                    val initial = state.searchQuery.ifEmpty { state.steamIds.joinToString(", ") }
+                    queryState.setTextAndPlaceCursorAtEnd(initial)
                 }
                 LaunchedEffect(queryState) {
                     snapshotFlow { queryState.text.toString() }
