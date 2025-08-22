@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.android.ads
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,8 +20,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.drawable.toBitmap
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -74,7 +77,7 @@ private fun NativeAdLayout(
                                         .crossfade(true)
                                         .build(),
                                     contentDescription = ad.headline,
-                                    modifier = Modifier.height(40.dp)
+                                    modifier = Modifier.height(48.dp)
                                 )
                             }
                         }
