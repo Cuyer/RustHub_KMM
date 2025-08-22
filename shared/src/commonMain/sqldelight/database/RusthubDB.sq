@@ -765,15 +765,11 @@ SELECT *
 FROM itemEntity
 WHERE language = :language
   AND (:category IS NULL OR categories LIKE '%' || :category || '%')
-  AND short_name IN (
-    SELECT short_name
-    FROM itemEntity
-    WHERE short_name IS NOT NULL
-      AND language IN (:language, 'ENGLISH')
-      AND (:category IS NULL OR categories LIKE '%' || :category || '%')
-      AND name LIKE '%' || :name || '%' COLLATE NOCASE
+  AND (
+        name       LIKE '%' || :name || '%' COLLATE NOCASE
+     OR short_name LIKE '%' || :name || '%' COLLATE NOCASE
   )
-ORDER BY name
+ORDER BY name COLLATE NOCASE
 LIMIT :limit OFFSET :offset;
 
 countPagedItemsFiltered:
@@ -788,13 +784,9 @@ SELECT COUNT(*)
 FROM itemEntity
 WHERE language = :language
   AND (:category IS NULL OR categories LIKE '%' || :category || '%')
-  AND short_name IN (
-    SELECT short_name
-    FROM itemEntity
-    WHERE short_name IS NOT NULL
-      AND language IN (:language, 'ENGLISH')
-      AND (:category IS NULL OR categories LIKE '%' || :category || '%')
-      AND name LIKE '%' || :name || '%' COLLATE NOCASE
+  AND (
+        name       LIKE '%' || :name || '%' COLLATE NOCASE
+     OR short_name LIKE '%' || :name || '%' COLLATE NOCASE
   );
 
 CREATE TABLE monumentEntity (
