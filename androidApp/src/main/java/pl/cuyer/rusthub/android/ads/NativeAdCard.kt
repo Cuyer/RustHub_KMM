@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
@@ -67,19 +69,15 @@ private fun NativeAdLayout(
             ) {
                 NativeAdAttribution(text = stringResource(SharedRes.strings.ad_label))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    ad.icon?.let { icon ->
-                        NativeAdIconView(modifier = Modifier.padding(end = 8.dp)) {
-                            val data = icon.drawable ?: icon.uri
-                            data?.let { src ->
-                                SubcomposeAsyncImage(
-                                    model = ImageRequest.Builder(context)
-                                        .data(src)
-                                        .crossfade(true)
-                                        .build(),
-                                    contentDescription = ad.headline,
-                                    modifier = Modifier.height(48.dp)
-                                )
-                            }
+                    ad.icon?.drawable?.let { drawable ->
+                        NativeAdIconView {
+                            Image(
+                                bitmap = drawable.toBitmap().asImageBitmap(),
+                                contentDescription = ad.headline,
+                                modifier = Modifier
+                                    .padding(end = 8.dp)
+                                    .size(48.dp)
+                            )
                         }
                     }
                     Column {

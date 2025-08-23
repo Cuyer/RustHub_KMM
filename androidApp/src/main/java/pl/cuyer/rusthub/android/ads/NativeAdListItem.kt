@@ -1,10 +1,12 @@
 package pl.cuyer.rusthub.android.ads
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
@@ -17,9 +19,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.drawable.toBitmap
 import coil3.compose.SubcomposeAsyncImage
+import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.google.android.gms.compose_util.LocalNativeAdView
@@ -50,7 +55,6 @@ private fun NativeAdListLayout(
     modifier: Modifier = Modifier,
     ad: NativeAdWrapper
 ) {
-    val context = LocalContext.current
     ElevatedCard(modifier = modifier.fillMaxWidth()) {
         NativeAdView(modifier = Modifier.fillMaxWidth()) {
             Column(
@@ -59,22 +63,20 @@ private fun NativeAdListLayout(
                     .padding(16.dp)
             ) {
                 NativeAdAttribution(text = stringResource(SharedRes.strings.ad_label))
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    ad.icon?.let { icon ->
-                        NativeAdIconView(modifier = Modifier.padding(end = 8.dp)) {
-                            val data = icon.drawable ?: icon.uri
-                            data?.let { src ->
-                                SubcomposeAsyncImage(
-                                    model = ImageRequest.Builder(context)
-                                        .data(src)
-                                        .crossfade(true)
-                                        .build(),
-                                    contentDescription = ad.headline,
-                                    modifier = Modifier.height(48.dp)
-                                )
-                            }
+                    ad.icon?.drawable?.let { drawable ->
+                        NativeAdIconView {
+                            Image(
+                                bitmap = drawable.toBitmap().asImageBitmap(),
+                                contentDescription = ad.headline,
+                                modifier = Modifier
+                                    .padding(end = 8.dp)
+                                    .size(48.dp)
+                            )
                         }
                     }
+
                     Column {
                         ad.headline?.let {
                             NativeAdHeadlineView {
@@ -102,11 +104,13 @@ private fun NativeAdListLayout(
                         }
                     }
                 }
+
                 ad.body?.let {
                     NativeAdBodyView(modifier = Modifier.padding(top = 4.dp)) {
                         Text(it, style = MaterialTheme.typography.bodyMedium)
                     }
                 }
+
                 Row(
                     modifier = Modifier
                         .align(Alignment.End)
@@ -132,6 +136,8 @@ private fun NativeAdListLayout(
                         }
                     }
                 }
+
+                // Keep this inside NativeAdView so it can bind to the views above.
                 ApplyNativeListAd(ad)
             }
         }
