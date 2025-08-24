@@ -152,17 +152,15 @@ fun NavigationRoot(startDestination: NavKey) {
     }
     val listDetailStrategy = rememberListDetailSceneStrategy<Any>()
 
-    val current = backStack.lastOrNull()
-    LaunchedEffect(current) { snackbarHostState.currentSnackbarData?.dismiss() }
-    val showNav = bottomNavItems.any { it.isInHierarchy(current) }
+    LaunchedEffect(backStack.lastOrNull()) { snackbarHostState.currentSnackbarData?.dismiss() }
 
-    if (showNav) {
+    if (bottomNavItems.any { it.isInHierarchy(backStack.lastOrNull()) }   ) {
         NavigationSuiteScaffold(
             containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
                 .safeDrawingPadding(),
-            navigationItems = { BottomBarItems(current, backStack) },
+            navigationItems = { BottomBarItems(backStack.lastOrNull(), backStack) },
             content = {
                 AppScaffold(
                     snackbarHostState = snackbarHostState,
