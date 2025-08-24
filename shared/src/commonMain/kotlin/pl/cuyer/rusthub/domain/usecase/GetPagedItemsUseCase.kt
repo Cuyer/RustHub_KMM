@@ -54,7 +54,7 @@ class GetPagedItemsUseCase(
         }
         return Pager(
             config = PagingConfig(
-                pageSize = 15,
+                pageSize = 30,
                 enablePlaceholders = true
             ),
             remoteMediator = ItemRemoteMediator(
