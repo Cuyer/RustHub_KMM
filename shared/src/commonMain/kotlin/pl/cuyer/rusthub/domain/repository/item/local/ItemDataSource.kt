@@ -9,6 +9,7 @@ import pl.cuyer.rusthub.domain.model.Language
 
 interface ItemDataSource {
     suspend fun upsertItems(items: List<RustItem>)
+    suspend fun clearItems()
     suspend fun isEmpty(language: Language): Boolean
     fun getItemsPagingSource(
         name: String?,

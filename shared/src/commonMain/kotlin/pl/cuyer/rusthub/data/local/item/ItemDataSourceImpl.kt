@@ -82,6 +82,14 @@ class ItemDataSourceImpl(
         }
     }
 
+    override suspend fun clearItems() {
+        withContext(Dispatchers.IO) {
+            safeExecute {
+                queries.deleteItems()
+            }
+        }
+    }
+
     /**
      * Checks if the database is empty for a given language.
      *
