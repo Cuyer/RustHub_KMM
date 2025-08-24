@@ -120,22 +120,27 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
 
     override fun launchBillingFlow(activity: Any, productId: String, obfuscatedId: String?) {
         val act = activity as? Activity ?: return
-        val data = productMap[productId] ?: return
-
-
-        val params = BillingFlowParams.newBuilder()
-            .setProductDetailsParamsList(
-                listOf(
-                    BillingFlowParams.ProductDetailsParams.newBuilder()
-                        .setProductDetails(data.details)
-                        .apply { data.offerToken?.let { setOfferToken(it) } }
-                        .build()
-                )
-            )
-            .apply { obfuscatedId?.let { setObfuscatedAccountId(it) } }
-            .build()
-
-        val result = billingClient.launchBillingFlow(act, params)
+        val data = productMap[productId] ?: run {
+            _errorFlow.tryEmit(BillingErrorCode.ITEM_UNAVAILABLE)
+            return
+        }
+        if (!billingClient.isReady) {
+            _errorFlow.tryEmit(BillingErrorCode.SERVICE_DISCONNECTED)
+            return
+        }
+        val productParams = BillingFlowParams.ProductDetailsParams.newBuilder()
+            .setProductDetails(data.details)
+        if (data.details.productType == BillingClient.ProductType.SUBS) {
+            val token = data.offerToken ?: run {
+                _errorFlow.tryEmit(BillingErrorCode.DEVELOPER_ERROR)
+                return
+            }
+            productParams.setOfferToken(token)
+        }
+        val paramsBuilder = BillingFlowParams.newBuilder()
+            .setProductDetailsParamsList(listOf(productParams.build()))
+        obfuscatedId?.let { paramsBuilder.setObfuscatedAccountId(it) }
+        val result = billingClient.launchBillingFlow(act, paramsBuilder.build())
         if (result.responseCode != BillingClient.BillingResponseCode.OK) {
             _errorFlow.tryEmit(result.responseCode.toErrorCode())
         }
