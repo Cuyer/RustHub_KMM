@@ -161,7 +161,6 @@ fun NavigationRoot(startDestination: NavKey) {
     val onClear: () -> Unit = { backStack.clear() }
     val onBack: (Int) -> Unit = { keysToRemove -> repeat(keysToRemove) { onPop() } }
     val onBottomBarClick: (BottomNavKey) -> Unit = { navigateBottomBar(backStack, it) }
-    val listDetailStrategy = rememberListDetailSceneStrategy<Any>()
 
     LaunchedEffect(backStack.lastOrNull()) { snackbarHostState.currentSnackbarData?.dismiss() }
 
@@ -175,8 +174,7 @@ fun NavigationRoot(startDestination: NavKey) {
             content = {
                 AppScaffold(
                     snackbarHostState = snackbarHostState,
-                    backStack = backStack,
-                    listDetailStrategy = listDetailStrategy,
+                    backStack = { backStack },
                     onBack = onBack,
                     onNavigate = onNavigate,
                     onNavigateUp = onPop,
@@ -188,8 +186,7 @@ fun NavigationRoot(startDestination: NavKey) {
     } else {
         AppScaffold(
             snackbarHostState = snackbarHostState,
-            backStack = backStack,
-            listDetailStrategy = listDetailStrategy,
+            backStack = { backStack },
             onBack = onBack,
             onNavigate = onNavigate,
             onNavigateUp = onPop,
@@ -205,8 +202,7 @@ fun NavigationRoot(startDestination: NavKey) {
 @Composable
 private fun AppScaffold(
     snackbarHostState: SnackbarHostState,
-    backStack: List<NavKey>,
-    listDetailStrategy: ListDetailSceneStrategy<Any>,
+    backStack: () -> List<NavKey>,
     onBack: (Int) -> Unit,
     onNavigate: (NavKey) -> Unit,
     onNavigateUp: () -> Unit,
@@ -221,11 +217,12 @@ private fun AppScaffold(
         contentColor = MaterialTheme.colorScheme.onBackground,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         content = { contentPadding ->
+            val listDetailStrategy = rememberListDetailSceneStrategy<Any>()
             NavDisplay(
                 modifier = Modifier
                     .padding(contentPadding)
                     .consumeWindowInsets(contentPadding),
-                backStack = backStack,
+                backStack = backStack(),
                 transitionSpec = {
                     fadeIn(
                         animationSpec = spring(
