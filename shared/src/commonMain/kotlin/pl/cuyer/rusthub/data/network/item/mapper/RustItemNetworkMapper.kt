@@ -8,6 +8,7 @@ import pl.cuyer.rusthub.data.network.item.model.LootAmountDto
 import pl.cuyer.rusthub.data.network.item.model.CraftingDto
 import pl.cuyer.rusthub.data.network.item.model.CraftingIngredientDto
 import pl.cuyer.rusthub.data.network.item.model.CraftingRecipeDto
+import pl.cuyer.rusthub.data.network.item.model.ItemSummaryDto
 import pl.cuyer.rusthub.data.network.item.model.ResearchTableCostDto
 import pl.cuyer.rusthub.data.network.item.model.TechTreeCostDto
 import pl.cuyer.rusthub.data.network.item.model.RecyclingDto
@@ -46,6 +47,7 @@ import pl.cuyer.rusthub.domain.model.TableRecipe
 import pl.cuyer.rusthub.domain.model.TableRecipeIngredient
 import pl.cuyer.rusthub.domain.model.ItemAttribute
 import pl.cuyer.rusthub.domain.model.ItemAttributeType
+import pl.cuyer.rusthub.domain.model.ItemSummary
 
 fun RustItemDto.toDomain(): RustItem {
     return RustItem(
