@@ -82,6 +82,14 @@ class ItemDataSourceImpl(
         }
     }
 
+    override suspend fun clearItems() {
+        withContext(Dispatchers.IO) {
+            safeExecute {
+                queries.deleteItems()
+            }
+        }
+    }
+
     /**
      * Checks if the database is empty for a given language.
      *
@@ -111,22 +119,42 @@ class ItemDataSourceImpl(
         category: ItemCategory?,
         language: Language,
     ): PagingSource<Int, ItemEntity> {
+        val query = name.orEmpty()
+        val isMultiLanguage = query.isNotBlank() && language != Language.ENGLISH
         return QueryPagingSource(
-            countQuery = queries.countPagedItemsFiltered(
-                name = name ?: "",
-                category = category?.name,
-                language = language.toEntity()
-            ),
+            countQuery = if (isMultiLanguage) {
+                queries.countPagedItemsFilteredMultiLanguage(
+                    name = query,
+                    category = category?.name,
+                    language = language.toEntity()
+                )
+            } else {
+                queries.countPagedItemsFiltered(
+                    name = query,
+                    category = category?.name,
+                    language = language.toEntity()
+                )
+            },
             transacter = queries,
             context = Dispatchers.IO,
             queryProvider = { limit, offset ->
-                queries.findItemsPagedFiltered(
-                    name = name ?: "",
-                    category = category?.name,
-                    language = language.toEntity(),
-                    limit = limit,
-                    offset = offset
-                )
+                if (isMultiLanguage) {
+                    queries.findItemsPagedFilteredMultiLanguage(
+                        name = query,
+                        category = category?.name,
+                        language = language.toEntity(),
+                        limit = limit,
+                        offset = offset
+                    )
+                } else {
+                    queries.findItemsPagedFiltered(
+                        name = query,
+                        category = category?.name,
+                        language = language.toEntity(),
+                        limit = limit,
+                        offset = offset
+                    )
+                }
             }
         )
     }

@@ -447,10 +447,9 @@ fun ServerScreen(
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            CircularWavyProgressIndicator(
+                            CircularProgressIndicator(
                                 Modifier
                                     .animateItem()
-                                    .padding(6.dp)
                             )
                         }
                     }

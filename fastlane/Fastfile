@@ -1,0 +1,49 @@
+require 'base64'
+
+default_platform(:android)
+
+platform :android do
+    desc "Bump versionName and versionCode"
+    lane :bump_version do
+        gradle_file = 'androidApp/build.gradle.kts'
+        props_file = 'gradle.properties'
+
+        gradle = File.read(gradle_file)
+        current_code = gradle[/versionCode\s*=\s*(\d+)/, 1].to_i
+        new_code = current_code + 1
+        File.write(gradle_file, gradle.sub(/versionCode\s*=\s*\d+/, "versionCode = #{new_code}"))
+
+        props = File.read(props_file)
+        current_name = props[/VERSION_NAME=(.*)/, 1].strip
+        parts = current_name.split('.')
+        parts[-1] = (parts[-1].to_i + 1).to_s
+        new_name = parts.join('.')
+        File.write(props_file, props.sub(/VERSION_NAME=.*/, "VERSION_NAME=#{new_name}"))
+
+        UI.message("Bumped to version #{new_name} (code #{new_code})")
+    end
+
+    desc "Upload the Android App Bundle to Google Play"
+    lane :publish do |options|
+        service_account_json = ENV['SERVICE_ACCOUNT_JSON']
+        UI.user_error!("Missing SERVICE_ACCOUNT_JSON environment variable") unless service_account_json
+
+        json_path = File.join(Dir.pwd, 'fastlane/service-account.json')
+        File.open(json_path, 'w') { |file| file.write(Base64.decode64(service_account_json)) }
+
+        aab_path = options[:aab] || Dir['androidApp/build/outputs/bundle/productionRelease/*.aab'].first
+        UI.user_error!("Could not find AAB at #{aab_path}") unless aab_path
+
+        update_priority = (options[:update_priority] || ENV['UPDATE_PRIORITY'] || 0).to_i
+
+        upload_to_play_store(
+            aab: aab_path,
+            json_key: json_path,
+            track: options[:track] || ENV['TRACK'],
+            release_status: options[:release_status] || ENV['RELEASE_STATUS'],
+            in_app_update_priority: update_priority
+        )
+
+        File.delete(json_path) if File.exist?(json_path)
+    end
+end

@@ -67,6 +67,7 @@ import pl.cuyer.rusthub.android.feature.subscription.SubscriptionScreen
 import pl.cuyer.rusthub.android.feature.raid.RaidSchedulerScreen
 import pl.cuyer.rusthub.android.feature.raid.RaidFormScreen
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
+import pl.cuyer.rusthub.android.navigation.BottomNavKey
 import pl.cuyer.rusthub.android.navigation.bottomNavItems
 import pl.cuyer.rusthub.android.navigation.navigateBottomBar
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
@@ -150,32 +151,47 @@ fun NavigationRoot(startDestination: NavKey) {
             backStack.add(Onboarding)
         }
     }
-    val listDetailStrategy = rememberListDetailSceneStrategy<Any>()
+    val onNavigate: (NavKey) -> Unit = { backStack.add(it) }
+    val onPop: () -> Unit = { backStack.removeLastOrNull() }
+    val onPopWhile: ((NavKey?) -> Boolean) -> Unit = { predicate ->
+        while (predicate(backStack.lastOrNull())) {
+            backStack.removeLastOrNull()
+        }
+    }
+    val onClear: () -> Unit = { backStack.clear() }
+    val onBack: (Int) -> Unit = { keysToRemove -> repeat(keysToRemove) { onPop() } }
+    val onBottomBarClick: (BottomNavKey) -> Unit = { navigateBottomBar(backStack, it) }
 
-    val current = backStack.lastOrNull()
-    LaunchedEffect(current) { snackbarHostState.currentSnackbarData?.dismiss() }
-    val showNav = bottomNavItems.any { it.isInHierarchy(current) }
+    LaunchedEffect(backStack.lastOrNull()) { snackbarHostState.currentSnackbarData?.dismiss() }
 
-    if (showNav) {
+    if (bottomNavItems.any { it.isInHierarchy(backStack.lastOrNull()) }) {
         NavigationSuiteScaffold(
             containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
                 .safeDrawingPadding(),
-            navigationItems = { BottomBarItems(current, backStack) },
+            navigationItems = { BottomBarItems(backStack.lastOrNull(), onBottomBarClick) },
             content = {
                 AppScaffold(
                     snackbarHostState = snackbarHostState,
-                    backStack = backStack,
-                    listDetailStrategy = listDetailStrategy
+                    backStack = { backStack },
+                    onBack = onBack,
+                    onNavigate = onNavigate,
+                    onNavigateUp = onPop,
+                    onPopWhile = onPopWhile,
+                    onClear = onClear
                 )
             }
         )
     } else {
         AppScaffold(
             snackbarHostState = snackbarHostState,
-            backStack = backStack,
-            listDetailStrategy = listDetailStrategy,
+            backStack = { backStack },
+            onBack = onBack,
+            onNavigate = onNavigate,
+            onNavigateUp = onPop,
+            onPopWhile = onPopWhile,
+            onClear = onClear,
             modifier = Modifier
                 .safeDrawingPadding()
         )
@@ -186,8 +202,12 @@ fun NavigationRoot(startDestination: NavKey) {
 @Composable
 private fun AppScaffold(
     snackbarHostState: SnackbarHostState,
-    backStack: MutableList<NavKey>,
-    listDetailStrategy: ListDetailSceneStrategy<Any>,
+    backStack: () -> List<NavKey>,
+    onBack: (Int) -> Unit,
+    onNavigate: (NavKey) -> Unit,
+    onNavigateUp: () -> Unit,
+    onPopWhile: ((NavKey?) -> Boolean) -> Unit,
+    onClear: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -197,11 +217,12 @@ private fun AppScaffold(
         contentColor = MaterialTheme.colorScheme.onBackground,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         content = { contentPadding ->
+            val listDetailStrategy = rememberListDetailSceneStrategy<Any>()
             NavDisplay(
                 modifier = Modifier
                     .padding(contentPadding)
                     .consumeWindowInsets(contentPadding),
-                backStack = backStack,
+                backStack = backStack(),
                 transitionSpec = {
                     fadeIn(
                         animationSpec = spring(
@@ -235,9 +256,7 @@ private fun AppScaffold(
                     rememberSavedStateNavEntryDecorator(),
                     rememberViewModelStoreNavEntryDecorator()
                 ),
-                onBack = { keysToRemove ->
-                    repeat(keysToRemove) { backStack.removeLastOrNull() }
-                },
+                onBack = onBack,
                 entryProvider = entryProvider {
                     entry<Onboarding> {
                         val viewModel = koinViewModel<OnboardingViewModel>()
@@ -247,10 +266,8 @@ private fun AppScaffold(
                             onAction = viewModel::onAction,
                             uiEvent = viewModel.uiEvent,
                             onNavigate = { dest ->
-                                backStack.apply {
-                                    if (dest is ServerList) clear()
-                                    add(dest)
-                                }
+                                if (dest is ServerList) onClear()
+                                onNavigate(dest)
                             }
                         )
                     }
@@ -263,13 +280,11 @@ private fun AppScaffold(
                             uiEvent = viewModel.uiEvent,
                             onAction = viewModel::onAction,
                             onNavigate = { dest ->
-                                if (dest is ServerList) backStack.clear()
-                                if (dest is ConfirmEmail) backStack.removeLastOrNull()
-                                backStack.add(dest)
+                                if (dest is ServerList) onClear()
+                                if (dest is ConfirmEmail) onNavigateUp()
+                                onNavigate(dest)
                             },
-                            onNavigateUp = {
-                                backStack.removeLastOrNull()
-                            }
+                            onNavigateUp = onNavigateUp
                         )
                     }
                     entry<ServerList>(metadata = ListDetailSceneStrategy.listPane()) {
@@ -284,9 +299,7 @@ private fun AppScaffold(
                             uiEvent = viewModel.uiEvent,
                             onAction = viewModel::onAction,
                             pagedList = paging,
-                            onNavigate = { dest ->
-                                backStack.add(dest)
-                            },
+                            onNavigate = { dest -> onNavigate(dest) },
                             showAds = showAds,
                             adState = adState,
                             onAdAction = adViewModel::onAction
@@ -301,8 +314,8 @@ private fun AppScaffold(
                             state = state,
                             uiEvent = viewModel.uiEvent,
                             onAction = viewModel::onAction,
-                            onNavigate = { dest -> backStack.add(dest) },
-                            onNavigateUp = { backStack.removeLastOrNull() }
+                            onNavigate = { dest -> onNavigate(dest) },
+                            onNavigateUp = onNavigateUp
                         )
                     }
                     entry<ItemList>(metadata = ListDetailSceneStrategy.listPane()) {
@@ -317,7 +330,7 @@ private fun AppScaffold(
                             uiEvent = viewModel.uiEvent,
                             onAction = viewModel::onAction,
                             pagedList = paging,
-                            onNavigate = { dest -> backStack.add(dest) },
+                            onNavigate = { dest -> onNavigate(dest) },
                             showAds = showAds,
                             adState = adState,
                             onAdAction = adViewModel::onAction
@@ -330,11 +343,7 @@ private fun AppScaffold(
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         ItemDetailsScreen(
                             state = state,
-                            onNavigateUp = {
-                                while (backStack.lastOrNull() is ItemDetails) {
-                                    backStack.removeLastOrNull()
-                                }
-                            },
+                            onNavigateUp = { onPopWhile { it is ItemDetails } },
                         )
                     }
                     entry<MonumentList>(metadata = ListDetailSceneStrategy.listPane()) {
@@ -349,7 +358,7 @@ private fun AppScaffold(
                             onAction = viewModel::onAction,
                             pagedList = paging,
                             uiEvent = viewModel.uiEvent,
-                            onNavigate = { dest -> backStack.add(dest) },
+                            onNavigate = { dest -> onNavigate(dest) },
                             showAds = showAds,
                             adState = adState,
                             onAdAction = adViewModel::onAction
@@ -362,18 +371,14 @@ private fun AppScaffold(
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         MonumentDetailsScreen(
                             state = state,
-                            onNavigateUp = {
-                                while (backStack.lastOrNull() is MonumentDetails) {
-                                    backStack.removeLastOrNull()
-                                }
-                            },
+                            onNavigateUp = { onPopWhile { it is MonumentDetails } },
                         )
                     }
                     entry<RaidScheduler>(metadata = ListDetailSceneStrategy.listPane()) {
                         val viewModel = koinViewModel<RaidSchedulerViewModel>()
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         RaidSchedulerScreen(
-                            onNavigate = { dest -> backStack.add(dest) },
+                            onNavigate = { dest -> onNavigate(dest) },
                             state = state,
                             onAction = viewModel::onAction,
                             uiEvent = viewModel.uiEvent
@@ -385,11 +390,7 @@ private fun AppScaffold(
                         ) { parametersOf(key.raid) }
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         RaidFormScreen(
-                            onNavigateUp = {
-                                while (backStack.lastOrNull() is RaidForm) {
-                                    backStack.removeLastOrNull()
-                                }
-                            },
+                            onNavigateUp = { onPopWhile { it is RaidForm } },
                             state = state,
                             onAction = viewModel::onAction,
                             uiEvent = viewModel.uiEvent
@@ -402,16 +403,14 @@ private fun AppScaffold(
                             state = state,
                             uiEvent = viewModel.uiEvent,
                             onAction = viewModel::onAction,
-                            onNavigate = { dest ->
-                                backStack.add(dest)
-                            }
+                            onNavigate = { dest -> onNavigate(dest) }
                         )
                     }
                     entry<DeleteAccount> {
                         val viewModel = koinViewModel<DeleteAccountViewModel>()
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         DeleteAccountScreen(
-                            onNavigateUp = { backStack.removeLastOrNull() },
+                            onNavigateUp = onNavigateUp,
                             state = state,
                             onAction = viewModel::onAction
                         )
@@ -420,7 +419,7 @@ private fun AppScaffold(
                         val viewModel = koinViewModel<UpgradeViewModel>()
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         UpgradeAccountScreen(
-                            onNavigateUp = { backStack.removeLastOrNull() },
+                            onNavigateUp = onNavigateUp,
                             uiEvent = viewModel.uiEvent,
                             state = state,
                             onAction = viewModel::onAction
@@ -434,10 +433,10 @@ private fun AppScaffold(
                             state = state,
                             onAction = viewModel::onAction,
                             onNavigate = { dest ->
-                                backStack.clear()
-                                backStack.add(dest)
+                                onClear()
+                                onNavigate(dest)
                             },
-                            onNavigateUp = { backStack.removeLastOrNull() }
+                            onNavigateUp = onNavigateUp
                         )
                     }
                     entry<ResetPassword> { key ->
@@ -445,7 +444,7 @@ private fun AppScaffold(
                             koinViewModel { parametersOf(key.email) }
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         ResetPasswordScreen(
-                            onNavigateUp = { backStack.removeLastOrNull() },
+                            onNavigateUp = onNavigateUp,
                             uiEvent = viewModel.uiEvent,
                             state = state,
                             onAction = viewModel::onAction
@@ -455,7 +454,7 @@ private fun AppScaffold(
                         val viewModel = koinViewModel<ChangePasswordViewModel>()
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         ChangePasswordScreen(
-                            onNavigateUp = { backStack.removeLastOrNull() },
+                            onNavigateUp = onNavigateUp,
                             uiEvent = viewModel.uiEvent,
                             state = state,
                             onAction = viewModel::onAction
@@ -465,19 +464,19 @@ private fun AppScaffold(
                     entry<PrivacyPolicy> {
                         PrivacyPolicyScreen(
                             url = Urls.PRIVACY_POLICY_URL,
-                            onNavigateUp = { backStack.removeLastOrNull() }
+                            onNavigateUp = onNavigateUp
                         )
                     }
                     entry<Terms> {
                         PrivacyPolicyScreen(
                             url = Urls.TERMS_URL,
                             title = stringResource(SharedRes.strings.terms_conditions),
-                            onNavigateUp = { backStack.removeLastOrNull() }
+                            onNavigateUp = onNavigateUp
                         )
                     }
                     entry<About> {
                         AboutScreen(
-                            onNavigateUp = { backStack.removeLastOrNull() }
+                            onNavigateUp = onNavigateUp
                         )
                     }
                     entry<Subscription> { key ->
@@ -489,9 +488,9 @@ private fun AppScaffold(
                             state = state,
                             onAction = viewModel::onAction,
                             uiEvent = viewModel.uiEvent,
-                            onNavigateUp = { backStack.removeLastOrNull() },
-                            onPrivacyPolicy = { backStack.add(PrivacyPolicy) },
-                            onTerms = { backStack.add(Terms) }
+                            onNavigateUp = onNavigateUp,
+                            onPrivacyPolicy = { onNavigate(PrivacyPolicy) },
+                            onTerms = { onNavigate(Terms) }
                         )
                     }
                 },
@@ -502,11 +501,11 @@ private fun AppScaffold(
 }
 
 @Composable
-private fun BottomBarItems(current: NavKey?, backStack: MutableList<NavKey>) {
+private fun BottomBarItems(current: NavKey?, onNavigate: (BottomNavKey) -> Unit) {
     bottomNavItems.forEach { item ->
         NavigationSuiteItem(
             selected = item.isInHierarchy(current),
-            onClick = { navigateBottomBar(backStack, item) },
+            onClick = { onNavigate(item) },
             icon = {
                 Icon(
                     item.icon,

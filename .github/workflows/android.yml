@@ -1,72 +1,89 @@
+---
 name: Android CI
 
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
+'on':
+    push:
+        branches: [main, develop]
+    pull_request:
+        branches: [main, develop]
 
 jobs:
-  build-dev:
-    if: github.ref == 'refs/heads/develop'
-    name: Build Dev APK
-    runs-on: ubuntu-latest
-    env:
-      DEV_KEYSTORE_PASSWORD: ${{ secrets.DEV_KEYSTORE_PASSWORD }}
-      DEV_STORE_PASSWORD: ${{ secrets.DEV_STORE_PASSWORD }}
-      DEV_SIGNING_KEY_ALIAS: ${{ secrets.DEV_SIGNING_KEY_ALIAS }}
-      DEV_SIGNING_KEY_PASSWORD: ${{ secrets.DEV_SIGNING_KEY_PASSWORD }}
-    steps:
-      - uses: actions/checkout@v4
+    build-dev:
+        if: github.ref == 'refs/heads/develop'
+        name: Build Dev APK
+        runs-on: ubuntu-latest
+        env:
+            DEV_KEYSTORE_PASSWORD: ${{ secrets.DEV_KEYSTORE_PASSWORD }}
+            DEV_STORE_PASSWORD: ${{ secrets.DEV_STORE_PASSWORD }}
+            DEV_SIGNING_KEY_ALIAS: ${{ secrets.DEV_SIGNING_KEY_ALIAS }}
+            DEV_SIGNING_KEY_PASSWORD: ${{ secrets.DEV_SIGNING_KEY_PASSWORD }}
+        steps:
+            - uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
+            - name: Set up JDK 17
+              uses: actions/setup-java@v4
+              with:
+                  distribution: temurin
+                  java-version: '17'
 
-      - name: Decrypt dev keystore
-        run: |
-          gpg --batch --yes --passphrase "$DEV_KEYSTORE_PASSWORD" \
-          --decrypt --output androidApp/keystore-dev.jks keystore-dev.gpg
+            - name: Decrypt dev keystore
+              run: |
+                  gpg --batch --yes --passphrase "$DEV_KEYSTORE_PASSWORD" \
+                  --decrypt --output androidApp/keystore-dev.jks keystore-dev.gpg
 
-      - name: Build Development APK
-        run: ./gradlew :androidApp:assembleDevelopmentRelease
+            - name: Build Development APK
+              run: ./gradlew :androidApp:assembleDevelopmentRelease
 
-      - name: Upload Development APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: development-apk
-          path: androidApp/build/outputs/apk/development/release/*.apk
+            - name: Upload Development APK
+              uses: actions/upload-artifact@v4
+              with:
+                  name: development-apk
+                  path: androidApp/build/outputs/apk/development/release/*.apk
 
-  build-prod:
-    if: github.ref == 'refs/heads/main'
-    name: Build Prod APK
-    runs-on: ubuntu-latest
-    env:
-      PROD_KEYSTORE_PASSWORD: ${{ secrets.PROD_KEYSTORE_PASSWORD }}
-      PROD_STORE_PASSWORD: ${{ secrets.PROD_STORE_PASSWORD }}
-      PROD_SIGNING_KEY_ALIAS: ${{ secrets.PROD_SIGNING_KEY_ALIAS }}
-      PROD_SIGNING_KEY_PASSWORD: ${{ secrets.PROD_SIGNING_KEY_PASSWORD }}
-    steps:
-      - uses: actions/checkout@v4
+    build-prod:
+        if: github.ref == 'refs/heads/main'
+        name: Build Prod APK
+        runs-on: ubuntu-latest
+        env:
+            PROD_KEYSTORE_PASSWORD: ${{ secrets.PROD_KEYSTORE_PASSWORD }}
+            PROD_STORE_PASSWORD: ${{ secrets.PROD_STORE_PASSWORD }}
+            PROD_SIGNING_KEY_ALIAS: ${{ secrets.PROD_SIGNING_KEY_ALIAS }}
+            PROD_SIGNING_KEY_PASSWORD: ${{ secrets.PROD_SIGNING_KEY_PASSWORD }}
+            SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+            UPDATE_PRIORITY: ${{ secrets.UPDATE_PRIORITY }}
+        steps:
+            - uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
+            - name: Set up JDK 17
+              uses: actions/setup-java@v4
+              with:
+                  distribution: temurin
+                  java-version: '17'
 
-      - name: Decrypt prod keystore
-        run: |
-          gpg --batch --yes --passphrase "$PROD_KEYSTORE_PASSWORD" \
-          --decrypt --output androidApp/keystore-prod.jks keystore-prod.gpg
+            - name: Set up Ruby
+              uses: ruby/setup-ruby@v1
+              with:
+                  ruby-version: '3.1'
 
-      - name: Build Production Bundle
-        run: ./gradlew :androidApp:bundleProductionRelease
+            - name: Install fastlane
+              run: gem install fastlane
 
-      - name: Upload Production Bundle
-        uses: actions/upload-artifact@v4
-        with:
-          name: production-bundle
-          path: androidApp/build/outputs/bundle/productionRelease/*.aab
+            - name: Bump version
+              run: fastlane android bump_version
+
+            - name: Decrypt prod keystore
+              run: |
+                  gpg --batch --yes --passphrase "$PROD_KEYSTORE_PASSWORD" \
+                  --decrypt --output androidApp/keystore-prod.jks keystore-prod.gpg
+
+            - name: Build Production Bundle
+              run: ./gradlew :androidApp:bundleProductionRelease
+
+            - name: Upload Production Bundle
+              uses: actions/upload-artifact@v4
+              with:
+                  name: production-bundle
+                  path: androidApp/build/outputs/bundle/productionRelease/*.aab
+
+            - name: Publish to Google Play
+              run: fastlane android publish
