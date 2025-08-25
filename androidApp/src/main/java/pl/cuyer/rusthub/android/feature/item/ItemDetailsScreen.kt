@@ -21,6 +21,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
@@ -182,10 +184,7 @@ fun ItemDetailsScreen(
             )
         }
     ) { innerPadding ->
-        PullToRefreshBox(
-            isRefreshing = false,
-            onRefresh = onRefresh,
-            state = pullToRefreshState,
+        Box(
             modifier = Modifier
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding)
@@ -197,26 +196,34 @@ fun ItemDetailsScreen(
                 }
 
                 state.value.item == null -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                    PullToRefreshBox(
+                        isRefreshing = false,
+                        onRefresh = onRefresh,
+                        state = pullToRefreshState
                     ) {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState()),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = "(×_×)",
-                                style = MaterialTheme.typography.headlineLarge,
-                                textAlign = TextAlign.Center,
-                                fontSize = 96.sp
-                            )
-                            Text(
-                                text = stringResource(SharedRes.strings.error_oops),
-                                style = MaterialTheme.typography.bodyLarge,
-                                textAlign = TextAlign.Center
-                            )
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "(×_×)",
+                                    style = MaterialTheme.typography.headlineLarge,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 96.sp
+                                )
+                                Text(
+                                    text = stringResource(SharedRes.strings.error_oops),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
                     }
                 }
@@ -247,32 +254,46 @@ fun ItemDetailsScreen(
                             modifier = Modifier.fillMaxSize(),
                             state = pagerState
                         ) { page ->
-                            DetailsContent(availablePages[page])
+                            PullToRefreshBox(
+                                isRefreshing = false,
+                                onRefresh = onRefresh,
+                                state = pullToRefreshState
+                            ) {
+                                DetailsContent(availablePages[page])
+                            }
                         }
                     }
                 }
 
                 else -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                    PullToRefreshBox(
+                        isRefreshing = false,
+                        onRefresh = onRefresh,
+                        state = pullToRefreshState
                     ) {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState()),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = "( •_•)?",
-                                style = MaterialTheme.typography.headlineLarge,
-                                textAlign = TextAlign.Center,
-                                fontSize = 96.sp
-                            )
-                            Text(
-                                text = stringResource(SharedRes.strings.error_item_unavailable),
-                                style = MaterialTheme.typography.bodyLarge,
-                                textAlign = TextAlign.Center
-                            )
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "( •_•)?",
+                                    style = MaterialTheme.typography.headlineLarge,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 96.sp
+                                )
+                                Text(
+                                    text = stringResource(SharedRes.strings.error_item_unavailable),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
                     }
                 }
