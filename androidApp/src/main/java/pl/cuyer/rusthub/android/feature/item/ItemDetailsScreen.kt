@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.android.feature.item
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -46,6 +48,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -58,6 +61,8 @@ import pl.cuyer.rusthub.android.designsystem.ItemTooltipImage
 import pl.cuyer.rusthub.android.designsystem.LootContentListItem
 import pl.cuyer.rusthub.android.designsystem.LootingListItem
 import pl.cuyer.rusthub.android.designsystem.DetailsRow
+import pl.cuyer.rusthub.android.designsystem.ItemDetailsShimmer
+import pl.cuyer.rusthub.android.designsystem.shimmer
 import pl.cuyer.rusthub.android.designsystem.WhereToFindListItem
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
@@ -143,12 +148,23 @@ fun ItemDetailsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = state.value.item?.name.orEmpty(),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    val title = state.value.item?.name ?: state.value.name
+                    if (title == null) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(0.5f)
+                                .height(20.dp)
+                                .clip(MaterialTheme.shapes.extraSmall)
+                                .shimmer()
+                        )
+                    } else {
+                        Text(
+                            text = title,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
@@ -161,37 +177,45 @@ fun ItemDetailsScreen(
             )
         }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .consumeWindowInsets(innerPadding)
-                .fillMaxSize()
-        ) {
-            if (availablePages.isNotEmpty()) {
-                PrimaryScrollableTabRow(
-                    selectedTabIndex = pagerState.currentPage
-                ) {
-                    availablePages.forEachIndexed { index, data ->
-                        key(data.page.title) {
-                            Tab(
-                                selected = pagerState.currentPage == index,
-                                onClick = {
-                                    scope.launch {
-                                        pagerState.animateScrollToPage(index)
-                                    }
-                                },
-                                text = { Text(stringResource(data.page.title)) }
-                            )
+        if (state.value.isLoading) {
+            ItemDetailsShimmer(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding)
+            )
+        } else {
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding)
+                    .fillMaxSize()
+            ) {
+                if (availablePages.isNotEmpty()) {
+                    PrimaryScrollableTabRow(
+                        selectedTabIndex = pagerState.currentPage
+                    ) {
+                        availablePages.forEachIndexed { index, data ->
+                            key(data.page.title) {
+                                Tab(
+                                    selected = pagerState.currentPage == index,
+                                    onClick = {
+                                        scope.launch {
+                                            pagerState.animateScrollToPage(index)
+                                        }
+                                    },
+                                    text = { Text(stringResource(data.page.title)) }
+                                )
+                            }
                         }
                     }
                 }
-            }
 
-            HorizontalPager(
-                modifier = Modifier.fillMaxSize(),
-                state = pagerState
-            ) { page ->
-                DetailsContent(availablePages[page])
+                HorizontalPager(
+                    modifier = Modifier.fillMaxSize(),
+                    state = pagerState
+                ) { page ->
+                    DetailsContent(availablePages[page])
+                }
             }
         }
     }

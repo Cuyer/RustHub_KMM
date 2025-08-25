@@ -11,6 +11,7 @@ import kotlinx.serialization.json.Json
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.data.network.item.mapper.toDomain
 import pl.cuyer.rusthub.data.network.item.model.ItemsResponseDto
+import pl.cuyer.rusthub.data.network.item.model.ItemDetailsResponseDto
 import pl.cuyer.rusthub.data.network.util.BaseApiResponse
 import pl.cuyer.rusthub.data.network.util.NetworkConstants
 import pl.cuyer.rusthub.data.network.util.appendNonNull
@@ -90,6 +91,22 @@ class ItemsClientImpl(
         }
 
         return Result.Success(items)
+    }
+
+    override fun getItemDetails(slug: String, language: Language): Flow<Result<RustItem>> {
+        return safeApiCall<ItemDetailsResponseDto> {
+            httpClient.get(NetworkConstants.BASE_URL + "items/details") {
+                url {
+                    appendNonNull("slug" to slug)
+                    appendNonNull("language" to language.toApiValue())
+                }
+            }
+        }.map { result ->
+            when (result) {
+                is Result.Success -> Result.Success(result.data.item.toDomain())
+                is Result.Error -> result
+            }
+        }
     }
 
     private fun Language.toApiValue(): String = when (this) {
