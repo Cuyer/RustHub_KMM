@@ -33,8 +33,9 @@ platform :android do
         FileUtils.mkdir_p(File.dirname(json_path))
         File.open(json_path, 'w') { |file| file.write(Base64.decode64(service_account_json)) }
 
-        aab_path = options[:aab] || Dir['androidApp/build/outputs/bundle/productionRelease/*.aab'].first
-        UI.user_error!("Could not find AAB at #{aab_path}") unless aab_path
+        aab_glob = File.expand_path('../androidApp/build/outputs/bundle/productionRelease/*.aab', __dir__)
+        aab_path = options[:aab] || Dir[aab_glob].first
+        UI.user_error!("Could not find AAB at #{aab_glob}") unless aab_path
 
         update_priority = (options[:update_priority] || ENV['UPDATE_PRIORITY'] || 0).to_i
         track = options[:track] || ENV['TRACK']

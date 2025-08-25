@@ -69,6 +69,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+          cache: 'gradle'
 
       - name: Decrypt dev keystore
         if: matrix.language == 'java-kotlin'
