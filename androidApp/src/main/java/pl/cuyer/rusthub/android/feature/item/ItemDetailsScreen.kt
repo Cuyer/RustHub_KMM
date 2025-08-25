@@ -182,10 +182,7 @@ fun ItemDetailsScreen(
             )
         }
     ) { innerPadding ->
-        PullToRefreshBox(
-            isRefreshing = false,
-            onRefresh = onRefresh,
-            state = pullToRefreshState,
+        Box(
             modifier = Modifier
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding)
@@ -247,7 +244,13 @@ fun ItemDetailsScreen(
                             modifier = Modifier.fillMaxSize(),
                             state = pagerState
                         ) { page ->
-                            DetailsContent(availablePages[page])
+                            PullToRefreshBox(
+                                isRefreshing = false,
+                                onRefresh = onRefresh,
+                                state = pullToRefreshState
+                            ) {
+                                DetailsContent(availablePages[page])
+                            }
                         }
                     }
                 }
