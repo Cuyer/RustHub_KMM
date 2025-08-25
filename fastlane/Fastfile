@@ -5,8 +5,8 @@ default_platform(:android)
 platform :android do
     desc "Bump versionName and versionCode"
     lane :bump_version do
-        gradle_file = 'androidApp/build.gradle.kts'
-        props_file = 'gradle.properties'
+        gradle_file = File.expand_path('../androidApp/build.gradle.kts', __dir__)
+        props_file = File.expand_path('../gradle.properties', __dir__)
 
         gradle = File.read(gradle_file)
         current_code = gradle[/versionCode\s*=\s*(\d+)/, 1].to_i
