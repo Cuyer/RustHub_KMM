@@ -362,7 +362,7 @@ fun ItemScreen(
                 ) {
                     onPagingItemsIndexed(
                         key = { index, item ->
-                            if (showAds && index == adIndex) "ad" else item.id ?: item.slug ?: item.hashCode()
+                            if (showAds && index == adIndex) "ad" else item.slug ?: item.hashCode()
                         },
                         contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "item" }
                     ) { index, item ->
@@ -388,8 +388,8 @@ fun ItemScreen(
                                 .animateItem()
                                 .padding(horizontal = spacing.xmedium),
                             item = item,
-                            onClick = { id ->
-                                onAction(ItemAction.OnItemClick(id))
+                            onClick = { slug, name ->
+                                onAction(ItemAction.OnItemClick(slug, name))
                             }
                         )
                     }

@@ -45,7 +45,6 @@ import pl.cuyer.rusthub.domain.usecase.RefreshUserUseCase
 import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 import pl.cuyer.rusthub.util.RemoteConfig
-import pl.cuyer.rusthub.domain.repository.item.local.ItemDataSource
 import pl.cuyer.rusthub.data.local.monument.MonumentSyncDataSourceImpl
 import pl.cuyer.rusthub.domain.repository.monument.local.MonumentSyncDataSource
 import pl.cuyer.rusthub.data.local.purchase.PurchaseSyncDataSourceImpl
@@ -137,10 +136,11 @@ actual fun platformModule(passphrase: String): Module = module {
             adsConsentManager = get(),
         )
     }
-    factory { (itemId: Long) ->
+    factory { (slug: String, name: String?) ->
         ItemDetailsViewModel(
             getItemDetailsUseCase = get(),
-            itemId = itemId,
+            slug = slug,
+            name = name,
         )
     }
     factory { (slug: String) ->

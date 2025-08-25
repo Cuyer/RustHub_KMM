@@ -16,4 +16,8 @@ interface ItemRepository {
         language: Language,
         searchQuery: String?
     ): Flow<Result<ItemsResponse>>
+    fun getItemDetails(
+        slug: String,
+        language: Language,
+    ): Flow<Result<RustItem>>
 }

@@ -325,8 +325,8 @@ private fun AppScaffold(
                     }
                     entry<ItemDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
                         val viewModel: ItemDetailsViewModel = koinViewModel(
-                            key = key.id.toString()
-                        ) { parametersOf(key.id) }
+                            key = key.slug
+                        ) { parametersOf(key.slug, key.name) }
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         ItemDetailsScreen(
                             state = state,

@@ -10,32 +10,45 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.CancellationException
 import pl.cuyer.rusthub.common.BaseViewModel
+import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.usecase.GetItemDetailsUseCase
 import pl.cuyer.rusthub.util.getCurrentAppLanguage
 
 class ItemDetailsViewModel(
     private val getItemDetailsUseCase: GetItemDetailsUseCase,
-    private val itemId: Long?,
+    private val slug: String?,
+    private val name: String?,
 ) : BaseViewModel() {
 
-    private val _state = MutableStateFlow(ItemDetailsState())
+    private val initialState = ItemDetailsState(slug = slug, name = name)
+    private val _state = MutableStateFlow(initialState)
     val state = _state
-        .onStart { itemId?.let { observeItem(it) } }
+        .onStart { slug?.let { observeItem(it) } }
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = ItemDetailsState()
+            initialValue = initialState
         )
 
-    private fun observeItem(id: Long) {
-        getItemDetailsUseCase(id, getCurrentAppLanguage())
+    private fun observeItem(slug: String) {
+        getItemDetailsUseCase(slug, getCurrentAppLanguage())
             .onStart { updateLoading(true) }
             .catch { e ->
                 if (e is CancellationException) throw e
                 updateLoading(false)
             }
-            .onEach { item ->
-                _state.update { it.copy(item = item, isLoading = false, itemId = id) }
+            .onEach { result ->
+                when (result) {
+                    is Result.Success -> _state.update {
+                        it.copy(
+                            item = result.data,
+                            isLoading = false,
+                            slug = slug,
+                            name = result.data.name ?: it.name
+                        )
+                    }
+                    is Result.Error -> updateLoading(false)
+                }
             }
             .launchIn(coroutineScope)
     }
