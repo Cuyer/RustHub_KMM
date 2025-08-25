@@ -39,7 +39,8 @@ platform :android do
         upload_to_play_store(
             aab: aab_path,
             json_key: json_path,
-            track: options[:track] || 'internal',
+            track: options[:track] || ENV['TRACK'],
+            release_status: options[:release_status] || ENV['RELEASE_STATUS'],
             in_app_update_priority: update_priority
         )
 
