@@ -53,6 +53,11 @@ class ItemDetailsViewModel(
             .launchIn(coroutineScope)
     }
 
+    fun refresh() {
+        val currentId = _state.value.id ?: id
+        currentId?.let { observeItem(it) }
+    }
+
     private fun updateLoading(loading: Boolean) {
         _state.update { it.copy(isLoading = loading) }
     }
