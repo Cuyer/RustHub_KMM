@@ -50,7 +50,9 @@ jobs:
             PROD_SIGNING_KEY_ALIAS: ${{ secrets.PROD_SIGNING_KEY_ALIAS }}
             PROD_SIGNING_KEY_PASSWORD: ${{ secrets.PROD_SIGNING_KEY_PASSWORD }}
             SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
-            UPDATE_PRIORITY: ${{ secrets.UPDATE_PRIORITY }}
+            UPDATE_PRIORITY: ${{ UPDATE_PRIORITY }}
+            TRACK: ${{ TRACK }}
+            RELEASE_STATUS: ${{ RELEASE_STATUS }}
         steps:
             - uses: actions/checkout@v4
 

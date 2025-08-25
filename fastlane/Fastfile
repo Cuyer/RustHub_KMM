@@ -35,12 +35,14 @@ platform :android do
         UI.user_error!("Could not find AAB at #{aab_path}") unless aab_path
 
         update_priority = (options[:update_priority] || ENV['UPDATE_PRIORITY'] || 0).to_i
+        track = options[:track] || ENV['TRACK']
+        release_status = options[:release_status] || ENV['RELEASE_STATUS']
 
         upload_to_play_store(
             aab: aab_path,
             json_key: json_path,
-            track: options[:track] || ENV['TRACK'],
-            release_status: options[:release_status] || ENV['RELEASE_STATUS'],
+            track: track,
+            release_status: release_status,
             in_app_update_priority: update_priority
         )
 
