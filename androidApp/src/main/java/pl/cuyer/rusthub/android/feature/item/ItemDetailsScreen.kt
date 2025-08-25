@@ -38,6 +38,8 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberSliderState
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.State
@@ -122,6 +124,7 @@ private sealed class PageData(val page: DetailsPage) {
 fun ItemDetailsScreen(
     state: State<ItemDetailsState>,
     onNavigateUp: () -> Unit,
+    onRefresh: () -> Unit,
 ) {
     // Build list of only available details pages and their content
     val availablePages = remember(state.value.item) {
@@ -145,6 +148,7 @@ fun ItemDetailsScreen(
     }
     val pagerState = rememberPagerState { availablePages.size }
     val scope = rememberCoroutineScope()
+    val pullToRefreshState = rememberPullToRefreshState()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -178,101 +182,98 @@ fun ItemDetailsScreen(
             )
         }
     ) { innerPadding ->
-        when {
-            state.value.isLoading -> {
-                ItemDetailsShimmer(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding)
-                )
-            }
-
-            state.value.item == null -> {
-                Box(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding)
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "(×_×)",
-                            style = MaterialTheme.typography.headlineLarge,
-                            textAlign = TextAlign.Center,
-                            fontSize = 96.sp
-                        )
-                        Text(
-                            text = stringResource(SharedRes.strings.error_oops),
-                            style = MaterialTheme.typography.bodyLarge,
-                            textAlign = TextAlign.Center
-                        )
-                    }
+        PullToRefreshBox(
+            isRefreshing = state.value.isLoading,
+            onRefresh = onRefresh,
+            state = pullToRefreshState,
+            modifier = Modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .fillMaxSize()
+        ) {
+            when {
+                state.value.isLoading -> {
+                    ItemDetailsShimmer()
                 }
-            }
 
-            availablePages.isNotEmpty() -> {
-                Column(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding)
-                        .fillMaxSize()
-                ) {
-                    PrimaryScrollableTabRow(
-                        selectedTabIndex = pagerState.currentPage
+                state.value.item == null -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        availablePages.forEachIndexed { index, data ->
-                            key(data.page.title) {
-                                Tab(
-                                    selected = pagerState.currentPage == index,
-                                    onClick = {
-                                        scope.launch {
-                                            pagerState.animateScrollToPage(index)
-                                        }
-                                    },
-                                    text = { Text(stringResource(data.page.title)) }
-                                )
-                            }
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "(×_×)",
+                                style = MaterialTheme.typography.headlineLarge,
+                                textAlign = TextAlign.Center,
+                                fontSize = 96.sp
+                            )
+                            Text(
+                                text = stringResource(SharedRes.strings.error_oops),
+                                style = MaterialTheme.typography.bodyLarge,
+                                textAlign = TextAlign.Center
+                            )
                         }
                     }
+                }
 
-                    HorizontalPager(
-                        modifier = Modifier.fillMaxSize(),
-                        state = pagerState
-                    ) { page ->
-                        DetailsContent(availablePages[page])
+                availablePages.isNotEmpty() -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        PrimaryScrollableTabRow(
+                            selectedTabIndex = pagerState.currentPage
+                        ) {
+                            availablePages.forEachIndexed { index, data ->
+                                key(data.page.title) {
+                                    Tab(
+                                        selected = pagerState.currentPage == index,
+                                        onClick = {
+                                            scope.launch {
+                                                pagerState.animateScrollToPage(index)
+                                            }
+                                        },
+                                        text = { Text(stringResource(data.page.title)) }
+                                    )
+                                }
+                            }
+                        }
+
+                        HorizontalPager(
+                            modifier = Modifier.fillMaxSize(),
+                            state = pagerState
+                        ) { page ->
+                            DetailsContent(availablePages[page])
+                        }
                     }
                 }
-            }
 
-            else -> {
-                Box(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding)
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+                else -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "( •_•)?",
-                            style = MaterialTheme.typography.headlineLarge,
-                            textAlign = TextAlign.Center,
-                            fontSize = 96.sp
-                        )
-                        Text(
-                            text = stringResource(SharedRes.strings.error_item_unavailable),
-                            style = MaterialTheme.typography.bodyLarge,
-                            textAlign = TextAlign.Center
-                        )
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "( •_•)?",
+                                style = MaterialTheme.typography.headlineLarge,
+                                textAlign = TextAlign.Center,
+                                fontSize = 96.sp
+                            )
+                            Text(
+                                text = stringResource(SharedRes.strings.error_item_unavailable),
+                                style = MaterialTheme.typography.bodyLarge,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }

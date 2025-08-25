@@ -344,6 +344,7 @@ private fun AppScaffold(
                         ItemDetailsScreen(
                             state = state,
                             onNavigateUp = { onPopWhile { it is ItemDetails } },
+                            onRefresh = viewModel::refresh,
                         )
                     }
                     entry<MonumentList>(metadata = ListDetailSceneStrategy.listPane()) {
