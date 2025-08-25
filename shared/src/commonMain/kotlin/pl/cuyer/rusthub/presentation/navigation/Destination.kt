@@ -49,7 +49,7 @@ data object ItemList : NavKey
 @Serializable
 @Immutable
 data class ItemDetails(
-    val slug: String,
+    val id: Long,
     val name: String? = null,
 ) : NavKey
 

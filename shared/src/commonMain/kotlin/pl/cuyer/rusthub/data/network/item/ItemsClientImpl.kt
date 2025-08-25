@@ -19,6 +19,7 @@ import pl.cuyer.rusthub.domain.model.ItemCategory
 import pl.cuyer.rusthub.domain.model.ItemsResponse
 import pl.cuyer.rusthub.domain.model.Language
 import pl.cuyer.rusthub.domain.model.RustItem
+import pl.cuyer.rusthub.domain.model.ItemSummary
 import pl.cuyer.rusthub.domain.repository.item.ItemRepository
 
 private const val PAGE_SIZE = 100
@@ -53,7 +54,7 @@ class ItemsClientImpl(
         }
     }
 
-    override suspend fun getItems(): Result<List<RustItem>> {
+    override suspend fun getItems(): Result<List<ItemSummary>> {
         val firstPage = when (val res = safeApiCall<ItemsResponseDto> {
             httpClient.get(NetworkConstants.BASE_URL + "items") {
                 url {
@@ -93,11 +94,11 @@ class ItemsClientImpl(
         return Result.Success(items)
     }
 
-    override fun getItemDetails(slug: String, language: Language): Flow<Result<RustItem>> {
+    override fun getItemDetails(id: Long, language: Language): Flow<Result<RustItem>> {
         return safeApiCall<ItemDetailsResponseDto> {
             httpClient.get(NetworkConstants.BASE_URL + "items/details") {
                 url {
-                    appendNonNull("slug" to slug)
+                    appendNonNull("id" to id)
                     appendNonNull("language" to language.toApiValue())
                 }
             }

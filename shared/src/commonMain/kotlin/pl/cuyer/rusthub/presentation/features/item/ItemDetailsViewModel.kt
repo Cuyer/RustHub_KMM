@@ -16,22 +16,22 @@ import pl.cuyer.rusthub.util.getCurrentAppLanguage
 
 class ItemDetailsViewModel(
     private val getItemDetailsUseCase: GetItemDetailsUseCase,
-    private val slug: String?,
+    private val id: Long?,
     private val name: String?,
 ) : BaseViewModel() {
 
-    private val initialState = ItemDetailsState(slug = slug, name = name)
+    private val initialState = ItemDetailsState(id = id, name = name)
     private val _state = MutableStateFlow(initialState)
     val state = _state
-        .onStart { slug?.let { observeItem(it) } }
+        .onStart { id?.let { observeItem(it) } }
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = initialState
         )
 
-    private fun observeItem(slug: String) {
-        getItemDetailsUseCase(slug, getCurrentAppLanguage())
+    private fun observeItem(id: Long) {
+        getItemDetailsUseCase(id, getCurrentAppLanguage())
             .onStart { updateLoading(true) }
             .catch { e ->
                 if (e is CancellationException) throw e
@@ -43,7 +43,7 @@ class ItemDetailsViewModel(
                         it.copy(
                             item = result.data,
                             isLoading = false,
-                            slug = slug,
+                            id = id,
                             name = result.data.name ?: it.name
                         )
                     }

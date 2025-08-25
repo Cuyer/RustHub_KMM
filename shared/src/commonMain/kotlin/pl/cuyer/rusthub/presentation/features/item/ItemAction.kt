@@ -6,7 +6,7 @@ import pl.cuyer.rusthub.domain.model.ItemCategory
 @Immutable
 sealed interface ItemAction {
     @Immutable
-    data class OnItemClick(val slug: String, val name: String) : ItemAction
+    data class OnItemClick(val id: Long, val name: String) : ItemAction
     @Immutable
     data class OnSearch(val query: String) : ItemAction
     @Immutable

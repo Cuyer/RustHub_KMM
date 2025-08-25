@@ -21,19 +21,19 @@ class GetItemDetailsUseCase(
     private val repository: ItemRepository,
 ) {
     /**
-     * Invokes the use case to retrieve the details of a `RustItem` by its slug and language.
+     * Invokes the use case to retrieve the details of a `RustItem` by its id and language.
      *
-     * @param slug The slug of the item to retrieve.
+     * @param id The id of the item to retrieve.
      * @param language The language to filter the item. If Polish is provided, it is replaced with English.
      * @return A `Flow` emitting a [Result] containing the `RustItem` or an error.
      */
-    operator fun invoke(slug: String, language: Language): Flow<Result<RustItem>> {
+    operator fun invoke(id: Long, language: Language): Flow<Result<RustItem>> {
         val updatedLanguage = if (language == Language.POLISH) {
             Language.ENGLISH
         } else {
             language
         }
 
-        return repository.getItemDetails(slug, updatedLanguage)
+        return repository.getItemDetails(id, updatedLanguage)
     }
 }

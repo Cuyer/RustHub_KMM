@@ -25,18 +25,18 @@ import coil3.request.crossfade
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.common.getImageByFileName
-import pl.cuyer.rusthub.domain.model.RustItem
+import pl.cuyer.rusthub.domain.model.ItemSummary
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ItemListItem(
     modifier: Modifier = Modifier,
-    item: RustItem,
-    onClick: (String, String) -> Unit
+    item: ItemSummary,
+    onClick: (Long, String) -> Unit
 ) {
     ElevatedCard(
         onClick = {
-            onClick(item.slug.orEmpty(), item.name.orEmpty())
+            onClick(item.id, item.name.orEmpty())
         },
         shape = MaterialTheme.shapes.extraSmall,
         modifier = modifier.fillMaxWidth()
@@ -49,7 +49,7 @@ fun ItemListItem(
             SubcomposeAsyncImage(
                 modifier = Modifier.size(48.dp),
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(item.iconUrl ?: item.image)
+                    .data(item.image)
                     .crossfade(true)
                     .build(),
                 contentDescription = item.name,
@@ -73,12 +73,6 @@ fun ItemListItem(
                     text = item.name.orEmpty(),
                     style = MaterialTheme.typography.titleLargeEmphasized
                 )
-                item.description?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
             }
         }
     }
@@ -90,10 +84,10 @@ private fun ItemListItemPreview() {
     RustHubTheme {
         ItemListItem(
             onClick = { _, _ -> },
-            item = RustItem(
+            item = ItemSummary(
+                id = 1L,
                 name = "Assault Rifle",
-                description = "High damage automatic rifle",
-                iconUrl = ""
+                image = ""
             )
         )
     }

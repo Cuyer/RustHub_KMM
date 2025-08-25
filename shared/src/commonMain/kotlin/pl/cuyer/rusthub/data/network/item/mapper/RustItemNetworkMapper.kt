@@ -107,6 +107,16 @@ fun ItemLanguageDto.toDomain(): Language {
     }
 }
 
+fun ItemSummaryDto.toDomain(): ItemSummary {
+    return ItemSummary(
+        id = id,
+        name = name,
+        shortName = shortName,
+        image = image,
+        categories = categories?.map { it.toDomain() } ?: emptyList()
+    )
+}
+
 fun LootingDto.toDomain(): Looting {
     return Looting(
         from = from,

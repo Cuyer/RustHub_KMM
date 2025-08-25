@@ -1,0 +1,17 @@
+ALTER TABLE itemEntity RENAME TO itemEntity_old;
+
+CREATE TABLE itemEntity (
+    id INTEGER NOT NULL,
+    name TEXT,
+    short_name TEXT,
+    image TEXT,
+    categories TEXT,
+    language TEXT AS LanguageEntity,
+    PRIMARY KEY(id)
+);
+
+INSERT INTO itemEntity (id, name, short_name, image, categories, language)
+SELECT id, name, short_name, image, categories, language
+FROM itemEntity_old;
+
+DROP TABLE itemEntity_old;
