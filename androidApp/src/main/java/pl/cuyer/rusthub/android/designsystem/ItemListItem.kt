@@ -73,6 +73,12 @@ fun ItemListItem(
                     text = item.name.orEmpty(),
                     style = MaterialTheme.typography.titleLargeEmphasized
                 )
+                item.description?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
         }
     }

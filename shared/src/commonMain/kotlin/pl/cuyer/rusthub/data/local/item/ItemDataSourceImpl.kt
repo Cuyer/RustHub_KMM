@@ -29,7 +29,8 @@ class ItemDataSourceImpl(
                             shortName = item.shortName,
                             image = item.image,
                             categories = item.categories.joinToString(",") { it.name },
-                            language = language.toEntity()
+                            language = language.toEntity(),
+                            description = item.description
                         )
                     }
                 }

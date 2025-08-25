@@ -11,4 +11,5 @@ data class ItemSummaryDto(
     val shortName: String? = null,
     val image: String? = null,
     val categories: List<ItemCategoryDto>? = null,
+    val description: String? = null
 )

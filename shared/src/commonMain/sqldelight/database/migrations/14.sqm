@@ -7,11 +7,12 @@ CREATE TABLE itemEntity (
     image TEXT,
     categories TEXT,
     language TEXT AS LanguageEntity,
+    description TEXT,
     PRIMARY KEY(id)
 );
 
-INSERT INTO itemEntity (id, name, short_name, image, categories, language)
-SELECT id, name, short_name, image, categories, language
+INSERT INTO itemEntity (id, name, short_name, image, categories, language, description)
+SELECT id, name, short_name, image, categories, language, description
 FROM itemEntity_old;
 
 DROP TABLE itemEntity_old;

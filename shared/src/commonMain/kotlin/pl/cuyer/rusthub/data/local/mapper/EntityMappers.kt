@@ -222,7 +222,8 @@ fun ItemEntity.toItemSummary(): ItemSummary {
         image = image,
         categories = categories?.split(",")?.mapNotNull {
             runCatching { ItemCategory.valueOf(it) }.getOrNull()
-        } ?: emptyList()
+        } ?: emptyList(),
+        description = description
     )
 }
 

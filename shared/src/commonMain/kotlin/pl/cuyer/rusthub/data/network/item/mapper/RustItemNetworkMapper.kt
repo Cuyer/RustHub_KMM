@@ -115,7 +115,8 @@ fun ItemSummaryDto.toDomain(): ItemSummary {
         name = name,
         shortName = shortName,
         image = image,
-        categories = categories?.map { it.toDomain() } ?: emptyList()
+        categories = categories?.map { it.toDomain() } ?: emptyList(),
+        description = description
     )
 }
 

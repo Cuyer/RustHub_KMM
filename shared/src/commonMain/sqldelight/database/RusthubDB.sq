@@ -656,6 +656,7 @@ CREATE TABLE itemEntity (
     image TEXT,
     categories TEXT,
     language TEXT AS LanguageEntity,
+    description TEXT,
     PRIMARY KEY(id)
 );
 
@@ -666,20 +667,23 @@ INSERT INTO itemEntity (
     short_name,
     image,
     categories,
-    language
+    language,
+    description
 ) VALUES (
     :id,
     :name,
     :shortName,
     :image,
     :categories,
-    :language
+    :language,
+    :description
 ) ON CONFLICT(id) DO UPDATE SET
     name = excluded.name,
     short_name = excluded.short_name,
     image = excluded.image,
     categories = excluded.categories,
-    language = excluded.language;
+    language = excluded.language,
+    description = excluded.description;
 
 getItems:
 SELECT * FROM itemEntity WHERE language = :language;

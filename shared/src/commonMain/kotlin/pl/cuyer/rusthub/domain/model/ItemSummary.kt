@@ -15,4 +15,5 @@ data class ItemSummary(
     val shortName: String? = null,
     val image: String? = null,
     val categories: List<ItemCategory> = emptyList(),
+    val description: String? = null
 )
