@@ -25,6 +25,7 @@ jobs:
               with:
                   distribution: temurin
                   java-version: '17'
+                  cache: 'gradle'
 
             - name: Decrypt dev keystore
               run: |
@@ -61,6 +62,7 @@ jobs:
               with:
                   distribution: temurin
                   java-version: '17'
+                  cache: 'gradle'
 
             - name: Set up Ruby
               uses: ruby/setup-ruby@v1
