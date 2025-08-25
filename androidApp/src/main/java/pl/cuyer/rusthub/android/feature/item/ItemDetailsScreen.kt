@@ -183,7 +183,7 @@ fun ItemDetailsScreen(
         }
     ) { innerPadding ->
         PullToRefreshBox(
-            isRefreshing = state.value.isLoading,
+            isRefreshing = false,
             onRefresh = onRefresh,
             state = pullToRefreshState,
             modifier = Modifier

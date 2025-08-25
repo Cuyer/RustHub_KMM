@@ -37,7 +37,7 @@ fun ItemDetailsShimmer(modifier: Modifier = Modifier) {
                 )
             }
         }
-        repeat(5) {
+        repeat(8) {
             ItemListItemShimmer(modifier = Modifier.fillMaxWidth())
         }
     }
