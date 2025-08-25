@@ -1,4 +1,5 @@
 require 'base64'
+require 'fileutils'
 
 default_platform(:android)
 
@@ -28,7 +29,8 @@ platform :android do
         service_account_json = ENV['SERVICE_ACCOUNT_JSON']
         UI.user_error!("Missing SERVICE_ACCOUNT_JSON environment variable") unless service_account_json
 
-        json_path = File.join(Dir.pwd, 'fastlane/service-account.json')
+        json_path = File.expand_path('service-account.json', __dir__)
+        FileUtils.mkdir_p(File.dirname(json_path))
         File.open(json_path, 'w') { |file| file.write(Base64.decode64(service_account_json)) }
 
         aab_path = options[:aab] || Dir['androidApp/build/outputs/bundle/productionRelease/*.aab'].first
