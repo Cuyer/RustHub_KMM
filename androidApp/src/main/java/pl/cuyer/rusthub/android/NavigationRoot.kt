@@ -338,12 +338,13 @@ private fun AppScaffold(
                     }
                     entry<ItemDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
                         val viewModel: ItemDetailsViewModel = koinViewModel(
-                            key = key.slug
-                        ) { parametersOf(key.slug, key.name) }
+                            key = key.id.toString()
+                        ) { parametersOf(key.id, key.name) }
                         val state = viewModel.state.collectAsStateWithLifecycle()
                         ItemDetailsScreen(
                             state = state,
                             onNavigateUp = { onPopWhile { it is ItemDetails } },
+                            onRefresh = viewModel::refresh,
                         )
                     }
                     entry<MonumentList>(metadata = ListDetailSceneStrategy.listPane()) {

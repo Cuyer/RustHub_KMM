@@ -98,7 +98,7 @@ import pl.cuyer.rusthub.android.util.HandlePagingItems
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.common.getImageByFileName
 import pl.cuyer.rusthub.domain.model.ItemCategory
-import pl.cuyer.rusthub.domain.model.RustItem
+import pl.cuyer.rusthub.domain.model.ItemSummary
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.presentation.features.item.ItemAction
@@ -115,7 +115,7 @@ fun ItemScreen(
     onNavigate: (NavKey) -> Unit,
     state: State<ItemState>,
     onAction: (ItemAction) -> Unit,
-    pagedList: LazyPagingItems<RustItem>,
+    pagedList: LazyPagingItems<ItemSummary>,
     uiEvent: Flow<UiEvent>,
     showAds: Boolean,
     adState: State<NativeAdState>,
@@ -366,7 +366,7 @@ fun ItemScreen(
                 ) {
                     onPagingItemsIndexed(
                         key = { index, item ->
-                            if (showAds && index == adIndex) "ad" else item.slug ?: item.hashCode()
+                            if (showAds && index == adIndex) "ad" else item.id
                         },
                         contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "item" }
                     ) { index, item ->
@@ -392,8 +392,8 @@ fun ItemScreen(
                                 .animateItem()
                                 .padding(horizontal = spacing.xmedium),
                             item = item,
-                            onClick = { slug, name ->
-                                onAction(ItemAction.OnItemClick(slug, name))
+                            onClick = { id, name ->
+                                onAction(ItemAction.OnItemClick(id, name))
                             }
                         )
                     }
@@ -456,7 +456,7 @@ private fun ItemScreenPreview() {
             onAction = {},
             onNavigate = {},
             uiEvent = flowOf(UiEvent.Navigate(ItemList)),
-            pagedList = flowOf(PagingData.from(emptyList<RustItem>())).collectAsLazyPagingItems(),
+            pagedList = flowOf(PagingData.from(emptyList<ItemSummary>())).collectAsLazyPagingItems(),
             showAds = true,
             adState = remember { mutableStateOf(NativeAdState()) },
             onAdAction = {}

@@ -58,7 +58,7 @@ class ItemRemoteMediator(
                     if (loadType == LoadType.REFRESH) {
                         dataSource.clearItems()
                     }
-                    dataSource.upsertItems(result.data.items)
+                    dataSource.upsertItems(result.data.items, language)
                     val end = page >= result.data.totalPages - 1
                     nextPage = if (end) page else page + 1
                     MediatorResult.Success(endOfPaginationReached = end)
