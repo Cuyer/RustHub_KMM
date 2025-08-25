@@ -11,5 +11,5 @@ data class ItemsResponseDto(
     val totalPages: Int,
     @SerialName("total_items")
     val totalItems: Long,
-    val items: List<RustItemDto>
+    val items: List<ItemSummaryDto>
 )

@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.domain.model.ItemCategory
-import pl.cuyer.rusthub.domain.model.RustItem
+import pl.cuyer.rusthub.domain.model.ItemSummary
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.presentation.navigation.ItemDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
@@ -91,7 +91,7 @@ class ItemViewModel(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val paging: Flow<PagingData<RustItem>> =
+    val paging: Flow<PagingData<ItemSummary>> =
         combine(queryFlow, categoryFlow) { query, category ->
             Pair(query, category)
         }.flatMapLatest { (query, category) ->
@@ -103,7 +103,7 @@ class ItemViewModel(
 
     fun onAction(action: ItemAction) {
         when (action) {
-            is ItemAction.OnItemClick -> navigateToItem(action.slug, action.name)
+            is ItemAction.OnItemClick -> navigateToItem(action.id, action.name)
             is ItemAction.OnSearch -> handleSearch(action.query)
             is ItemAction.OnCategoryChange -> changeCategory(action.category)
             ItemAction.OnClearSearchQuery -> clearSearchQuery()
@@ -128,9 +128,9 @@ class ItemViewModel(
         }
     }
 
-    private fun navigateToItem(slug: String, name: String) {
+    private fun navigateToItem(id: Long, name: String) {
         coroutineScope.launch {
-            _uiEvent.send(UiEvent.Navigate(ItemDetails(slug, name)))
+            _uiEvent.send(UiEvent.Navigate(ItemDetails(id, name)))
         }
     }
 

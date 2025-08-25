@@ -171,7 +171,7 @@ val appModule = module {
     single { PasswordValidator(get()) }
     single { UsernameValidator(get()) }
     single { GetPagedServersUseCase(get(), get(), get(), get()) }
-    single { GetPagedItemsUseCase(get(), get(), get()) }
+    single { GetPagedItemsUseCase(get(), get()) }
     single { GetPagedMonumentsUseCase(get(), get()) }
     single { GetRaidsUseCase(get()) }
     single { ObserveRaidsUseCase(get()) }

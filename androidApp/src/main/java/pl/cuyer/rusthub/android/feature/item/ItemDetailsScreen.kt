@@ -177,20 +177,50 @@ fun ItemDetailsScreen(
             )
         }
     ) { innerPadding ->
-        if (state.value.isLoading) {
-            ItemDetailsShimmer(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding)
-            )
-        } else {
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding)
-                    .fillMaxSize()
-            ) {
-                if (availablePages.isNotEmpty()) {
+        when {
+            state.value.isLoading -> {
+                ItemDetailsShimmer(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding)
+                )
+            }
+
+            state.value.item == null -> {
+                Box(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "(×_×)",
+                            style = MaterialTheme.typography.headlineLarge,
+                            textAlign = TextAlign.Center,
+                            fontSize = 96.sp
+                        )
+                        Text(
+                            text = stringResource(SharedRes.strings.error_oops),
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+
+            availablePages.isNotEmpty() -> {
+                Column(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding)
+                        .fillMaxSize()
+                ) {
                     PrimaryScrollableTabRow(
                         selectedTabIndex = pagerState.currentPage
                     ) {
@@ -208,13 +238,41 @@ fun ItemDetailsScreen(
                             }
                         }
                     }
-                }
 
-                HorizontalPager(
-                    modifier = Modifier.fillMaxSize(),
-                    state = pagerState
-                ) { page ->
-                    DetailsContent(availablePages[page])
+                    HorizontalPager(
+                        modifier = Modifier.fillMaxSize(),
+                        state = pagerState
+                    ) { page ->
+                        DetailsContent(availablePages[page])
+                    }
+                }
+            }
+
+            else -> {
+                Box(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "( •_•)?",
+                            style = MaterialTheme.typography.headlineLarge,
+                            textAlign = TextAlign.Center,
+                            fontSize = 96.sp
+                        )
+                        Text(
+                            text = stringResource(SharedRes.strings.error_item_unavailable),
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
         }

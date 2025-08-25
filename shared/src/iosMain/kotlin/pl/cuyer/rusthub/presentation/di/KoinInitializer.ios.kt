@@ -136,10 +136,10 @@ actual fun platformModule(passphrase: String): Module = module {
             adsConsentManager = get(),
         )
     }
-    factory { (slug: String, name: String?) ->
+    factory { (id: Long, name: String?) ->
         ItemDetailsViewModel(
             getItemDetailsUseCase = get(),
-            slug = slug,
+            id = id,
             name = name,
         )
     }

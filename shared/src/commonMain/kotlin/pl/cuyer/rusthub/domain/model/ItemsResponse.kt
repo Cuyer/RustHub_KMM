@@ -3,11 +3,12 @@ package pl.cuyer.rusthub.domain.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import androidx.compose.runtime.Immutable
+import pl.cuyer.rusthub.domain.model.ItemSummary
 
 @Serializable
 @Immutable
 /**
- * Represents a paged response of [RustItem] objects returned from the API.
+ * Represents a paged response of [ItemSummary] objects returned from the API.
  */
 data class ItemsResponse(
     val page: Int,
@@ -16,5 +17,5 @@ data class ItemsResponse(
     val totalPages: Int,
     @SerialName("total_items")
     val totalItems: Long,
-    val items: List<RustItem>
+    val items: List<ItemSummary>
 )

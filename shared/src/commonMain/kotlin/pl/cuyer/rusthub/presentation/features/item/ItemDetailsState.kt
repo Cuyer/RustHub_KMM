@@ -7,6 +7,6 @@ import androidx.compose.runtime.Immutable
 data class ItemDetailsState(
     val item: RustItem? = null,
     val isLoading: Boolean = true,
-    val slug: String? = null,
+    val id: Long? = null,
     val name: String? = null,
 )
