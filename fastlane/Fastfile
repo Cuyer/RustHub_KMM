@@ -1,7 +1,29 @@
 require 'base64'
 require 'fileutils'
+require 'google/apis/androidpublisher_v3'
+require 'googleauth'
 
 default_platform(:android)
+
+def verify_update_priority(json_key, track, expected_priority)
+    package_name = CredentialsManager::AppfileConfig.new.package_name
+    service = Google::Apis::AndroidpublisherV3::AndroidPublisherService.new
+    service.authorization = Google::Auth::ServiceAccountCredentials.make_creds(
+        json_key_io: File.open(json_key),
+        scope: 'https://www.googleapis.com/auth/androidpublisher'
+    )
+
+    edit = service.insert_edit(package_name)
+    track_info = service.get_edit_track(package_name, edit.id, track)
+    release = track_info.releases&.first
+    actual_priority = release&.in_app_update_priority.to_i
+
+    unless actual_priority == expected_priority
+        UI.user_error!("Update priority mismatch: expected #{expected_priority}, got #{actual_priority}")
+    end
+
+    UI.message("Verified update priority #{actual_priority} for track #{track}")
+end
 
 platform :android do
     desc "Bump versionName and versionCode"
@@ -48,6 +70,8 @@ platform :android do
             release_status: release_status,
             in_app_update_priority: update_priority
         )
+
+        verify_update_priority(json_path, track, update_priority)
 
         File.delete(json_path) if File.exist?(json_path)
     end
