@@ -13,15 +13,20 @@ def verify_update_priority(json_key, track, expected_priority)
         scope: 'https://www.googleapis.com/auth/androidpublisher'
     )
 
-    track_info = service.get_track(package_name, track)
-    release = track_info.releases&.first
-    actual_priority = release&.in_app_update_priority.to_i
+    edit = service.insert_edit(package_name, Google::Apis::AndroidpublisherV3::AppEdit.new)
+    begin
+        track_info = service.get_edit_track(package_name, edit.id, track)
+        release = track_info.releases&.first
+        actual_priority = release&.in_app_update_priority.to_i
 
-    unless actual_priority == expected_priority
-        UI.user_error!("Update priority mismatch: expected #{expected_priority}, got #{actual_priority}")
+        unless actual_priority == expected_priority
+            UI.user_error!("Update priority mismatch: expected #{expected_priority}, got #{actual_priority}")
+        end
+
+        UI.message("Verified update priority #{actual_priority} for track #{track}")
+    ensure
+        service.delete_edit(package_name, edit.id)
     end
-
-    UI.message("Verified update priority #{actual_priority} for track #{track}")
 end
 
 platform :android do
