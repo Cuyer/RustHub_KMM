@@ -13,8 +13,7 @@ def verify_update_priority(json_key, track, expected_priority)
         scope: 'https://www.googleapis.com/auth/androidpublisher'
     )
 
-    edit = service.insert_edit(package_name)
-    track_info = service.get_edit_track(package_name, edit.id, track)
+    track_info = service.get_track(package_name, track)
     release = track_info.releases&.first
     actual_priority = release&.in_app_update_priority.to_i
 
