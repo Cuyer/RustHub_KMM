@@ -46,13 +46,15 @@ private fun useCtLibrary(): Boolean {
 }
 
 private fun currentLanguageTag(): String {
-    val locales = AppCompatDelegate.getApplicationLocales()
-    val locale = if (!locales.isEmpty) {
-        locales[0]
-    } else {
-        Locale.getDefault()
-    }
-    return locale?.toLanguageTag() ?: Locale.getDefault().toLanguageTag()
+    return runCatching {
+        val locales = AppCompatDelegate.getApplicationLocales()
+        val locale = if (!locales.isEmpty) {
+            locales[0]
+        } else {
+            Locale.getDefault()
+        }
+        locale?.toLanguageTag()
+    }.getOrNull() ?: Locale.getDefault().toLanguageTag()
 }
 
 actual class HttpClientFactory actual constructor(
