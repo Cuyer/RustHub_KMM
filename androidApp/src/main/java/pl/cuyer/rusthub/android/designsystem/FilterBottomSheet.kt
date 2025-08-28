@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,6 +45,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.theme.RustHubTheme
@@ -279,11 +283,16 @@ private fun RangeFilters(
                     }
                 }
 
-                LaunchedEffect(textFieldState.text) {
-                    val newValue = textFieldState.text.toString().toIntOrNull()
-                    if (newValue != option.value) {
-                        onOptionsChange(index, newValue)
-                    }
+                LaunchedEffect(textFieldState) {
+                    snapshotFlow { textFieldState.text.toString() }
+                        .debounce(500)
+                        .distinctUntilChanged()
+                        .collect { text ->
+                            val newValue = text.toIntOrNull()
+                            if (newValue != option.value) {
+                                onOptionsChange(index, newValue)
+                            }
+                        }
                 }
 
                 AppTextField(
