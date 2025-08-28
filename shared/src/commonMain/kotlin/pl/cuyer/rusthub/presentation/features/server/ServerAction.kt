@@ -31,4 +31,6 @@ sealed interface ServerAction {
     data class OnCheckboxChange(val index: Int, val isChecked: Boolean) : ServerAction
     @Immutable
     data class OnRangeChange(val index: Int, val value: Int?) : ServerAction
+    @Immutable
+    data object RefreshOptions : ServerAction
 }
