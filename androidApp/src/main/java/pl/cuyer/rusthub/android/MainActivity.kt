@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-        lifecycleScope.launchWhenCreated {
+        lifecycleScope.launch {
             app.koinReady.await()
             startupViewModel = getViewModel()
             inAppUpdateManager = get()
@@ -125,7 +125,7 @@ class MainActivity : AppCompatActivity() {
             inAppUpdateManager.check(this@MainActivity)
 
             if (!lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
-                return@launchWhenCreated
+                return@launch
             }
 
             setContent {
