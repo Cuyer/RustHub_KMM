@@ -99,7 +99,7 @@ class ServerViewModel(
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = ServerState()
+            initialValue = _state.value
         )
 
     private val filterChangeFlow = _state

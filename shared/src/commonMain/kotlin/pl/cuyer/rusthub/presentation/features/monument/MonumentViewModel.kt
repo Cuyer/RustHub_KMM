@@ -71,7 +71,7 @@ class MonumentViewModel(
     val state = _state.stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000L),
-        initialValue = MonumentState(),
+        initialValue = _state.value,
     )
 
     private val query = state

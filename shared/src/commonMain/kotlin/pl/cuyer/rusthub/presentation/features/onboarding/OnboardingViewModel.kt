@@ -54,7 +54,7 @@ class OnboardingViewModel(
     val state = _state.stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000L),
-        initialValue = OnboardingState()
+        initialValue = _state.value
     )
 
     var authAnonymouslyJob: Job? = null

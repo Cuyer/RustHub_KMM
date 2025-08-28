@@ -51,7 +51,7 @@ class UpgradeViewModel(
     val state = _state.stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000L),
-        initialValue = UpgradeState()
+        initialValue = _state.value
     )
 
     private var submitJob: Job? = null

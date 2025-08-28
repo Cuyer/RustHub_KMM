@@ -49,7 +49,7 @@ class ConfirmEmailViewModel(
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = ConfirmEmailState()
+            initialValue = _state.value
         )
 
     private var confirmJob: Job? = null

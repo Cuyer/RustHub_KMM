@@ -39,7 +39,7 @@ class ResetPasswordViewModel(
     val state = _state.stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000L),
-        initialValue = ResetPasswordState(email = email)
+        initialValue = _state.value
     )
 
     private var sendJob: Job? = null

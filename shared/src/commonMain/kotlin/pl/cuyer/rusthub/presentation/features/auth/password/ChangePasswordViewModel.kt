@@ -38,7 +38,7 @@ class ChangePasswordViewModel(
     val state = _state.stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000L),
-        initialValue = ChangePasswordState()
+        initialValue = _state.value
     )
 
     private var changeJob: Job? = null

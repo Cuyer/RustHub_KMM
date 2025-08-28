@@ -51,7 +51,7 @@ class DeleteAccountViewModel(
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = DeleteAccountState()
+            initialValue = _state.value
         )
 
     var deleteJob: Job? = null

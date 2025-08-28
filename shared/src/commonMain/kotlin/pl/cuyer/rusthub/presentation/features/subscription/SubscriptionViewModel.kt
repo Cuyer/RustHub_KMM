@@ -72,7 +72,7 @@ class SubscriptionViewModel(
     val state = _state.stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000L),
-        initialValue = SubscriptionState(currentPlan = initialPlan)
+        initialValue = _state.value
     )
 
     private var subscriptionJob: Job? = null

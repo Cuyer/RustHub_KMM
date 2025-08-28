@@ -69,7 +69,7 @@ class ItemViewModel(
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = ItemState()
+            initialValue = _state.value
         )
 
     private val query = state
