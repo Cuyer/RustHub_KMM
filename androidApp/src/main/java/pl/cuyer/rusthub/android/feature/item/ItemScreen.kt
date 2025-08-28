@@ -196,7 +196,7 @@ fun ItemScreen(
                             onAction(ItemAction.OnSearch(textFieldState.text.toString()))
                         },
                         onOpenFilters = {},
-                        searchQueryUi = { state.value.searchQuery },
+                        searchQueryUi = { state.value.searchQueries },
                         onDelete = {
                             if (it.isBlank()) onAction(ItemAction.DeleteSearchQueries)
                             else onAction(ItemAction.DeleteSearchQueryByQuery(it))

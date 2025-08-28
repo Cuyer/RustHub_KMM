@@ -67,15 +67,20 @@ class MonumentViewModel(
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    private val queryFlow = MutableStateFlow("")
-    private val typeFlow = MutableStateFlow<MonumentType?>(null)
-
     private val _state = MutableStateFlow(MonumentState())
     val state = _state.stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000L),
         initialValue = MonumentState(),
     )
+
+    private val query = state
+        .map { it.query }
+        .distinctUntilChanged()
+
+    private val typeFlow = state
+        .map { it.selectedType }
+        .distinctUntilChanged()
 
     val showAds = getUserUseCase()
         .map { user -> !(user?.subscribed ?: false) && adsConsentManager.canRequestAds }
@@ -92,13 +97,12 @@ class MonumentViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val paging: Flow<PagingData<Monument>> =
-        combine(queryFlow, typeFlow) { query, type ->
+        combine(query, typeFlow) { query, type ->
             Pair(query, type)
         }
             .flatMapLatest { (query, type) ->
                 getPagedMonumentsUseCase(query, type, getCurrentAppLanguage())
             }
-            .flowOn(Dispatchers.Default)
             .cachedIn(coroutineScope)
             .catchAndLog { }
 
@@ -128,7 +132,7 @@ class MonumentViewModel(
                 }.onFailure {
                     sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_search))
                 }.onSuccess {
-                    queryFlow.update { query }
+                    _state.update { it.copy(query = query) }
                 }
             }
         } else {
@@ -137,12 +141,11 @@ class MonumentViewModel(
     }
 
     private fun changeType(type: MonumentType?) {
-        typeFlow.update { type }
         _state.update { it.copy(selectedType = type) }
     }
 
     private fun clearSearchQuery() {
-        queryFlow.update { "" }
+        _state.update { it.copy(query = "") }
     }
 
     private fun deleteSearchQueries(query: String?) {
@@ -166,8 +169,8 @@ class MonumentViewModel(
             .distinctUntilChanged()
             .map { queries -> queries.map { it.toUi() } }
             .flowOn(Dispatchers.Default)
-            .onEach { mapped ->
-                updateSearchQuery(mapped)
+            .onEach { mappedQueries ->
+                updateSearchQueries(mappedQueries)
                 updateIsLoadingSearchHistory(false)
             }
             .onStart { updateIsLoadingSearchHistory(true) }
@@ -177,8 +180,8 @@ class MonumentViewModel(
             .launchIn(coroutineScope)
     }
 
-    private fun updateSearchQuery(mapped: List<SearchQueryUi>) {
-        _state.update { it.copy(searchQuery = mapped) }
+    private fun updateSearchQueries(mappedQueries: List<SearchQueryUi>) {
+        _state.update { it.copy(searchQueries = mappedQueries) }
     }
 
     private fun updateIsLoadingSearchHistory(loading: Boolean) {
