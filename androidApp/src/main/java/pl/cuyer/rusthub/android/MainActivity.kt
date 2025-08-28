@@ -59,91 +59,89 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-        lifecycleScope.launchWhenCreated {
-            app.koinReady.await()
-            startupViewModel = getViewModel()
-            inAppUpdateManager = get()
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                app.koinReady.await()
+                startupViewModel = getViewModel()
+                inAppUpdateManager = get()
 
-            var themeSettings by mutableStateOf(
-                ThemeSettings(
-                    darkTheme = false,
-                    dynamicColor = false
+                var themeSettings by mutableStateOf(
+                    ThemeSettings(
+                        darkTheme = false,
+                        dynamicColor = false
+                    )
                 )
-            )
 
-            lifecycleScope.launch {
-                lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    combine(
-                        isSystemInDarkTheme(),
-                        startupViewModel.state
-                    ) { systemDark, uiState ->
-                        ThemeSettings(
-                            darkTheme = when (uiState.theme) {
-                                Theme.SYSTEM -> systemDark
-                                Theme.LIGHT -> false
-                                Theme.DARK -> true
-                            },
-                            dynamicColor = uiState.dynamicColors
-                        )
-                    }.onEach { themeSettings = it }
-                        .map { it.darkTheme }
-                        .distinctUntilChanged()
-                        .collect { darkTheme ->
-                            enableEdgeToEdge(
-                                navigationBarStyle = if (darkTheme) {
-                                    SystemBarStyle.dark(
-                                        scrim = Color.TRANSPARENT
-                                    )
-                                } else {
-                                    SystemBarStyle.light(
-                                        scrim = Color.TRANSPARENT,
-                                        darkScrim = Color.TRANSPARENT
-                                    )
+                launch {
+                    lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        combine(
+                            isSystemInDarkTheme(),
+                            startupViewModel.state
+                        ) { systemDark, uiState ->
+                            ThemeSettings(
+                                darkTheme = when (uiState.theme) {
+                                    Theme.SYSTEM -> systemDark
+                                    Theme.LIGHT -> false
+                                    Theme.DARK -> true
                                 },
-                                statusBarStyle = if (darkTheme) {
-                                    SystemBarStyle.dark(
-                                        scrim = Color.TRANSPARENT
-                                    )
-                                } else {
-                                    SystemBarStyle.light(
-                                        scrim = Color.TRANSPARENT,
-                                        darkScrim = Color.TRANSPARENT
-                                    )
-                                }
+                                dynamicColor = uiState.dynamicColors
                             )
-                        }
+                        }.onEach { themeSettings = it }
+                            .map { it.darkTheme }
+                            .distinctUntilChanged()
+                            .collect { darkTheme ->
+                                enableEdgeToEdge(
+                                    navigationBarStyle = if (darkTheme) {
+                                        SystemBarStyle.dark(
+                                            scrim = Color.TRANSPARENT
+                                        )
+                                    } else {
+                                        SystemBarStyle.light(
+                                            scrim = Color.TRANSPARENT,
+                                            darkScrim = Color.TRANSPARENT
+                                        )
+                                    },
+                                    statusBarStyle = if (darkTheme) {
+                                        SystemBarStyle.dark(
+                                            scrim = Color.TRANSPARENT
+                                        )
+                                    } else {
+                                        SystemBarStyle.light(
+                                            scrim = Color.TRANSPARENT,
+                                            darkScrim = Color.TRANSPARENT
+                                        )
+                                    }
+                                )
+                            }
+                    }
                 }
-            }
 
-            lifecycleScope.launch {
-                withContext(Dispatchers.IO) {
-                    MobileAds.initialize(this@MainActivity)
+                launch {
+                    withContext(Dispatchers.IO) {
+                        MobileAds.initialize(this@MainActivity)
+                    }
                 }
-            }
 
-            inAppUpdateManager.setLauncher(updateLauncher, this@MainActivity)
-            inAppUpdateManager.check(this@MainActivity)
+                inAppUpdateManager.setLauncher(updateLauncher, this@MainActivity)
+                inAppUpdateManager.check(this@MainActivity)
 
-            if (!lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
-                return@launchWhenCreated
-            }
-
-            setContent {
-                RustHubTheme(
-                    darkTheme = themeSettings.darkTheme,
-                    dynamicColor = themeSettings.dynamicColor
-                ) {
-                    val state = startupViewModel.state.collectAsStateWithLifecycle()
-                    if (!state.value.isLoading) {
-                        RustHubBackground {
-                            NavigationRoot(startDestination = state.value.startDestination)
+                setContent {
+                    RustHubTheme(
+                        darkTheme = themeSettings.darkTheme,
+                        dynamicColor = themeSettings.dynamicColor
+                    ) {
+                        val state = startupViewModel.state.collectAsStateWithLifecycle()
+                        if (!state.value.isLoading) {
+                            RustHubBackground {
+                                NavigationRoot(startDestination = state.value.startDestination)
+                            }
                         }
                     }
                 }
-            }
 
-            splashScreen.setKeepOnScreenCondition {
-                startupViewModel.state.value.isLoading
+                splashScreen.setKeepOnScreenCondition {
+                    startupViewModel.state.value.isLoading
+                }
             }
         }
     }
