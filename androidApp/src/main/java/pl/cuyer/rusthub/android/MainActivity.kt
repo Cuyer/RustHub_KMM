@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-        lifecycleScope.launch {
+        lifecycleScope.launchWhenCreated {
             app.koinReady.await()
             startupViewModel = getViewModel()
             inAppUpdateManager = get()
@@ -123,6 +123,10 @@ class MainActivity : AppCompatActivity() {
 
             inAppUpdateManager.setLauncher(updateLauncher, this@MainActivity)
             inAppUpdateManager.check(this@MainActivity)
+
+            if (!lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
+                return@launchWhenCreated
+            }
 
             setContent {
                 RustHubTheme(
