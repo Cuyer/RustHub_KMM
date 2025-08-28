@@ -3,6 +3,7 @@ package pl.cuyer.rusthub.presentation.features.server
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import androidx.paging.peek
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -123,6 +124,11 @@ class ServerViewModel(
                 ).map { pagingData ->
                     pagingData.map { it.toUiModel(stringProvider) }
                 }.flowOn(Dispatchers.Default)
+            }
+            .onEach { pagingData ->
+                if (pagingData.peek(0) != null) {
+                    _uiEvent.send(UiEvent.ScrollToIndex(0))
+                }
             }
             .cachedIn(coroutineScope)
             .catchAndLog {
