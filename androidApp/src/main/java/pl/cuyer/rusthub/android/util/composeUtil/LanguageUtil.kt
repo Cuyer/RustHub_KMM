@@ -13,8 +13,8 @@ import java.util.Locale
 fun rememberCurrentLanguage(): State<Language> {
     val configuration = LocalConfiguration.current // recomposes on locale/config changes
     val language = remember(configuration) {
-        val locales = AppCompatDelegate.getApplicationLocales()
-        val tag = if (!locales.isEmpty) {
+        val locales = runCatching { AppCompatDelegate.getApplicationLocales() }.getOrNull()
+        val tag = if (locales != null && !locales.isEmpty) {
             locales[0]?.language ?: Locale.getDefault().language
         } else {
             Locale.getDefault().language

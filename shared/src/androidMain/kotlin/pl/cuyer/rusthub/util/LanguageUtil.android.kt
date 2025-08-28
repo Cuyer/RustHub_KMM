@@ -18,13 +18,15 @@ actual fun updateAppLanguage(language: Language) {
     }
     val locale = Locale.forLanguageTag(tag)
     if (locale.language.isEmpty()) return
-    val locales = LocaleListCompat.create(locale)
-    AppCompatDelegate.setApplicationLocales(locales)
+    runCatching {
+        val locales = LocaleListCompat.create(locale)
+        AppCompatDelegate.setApplicationLocales(locales)
+    }
 }
 
 actual fun getCurrentAppLanguage(): Language {
-    val locales = AppCompatDelegate.getApplicationLocales()
-    val code = if (!locales.isEmpty) {
+    val locales = runCatching { AppCompatDelegate.getApplicationLocales() }.getOrNull()
+    val code = if (locales != null && !locales.isEmpty) {
         locales[0]?.language ?: Locale.getDefault().language
     } else {
         Locale.getDefault().language
