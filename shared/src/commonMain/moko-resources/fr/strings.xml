@@ -17,6 +17,8 @@
     <string name="logout_button">Se déconnecter</string>
     <string name="fetch_user_error">Impossible de récupérer les données de l'utilisateur.</string>
     <string name="play_store_required">Google Play Store est requis. Veuillez l'installer ou le mettre à jour.</string>
+    <string name="play_services_required">Les services Google Play sont requis. Veuillez les installer ou les mettre à jour.</string>
+    <string name="play_store_sign_in_required">Un compte Google Play Store est requis. Veuillez vous connecter.</string>
     <string name="wipe">Wipe</string>
     <string name="days"> jours</string>
     <string name="three_max">Max 3</string>

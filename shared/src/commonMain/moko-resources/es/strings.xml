@@ -17,6 +17,8 @@
     <string name="logout_button">Botón de cierre de sesión</string>
     <string name="fetch_user_error">Se produjo un error al alcanzar los datos del usuario.</string>
     <string name="play_store_required">Se requiere Google Play Store. Instálalo o actualízalo.</string>
+    <string name="play_services_required">Se requieren los servicios de Google Play. Instálalos o actualízalos.</string>
+    <string name="play_store_sign_in_required">Se requiere una cuenta de Google Play Store. Inicia sesión.</string>
     <string name="wipe">Limpiar</string>
     <string name="days">días</string>
     <string name="three_max">Max 3</string>

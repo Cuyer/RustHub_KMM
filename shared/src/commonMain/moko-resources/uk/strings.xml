@@ -17,6 +17,8 @@
     <string name="logout_button">Кнопка виходу</string>
     <string name="fetch_user_error">Під час отримання даних користувачів сталася помилка.</string>
     <string name="play_store_required">Потрібен Google Play Store. Будь ласка, встановіть або оновіть його.</string>
+    <string name="play_services_required">Потрібні сервіси Google Play. Будь ласка, встановіть або оновіть їх.</string>
+    <string name="play_store_sign_in_required">Потрібен обліковий запис Google Play Store. Будь ласка, увійдіть.</string>
     <string name="wipe">Витирати</string>
     <string name="days">дні</string>
     <string name="three_max">Макс 3</string>
