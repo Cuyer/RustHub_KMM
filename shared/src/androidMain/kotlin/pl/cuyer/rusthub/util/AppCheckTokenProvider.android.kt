@@ -50,7 +50,12 @@ actual class AppCheckTokenProvider actual constructor(
 
     private suspend fun notifyPlayStoreRequired(e: Exception): Boolean {
         val integrityCause = e.cause as? IntegrityServiceException
-        if (integrityCause?.errorCode == IntegrityErrorCode.PLAY_STORE_NOT_FOUND) {
+        if (
+            integrityCause?.errorCode in listOf(
+                IntegrityErrorCode.PLAY_STORE_NOT_FOUND,
+                IntegrityErrorCode.PLAY_STORE_VERSION_OUTDATED
+            )
+        ) {
             withContext(Dispatchers.Main.immediate) {
                 snackbarController.sendEvent(
                     SnackbarEvent(stringProvider.get(SharedRes.strings.play_store_required))
