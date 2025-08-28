@@ -17,6 +17,8 @@
     <string name="logout_button">Выйти</string>
     <string name="fetch_user_error">Не удалось получить данные пользователя.</string>
     <string name="play_store_required">Требуется Google Play Store. Пожалуйста, установите или обновите его.</string>
+    <string name="play_services_required">Требуются сервисы Google Play. Пожалуйста, установите или обновите их.</string>
+    <string name="play_store_sign_in_required">Требуется аккаунт Google Play Store. Пожалуйста, войдите.</string>
     <string name="wipe">Вайп</string>
     <string name="days"> дней</string>
     <string name="three_max">Макс 3</string>

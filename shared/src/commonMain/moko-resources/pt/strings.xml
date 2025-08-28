@@ -17,6 +17,8 @@
     <string name="logout_button">Botão de logout</string>
     <string name="fetch_user_error">Ocorreu um erro ao buscar dados do usuário.</string>
     <string name="play_store_required">É necessário o Google Play Store. Instale-o ou atualize-o.</string>
+    <string name="play_services_required">Os Serviços do Google Play são necessários. Instale-os ou atualize-os.</string>
+    <string name="play_store_sign_in_required">É necessária uma conta no Google Play Store. Faça login.</string>
     <string name="wipe">Limpar</string>
     <string name="days">dias</string>
     <string name="three_max">Máx 3</string>
