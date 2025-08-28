@@ -24,8 +24,8 @@ fun RustHubBackground(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    val primary = MaterialTheme.colorScheme.surface
-    val secondary = MaterialTheme.colorScheme.surfaceContainer
+    val primary = MaterialTheme.colorScheme.background
+    val secondary = MaterialTheme.colorScheme.surface
 
     val gradient = remember(primary, secondary) {
         Brush.verticalGradient(colors = listOf(primary, secondary))
@@ -50,7 +50,7 @@ fun RustHubBackground(
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .windowInsetsBottomHeight(WindowInsets.navigationBars)
-                .background(MaterialTheme.colorScheme.surfaceContainer)
+                .background(MaterialTheme.colorScheme.surface)
         )
     }
 }
