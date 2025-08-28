@@ -141,12 +141,6 @@ fun ServerScreen(
 
     val pullToRefreshState = rememberPullToRefreshState()
 
-    LaunchedEffect(pagedList.itemSnapshotList.items) {
-        if (pagedList.itemCount > 0) {
-            lazyListState.scrollToItem(0)
-            scrollBehavior.scrollOffset = 1f
-        }
-    }
 
     val isAtTop by remember {
         derivedStateOf {
