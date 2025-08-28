@@ -4,6 +4,9 @@ pluginManagement {
         google()
         gradlePluginPortal()
         mavenCentral()
+        maven {
+            url = uri("https://androidx.dev/kmp/builds/13990812/artifacts/snapshots/repository")
+        }
     }
     resolutionStrategy {
         eachPlugin {
@@ -19,6 +22,13 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url = uri("https://androidx.dev/kmp/builds/13990812/artifacts/snapshots/repository")
+            content {
+                includeModule("androidx.compose.material3.adaptive", "adaptive-navigation3")
+                includeModule("androidx.compose.material3.adaptive", "adaptive-navigation3-android")
+            }
+        }
     }
 }
 
