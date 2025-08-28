@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.semantics.clearAndSetSemantics
 
 fun Modifier.shimmer(): Modifier = composed {
@@ -28,9 +29,9 @@ fun Modifier.shimmer(): Modifier = composed {
 
     val brush = Brush.linearGradient(
         colors = listOf(
-            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
-            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+            MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f),
+            MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.7f),
+            MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f)
         ),
         start = Offset.Zero,
         end = Offset(x = translateAnim.value, y = translateAnim.value)
