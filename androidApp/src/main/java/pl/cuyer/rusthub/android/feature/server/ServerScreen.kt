@@ -276,6 +276,7 @@ fun ServerScreen(
             isRefreshing = false,
             onRefresh = {
                 pagedList.refresh()
+                onAction(ServerAction.RefreshOptions)
             },
             state = pullToRefreshState,
             modifier = Modifier

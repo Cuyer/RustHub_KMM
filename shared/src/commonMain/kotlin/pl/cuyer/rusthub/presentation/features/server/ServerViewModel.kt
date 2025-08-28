@@ -196,6 +196,10 @@ class ServerViewModel(
         }
     }
 
+    private fun refreshOptions() {
+        observeFilters()
+    }
+
     fun onAction(action: ServerAction) {
         when (action) {
             is ServerAction.OnServerClick -> navigateToServer(action.id, action.name)
@@ -216,6 +220,7 @@ class ServerViewModel(
             is ServerAction.OnDropdownChange -> updateDropdown(action.index, action.selectedIndex)
             is ServerAction.OnCheckboxChange -> updateCheckbox(action.index, action.isChecked)
             is ServerAction.OnRangeChange -> updateRange(action.index, action.value)
+            is ServerAction.RefreshOptions -> refreshOptions()
         }
     }
 
