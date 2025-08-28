@@ -131,7 +131,6 @@ fun ServerScreen(
     ObserveAsEvents(uiEvent) { event ->
         when (event) {
             is UiEvent.Navigate -> onNavigate(event.destination)
-            UiEvent.RefreshList -> pagedList.refresh()
             else -> Unit
         }
     }
@@ -233,7 +232,7 @@ fun ServerScreen(
                         filtersCount = { activeFiltersCount }
                     )
                     ServerFilterChips(
-                        selected = state.value.filter,
+                        selected = state.value.filters?.filter ?: ServerFilter.ALL,
                         onSelectedChange = {
                             onAction(ServerAction.OnFilterChange(it))
                         },

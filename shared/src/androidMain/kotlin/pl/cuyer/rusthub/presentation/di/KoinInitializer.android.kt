@@ -29,7 +29,6 @@ import pl.cuyer.rusthub.presentation.features.raid.RaidSchedulerViewModel
 import pl.cuyer.rusthub.presentation.features.raid.RaidFormViewModel
 import pl.cuyer.rusthub.domain.model.Raid
 import pl.cuyer.rusthub.common.user.UserEventController
-import pl.cuyer.rusthub.domain.usecase.ClearServerCacheUseCase
 import pl.cuyer.rusthub.util.AppCheckTokenProvider
 import pl.cuyer.rusthub.util.ClipboardHandler
 import pl.cuyer.rusthub.util.ConnectivityObserver
@@ -169,7 +168,6 @@ actual fun platformModule(passphrase: String): Module = module {
             saveSearchQueryUseCase = get(),
             getSearchQueriesUseCase = get(),
             deleteSearchQueriesUseCase = get(),
-            clearServerCacheUseCase = get(),
             stringProvider = get(),
             connectivityObserver = get(),
             getUserUseCase = get(),

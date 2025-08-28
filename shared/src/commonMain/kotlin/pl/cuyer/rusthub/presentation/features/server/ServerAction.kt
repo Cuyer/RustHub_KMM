@@ -22,8 +22,6 @@ sealed interface ServerAction {
     @Immutable
     data class OnError(val exception: Throwable): ServerAction
     @Immutable
-    data class OnChangeLoadMoreState(val isLoadingMore: Boolean): ServerAction
-    @Immutable
     data class OnFilterChange(val filter: ServerFilter): ServerAction
     @Immutable
     data class GatherConsent(val activity: Any, val onAdAvailable: () -> Unit) : ServerAction

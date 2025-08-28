@@ -5,39 +5,32 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import database.ServerEntity
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.exception.ConnectivityException
 import pl.cuyer.rusthub.domain.exception.ServiceUnavailableException
 import pl.cuyer.rusthub.domain.model.ServerQuery
-import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
-import pl.cuyer.rusthub.domain.repository.server.ServerCacheDataSource
 import pl.cuyer.rusthub.util.CrashReporter
-import kotlinx.coroutines.CancellationException
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalPagingApi::class, ExperimentalTime::class)
 class ServerRemoteMediator(
     private val dataSource: ServerDataSource,
     private val api: ServerRepository,
-    private val filters: FiltersDataSource,
     private val cacheDataSource: ServerCacheDataSource,
-    private val searchQuery: String?
+    private val query: ServerQuery,
+    private val searchQuery: String?,
 ) : RemoteMediator<Int, ServerEntity>() {
     private var nextPage: Int = 0
 
     override suspend fun initialize(): InitializeAction {
-        val current = filters.getFilters().firstOrNull()
-        if (current == null) {
-            filters.upsertFilters(ServerQuery())
-        }
         return InitializeAction.LAUNCH_INITIAL_REFRESH
     }
 
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, ServerEntity>
+        state: PagingState<Int, ServerEntity>,
     ): MediatorResult {
         val page = when (loadType) {
             LoadType.REFRESH -> {
@@ -49,14 +42,12 @@ class ServerRemoteMediator(
         }
 
         return try {
-            val query: ServerQuery = filters.getFilters().first() ?: ServerQuery()
             when (val result = api.getServers(
                 page,
                 state.config.pageSize,
                 query,
-                searchQuery
-            )
-                .first()) {
+                searchQuery,
+            ).first()) {
                 is Result.Error -> {
                     return if (
                         result.exception is ConnectivityException ||
@@ -77,7 +68,6 @@ class ServerRemoteMediator(
                     nextPage = if (end) page else page + 1
                     MediatorResult.Success(endOfPaginationReached = end)
                 }
-
             }
         } catch (e: Exception) {
             if (e is CancellationException) throw e
@@ -90,4 +80,3 @@ class ServerRemoteMediator(
         }
     }
 }
-
