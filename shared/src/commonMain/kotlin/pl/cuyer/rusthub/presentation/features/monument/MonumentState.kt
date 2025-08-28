@@ -8,8 +8,9 @@ import pl.cuyer.rusthub.presentation.model.SearchQueryUi
 @Immutable
 data class MonumentState(
     val isRefreshing: Boolean = true,
-    val searchQuery: List<SearchQueryUi> = emptyList(),
+    val searchQueries: List<SearchQueryUi> = emptyList(),
     val isLoadingSearchHistory: Boolean = true,
     val selectedType: MonumentType? = null,
     val syncState: MonumentSyncState = MonumentSyncState.DONE,
+    val query: String = "",
 )

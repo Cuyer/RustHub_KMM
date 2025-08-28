@@ -6,8 +6,9 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class ItemState(
-    val searchQuery: List<SearchQueryUi> = emptyList(),
+    val searchQueries: List<SearchQueryUi> = emptyList(),
     val isLoadingSearchHistory: Boolean = true,
     val selectedCategory: ItemCategory? = null,
     val isConnected: Boolean = true,
+    val query: String = "",
 )
