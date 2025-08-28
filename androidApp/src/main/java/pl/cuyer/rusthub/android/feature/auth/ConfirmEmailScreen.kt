@@ -94,7 +94,6 @@ fun ConfirmEmailScreen(
         when (event) {
             is UiEvent.Navigate -> onNavigate(event.destination)
             is UiEvent.NavigateUp -> onNavigateUp()
-            else -> Unit
         }
     }
     BackHandler {
