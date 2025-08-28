@@ -7,6 +7,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import pl.cuyer.rusthub.common.Constants.DEFAULT_KEY
 import pl.cuyer.rusthub.data.local.Queries
@@ -16,6 +17,7 @@ import pl.cuyer.rusthub.database.RustHubDatabase
 import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
 import pl.cuyer.rusthub.util.CrashReporter
+import database.FiltersEntity
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -24,6 +26,7 @@ class FiltersDataSourceImpl(
 ) : FiltersDataSource, Queries(db) {
 
     override fun getFilters(): Flow<ServerQuery?> {
+        ensureDefaultFilters()
         return queries
             .getFilters(DEFAULT_KEY)
             .asFlow()
@@ -33,6 +36,15 @@ class FiltersDataSourceImpl(
                 CrashReporter.recordException(e)
                 throw e
             }
+    }
+
+    private fun ensureDefaultFilters() {
+        val exists = safeQuery<FiltersEntity?>(null) {
+            queries.getFilters(DEFAULT_KEY).executeAsOneOrNull()
+        }
+        if (exists == null) {
+            runBlocking { upsertFilters(ServerQuery()) }
+        }
     }
 
     override suspend fun upsertFilters(filters: ServerQuery) {
