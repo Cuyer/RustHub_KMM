@@ -3,7 +3,6 @@ package pl.cuyer.rusthub.presentation.features.item
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
-import androidx.paging.peek
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -98,11 +97,6 @@ class ItemViewModel(
         }.flatMapLatest { (query, category) ->
             getPagedItemsUseCase(query, category, getCurrentAppLanguage())
         }
-            .onEach { pagingData ->
-                if (pagingData.peek(0) != null) {
-                    _uiEvent.send(UiEvent.ScrollToIndex(0))
-                }
-            }
             .flowOn(Dispatchers.Default)
             .cachedIn(coroutineScope)
             .catchAndLog { }
