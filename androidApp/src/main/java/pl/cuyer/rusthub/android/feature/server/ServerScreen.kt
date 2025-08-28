@@ -127,17 +127,22 @@ fun ServerScreen(
     val searchBarState = rememberSearchBarState()
     val textFieldState = rememberTextFieldState()
     val scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
+    val coroutineScope = rememberCoroutineScope()
+    val lazyListState = rememberLazyListState()
 
     ObserveAsEvents(uiEvent) { event ->
         when (event) {
             is UiEvent.Navigate -> onNavigate(event.destination)
             UiEvent.RefreshList -> pagedList.refresh()
+            is UiEvent.ScrollToIndex -> coroutineScope.launch {
+                if (pagedList.itemCount > event.index) {
+                    lazyListState.scrollToItem(event.index)
+                    scrollBehavior.scrollOffset = 1f
+                }
+            }
             else -> Unit
         }
     }
-
-    val coroutineScope = rememberCoroutineScope()
-    val lazyListState = rememberLazyListState()
 
     val pullToRefreshState = rememberPullToRefreshState()
 

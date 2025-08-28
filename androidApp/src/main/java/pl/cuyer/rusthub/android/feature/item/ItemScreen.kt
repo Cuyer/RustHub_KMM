@@ -136,7 +136,16 @@ fun ItemScreen(
     val ads = adState
 
     ObserveAsEvents(uiEvent) { event ->
-        if (event is UiEvent.Navigate) onNavigate(event.destination)
+        when (event) {
+            is UiEvent.Navigate -> onNavigate(event.destination)
+            is UiEvent.ScrollToIndex -> coroutineScope.launch {
+                if (pagedList.itemCount > event.index) {
+                    lazyListState.scrollToItem(event.index)
+                    scrollBehavior.scrollOffset = 1f
+                }
+            }
+            else -> Unit
+        }
     }
 
     LaunchedEffect(showAds) {
