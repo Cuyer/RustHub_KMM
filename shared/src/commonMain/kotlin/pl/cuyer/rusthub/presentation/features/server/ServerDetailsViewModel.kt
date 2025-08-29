@@ -81,7 +81,7 @@ class ServerDetailsViewModel(
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = ServerDetailsState()
+            initialValue = _state.value
         )
 
     private var toggleJob: Job? = null

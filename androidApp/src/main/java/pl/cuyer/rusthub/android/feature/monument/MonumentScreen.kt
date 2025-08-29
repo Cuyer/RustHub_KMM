@@ -173,7 +173,7 @@ fun MonumentScreen(
                             onAction(MonumentAction.OnSearch(textFieldState.text.toString()))
                         },
                         onOpenFilters = {},
-                        searchQueryUi = { state.value.searchQuery },
+                        searchQueryUi = { state.value.searchQueries },
                         onDelete = {
                             if (it.isBlank()) onAction(MonumentAction.DeleteSearchQueries)
                             else onAction(MonumentAction.DeleteSearchQueryByQuery(it))

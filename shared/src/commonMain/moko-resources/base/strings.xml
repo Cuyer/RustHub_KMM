@@ -17,6 +17,8 @@
     <string name="logout_button">Logout button</string>
     <string name="fetch_user_error">An error occurred while fetching user data.</string>
     <string name="play_store_required">Google Play Store is required. Please install or update it.</string>
+    <string name="play_services_required">Google Play services are required. Please install or update them.</string>
+    <string name="play_store_sign_in_required">Please sign in to the Google Play Store.</string>
     <string name="wipe">Wipe</string>
     <string name="days"> days</string>
     <string name="three_max">Max 3</string>

@@ -27,7 +27,7 @@ class ItemDetailsViewModel(
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = initialState
+            initialValue = _state.value
         )
 
     private fun observeItem(id: Long) {

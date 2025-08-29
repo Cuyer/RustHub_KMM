@@ -22,8 +22,6 @@ sealed interface ServerAction {
     @Immutable
     data class OnError(val exception: Throwable): ServerAction
     @Immutable
-    data class OnChangeLoadMoreState(val isLoadingMore: Boolean): ServerAction
-    @Immutable
     data class OnFilterChange(val filter: ServerFilter): ServerAction
     @Immutable
     data class GatherConsent(val activity: Any, val onAdAvailable: () -> Unit) : ServerAction
@@ -33,4 +31,6 @@ sealed interface ServerAction {
     data class OnCheckboxChange(val index: Int, val isChecked: Boolean) : ServerAction
     @Immutable
     data class OnRangeChange(val index: Int, val value: Int?) : ServerAction
+    @Immutable
+    data object RefreshOptions : ServerAction
 }

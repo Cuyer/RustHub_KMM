@@ -68,7 +68,7 @@ class StartupViewModel(
     val state = _state.stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000L),
-        initialValue = StartupState()
+        initialValue = _state.value
     )
 
     init {

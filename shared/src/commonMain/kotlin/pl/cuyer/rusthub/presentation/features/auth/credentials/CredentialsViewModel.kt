@@ -69,7 +69,7 @@ class CredentialsViewModel(
     val state = _state.stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000L),
-        initialValue = CredentialsState(email = email, userExists = userExists, provider = provider)
+        initialValue = _state.value
     )
 
     private var submitJob: Job? = null

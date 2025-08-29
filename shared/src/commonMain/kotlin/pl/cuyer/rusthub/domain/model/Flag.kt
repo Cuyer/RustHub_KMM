@@ -3,7 +3,9 @@ package pl.cuyer.rusthub.domain.model
 import pl.cuyer.rusthub.util.getCountryCode
 import pl.cuyer.rusthub.util.getCountryDisplayName
 import androidx.compose.runtime.Immutable
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Immutable
 enum class Flag {
     AD, AE, AF, AG, AI, AL, AM, AO, AQ, AR, AS, AT, AU, AW, AX, AZ,

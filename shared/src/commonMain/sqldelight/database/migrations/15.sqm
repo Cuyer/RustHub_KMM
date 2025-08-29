@@ -1,0 +1,10 @@
+DROP TABLE filtersFlagEntity;
+DROP TABLE filtersMapEntity;
+DROP TABLE filtersRegionEntity;
+DROP TABLE filtersDifficultyEntity;
+DROP TABLE filtersWipeScheduleEntity;
+DROP TABLE filtersOptionsEntity;
+CREATE TABLE filtersOptionsEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    options TEXT NOT NULL
+);

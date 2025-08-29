@@ -2,7 +2,6 @@ package pl.cuyer.rusthub.presentation.features.item
 
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import androidx.paging.map
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -27,7 +26,6 @@ import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.domain.model.ItemCategory
 import pl.cuyer.rusthub.domain.model.ItemSummary
-import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.presentation.navigation.ItemDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.domain.usecase.GetPagedItemsUseCase
@@ -66,16 +64,21 @@ class ItemViewModel(
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    private val queryFlow = MutableStateFlow("")
-    private val categoryFlow = MutableStateFlow<ItemCategory?>(null)
-
     private val _state = MutableStateFlow(ItemState())
     val state = _state
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = ItemState()
+            initialValue = _state.value
         )
+
+    private val query = state
+        .map { it.query }
+        .distinctUntilChanged()
+
+    private val categoryFlow = state
+        .map { it.selectedCategory }
+        .distinctUntilChanged()
 
     val showAds = getUserUseCase()
         .map { user -> !(user?.subscribed ?: false) && adsConsentManager.canRequestAds }
@@ -92,12 +95,11 @@ class ItemViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val paging: Flow<PagingData<ItemSummary>> =
-        combine(queryFlow, categoryFlow) { query, category ->
+        combine(query, categoryFlow) { query, category ->
             Pair(query, category)
         }.flatMapLatest { (query, category) ->
             getPagedItemsUseCase(query, category, getCurrentAppLanguage())
         }
-            .flowOn(Dispatchers.Default)
             .cachedIn(coroutineScope)
             .catchAndLog { }
 
@@ -118,9 +120,6 @@ class ItemViewModel(
     }
 
     private fun changeCategory(category: ItemCategory?) {
-        categoryFlow.update {
-            category
-        }
         _state.update { currentState ->
             currentState.copy(
                 selectedCategory = category
@@ -139,8 +138,8 @@ class ItemViewModel(
             .distinctUntilChanged()
             .map { queries -> queries.map { it.toUi() } }
             .flowOn(Dispatchers.Default)
-            .onEach { mapped ->
-                updateSearchQuery(mapped)
+            .onEach { mappedQueries ->
+                updateSearchQueries(mappedQueries)
                 updateIsLoadingSearchHistory(false)
             }
             .onStart { updateIsLoadingSearchHistory(true) }
@@ -160,7 +159,7 @@ class ItemViewModel(
                 }.onFailure {
                     sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_search))
                 }.onSuccess {
-                    queryFlow.update { query }
+                    _state.update { it.copy(query = query) }
                 }
             }
         } else {
@@ -184,11 +183,11 @@ class ItemViewModel(
     }
 
     private fun clearSearchQuery() {
-        queryFlow.update { "" }
+        _state.update { it.copy(query = "") }
     }
 
-    private fun updateSearchQuery(mappedQuery: List<SearchQueryUi>) {
-        _state.update { it.copy(searchQuery = mappedQuery) }
+    private fun updateSearchQueries(mappedQueries: List<SearchQueryUi>) {
+        _state.update { it.copy(searchQueries = mappedQueries) }
     }
 
     private fun updateIsLoadingSearchHistory(loading: Boolean) {

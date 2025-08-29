@@ -2,13 +2,8 @@
 
 package pl.cuyer.rusthub.data.local.mapper
 
-import database.FiltersDifficultyEntity
 import database.FiltersEntity
-import database.FiltersFlagEntity
-import database.FiltersMapEntity
 import database.FiltersOptionsEntity
-import database.FiltersRegionEntity
-import database.FiltersWipeScheduleEntity
 import database.SearchQueryEntity
 import database.ServerEntity
 import database.UserEntity
@@ -59,6 +54,7 @@ import pl.cuyer.rusthub.domain.model.Mining
 import kotlin.time.Instant
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlin.time.ExperimentalTime
 
@@ -170,35 +166,10 @@ fun ServerEntity.toServerInfo(): ServerInfo {
     )
 }
 
-fun FiltersOptionsEntity?.toDomain(
-    flags: List<Flag?>,
-    maps: List<Maps?>,
-    regions: List<Region?>,
-    difficulty: List<Difficulty?>,
-    wipeSchedules: List<WipeSchedule?>
-): FiltersOptions {
-    return FiltersOptions(
-        maxRanking = this?.max_ranking?.toInt() ?: 0,
-        maxPlayerCount = this?.max_player_count?.toInt() ?: 0,
-        maxGroupLimit = this?.max_group_limit?.toInt() ?: 0,
-        flags = flags.filterNotNull(),
-        maps = maps.filterNotNull(),
-        regions = regions.filterNotNull(),
-        difficulty = difficulty.filterNotNull(),
-        wipeSchedules = wipeSchedules.filterNotNull()
-    )
+fun FiltersOptionsEntity?.toDomain(): FiltersOptions {
+    return this?.let { Json.decodeFromString<FiltersOptions>(it.options) }
+        ?: FiltersOptions(emptyList(), 0, 0, 0, emptyList(), emptyList(), emptyList(), emptyList())
 }
-
-fun FiltersDifficultyEntity?.toDomain(): Difficulty? = this?.let { Difficulty.valueOf(it.label) }
-
-fun FiltersFlagEntity?.toDomain(): Flag? = this?.let { Flag.valueOf(it.label) }
-
-fun FiltersMapEntity?.toDomain(): Maps? = this?.let { Maps.valueOf(it.label) }
-
-fun FiltersRegionEntity?.toDomain(): Region? = this?.let { Region.valueOf(it.label) }
-
-fun FiltersWipeScheduleEntity?.toDomain(): WipeSchedule? =
-    this?.let { WipeSchedule.valueOf(it.label) }
 
 fun SearchQueryEntity.toDomain(): SearchQuery = SearchQuery(id, query, Instant.parse(timestamp))
 

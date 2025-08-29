@@ -100,7 +100,6 @@ import pl.cuyer.rusthub.domain.usecase.RefreshUserUseCase
 import pl.cuyer.rusthub.domain.usecase.GetActiveSubscriptionUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.UpgradeWithGoogleUseCase
-import pl.cuyer.rusthub.domain.usecase.ClearServerCacheUseCase
 import pl.cuyer.rusthub.domain.usecase.GetRaidsUseCase
 import pl.cuyer.rusthub.domain.usecase.CreateRaidUseCase
 import pl.cuyer.rusthub.domain.usecase.UpdateRaidUseCase
@@ -170,7 +169,7 @@ val appModule = module {
     single { EmailValidator(get()) }
     single { PasswordValidator(get()) }
     single { UsernameValidator(get()) }
-    single { GetPagedServersUseCase(get(), get(), get(), get()) }
+    single { GetPagedServersUseCase(get(), get(), get()) }
     single { GetPagedItemsUseCase(get(), get()) }
     single { GetPagedMonumentsUseCase(get(), get()) }
     single { GetRaidsUseCase(get()) }
@@ -187,7 +186,6 @@ val appModule = module {
     single { SaveMonumentSearchQueryUseCase(get()) }
     single { ClearFiltersUseCase(get()) }
     singleOf(::ServerCacheDataSourceImpl) bind ServerCacheDataSource::class
-    single { ClearServerCacheUseCase(get()) }
     single { GetFiltersOptionsUseCase(get(), get()) }
     single { GetSearchQueriesUseCase(get()) }
     single { GetItemSearchQueriesUseCase(get()) }

@@ -20,7 +20,7 @@ open class BaseNativeAdViewModel(
     val state = _state.stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000L),
-        initialValue = NativeAdState()
+        initialValue = _state.value
     )
 
     fun onAction(action: AdAction) {

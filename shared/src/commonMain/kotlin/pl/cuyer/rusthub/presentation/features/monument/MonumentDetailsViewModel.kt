@@ -24,7 +24,7 @@ class MonumentDetailsViewModel(
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = MonumentDetailsState(),
+            initialValue = _state.value,
         )
 
     private fun observeMonument(slug: String) {

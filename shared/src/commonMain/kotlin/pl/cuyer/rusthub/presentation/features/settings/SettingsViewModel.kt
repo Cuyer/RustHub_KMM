@@ -110,7 +110,7 @@ class SettingsViewModel(
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = SettingsState()
+            initialValue = _state.value
         )
 
     fun onAction(action: SettingsAction) {

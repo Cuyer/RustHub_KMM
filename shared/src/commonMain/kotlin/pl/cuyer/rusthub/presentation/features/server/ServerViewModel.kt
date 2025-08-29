@@ -3,7 +3,6 @@ package pl.cuyer.rusthub.presentation.features.server
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -11,11 +10,8 @@ import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import pl.cuyer.rusthub.util.catchAndLog
-import pl.cuyer.rusthub.util.CrashReporter
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
@@ -26,6 +22,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import pl.cuyer.rusthub.util.CrashReporter
+import pl.cuyer.rusthub.util.catchAndLog
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.domain.model.SearchQuery
 import pl.cuyer.rusthub.domain.model.ServerFilter
@@ -42,7 +40,6 @@ import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
-import pl.cuyer.rusthub.domain.usecase.ClearServerCacheUseCase
 import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.presentation.model.SearchQueryUi
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
@@ -77,7 +74,6 @@ class ServerViewModel(
     private val saveSearchQueryUseCase: SaveSearchQueryUseCase,
     private val getSearchQueriesUseCase: GetSearchQueriesUseCase,
     private val deleteSearchQueriesUseCase: DeleteSearchQueriesUseCase,
-    private val clearServerCacheUseCase: ClearServerCacheUseCase,
     private val stringProvider: StringProvider,
     private val connectivityObserver: ConnectivityObserver,
     private val getUserUseCase: GetUserUseCase,
@@ -86,8 +82,6 @@ class ServerViewModel(
 
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
-
-    private val queryFlow = MutableStateFlow("")
 
     private val _state = MutableStateFlow(ServerState())
     val state = _state
@@ -99,11 +93,15 @@ class ServerViewModel(
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = ServerState()
+            initialValue = _state.value
         )
 
-    private val filterChangeFlow = _state
-        .map { it.filter }
+    private val queryFlow = state
+        .map { it.query }
+        .distinctUntilChanged()
+
+    private val filterChangeFlow = state
+        .map { it.filters }
         .distinctUntilChanged()
 
     val showAds = getUserUseCase()
@@ -116,10 +114,11 @@ class ServerViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val paging: Flow<PagingData<ServerInfoUi>> =
-        combine(queryFlow, filterChangeFlow) { query, _ -> query }
-            .flatMapLatest { query ->
+        combine(queryFlow, filterChangeFlow) { query, filters -> query to filters }
+            .flatMapLatest { (query, filters) ->
                 getPagedServersUseCase(
-                    searchQuery = query
+                    searchQuery = query,
+                    filters = filters?.toDomain(stringProvider) ?: ServerQuery()
                 ).map { pagingData ->
                     pagingData.map { it.toUiModel(stringProvider) }
                 }.flowOn(Dispatchers.Default)
@@ -192,10 +191,13 @@ class ServerViewModel(
     private fun updateFilters(mappedFilters: FilterUi) {
         _state.update {
             it.copy(
-                filters = mappedFilters,
-                filter = mappedFilters.filter
+                filters = mappedFilters
             )
         }
+    }
+
+    private fun refreshOptions() {
+        observeFilters()
     }
 
     fun onAction(action: ServerAction) {
@@ -213,12 +215,12 @@ class ServerViewModel(
                 )
             )
 
-            is ServerAction.OnChangeLoadMoreState -> updateLoadingMore(action.isLoadingMore)
             is ServerAction.OnFilterChange -> updateFilter(action.filter)
             is ServerAction.GatherConsent -> gatherConsent(action.activity, action.onAdAvailable)
             is ServerAction.OnDropdownChange -> updateDropdown(action.index, action.selectedIndex)
             is ServerAction.OnCheckboxChange -> updateCheckbox(action.index, action.isChecked)
             is ServerAction.OnRangeChange -> updateRange(action.index, action.value)
+            is ServerAction.RefreshOptions -> refreshOptions()
         }
     }
 
@@ -254,8 +256,7 @@ class ServerViewModel(
                     CrashReporter.recordException(it)
                     sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_search))
                 }.onSuccess {
-                    queryFlow.update { query }
-                    clearServerCache()
+                    _state.update { it.copy(query = query) }
                 }
             }
         } else {
@@ -265,9 +266,8 @@ class ServerViewModel(
 
     private fun clearSearchQuery() {
         coroutineScope.launch {
-            if (queryFlow.value.isNotEmpty()) {
-                queryFlow.update { "" }
-                clearServerCache()
+            if (_state.value.query.isNotEmpty()) {
+                _state.update { it.copy(query = "") }
             }
         }
     }
@@ -303,15 +303,11 @@ class ServerViewModel(
     }
     private fun clearFilters() {
         coroutineScope.launch {
-            _state.update { it.copy(filter = ServerFilter.ALL) }
             runCatching {
                 clearFiltersUseCase()
-                clearServerCache()
             }.onFailure {
                 CrashReporter.recordException(it)
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_clearing_filters))
-            }.onSuccess {
-                _uiEvent.send(UiEvent.RefreshList)
             }
         }
     }
@@ -353,9 +349,6 @@ class ServerViewModel(
                 isLoadingSearchHistory = loading
             )
         }
-    }
-    private fun updateLoadingMore(loading: Boolean) {
-        _state.update { it.copy(loadingMore = loading) }
     }
 
     private fun updateDropdown(index: Int, selectedIndex: Int?) {
@@ -420,43 +413,21 @@ class ServerViewModel(
     private fun saveFilters() {
         coroutineScope.launch {
             val current = state.value.filters?.toDomain(stringProvider) ?: return@launch
-            _state.update { it.copy(filter = current.filter) }
             runCatching {
                 saveFiltersUseCase(current)
-                clearServerCache()
             }.onFailure {
                 CrashReporter.recordException(it)
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_filters))
-            }.onSuccess {
-                _uiEvent.send(UiEvent.RefreshList)
             }
         }
-    }
-
-    private suspend fun clearServerCache() {
-        // Ensure cached servers are purged before loading with new filters or query
-        runCatching { clearServerCacheUseCase() }
-            .onFailure { CrashReporter.recordException(it) }
     }
 
     private fun updateFilter(filter: ServerFilter) {
-        coroutineScope.launch {
-            runCatching {
-                val current = state.value.filters
-                    ?.copy(filter = filter)
-                    ?.toDomain(stringProvider)
-                    ?: getFiltersUseCase().first()?.copy(filter = filter)
-                    ?: ServerQuery(filter = filter)
-                saveFiltersUseCase(current)
-                clearServerCache()
-            }.onSuccess {
-                _state.update { it.copy(filter = filter) }
-                _uiEvent.send(UiEvent.RefreshList)
-            }.onFailure {
-                CrashReporter.recordException(it)
-                sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_saving_filters))
-            }
+        _state.update { state ->
+            val current = state.filters ?: return@update state
+            state.copy(filters = current.copy(filter = filter))
         }
+        saveFilters()
     }
 
     private fun observeConnectivity() {
