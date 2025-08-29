@@ -1,11 +1,11 @@
 package pl.cuyer.rusthub.data.local.filtersOptions
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToOneOrNull
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import pl.cuyer.rusthub.common.Constants.DEFAULT_KEY
 import pl.cuyer.rusthub.data.local.Queries
@@ -32,13 +32,17 @@ class FiltersOptionsDataSourceImpl(
         }
     }
 
-    override fun getFiltersOptions(): Flow<FiltersOptions> = flow {
-        val rawOptions = safeQuery(null) { queries.getFiltersOptions(DEFAULT_KEY).executeAsOneOrNull() }
-        emit(rawOptions.toDomain())
-    }.catch { e ->
-        CrashReporter.recordException(e)
-        throw e
-    }.flowOn(Dispatchers.IO)
+    override fun getFiltersOptions(): Flow<FiltersOptions> {
+        return queries
+            .getFiltersOptions(DEFAULT_KEY)
+            .asFlow()
+            .mapToOneOrNull(Dispatchers.IO)
+            .map { it.toDomain() }
+            .catch { e ->
+                CrashReporter.recordException(e)
+                throw e
+            }
+    }
 
     override suspend fun clearFiltersOptions() {
         withContext(Dispatchers.IO) {
