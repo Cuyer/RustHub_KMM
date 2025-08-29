@@ -505,6 +505,10 @@ private fun PlanSelector(
             ElevatedCard(
                 onClick = { onPlanSelect(plan) },
                 enabled = !lifetimeOwned && plan != currentPlan,
+                colors = CardDefaults.elevatedCardColors().copy(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                ),
                 modifier = Modifier
                     .semantics {
                         role = Role.RadioButton
@@ -733,7 +737,11 @@ private fun FaqSection() {
                 label = "rotation"
             )
             ElevatedCard(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.elevatedCardColors().copy(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                )
             ) {
                 LookaheadScope {
                     val sd = if (expanded) {
