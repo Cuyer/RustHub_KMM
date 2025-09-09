@@ -55,7 +55,6 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.derivedStateOf
@@ -68,7 +67,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.LookaheadScope
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -91,9 +89,7 @@ import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
-import pl.cuyer.rusthub.android.ads.NativeAdListItem
-import pl.cuyer.rusthub.presentation.features.ads.AdAction
-import pl.cuyer.rusthub.presentation.features.ads.NativeAdState
+import pl.cuyer.rusthub.android.ads.AsyncNativeAdItem
 import pl.cuyer.rusthub.android.util.HandlePagingItems
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.common.getImageByFileName
@@ -117,9 +113,7 @@ fun ItemScreen(
     onAction: (ItemAction) -> Unit,
     pagedList: LazyPagingItems<ItemSummary>,
     uiEvent: Flow<UiEvent>,
-    showAds: Boolean,
-    adState: State<NativeAdState>,
-    onAdAction: (AdAction) -> Unit
+    showAds: Boolean
 ) {
     val searchBarState = rememberSearchBarState()
     val textFieldState = rememberTextFieldState()
@@ -133,17 +127,11 @@ fun ItemScreen(
                     lazyListState.firstVisibleItemScrollOffset == 0
         }
     }
-    val ads = adState
 
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
 
-    LaunchedEffect(showAds) {
-        if (showAds) {
-            onAdAction(AdAction.LoadAd(BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID))
-        }
-    }
     Scaffold(
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onBackground,
@@ -366,7 +354,9 @@ fun ItemScreen(
                 ) {
                     onPagingItemsIndexed(
                         key = { index, item ->
-                            if (showAds && index == adIndex) "ad" else item.id
+                            if (showAds && index == adIndex) {
+                                BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID
+                            } else item.id
                         },
                         contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "item" }
                     ) { index, item ->
@@ -374,13 +364,14 @@ fun ItemScreen(
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .animateItem(),
+                                    .animateItem()
                             ) {
-                                NativeAdListItem(
+                                AsyncNativeAdItem(
+                                    adId = BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID,
+                                    listState = lazyListState,
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(horizontal = spacing.xmedium),
-                                    ad = ads.value.ads[BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID]
+                                        .padding(horizontal = spacing.xmedium)
                                 )
                                 Spacer(modifier = Modifier.height(spacing.medium))
                             }
@@ -457,9 +448,7 @@ private fun ItemScreenPreview() {
             onNavigate = {},
             uiEvent = flowOf(UiEvent.Navigate(ItemList)),
             pagedList = flowOf(PagingData.from(emptyList<ItemSummary>())).collectAsLazyPagingItems(),
-            showAds = true,
-            adState = remember { mutableStateOf(NativeAdState()) },
-            onAdAction = {}
+            showAds = true
         )
     }
 }

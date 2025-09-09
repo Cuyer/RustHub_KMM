@@ -83,7 +83,7 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.BuildConfig
-import pl.cuyer.rusthub.android.ads.NativeAdCard
+import pl.cuyer.rusthub.android.ads.AsyncNativeAdItem
 import pl.cuyer.rusthub.android.designsystem.FilterBottomSheet
 import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.designsystem.ServerListItem
@@ -95,8 +95,6 @@ import pl.cuyer.rusthub.android.util.HandlePagingItems
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.ServerFilter
 import pl.cuyer.rusthub.domain.model.ServerStatus
-import pl.cuyer.rusthub.presentation.features.ads.AdAction
-import pl.cuyer.rusthub.presentation.features.ads.NativeAdState
 import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.features.server.ServerState
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
@@ -119,9 +117,7 @@ fun ServerScreen(
     onAction: (ServerAction) -> Unit,
     pagedList: LazyPagingItems<ServerInfoUi>,
     uiEvent: Flow<UiEvent>,
-    showAds: Boolean,
-    adState: State<NativeAdState>,
-    onAdAction: (AdAction) -> Unit
+    showAds: Boolean
 ) {
     var showSheet by rememberSaveable { mutableStateOf(false) }
     val searchBarState = rememberSearchBarState()
@@ -140,23 +136,16 @@ fun ServerScreen(
 
     val pullToRefreshState = rememberPullToRefreshState()
 
-
     val isAtTop by remember {
         derivedStateOf {
             lazyListState.firstVisibleItemIndex == 0 && lazyListState.firstVisibleItemScrollOffset == 0
         }
     }
-
-    val ads = adState
     val activity = LocalActivity.current as Activity
 
     LaunchedEffect(Unit) {
-        onAction(ServerAction.GatherConsent(activity) {
-            onAdAction(AdAction.LoadAd(BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID))
-        }
-        )
+        onAction(ServerAction.GatherConsent(activity) {})
     }
-
 
     val stringProvider = koinInject<StringProvider>()
 
@@ -394,7 +383,9 @@ fun ServerScreen(
                 ) {
                     onPagingItemsIndexed(
                         key = { index, item ->
-                            if (showAds && index == adIndex) "ad" else item.id ?: UUID.randomUUID()
+                            if (showAds && index == adIndex) {
+                                BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID
+                            } else item.id ?: UUID.randomUUID()
                         },
                         contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "server" }
                     ) { index, item ->
@@ -404,11 +395,12 @@ fun ServerScreen(
                                     .fillMaxWidth()
                                     .animateItem()
                             ) {
-                                NativeAdCard(
+                                AsyncNativeAdItem(
+                                    adId = BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID,
+                                    listState = lazyListState,
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(horizontal = spacing.xmedium),
-                                    ad = ads.value.ads[BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID]
+                                        .padding(horizontal = spacing.xmedium)
                                 )
                                 Spacer(modifier = Modifier.height(spacing.medium))
                             }
@@ -527,9 +519,7 @@ private fun ServerScreenPreview() {
                     )
                 ),
                 pagedList = flowOf(PagingData.from(emptyList<ServerInfoUi>())).collectAsLazyPagingItems(),
-                showAds = true,
-                adState = remember { mutableStateOf(NativeAdState()) },
-                onAdAction = {}
+                showAds = true
             )
         }
     }
