@@ -7,7 +7,6 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdOptions
-import com.google.android.gms.ads.VideoOptions
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -47,13 +46,7 @@ class NativeAdRepositoryImpl(
                     if (!cont.isCompleted) cont.resume(null)
                 }
             })
-            .withNativeAdOptions(
-                NativeAdOptions.Builder()
-                    .setVideoOptions(
-                        VideoOptions.Builder().setStartMuted(true).build()
-                    )
-                    .build()
-            )
+            .withNativeAdOptions(NativeAdOptions.Builder().build())
             .build()
 
         loader.loadAd(AdRequest.Builder().build())
