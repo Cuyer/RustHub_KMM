@@ -43,7 +43,6 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -64,7 +63,7 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.BuildConfig
-import pl.cuyer.rusthub.android.ads.NativeAdListItem
+import pl.cuyer.rusthub.android.ads.AsyncNativeAdItem
 import pl.cuyer.rusthub.android.designsystem.MonumentListItem
 import pl.cuyer.rusthub.android.designsystem.MonumentListItemShimmer
 import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
@@ -76,8 +75,6 @@ import pl.cuyer.rusthub.domain.model.Monument
 import pl.cuyer.rusthub.domain.model.MonumentSyncState
 import pl.cuyer.rusthub.domain.model.MonumentType
 import pl.cuyer.rusthub.domain.model.displayName
-import pl.cuyer.rusthub.presentation.features.ads.AdAction
-import pl.cuyer.rusthub.presentation.features.ads.NativeAdState
 import pl.cuyer.rusthub.presentation.features.monument.MonumentAction
 import pl.cuyer.rusthub.presentation.features.monument.MonumentState
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
@@ -93,9 +90,7 @@ fun MonumentScreen(
     pagedList: LazyPagingItems<Monument>,
     uiEvent: Flow<UiEvent>,
     onNavigate: (NavKey) -> Unit,
-    showAds: Boolean,
-    adState: State<NativeAdState>,
-    onAdAction: (AdAction) -> Unit,
+    showAds: Boolean
 ) {
     val searchBarState = rememberSearchBarState()
     val textFieldState = rememberTextFieldState("")
@@ -109,17 +104,11 @@ fun MonumentScreen(
                     lazyListState.firstVisibleItemScrollOffset == 0
         }
     }
-    val ads = adState
 
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
 
-    LaunchedEffect(showAds) {
-        if (showAds) {
-            onAdAction(AdAction.LoadAd(BuildConfig.MONUMENTS_ADMOB_NATIVE_AD_ID))
-        }
-    }
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -307,7 +296,9 @@ fun MonumentScreen(
                     ) {
                         onPagingItemsIndexed(
                             key = { index, item ->
-                                if (showAds && index == adIndex) "ad" else item.slug ?: index
+                                if (showAds && index == adIndex) {
+                                    BuildConfig.MONUMENTS_ADMOB_NATIVE_AD_ID
+                                } else item.slug ?: index
                             },
                             contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "monument" }
                         ) { index, monument ->
@@ -317,11 +308,12 @@ fun MonumentScreen(
                                         .fillMaxWidth()
                                         .animateItem()
                                 ) {
-                                    NativeAdListItem(
+                                    AsyncNativeAdItem(
+                                        adId = BuildConfig.MONUMENTS_ADMOB_NATIVE_AD_ID,
+                                        listState = lazyListState,
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(horizontal = spacing.xmedium),
-                                        ad = ads.value.ads[BuildConfig.MONUMENTS_ADMOB_NATIVE_AD_ID]
+                                            .padding(horizontal = spacing.xmedium)
                                     )
                                     Spacer(modifier = Modifier.height(spacing.medium))
                                 }
