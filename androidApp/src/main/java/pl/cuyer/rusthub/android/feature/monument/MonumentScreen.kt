@@ -97,7 +97,6 @@ fun MonumentScreen(
     adState: State<NativeAdState>,
     onAdAction: (AdAction) -> Unit,
 ) {
-    val searchBarState = rememberSearchBarState()
     val textFieldState = rememberTextFieldState("")
     val scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
     val lazyListState = rememberLazyListState()
@@ -167,7 +166,6 @@ fun MonumentScreen(
                         .animateBounds(this)
                 ) {
                     RustSearchBarTopAppBar(
-                        searchBarState = searchBarState,
                         textFieldState = textFieldState,
                         onSearchTriggered = {
                             onAction(MonumentAction.OnSearch(textFieldState.text.toString()))

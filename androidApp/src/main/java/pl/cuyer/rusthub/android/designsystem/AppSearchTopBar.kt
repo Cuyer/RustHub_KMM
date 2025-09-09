@@ -38,7 +38,6 @@ import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExpandedDockedSearchBar
 import androidx.compose.material3.ExpandedFullScreenSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,7 +52,6 @@ import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopSearchBar
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberSearchBarState
@@ -71,15 +69,13 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
-import pl.cuyer.rusthub.android.designsystem.SearchHistoryShimmer
-import pl.cuyer.rusthub.android.designsystem.defaultFadeTransition
 import pl.cuyer.rusthub.presentation.model.SearchQueryUi
-import dev.icerock.moko.resources.StringResource
 
 
 @OptIn(
@@ -88,7 +84,6 @@ import dev.icerock.moko.resources.StringResource
 )
 @Composable
 fun RustSearchBarTopAppBar(
-    searchBarState: SearchBarState,
     textFieldState: TextFieldState,
     onSearchTriggered: () -> Unit,
     onOpenFilters: () -> Unit,
@@ -104,6 +99,7 @@ fun RustSearchBarTopAppBar(
     val context = LocalContext.current
     val windowSizeClass = calculateWindowSizeClass(context as Activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
+    val searchBarState = rememberSearchBarState()
 
     LaunchedEffect(textFieldState.text) {
         if (textFieldState.text.isBlank()) onClearSearchQuery()
@@ -377,13 +373,12 @@ private fun SearchHistorySuggestions(
 @Preview(device = "spec:parent=pixel_5,orientation=portrait")
 @Composable
 private fun AppSearchTopBarPreview() {
-    RustHubTheme() {
+    RustHubTheme {
         Scaffold(
             containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onBackground,
             topBar = {
                 RustSearchBarTopAppBar(
-                    searchBarState = rememberSearchBarState(),
                     textFieldState = TextFieldState(""),
                     onSearchTriggered = {},
                     onOpenFilters = {},

@@ -124,7 +124,6 @@ fun ServerScreen(
     onAdAction: (AdAction) -> Unit
 ) {
     var showSheet by rememberSaveable { mutableStateOf(false) }
-    val searchBarState = rememberSearchBarState()
     val textFieldState = rememberTextFieldState()
     val scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
 
@@ -212,7 +211,6 @@ fun ServerScreen(
                         .animateBounds(this)
                 ) {
                     RustSearchBarTopAppBar(
-                        searchBarState = searchBarState,
                         textFieldState = textFieldState,
                         onSearchTriggered = {
                             onAction(ServerAction.OnSearch(textFieldState.text.toString()))
