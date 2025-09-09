@@ -53,6 +53,14 @@ CREATE TABLE serverEntity (
     subscribed     INTEGER    NOT NULL DEFAULT 0
 );
 
+CREATE INDEX serverEntity_name_index ON serverEntity(name);
+CREATE INDEX serverEntity_favourite_index ON serverEntity(favourite);
+CREATE INDEX serverEntity_subscribed_index ON serverEntity(subscribed);
+CREATE INDEX serverEntity_ranking_index ON serverEntity(ranking);
+CREATE INDEX serverEntity_player_count_index ON serverEntity(player_count);
+CREATE INDEX serverEntity_server_flag_index ON serverEntity(server_flag);
+CREATE INDEX serverEntity_region_index ON serverEntity(region);
+
 -- =============================================================================
 -- Paged SELECT
 -- =============================================================================
