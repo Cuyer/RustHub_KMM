@@ -200,7 +200,6 @@ fun ItemScreen(
                             else onAction(ItemAction.DeleteSearchQueryByQuery(it))
                         },
                         onClearSearchQuery = { onAction(ItemAction.OnClearSearchQuery) },
-                        isLoadingSearchHistory = { state.value.isLoadingSearchHistory },
                         showFiltersIcon = false,
                         placeholderRes = SharedRes.strings.search_items
                     )

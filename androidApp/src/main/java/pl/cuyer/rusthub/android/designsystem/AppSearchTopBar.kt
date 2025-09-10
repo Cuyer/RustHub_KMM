@@ -37,6 +37,7 @@ import androidx.compose.material3.AppBarWithSearch
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ExpandedDockedSearchBar
 import androidx.compose.material3.ExpandedFullScreenSearchBar
@@ -44,6 +45,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
@@ -89,7 +91,6 @@ fun RustSearchBarTopAppBar(
     searchQueryUi: () -> List<SearchQueryUi>,
     onDelete: (String) -> Unit,
     onClearSearchQuery: () -> Unit,
-    isLoadingSearchHistory: () -> Boolean,
     showFiltersIcon: Boolean = true,
     filtersCount: () -> Int = { 0 },
     placeholderRes: StringResource = SharedRes.strings.search_servers,
@@ -216,7 +217,6 @@ fun RustSearchBarTopAppBar(
         ) {
             SearchHistorySuggestions(
                 searchQueryUi = searchQueryUi,
-                isLoadingSearchHistory = isLoadingSearchHistory,
                 textFieldState = textFieldState,
                 searchBarState = searchBarState,
                 onDelete = onDelete,
@@ -230,7 +230,6 @@ fun RustSearchBarTopAppBar(
         ) {
             SearchHistorySuggestions(
                 searchQueryUi = searchQueryUi,
-                isLoadingSearchHistory = isLoadingSearchHistory,
                 textFieldState = textFieldState,
                 searchBarState = searchBarState,
                 onDelete = onDelete,
@@ -245,112 +244,105 @@ fun RustSearchBarTopAppBar(
 @Composable
 private fun SearchHistorySuggestions(
     searchQueryUi: () -> List<SearchQueryUi>,
-    isLoadingSearchHistory: () -> Boolean,
     textFieldState: TextFieldState,
     searchBarState: SearchBarState,
     onDelete: (String) -> Unit,
     onSearchTriggered: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    AnimatedContent(
-        targetState = isLoadingSearchHistory(),
-        transitionSpec = { defaultFadeTransition() }
-    ) { loading ->
-        if (loading) {
-            SearchHistoryShimmer(modifier = Modifier.fillMaxWidth())
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(spacing.xxmedium)
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(spacing.xxmedium)
+    ) {
+        item(key = "label", contentType = "label") {
+            AnimatedVisibility(
+                visible = searchQueryUi().isNotEmpty(),
+                enter = fadeIn(
+                    animationSpec = spring(
+                        stiffness = Spring.StiffnessLow,
+                        dampingRatio = Spring.DampingRatioLowBouncy,
+                    )
+                ),
+                exit = fadeOut(
+                    animationSpec = spring(
+                        stiffness = Spring.StiffnessLow,
+                        dampingRatio = Spring.DampingRatioLowBouncy,
+                    )
+                )
             ) {
-                item(key = "label", contentType = "label") {
-                    AnimatedVisibility(
-                        visible = searchQueryUi().isNotEmpty(),
-                        enter = fadeIn(
-                            animationSpec = spring(
-                                stiffness = Spring.StiffnessLow,
-                                dampingRatio = Spring.DampingRatioLowBouncy,
-                            )
-                        ),
-                        exit = fadeOut(
-                            animationSpec = spring(
-                                stiffness = Spring.StiffnessLow,
-                                dampingRatio = Spring.DampingRatioLowBouncy,
-                            )
-                        )
-                    ) {
-                        Row {
-                            Text(
-                                modifier = Modifier
-                                    .animateItem()
-                                    .padding(spacing.medium),
-                                text = stringResource(SharedRes.strings.recent_searches)
-                            )
-                        }
-                    }
+                Row {
+                    Text(
+                        modifier = Modifier
+                            .animateItem()
+                            .padding(spacing.medium),
+                        text = stringResource(SharedRes.strings.recent_searches)
+                    )
                 }
-                items(
-                    searchQueryUi(),
-                    key = { it.query },
-                    contentType = { "history" }
-                ) { item ->
-                    val swipeState = rememberSwipeToDismissBoxState()
-                    SwipeToDismissBox(
-                        state = swipeState,
-                        backgroundContent = {
-                            Box(
-                                Modifier
-                                    .fillMaxSize()
-                                    .background(MaterialTheme.colorScheme.error)
-                                    .padding(end = spacing.medium),
-                                contentAlignment = Alignment.CenterEnd
-                            ) {
-                                Icon(
-                                    Icons.Default.Delete,
-                                    contentDescription = stringResource(SharedRes.strings.delete),
-                                    tint = MaterialTheme.colorScheme.onError
-                                )
-                            }
+            }
+        }
+        items(
+            searchQueryUi(),
+            key = { it.query },
+            contentType = { "history" }
+        ) { item ->
+            val swipeState = rememberSwipeToDismissBoxState()
+            SwipeToDismissBox(
+                state = swipeState,
+                backgroundContent = {
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.error)
+                            .padding(end = spacing.medium),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = stringResource(SharedRes.strings.delete),
+                            tint = MaterialTheme.colorScheme.onError
+                        )
+                    }
+                },
+                onDismiss = { if (it == SwipeToDismissBoxValue.EndToStart) onDelete(item.query) },
+                enableDismissFromStartToEnd = false
+            ) {
+                ListItem(
+                    modifier = Modifier
+                        .animateItem()
+                        .fillMaxWidth()
+                        .clickable {
+                            textFieldState.setTextAndPlaceCursorAtEnd(item.query)
+                            onSearchTriggered()
+                            coroutineScope.launch { searchBarState.animateToCollapsed() }
                         },
-                        onDismiss = { if (it == SwipeToDismissBoxValue.EndToStart) onDelete(item.query) },
-                        enableDismissFromStartToEnd = false
+                    colors = ListItemDefaults.colors().copy(
+                        containerColor = SearchBarDefaults.colors().containerColor
+                    ),
+                    headlineContent = { Text(item.query) }
+                )
+            }
+        }
+        if (searchQueryUi().isNotEmpty()) {
+            item(key = "clear", contentType = "clear") {
+                Row(
+                    modifier = Modifier
+                        .animateItem()
+                        .fillMaxWidth()
+                        .padding(spacing.medium),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    AppButton(
+                        onClick = {
+                            onDelete("")
+                            textFieldState.setTextAndPlaceCursorAtEnd("")
+                            coroutineScope.launch { searchBarState.animateToCollapsed() }
+                        },
+                        colors = ButtonDefaults.elevatedButtonColors(
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.onBackground
+                        ),
                     ) {
-                        ListItem(
-                            modifier = Modifier
-                                .animateItem()
-                                .fillMaxWidth()
-                                .clickable {
-                                    textFieldState.setTextAndPlaceCursorAtEnd(item.query)
-                                    onSearchTriggered()
-                                    coroutineScope.launch { searchBarState.animateToCollapsed() }
-                                },
-                            headlineContent = { Text(item.query) }
-                        )
-                    }
-                }
-                if (searchQueryUi().isNotEmpty()) {
-                    item(key = "clear", contentType = "clear") {
-                        Row(
-                            modifier = Modifier
-                                .animateItem()
-                                .fillMaxWidth()
-                                .padding(spacing.medium),
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            AppButton(
-                                onClick = {
-                                    onDelete("")
-                                    textFieldState.setTextAndPlaceCursorAtEnd("")
-                                    coroutineScope.launch { searchBarState.animateToCollapsed() }
-                                },
-                                colors = ButtonDefaults.elevatedButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.background,
-                                    contentColor = MaterialTheme.colorScheme.onBackground
-                                ),
-                            ) {
-                                Text(stringResource(SharedRes.strings.clear_search_history))
-                            }
-                        }
+                        Text(stringResource(SharedRes.strings.clear_search_history))
                     }
                 }
             }
@@ -374,7 +366,6 @@ private fun AppSearchTopBarPreview() {
                     searchQueryUi = { emptyList() },
                     onDelete = {},
                     onClearSearchQuery = {},
-                    isLoadingSearchHistory = { false },
                     placeholderRes = SharedRes.strings.search_servers
                 )
             }

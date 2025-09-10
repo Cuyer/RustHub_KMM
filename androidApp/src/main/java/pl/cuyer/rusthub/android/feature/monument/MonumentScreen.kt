@@ -177,7 +177,6 @@ fun MonumentScreen(
                             else onAction(MonumentAction.DeleteSearchQueryByQuery(it))
                         },
                         onClearSearchQuery = { onAction(MonumentAction.OnClearSearchQuery) },
-                        isLoadingSearchHistory = { state.value.isLoadingSearchHistory },
                         placeholderRes = SharedRes.strings.search_monuments,
                         showFiltersIcon = false,
                     )

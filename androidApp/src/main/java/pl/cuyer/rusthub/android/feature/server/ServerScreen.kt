@@ -225,7 +225,6 @@ fun ServerScreen(
                         onClearSearchQuery = {
                             onAction(ServerAction.OnClearSearchQuery)
                         },
-                        isLoadingSearchHistory = { state.value.isLoadingSearchHistory },
                         showFiltersIcon = true,
                         filtersCount = { activeFiltersCount }
                     )
@@ -506,7 +505,7 @@ private fun ServerFilterChips(
 @Preview
 @Composable
 private fun ServerScreenPreview() {
-    RustHubTheme() {
+    RustHubTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

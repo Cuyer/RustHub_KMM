@@ -137,9 +137,7 @@ class ServerViewModel(
             .flowOn(Dispatchers.Default)
             .onEach { mappedQuery ->
                 updateSearchQuery(mappedQuery)
-                updateIsLoadingSearchHistory(false)
             }
-            .onStart { updateIsLoadingSearchHistory(true) }
             .catchAndLog {
                 sendSnackbarEvent(
                     stringProvider.get(SharedRes.strings.error_fetching_search_history)
@@ -339,14 +337,6 @@ class ServerViewModel(
         _state.update {
             it.copy(
                 isLoadingFilters = loading
-            )
-        }
-    }
-
-    private fun updateIsLoadingSearchHistory(loading: Boolean) {
-        _state.update {
-            it.copy(
-                isLoadingSearchHistory = loading
             )
         }
     }
