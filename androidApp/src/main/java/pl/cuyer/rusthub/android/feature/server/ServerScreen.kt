@@ -124,7 +124,6 @@ fun ServerScreen(
     onAdAction: (AdAction) -> Unit
 ) {
     var showSheet by rememberSaveable { mutableStateOf(false) }
-    val searchBarState = rememberSearchBarState()
     val textFieldState = rememberTextFieldState()
     val scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
 
@@ -212,7 +211,6 @@ fun ServerScreen(
                         .animateBounds(this)
                 ) {
                     RustSearchBarTopAppBar(
-                        searchBarState = searchBarState,
                         textFieldState = textFieldState,
                         onSearchTriggered = {
                             onAction(ServerAction.OnSearch(textFieldState.text.toString()))
@@ -227,7 +225,6 @@ fun ServerScreen(
                         onClearSearchQuery = {
                             onAction(ServerAction.OnClearSearchQuery)
                         },
-                        isLoadingSearchHistory = { state.value.isLoadingSearchHistory },
                         showFiltersIcon = true,
                         filtersCount = { activeFiltersCount }
                     )
@@ -508,7 +505,7 @@ private fun ServerFilterChips(
 @Preview
 @Composable
 private fun ServerScreenPreview() {
-    RustHubTheme() {
+    RustHubTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

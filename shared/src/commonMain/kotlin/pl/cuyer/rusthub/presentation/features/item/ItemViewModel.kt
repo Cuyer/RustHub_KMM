@@ -140,9 +140,7 @@ class ItemViewModel(
             .flowOn(Dispatchers.Default)
             .onEach { mappedQueries ->
                 updateSearchQueries(mappedQueries)
-                updateIsLoadingSearchHistory(false)
             }
-            .onStart { updateIsLoadingSearchHistory(true) }
             .catchAndLog {
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_fetching_search_history))
             }
@@ -188,10 +186,6 @@ class ItemViewModel(
 
     private fun updateSearchQueries(mappedQueries: List<SearchQueryUi>) {
         _state.update { it.copy(searchQueries = mappedQueries) }
-    }
-
-    private fun updateIsLoadingSearchHistory(loading: Boolean) {
-        _state.update { it.copy(isLoadingSearchHistory = loading) }
     }
 
     private fun observeConnectivity() {

@@ -121,7 +121,6 @@ fun ItemScreen(
     adState: State<NativeAdState>,
     onAdAction: (AdAction) -> Unit
 ) {
-    val searchBarState = rememberSearchBarState()
     val textFieldState = rememberTextFieldState()
     val scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
     val lazyListState = rememberLazyListState()
@@ -190,7 +189,6 @@ fun ItemScreen(
                         .animateBounds(this)
                 ) {
                     RustSearchBarTopAppBar(
-                        searchBarState = searchBarState,
                         textFieldState = textFieldState,
                         onSearchTriggered = {
                             onAction(ItemAction.OnSearch(textFieldState.text.toString()))
@@ -202,7 +200,6 @@ fun ItemScreen(
                             else onAction(ItemAction.DeleteSearchQueryByQuery(it))
                         },
                         onClearSearchQuery = { onAction(ItemAction.OnClearSearchQuery) },
-                        isLoadingSearchHistory = { state.value.isLoadingSearchHistory },
                         showFiltersIcon = false,
                         placeholderRes = SharedRes.strings.search_items
                     )
