@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.android.ads
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -53,92 +54,94 @@ private fun ApplyNativeListAd(ad: NativeAdWrapper) {
 @Composable
 private fun NativeAdListLayout(
     modifier: Modifier = Modifier,
-    ad: NativeAdWrapper
+    ad: () -> NativeAdWrapper?
 ) {
-    ElevatedCard(modifier = modifier.fillMaxWidth()) {
-        NativeAdView(modifier = Modifier.fillMaxWidth()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                NativeAdAttribution(text = stringResource(SharedRes.strings.ad_label))
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    ad.icon?.drawable?.let { drawable ->
-                        NativeAdIconView {
-                            Image(
-                                bitmap = drawable.toBitmap().asImageBitmap(),
-                                contentDescription = ad.headline,
-                                modifier = Modifier
-                                    .padding(end = 8.dp)
-                                    .size(48.dp)
-                            )
-                        }
-                    }
-
-                    Column {
-                        ad.headline?.let {
-                            NativeAdHeadlineView {
-                                Text(
-                                    text = it,
-                                    style = MaterialTheme.typography.titleLargeEmphasized
-                                )
-                            }
-                        }
-                        ad.starRating?.let { rating ->
-                            NativeAdStarRatingView {
-                                Text(
-                                    text = stringResource(SharedRes.strings.rated, rating),
-                                    style = MaterialTheme.typography.labelMedium
-                                )
-                            }
-                        }
-                        ad.advertiser?.let { advertiser ->
-                            NativeAdAdvertiserView {
-                                Text(
-                                    text = advertiser,
-                                    style = MaterialTheme.typography.labelMedium
-                                )
-                            }
-                        }
-                    }
-                }
-
-                ad.body?.let {
-                    NativeAdBodyView(modifier = Modifier.padding(top = 4.dp)) {
-                        Text(it, style = MaterialTheme.typography.bodyMedium)
-                    }
-                }
-
-                Row(
+    ad()?.let { ad ->
+        ElevatedCard(modifier = modifier.fillMaxWidth()) {
+            NativeAdView(modifier = Modifier.fillMaxWidth()) {
+                Column(
                     modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(top = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxWidth()
+                        .padding(16.dp)
                 ) {
-                    ad.price?.let { price ->
-                        NativeAdPriceView(modifier = Modifier.padding(end = 8.dp)) {
-                            Text(text = price, style = MaterialTheme.typography.labelLarge)
-                        }
-                    }
-                    ad.store?.let { store ->
-                        NativeAdStoreView(modifier = Modifier.padding(end = 8.dp)) {
-                            Text(text = store, style = MaterialTheme.typography.labelLarge)
-                        }
-                    }
-                    ad.callToAction?.let { cta ->
-                        NativeAdCallToActionView {
-                            NativeAdButton(
-                                text = cta,
-                                modifier = Modifier.align(Alignment.CenterVertically)
-                            )
-                        }
-                    }
-                }
+                    NativeAdAttribution(text = stringResource(SharedRes.strings.ad_label))
 
-                // Keep this inside NativeAdView so it can bind to the views above.
-                ApplyNativeListAd(ad)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        ad.icon?.drawable?.let { drawable ->
+                            NativeAdIconView {
+                                Image(
+                                    bitmap = drawable.toBitmap().asImageBitmap(),
+                                    contentDescription = ad.headline,
+                                    modifier = Modifier
+                                        .padding(end = 8.dp)
+                                        .size(48.dp)
+                                )
+                            }
+                        }
+
+                        Column {
+                            ad.headline?.let {
+                                NativeAdHeadlineView {
+                                    Text(
+                                        text = it,
+                                        style = MaterialTheme.typography.titleLargeEmphasized
+                                    )
+                                }
+                            }
+                            ad.starRating?.let { rating ->
+                                NativeAdStarRatingView {
+                                    Text(
+                                        text = stringResource(SharedRes.strings.rated, rating),
+                                        style = MaterialTheme.typography.labelMedium
+                                    )
+                                }
+                            }
+                            ad.advertiser?.let { advertiser ->
+                                NativeAdAdvertiserView {
+                                    Text(
+                                        text = advertiser,
+                                        style = MaterialTheme.typography.labelMedium
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    ad.body?.let {
+                        NativeAdBodyView(modifier = Modifier.padding(top = 4.dp)) {
+                            Text(it, style = MaterialTheme.typography.bodyMedium)
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(top = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ad.price?.let { price ->
+                            NativeAdPriceView(modifier = Modifier.padding(end = 8.dp)) {
+                                Text(text = price, style = MaterialTheme.typography.labelLarge)
+                            }
+                        }
+                        ad.store?.let { store ->
+                            NativeAdStoreView(modifier = Modifier.padding(end = 8.dp)) {
+                                Text(text = store, style = MaterialTheme.typography.labelLarge)
+                            }
+                        }
+                        ad.callToAction?.let { cta ->
+                            NativeAdCallToActionView {
+                                NativeAdButton(
+                                    text = cta,
+                                    modifier = Modifier.align(Alignment.CenterVertically)
+                                )
+                            }
+                        }
+                    }
+
+                    // Keep this inside NativeAdView so it can bind to the views above.
+                    ApplyNativeListAd(ad)
+                }
             }
         }
     }
@@ -147,8 +150,8 @@ private fun NativeAdListLayout(
 @Composable
 fun NativeAdListItem(
     modifier: Modifier = Modifier,
-    ad: NativeAdWrapper?
+    ad: () -> NativeAdWrapper?
 ) {
-    ad?.let { NativeAdListLayout(modifier, it) }
+    NativeAdListLayout(modifier, ad)
 }
 

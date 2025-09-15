@@ -37,6 +37,7 @@ import com.google.android.gms.ads.MediaContent
 import com.google.android.gms.ads.nativead.AdChoicesView
 import com.google.android.gms.ads.nativead.MediaView
 import com.google.android.gms.ads.nativead.NativeAdView
+import pl.cuyer.rusthub.domain.model.ads.NativeAdWrapper
 
 /**
  * A CompositionLocal that can provide a `NativeAdView` to ad attributes such as `NativeHeadline`.
@@ -50,7 +51,7 @@ internal val LocalNativeAdView = staticCompositionLocalOf<NativeAdView?> { null 
  * @param content A composable function that defines the rest of the native ad view's elements.
  */
 @Composable
-fun NativeAdView(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+fun NativeAdView(modifier: Modifier = Modifier, ad: NativeAdWrapper? = null, content: @Composable () -> Unit) {
   val localContext = LocalContext.current
 
   AndroidView(

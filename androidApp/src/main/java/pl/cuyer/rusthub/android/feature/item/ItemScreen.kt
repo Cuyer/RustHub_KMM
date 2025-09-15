@@ -377,7 +377,7 @@ fun ItemScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = spacing.xmedium),
-                                    ad = ads.value.ads[BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID]
+                                    ad = { ads.value.ads[BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID] }
                                 )
                                 Spacer(modifier = Modifier.height(spacing.medium))
                             }
