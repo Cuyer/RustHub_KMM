@@ -84,7 +84,6 @@ import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.BuildConfig
 import pl.cuyer.rusthub.android.ads.NativeAdCard
-import pl.cuyer.rusthub.android.ads.rememberShouldDisplayAds
 import pl.cuyer.rusthub.android.designsystem.FilterBottomSheet
 import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
 import pl.cuyer.rusthub.android.designsystem.ServerListItem
@@ -148,22 +147,13 @@ fun ServerScreen(
     }
 
     val ads = adState
-    var canRequestAds by remember { mutableStateOf(false) }
-    val shouldDisplayAds = rememberShouldDisplayAds(showAds && canRequestAds, pagedList)
     val activity = LocalActivity.current as Activity
 
     LaunchedEffect(Unit) {
-        onAction(
-            ServerAction.GatherConsent(activity) {
-                canRequestAds = true
-            }
-        )
-    }
-
-    LaunchedEffect(shouldDisplayAds) {
-        if (shouldDisplayAds) {
+        onAction(ServerAction.GatherConsent(activity) {
             onAdAction(AdAction.LoadAd(BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID))
         }
+        )
     }
 
 
@@ -401,11 +391,11 @@ fun ServerScreen(
                 ) {
                     onPagingItemsIndexed(
                         key = { index, item ->
-                            if (shouldDisplayAds && index == adIndex) "ad" else item.id ?: UUID.randomUUID()
+                            if (showAds && index == adIndex) "ad" else item.id ?: UUID.randomUUID()
                         },
-                        contentType = { index, _ -> if (shouldDisplayAds && index == adIndex) "ad" else "server" }
+                        contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "server" }
                     ) { index, item ->
-                        if (shouldDisplayAds && index == adIndex) {
+                        if (showAds && index == adIndex) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()

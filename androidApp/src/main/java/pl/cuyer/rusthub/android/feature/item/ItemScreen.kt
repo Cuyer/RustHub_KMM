@@ -92,7 +92,6 @@ import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.ads.NativeAdListItem
-import pl.cuyer.rusthub.android.ads.rememberShouldDisplayAds
 import pl.cuyer.rusthub.presentation.features.ads.AdAction
 import pl.cuyer.rusthub.presentation.features.ads.NativeAdState
 import pl.cuyer.rusthub.android.util.HandlePagingItems
@@ -134,14 +133,13 @@ fun ItemScreen(
         }
     }
     val ads = adState
-    val shouldDisplayAds = rememberShouldDisplayAds(showAds, pagedList)
 
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
 
-    LaunchedEffect(shouldDisplayAds) {
-        if (shouldDisplayAds) {
+    LaunchedEffect(showAds) {
+        if (showAds) {
             onAdAction(AdAction.LoadAd(BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID))
         }
     }
@@ -365,11 +363,11 @@ fun ItemScreen(
                 ) {
                     onPagingItemsIndexed(
                         key = { index, item ->
-                            if (shouldDisplayAds && index == adIndex) "ad" else item.id
+                            if (showAds && index == adIndex) "ad" else item.id
                         },
-                        contentType = { index, _ -> if (shouldDisplayAds && index == adIndex) "ad" else "item" }
+                        contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "item" }
                     ) { index, item ->
-                        if (shouldDisplayAds && index == adIndex) {
+                        if (showAds && index == adIndex) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
