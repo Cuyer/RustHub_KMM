@@ -63,7 +63,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -77,7 +76,6 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavKey
-import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -135,24 +133,6 @@ fun ItemScreen(
         }
     }
     val ads = adState
-    val loadState = pagedList.loadState
-    var isInitialLoadFinished by remember { mutableStateOf(false) }
-
-    LaunchedEffect(
-        loadState.refresh,
-        loadState.prepend,
-        loadState.append
-    ) {
-        if (!isInitialLoadFinished &&
-            loadState.refresh is LoadState.NotLoading &&
-            loadState.prepend !is LoadState.Loading &&
-            loadState.append !is LoadState.Loading
-        ) {
-            isInitialLoadFinished = true
-        }
-    }
-
-    val shouldShowAds = showAds && isInitialLoadFinished
 
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
@@ -383,11 +363,11 @@ fun ItemScreen(
                 ) {
                     onPagingItemsIndexed(
                         key = { index, item ->
-                            if (shouldShowAds && index == adIndex) "ad" else item.id
+                            if (showAds && index == adIndex) "ad" else item.id
                         },
-                        contentType = { index, _ -> if (shouldShowAds && index == adIndex) "ad" else "item" }
+                        contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "item" }
                     ) { index, item ->
-                        if (shouldShowAds && index == adIndex) {
+                        if (showAds && index == adIndex) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()

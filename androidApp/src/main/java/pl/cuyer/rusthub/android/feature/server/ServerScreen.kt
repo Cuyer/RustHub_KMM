@@ -73,7 +73,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavKey
-import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -149,24 +148,6 @@ fun ServerScreen(
 
     val ads = adState
     val activity = LocalActivity.current as Activity
-    val loadState = pagedList.loadState
-    var isInitialLoadFinished by remember { mutableStateOf(false) }
-
-    LaunchedEffect(
-        loadState.refresh,
-        loadState.prepend,
-        loadState.append
-    ) {
-        if (!isInitialLoadFinished &&
-            loadState.refresh is LoadState.NotLoading &&
-            loadState.prepend !is LoadState.Loading &&
-            loadState.append !is LoadState.Loading
-        ) {
-            isInitialLoadFinished = true
-        }
-    }
-
-    val shouldShowAds = showAds && isInitialLoadFinished
 
     LaunchedEffect(Unit) {
         onAction(ServerAction.GatherConsent(activity) {
@@ -410,11 +391,11 @@ fun ServerScreen(
                 ) {
                     onPagingItemsIndexed(
                         key = { index, item ->
-                            if (shouldShowAds && index == adIndex) "ad" else item.id ?: UUID.randomUUID()
+                            if (showAds && index == adIndex) "ad" else item.id ?: UUID.randomUUID()
                         },
-                        contentType = { index, _ -> if (shouldShowAds && index == adIndex) "ad" else "server" }
+                        contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "server" }
                     ) { index, item ->
-                        if (shouldShowAds && index == adIndex) {
+                        if (showAds && index == adIndex) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()

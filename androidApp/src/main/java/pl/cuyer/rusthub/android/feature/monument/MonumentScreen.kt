@@ -47,11 +47,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -61,7 +59,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavKey
 import androidx.paging.compose.LazyPagingItems
-import androidx.paging.LoadState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -112,24 +109,6 @@ fun MonumentScreen(
         }
     }
     val ads = adState
-    val loadState = pagedList.loadState
-    var isInitialLoadFinished by remember { mutableStateOf(false) }
-
-    LaunchedEffect(
-        loadState.refresh,
-        loadState.prepend,
-        loadState.append
-    ) {
-        if (!isInitialLoadFinished &&
-            loadState.refresh is LoadState.NotLoading &&
-            loadState.prepend !is LoadState.Loading &&
-            loadState.append !is LoadState.Loading
-        ) {
-            isInitialLoadFinished = true
-        }
-    }
-
-    val shouldShowAds = showAds && isInitialLoadFinished
 
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
@@ -325,11 +304,11 @@ fun MonumentScreen(
                     ) {
                         onPagingItemsIndexed(
                             key = { index, item ->
-                                if (shouldShowAds && index == adIndex) "ad" else item.slug ?: index
+                                if (showAds && index == adIndex) "ad" else item.slug ?: index
                             },
-                            contentType = { index, _ -> if (shouldShowAds && index == adIndex) "ad" else "monument" }
+                            contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "monument" }
                         ) { index, monument ->
-                            if (shouldShowAds && index == adIndex) {
+                            if (showAds && index == adIndex) {
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
