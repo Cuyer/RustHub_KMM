@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
@@ -41,7 +40,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
-import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -108,7 +106,6 @@ fun MonumentScreen(
                     lazyListState.firstVisibleItemScrollOffset == 0
         }
     }
-    val ads = adState
 
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
@@ -318,7 +315,7 @@ fun MonumentScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(horizontal = spacing.xmedium),
-                                        ad = { ads.value.ads[BuildConfig.MONUMENTS_ADMOB_NATIVE_AD_ID] }
+                                        ad = { adState.value.ads[BuildConfig.MONUMENTS_ADMOB_NATIVE_AD_ID] }
                                     )
                                     Spacer(modifier = Modifier.height(spacing.medium))
                                 }
