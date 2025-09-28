@@ -65,6 +65,7 @@ import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.BuildConfig
 import pl.cuyer.rusthub.android.ads.NativeAdListItem
+import pl.cuyer.rusthub.android.ads.rememberShouldDisplayAds
 import pl.cuyer.rusthub.android.designsystem.MonumentListItem
 import pl.cuyer.rusthub.android.designsystem.MonumentListItemShimmer
 import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
@@ -109,13 +110,14 @@ fun MonumentScreen(
         }
     }
     val ads = adState
+    val shouldDisplayAds = rememberShouldDisplayAds(showAds, pagedList)
 
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
 
-    LaunchedEffect(showAds) {
-        if (showAds) {
+    LaunchedEffect(shouldDisplayAds) {
+        if (shouldDisplayAds) {
             onAdAction(AdAction.LoadAd(BuildConfig.MONUMENTS_ADMOB_NATIVE_AD_ID))
         }
     }
@@ -304,11 +306,11 @@ fun MonumentScreen(
                     ) {
                         onPagingItemsIndexed(
                             key = { index, item ->
-                                if (showAds && index == adIndex) "ad" else item.slug ?: index
+                                if (shouldDisplayAds && index == adIndex) "ad" else item.slug ?: index
                             },
-                            contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "monument" }
+                            contentType = { index, _ -> if (shouldDisplayAds && index == adIndex) "ad" else "monument" }
                         ) { index, monument ->
-                            if (showAds && index == adIndex) {
+                            if (shouldDisplayAds && index == adIndex) {
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
