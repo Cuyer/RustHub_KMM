@@ -464,11 +464,11 @@
     <string name="radtown_recycler">Radtown Recycler</string>
     <string name="guaranteed_output">Salida garantizada</string>
     <string name="extra_chance_output">Salida de oportunidad extra</string>
-    <string name="multiplier_format">x%1 $ D</string>
-    <string name="percentage_format">%1 $ d %%</string>
-    <string name="time_per_fuel">Tiempo por combustible: %1 $ d s</string>
+    <string name="multiplier_format">x%1$d</string>
+    <string name="percentage_format">%1$d%%</string>
+    <string name="time_per_fuel">Tiempo por combustible: %1$d s</string>
     <string name="raw_material_cost">Costo de materia prima</string>
-    <string name="using_mixing_table">Uso de la tabla de mezcla x%1 $ D</string>
+    <string name="using_mixing_table">Uso de la tabla de mezcla x%1$d</string>
     <string name="time_to_raid">Tiempo de atacar: %1$s</string>
     <string name="hp">HP</string>
     <string name="update_ready">Actualizar listo para instalar</string>
