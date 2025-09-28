@@ -23,7 +23,7 @@ android {
         applicationId = "pl.cuyer.rusthub.android"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 95
+        versionCode = 96
         versionName = project.property("VERSION_NAME") as String
         buildConfigField("String", "SERVERS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/4096035325\"")
         buildConfigField("String", "ITEMS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/1469871989\"")
@@ -158,7 +158,7 @@ dependencies {
     debugImplementation(libs.compose.ui.tooling)
 }
 
-tasks.register("printComposeMetrics") {
+/*tasks.register("printComposeMetrics") {
     group = "compose"
     description = "Prints Compose compiler metrics and reports"
     dependsOn("assemble")
@@ -170,4 +170,4 @@ tasks.register("printComposeMetrics") {
         println("Compose reports location: $reportsDir")
         reportsDir.walk().filter { it.isFile }.forEach { println(it.readText()) }
     }
-}
+}*/
