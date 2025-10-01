@@ -4,9 +4,6 @@ pluginManagement {
         google()
         gradlePluginPortal()
         mavenCentral()
-        maven {
-            url = uri("https://androidx.dev/kmp/builds/14180086/artifacts/snapshots/repository")
-        }
     }
     resolutionStrategy {
         eachPlugin {
@@ -22,9 +19,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven {
-            url = uri("https://androidx.dev/kmp/builds/14180086/artifacts/snapshots/repository")
-        }
     }
 }
 
