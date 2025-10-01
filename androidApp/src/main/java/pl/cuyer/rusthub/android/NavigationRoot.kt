@@ -39,6 +39,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
+import androidx.navigation3.runtime.rememberSceneSetupNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.launch
@@ -157,7 +158,7 @@ fun NavigationRoot(startDestination: NavKey) {
         }
     }
     val onClear: () -> Unit = { backStack.clear() }
-    val onBack: () -> Unit = { onPop() }
+    val onBack: (Int) -> Unit = { keysToRemove -> repeat(keysToRemove) { onPop() } }
     val onBottomBarClick: (BottomNavKey) -> Unit = { navigateBottomBar(backStack, it) }
 
     LaunchedEffect(backStack.lastOrNull()) { snackbarHostState.currentSnackbarData?.dismiss() }
@@ -201,7 +202,7 @@ fun NavigationRoot(startDestination: NavKey) {
 private fun AppScaffold(
     snackbarHostState: SnackbarHostState,
     backStack: () -> List<NavKey>,
-    onBack: () -> Unit,
+    onBack: (Int) -> Unit,
     onNavigate: (NavKey) -> Unit,
     onNavigateUp: () -> Unit,
     onPopWhile: ((NavKey?) -> Boolean) -> Unit,
@@ -250,6 +251,7 @@ private fun AppScaffold(
                             )
                 },
                 entryDecorators = listOf(
+                    rememberSceneSetupNavEntryDecorator(),
                     rememberSavedStateNavEntryDecorator(),
                     rememberViewModelStoreNavEntryDecorator()
                 ),
