@@ -150,7 +150,7 @@ fun NavigationRoot(startDestination: NavKey) {
             backStack.add(Onboarding)
         }
     }
-    val onNavigate: (NavKey) -> Unit = { backStack.add(it) }
+
     val onPop: () -> Unit = { backStack.removeLastOrNull() }
     val onPopWhile: ((NavKey?) -> Boolean) -> Unit = { predicate ->
         while (predicate(backStack.lastOrNull())) {
@@ -160,6 +160,32 @@ fun NavigationRoot(startDestination: NavKey) {
     val onClear: () -> Unit = { backStack.clear() }
     val onBack: (Int) -> Unit = { keysToRemove -> repeat(keysToRemove) { onPop() } }
     val onBottomBarClick: (BottomNavKey) -> Unit = { navigateBottomBar(backStack, it) }
+
+
+    val onNavigateSingleTop: (NavKey) -> Unit = { dest ->
+        when (dest) {
+            is ServerDetails -> {
+                // remove any existing ServerDetails before pushing
+                onPopWhile { it is ServerDetails }
+                backStack.add(dest)
+            }
+            is ItemDetails -> {
+                onPopWhile { it is ItemDetails }
+                backStack.add(dest)
+            }
+            is MonumentDetails -> {
+                onPopWhile { it is MonumentDetails }
+                backStack.add(dest)
+            }
+            is RaidForm -> {
+                onPopWhile { it is RaidForm }
+                backStack.add(dest)
+            }
+            else -> backStack.add(dest)
+        }
+    }
+
+    val onNavigate: (NavKey) -> Unit = onNavigateSingleTop
 
     LaunchedEffect(backStack.lastOrNull()) { snackbarHostState.currentSnackbarData?.dismiss() }
 
