@@ -36,7 +36,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.entry
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
@@ -113,7 +112,6 @@ import pl.cuyer.rusthub.presentation.navigation.Terms
 import pl.cuyer.rusthub.presentation.navigation.UpgradeAccount
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
-import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -159,7 +157,7 @@ fun NavigationRoot(startDestination: NavKey) {
         }
     }
     val onClear: () -> Unit = { backStack.clear() }
-    val onBack: (Int) -> Unit = { keysToRemove -> repeat(keysToRemove) { onPop() } }
+    val onBack: () -> Unit = { onPop() }
     val onBottomBarClick: (BottomNavKey) -> Unit = { navigateBottomBar(backStack, it) }
 
     LaunchedEffect(backStack.lastOrNull()) { snackbarHostState.currentSnackbarData?.dismiss() }
@@ -203,7 +201,7 @@ fun NavigationRoot(startDestination: NavKey) {
 private fun AppScaffold(
     snackbarHostState: SnackbarHostState,
     backStack: () -> List<NavKey>,
-    onBack: (Int) -> Unit,
+    onBack: () -> Unit,
     onNavigate: (NavKey) -> Unit,
     onNavigateUp: () -> Unit,
     onPopWhile: ((NavKey?) -> Boolean) -> Unit,
@@ -252,7 +250,6 @@ private fun AppScaffold(
                             )
                 },
                 entryDecorators = listOf(
-                    rememberSceneSetupNavEntryDecorator(),
                     rememberSavedStateNavEntryDecorator(),
                     rememberViewModelStoreNavEntryDecorator()
                 ),

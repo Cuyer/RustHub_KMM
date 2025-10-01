@@ -83,7 +83,6 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(project.dependencies.platform(libs.koin.bom))
-            implementation(project.dependencies.platform(libs.compose.bom))
             implementation(libs.compose.runtime)
             implementation(libs.koin.core)
             implementation(libs.ktor.client.core)
