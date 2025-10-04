@@ -62,6 +62,7 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.BuildConfig
+import pl.cuyer.rusthub.android.ads.NativeAdCard
 import pl.cuyer.rusthub.android.ads.NativeAdListItem
 import pl.cuyer.rusthub.android.designsystem.MonumentListItem
 import pl.cuyer.rusthub.android.designsystem.MonumentListItemShimmer
@@ -311,7 +312,7 @@ fun MonumentScreen(
                                         .fillMaxWidth()
                                         .animateItem()
                                 ) {
-                                    NativeAdListItem(
+                                    NativeAdCard(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(horizontal = spacing.xmedium),

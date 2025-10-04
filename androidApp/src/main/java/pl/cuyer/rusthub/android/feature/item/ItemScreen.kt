@@ -74,6 +74,7 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.BuildConfig
+import pl.cuyer.rusthub.android.ads.NativeAdCard
 import pl.cuyer.rusthub.android.ads.NativeAdListItem
 import pl.cuyer.rusthub.android.designsystem.ItemListItem
 import pl.cuyer.rusthub.android.designsystem.ItemListItemShimmer
@@ -360,7 +361,7 @@ fun ItemScreen(
                                     .fillMaxWidth()
                                     .animateItem(),
                             ) {
-                                NativeAdListItem(
+                                NativeAdCard(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = spacing.xmedium),
