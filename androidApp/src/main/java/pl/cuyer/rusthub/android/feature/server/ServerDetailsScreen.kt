@@ -484,7 +484,7 @@ fun ServerDetailsScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = spacing.medium),
-                                    ad = { adState.value.ads[BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID] }
+                                    ad = { adState.value.ads[BuildConfig.SERVER_DETAILS_ADMOB_NATIVE_AD_ID] }
                                 )
                                 Spacer(modifier = Modifier.height(spacing.medium))
                             }
