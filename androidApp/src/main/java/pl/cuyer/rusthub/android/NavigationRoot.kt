@@ -120,7 +120,7 @@ import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
     ExperimentalMaterial3AdaptiveApi::class
 )
 @Composable
-fun NavigationRoot(startDestination: NavKey) {
+fun NavigationRoot(startDestination: () -> NavKey) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -143,7 +143,7 @@ fun NavigationRoot(startDestination: NavKey) {
         }
     }
 
-    val backStack = rememberNavBackStack(startDestination)
+    val backStack = rememberNavBackStack(startDestination())
     ObserveAsEvents(flow = UserEventController.events, key1 = backStack) { event ->
         if (event is UserEvent.LoggedOut) {
             backStack.clear()

@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity() {
                         val state = startupViewModel.state.collectAsStateWithLifecycle()
                         if (!state.value.isLoading) {
                             RustHubBackground {
-                                NavigationRoot(startDestination = state.value.startDestination)
+                                NavigationRoot(startDestination = { state.value.startDestination })
                             }
                         }
                     }
