@@ -39,7 +39,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
-import androidx.navigation3.runtime.rememberSceneSetupNavEntryDecorator
+import androidx.navigation3.scene.rememberSceneSetupNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.launch
@@ -242,7 +242,7 @@ private fun AppScaffold(
         contentColor = MaterialTheme.colorScheme.onBackground,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         content = { contentPadding ->
-            val listDetailStrategy = rememberListDetailSceneStrategy<Any>()
+            val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
             NavDisplay(
                 modifier = Modifier
                     .padding(contentPadding)
