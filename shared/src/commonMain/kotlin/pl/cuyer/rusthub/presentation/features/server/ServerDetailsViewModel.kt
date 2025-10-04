@@ -50,6 +50,7 @@ import pl.cuyer.rusthub.util.StringProvider
 import pl.cuyer.rusthub.util.ConnectivityObserver
 import pl.cuyer.rusthub.util.toUserMessage
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.util.AdsConsentManager
 
 class ServerDetailsViewModel(
     private val clipboardHandler: ClipboardHandler,
@@ -65,7 +66,8 @@ class ServerDetailsViewModel(
     private val stringProvider: StringProvider,
     private val serverName: String?,
     private val serverId: Long?,
-    private val connectivityObserver: ConnectivityObserver
+    private val connectivityObserver: ConnectivityObserver,
+    private val adsConsentManager: AdsConsentManager,
 ) : BaseViewModel() {
     private val _uiEvent = Channel<UiEvent>(UNLIMITED)
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -82,6 +84,14 @@ class ServerDetailsViewModel(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = _state.value
+        )
+
+    val showAds = getUserUseCase()
+        .map { user -> !(user?.subscribed ?: false) && adsConsentManager.canRequestAds }
+        .stateIn(
+            scope = coroutineScope,
+            started = SharingStarted.WhileSubscribed(5_000L),
+            initialValue = true
         )
 
     private var toggleJob: Job? = null

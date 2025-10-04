@@ -303,12 +303,18 @@ private fun AppScaffold(
                                 key = key.id.toString()
                             ) { parametersOf(key.id, key.name) }
                             val state = viewModel.state.collectAsStateWithLifecycle()
+                            val showAds by viewModel.showAds.collectAsStateWithLifecycle()
+                            val adViewModel = koinViewModel<NativeAdViewModel>()
+                            val adState = adViewModel.state.collectAsStateWithLifecycle()
                             ServerDetailsScreen(
                                 state = state,
                                 uiEvent = viewModel.uiEvent,
                                 onAction = viewModel::onAction,
                                 onNavigate = { dest -> onNavigate(dest) },
-                                onNavigateUp = onNavigateUp
+                                onNavigateUp = onNavigateUp,
+                                showAds = showAds,
+                                adState = adState,
+                                onAdAction = adViewModel::onAction
                             )
                         }
                         entry<ItemList>(metadata = ListDetailSceneStrategy.listPane()) {
