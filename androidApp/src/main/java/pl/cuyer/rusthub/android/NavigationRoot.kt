@@ -37,9 +37,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberDecoratedNavEntries
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
-import androidx.navigation3.scene.rememberSceneSetupNavEntryDecorator
+import androidx.navigation3.scene.rememberSceneState
 import androidx.navigation3.ui.NavDisplay
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.launch
@@ -243,11 +244,26 @@ private fun AppScaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         content = { contentPadding ->
             val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
+            val decoratedEntries =
+                rememberDecoratedNavEntries(
+                    backStack(),
+                    listOf(
+                        rememberSaveableStateHolderNavEntryDecorator(),
+                        rememberViewModelStoreNavEntryDecorator(),
+                    ),
+                )
+            val sceneState =
+                rememberSceneState(
+                    entries = decoratedEntries,
+                    sceneStrategy = listDetailStrategy,
+                    onBack = { onBack(1) },
+                )
+
             NavDisplay(
                 modifier = Modifier
                     .padding(contentPadding)
                     .consumeWindowInsets(contentPadding),
-                backStack = backStack(),
+                sceneState = sceneState,
                 transitionSpec = {
                     fadeIn(
                         animationSpec = spring(
@@ -276,12 +292,7 @@ private fun AppScaffold(
                                 )
                             )
                 },
-                entryDecorators = listOf(
-                    rememberSceneSetupNavEntryDecorator(),
-                    rememberSaveableStateHolderNavEntryDecorator(),
-                    rememberViewModelStoreNavEntryDecorator()
-                ),
-                onBack = onBack,
+                onBack = { onBack(1) },
                 entryProvider = entryProvider {
                     entry<Onboarding> {
                         val viewModel = koinViewModel<OnboardingViewModel>()
