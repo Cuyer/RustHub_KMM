@@ -51,6 +51,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -80,6 +81,8 @@ import dev.icerock.moko.permissions.compose.BindEffect
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.compose.koinInject
+import pl.cuyer.rusthub.android.BuildConfig
+import pl.cuyer.rusthub.android.ads.NativeAdCard
 import pl.cuyer.rusthub.android.designsystem.MapDialog
 import pl.cuyer.rusthub.android.designsystem.NotificationInfoDialog
 import pl.cuyer.rusthub.android.designsystem.ServerDetail
@@ -96,6 +99,8 @@ import pl.cuyer.rusthub.domain.model.ServerStatus
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.domain.model.toDrawable
+import pl.cuyer.rusthub.presentation.features.ads.AdAction
+import pl.cuyer.rusthub.presentation.features.ads.NativeAdState
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsAction
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsState
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
@@ -110,12 +115,21 @@ fun ServerDetailsScreen(
     onNavigateUp: () -> Unit,
     state: State<ServerDetailsState>,
     onAction: (ServerDetailsAction) -> Unit,
-    uiEvent: Flow<UiEvent>
+    uiEvent: Flow<UiEvent>,
+    showAds: Boolean,
+    adState: State<NativeAdState>,
+    onAdAction: (AdAction) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val lazyListState = rememberLazyListState()
     ObserveAsEvents(uiEvent) { event ->
         if (event is UiEvent.Navigate) onNavigate(event.destination)
+    }
+
+    LaunchedEffect(showAds) {
+        if (showAds) {
+            onAdAction(AdAction.LoadAd(BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID))
+        }
     }
 
     val permissionsController = koinInject<PermissionsController>()
@@ -464,6 +478,16 @@ fun ServerDetailsScreen(
                                     )
                                 )
                             }
+                            if (showAds) {
+                                Spacer(modifier = Modifier.height(spacing.medium))
+                                NativeAdCard(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = spacing.medium),
+                                    ad = { adState.value.ads[BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID] }
+                                )
+                                Spacer(modifier = Modifier.height(spacing.medium))
+                            }
                         }
 
                         item(key = "settings", contentType = "settings") {
@@ -739,6 +763,7 @@ private fun ServerDetailsPrev() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
+            val adState = remember { mutableStateOf(NativeAdState()) }
             ServerDetailsScreen(
                 onNavigate = {},
                 onNavigateUp = {},
@@ -751,7 +776,10 @@ private fun ServerDetailsPrev() {
                             name = "Repulsion"
                         )
                     )
-                )
+                ),
+                showAds = false,
+                adState = adState,
+                onAdAction = {}
             )
         }
     }
