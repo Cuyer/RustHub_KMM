@@ -37,10 +37,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberDecoratedNavEntries
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
-import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
-import androidx.navigation3.scene.rememberSceneSetupNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.launch
@@ -244,49 +243,17 @@ private fun AppScaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         content = { contentPadding ->
             val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
-            NavDisplay(
-                modifier = Modifier
-                    .padding(contentPadding)
-                    .consumeWindowInsets(contentPadding),
-                backStack = backStack(),
-                transitionSpec = {
-                    fadeIn(
-                        animationSpec = spring(
-                            stiffness = Spring.StiffnessLow,
-                            dampingRatio = Spring.DampingRatioLowBouncy
-                        )
-                    ) togetherWith
-                            fadeOut(
-                                animationSpec = spring(
-                                    stiffness = Spring.StiffnessLow,
-                                    dampingRatio = Spring.DampingRatioLowBouncy
-                                )
-                            )
-                },
-                popTransitionSpec = {
-                    fadeIn(
-                        animationSpec = spring(
-                            stiffness = Spring.StiffnessLow,
-                            dampingRatio = Spring.DampingRatioLowBouncy
-                        )
-                    ) togetherWith
-                            fadeOut(
-                                animationSpec = spring(
-                                    stiffness = Spring.StiffnessLow,
-                                    dampingRatio = Spring.DampingRatioLowBouncy
-                                )
-                            )
-                },
-                entryDecorators = listOf(
-                    rememberSceneSetupNavEntryDecorator(),
-                    rememberSaveableStateHolderNavEntryDecorator(),
-                    rememberViewModelStoreNavEntryDecorator()
-                ),
-                onBack = onBack,
-                entryProvider = entryProvider {
-                    entry<Onboarding> {
-                        val viewModel = koinViewModel<OnboardingViewModel>()
-                        val state = viewModel.state.collectAsStateWithLifecycle()
+            val decoratedEntries =
+                rememberDecoratedNavEntries(
+                    backStack = backStack(),
+                    entryDecorators = listOf(
+                        rememberSaveableStateHolderNavEntryDecorator(),
+                        rememberViewModelStoreNavEntryDecorator(),
+                    ),
+                    entryProvider = entryProvider {
+                        entry<Onboarding> {
+                            val viewModel = koinViewModel<OnboardingViewModel>()
+                            val state = viewModel.state.collectAsStateWithLifecycle()
                         OnboardingScreen(
                             state = state,
                             onAction = viewModel::onAction,
@@ -521,7 +488,43 @@ private fun AppScaffold(
                         )
                     }
                 },
-                sceneStrategy = listDetailStrategy
+                )
+
+            NavDisplay(
+                entries = decoratedEntries,
+                modifier = Modifier
+                    .padding(contentPadding)
+                    .consumeWindowInsets(contentPadding),
+                sceneStrategy = listDetailStrategy,
+                transitionSpec = {
+                    fadeIn(
+                        animationSpec = spring(
+                            stiffness = Spring.StiffnessLow,
+                            dampingRatio = Spring.DampingRatioLowBouncy
+                        )
+                    ) togetherWith
+                            fadeOut(
+                                animationSpec = spring(
+                                    stiffness = Spring.StiffnessLow,
+                                    dampingRatio = Spring.DampingRatioLowBouncy
+                                )
+                            )
+                },
+                popTransitionSpec = {
+                    fadeIn(
+                        animationSpec = spring(
+                            stiffness = Spring.StiffnessLow,
+                            dampingRatio = Spring.DampingRatioLowBouncy
+                        )
+                    ) togetherWith
+                            fadeOut(
+                                animationSpec = spring(
+                                    stiffness = Spring.StiffnessLow,
+                                    dampingRatio = Spring.DampingRatioLowBouncy
+                                )
+                            )
+                },
+                onBack = { onBack(1) },
             )
         }
     )
