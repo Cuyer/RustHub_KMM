@@ -37,10 +37,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberDecoratedNavEntries
+import androidx.navigation3.runtime.rememberNavEntries
+import androidx.navigation3.ui.rememberNavigationEventState
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
-import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
-import androidx.navigation3.scene.rememberSceneSetupNavEntryDecorator
+import androidx.navigation3.scene.rememberSceneState
 import androidx.navigation3.ui.NavDisplay
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.launch
@@ -244,46 +246,8 @@ private fun AppScaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         content = { contentPadding ->
             val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
-            NavDisplay(
-                modifier = Modifier
-                    .padding(contentPadding)
-                    .consumeWindowInsets(contentPadding),
-                backStack = backStack(),
-                transitionSpec = {
-                    fadeIn(
-                        animationSpec = spring(
-                            stiffness = Spring.StiffnessLow,
-                            dampingRatio = Spring.DampingRatioLowBouncy
-                        )
-                    ) togetherWith
-                            fadeOut(
-                                animationSpec = spring(
-                                    stiffness = Spring.StiffnessLow,
-                                    dampingRatio = Spring.DampingRatioLowBouncy
-                                )
-                            )
-                },
-                popTransitionSpec = {
-                    fadeIn(
-                        animationSpec = spring(
-                            stiffness = Spring.StiffnessLow,
-                            dampingRatio = Spring.DampingRatioLowBouncy
-                        )
-                    ) togetherWith
-                            fadeOut(
-                                animationSpec = spring(
-                                    stiffness = Spring.StiffnessLow,
-                                    dampingRatio = Spring.DampingRatioLowBouncy
-                                )
-                            )
-                },
-                entryDecorators = listOf(
-                    rememberSceneSetupNavEntryDecorator(),
-                    rememberSaveableStateHolderNavEntryDecorator(),
-                    rememberViewModelStoreNavEntryDecorator()
-                ),
-                onBack = onBack,
-                entryProvider = entryProvider {
+            val navEntryProvider =
+                entryProvider<NavKey> {
                     entry<Onboarding> {
                         val viewModel = koinViewModel<OnboardingViewModel>()
                         val state = viewModel.state.collectAsStateWithLifecycle()
@@ -487,7 +451,6 @@ private fun AppScaffold(
                             onAction = viewModel::onAction
                         )
                     }
-
                     entry<PrivacyPolicy> {
                         PrivacyPolicyScreen(
                             url = Urls.PRIVACY_POLICY_URL,
@@ -520,8 +483,61 @@ private fun AppScaffold(
                             onTerms = { onNavigate(Terms) }
                         )
                     }
+                }
+            val navEntries = rememberNavEntries(backStack(), navEntryProvider)
+            val decoratedEntries =
+                rememberDecoratedNavEntries(
+                    navEntries,
+                    listOf(
+                        rememberSaveableStateHolderNavEntryDecorator(),
+                        rememberViewModelStoreNavEntryDecorator(),
+                    ),
+                )
+            val sceneState =
+                rememberSceneState(
+                    entries = decoratedEntries,
+                    sceneStrategy = listDetailStrategy,
+                    onBack = { onBack(1) },
+                )
+            val navigationEventState =
+                rememberNavigationEventState(
+                    sceneState = sceneState,
+                    onBack = { onBack(1) },
+                )
+
+            NavDisplay(
+                modifier = Modifier
+                    .padding(contentPadding)
+                    .consumeWindowInsets(contentPadding),
+                sceneState = sceneState,
+                navigationEventState = navigationEventState,
+                transitionSpec = {
+                    fadeIn(
+                        animationSpec = spring(
+                            stiffness = Spring.StiffnessLow,
+                            dampingRatio = Spring.DampingRatioLowBouncy
+                        )
+                    ) togetherWith
+                            fadeOut(
+                                animationSpec = spring(
+                                    stiffness = Spring.StiffnessLow,
+                                    dampingRatio = Spring.DampingRatioLowBouncy
+                                )
+                            )
                 },
-                sceneStrategy = listDetailStrategy
+                popTransitionSpec = {
+                    fadeIn(
+                        animationSpec = spring(
+                            stiffness = Spring.StiffnessLow,
+                            dampingRatio = Spring.DampingRatioLowBouncy
+                        )
+                    ) togetherWith
+                            fadeOut(
+                                animationSpec = spring(
+                                    stiffness = Spring.StiffnessLow,
+                                    dampingRatio = Spring.DampingRatioLowBouncy
+                                )
+                            )
             )
         }
     )
