@@ -102,7 +102,7 @@ android {
         }
 
         getByName("debug") {
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("development")
         }
     }
 }
