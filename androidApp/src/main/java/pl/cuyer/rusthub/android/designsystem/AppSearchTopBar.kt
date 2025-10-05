@@ -57,7 +57,6 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.minimumInteractiveComponentSize
-import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -66,7 +65,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -101,7 +99,7 @@ fun RustSearchBarTopAppBar(
     val coroutineScope = rememberCoroutineScope()
     val windowSizeClass = calculateWindowSizeClass(LocalActivity.current as Activity)
     val isTabletMode = remember(windowSizeClass.widthSizeClass) { windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium }
-    val searchBarState = rememberSearchBarState()
+    val searchBarState = rememberStableSearchBarState()
 
     LaunchedEffect(textFieldState.text) {
         if (textFieldState.text.isBlank()) onClearSearchQuery()
