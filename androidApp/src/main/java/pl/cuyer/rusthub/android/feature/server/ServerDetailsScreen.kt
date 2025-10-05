@@ -128,7 +128,7 @@ fun ServerDetailsScreen(
 
     LaunchedEffect(showAds) {
         if (showAds) {
-            onAdAction(AdAction.LoadAd(BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID))
+            onAdAction(AdAction.LoadAd(BuildConfig.SERVER_DETAILS_ADMOB_NATIVE_AD_ID))
         }
     }
 
