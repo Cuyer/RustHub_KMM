@@ -56,6 +56,8 @@ import pl.cuyer.rusthub.android.feature.item.ItemScreen
 import pl.cuyer.rusthub.android.feature.monument.MonumentDetailsScreen
 import pl.cuyer.rusthub.android.feature.monument.MonumentScreen
 import pl.cuyer.rusthub.android.feature.onboarding.OnboardingScreen
+import pl.cuyer.rusthub.android.feature.raid.RaidFormScreen
+import pl.cuyer.rusthub.android.feature.raid.RaidSchedulerScreen
 import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
 import pl.cuyer.rusthub.android.feature.settings.ChangePasswordScreen
@@ -63,12 +65,9 @@ import pl.cuyer.rusthub.android.feature.settings.DeleteAccountScreen
 import pl.cuyer.rusthub.android.feature.settings.PrivacyPolicyScreen
 import pl.cuyer.rusthub.android.feature.settings.SettingsScreen
 import pl.cuyer.rusthub.android.feature.subscription.SubscriptionScreen
-import pl.cuyer.rusthub.android.feature.raid.RaidSchedulerScreen
-import pl.cuyer.rusthub.android.feature.raid.RaidFormScreen
-import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.navigation.BottomNavKey
+import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.navigation.bottomNavItems
-import pl.cuyer.rusthub.android.navigation.navigateBottomBar
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.common.Urls
 import pl.cuyer.rusthub.common.user.UserEvent
@@ -85,12 +84,12 @@ import pl.cuyer.rusthub.presentation.features.item.ItemViewModel
 import pl.cuyer.rusthub.presentation.features.monument.MonumentDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.monument.MonumentViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
+import pl.cuyer.rusthub.presentation.features.raid.RaidFormViewModel
+import pl.cuyer.rusthub.presentation.features.raid.RaidSchedulerViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
-import pl.cuyer.rusthub.presentation.features.raid.RaidSchedulerViewModel
-import pl.cuyer.rusthub.presentation.features.raid.RaidFormViewModel
 import pl.cuyer.rusthub.presentation.navigation.About
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
@@ -101,9 +100,9 @@ import pl.cuyer.rusthub.presentation.navigation.ItemList
 import pl.cuyer.rusthub.presentation.navigation.MonumentDetails
 import pl.cuyer.rusthub.presentation.navigation.MonumentList
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
-import pl.cuyer.rusthub.presentation.navigation.RaidScheduler
-import pl.cuyer.rusthub.presentation.navigation.RaidForm
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
+import pl.cuyer.rusthub.presentation.navigation.RaidForm
+import pl.cuyer.rusthub.presentation.navigation.RaidScheduler
 import pl.cuyer.rusthub.presentation.navigation.ResetPassword
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
@@ -159,19 +158,7 @@ fun NavigationRoot(startDestination: () -> NavKey) {
     }
     val onClear: () -> Unit = { backStack.clear() }
     val onBack: (Int) -> Unit = { keysToRemove -> repeat(keysToRemove) { onPop() } }
-    val onBottomBarClick: (BottomNavKey) -> Unit = { navigateBottomBar(backStack, it) }
 
-
-    val onNavigateSingleTop: (NavKey) -> Unit = singleTop@ { destination ->
-        if (backStack.lastOrNull() == destination) {
-            return@singleTop
-        }
-
-        backStack.removeEntriesFor(destination)
-        backStack.add(destination)
-    }
-
-    val onNavigate: (NavKey) -> Unit = onNavigateSingleTop
 
     LaunchedEffect(backStack.lastOrNull()) { snackbarHostState.currentSnackbarData?.dismiss() }
 
@@ -187,7 +174,6 @@ fun NavigationRoot(startDestination: () -> NavKey) {
                     snackbarHostState = snackbarHostState,
                     backStack = { backStack },
                     onBack = onBack,
-                    onNavigate = onNavigate,
                     onNavigateUp = onPop,
                     onPopWhile = onPopWhile,
                     onClear = onClear
@@ -551,22 +537,6 @@ private fun AppScaffold(
             )
         }
     )
-}
-
-private fun MutableList<NavKey>.removeEntriesFor(destination: NavKey) {
-    when (destination) {
-        is ServerDetails -> removeFromEndWhile { it is ServerDetails }
-        is ItemDetails -> removeFromEndWhile { it is ItemDetails }
-        is MonumentDetails -> removeFromEndWhile { it is MonumentDetails }
-        is RaidForm -> removeFromEndWhile { it is RaidForm }
-        else -> removeAll { it == destination }
-    }
-}
-
-private fun MutableList<NavKey>.removeFromEndWhile(predicate: (NavKey) -> Boolean) {
-    while (isNotEmpty() && predicate(last())) {
-        removeLast()
-    }
 }
 
 @Composable
