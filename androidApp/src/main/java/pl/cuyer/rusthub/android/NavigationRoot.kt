@@ -181,7 +181,13 @@ fun NavigationRoot(startDestination: () -> NavKey) {
                 onPopWhile { it is RaidForm }
                 backStack.add(dest)
             }
-            else -> backStack.add(dest)
+            else -> {
+                if (backStack.lastOrNull() == dest) {
+                    return@onNavigateSingleTop
+                }
+                backStack.removeAll { it == dest }
+                backStack.add(dest)
+            }
         }
     }
 
