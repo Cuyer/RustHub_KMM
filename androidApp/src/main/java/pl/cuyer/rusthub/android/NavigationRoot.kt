@@ -377,7 +377,7 @@ private fun AppScaffold(
                                 val state = viewModel.state.collectAsStateWithLifecycle()
                                 ItemDetailsScreen(
                                     state = state,
-                                    onNavigateUp = {  },
+                                    onNavigateUp = onNavigateUp,
                                     onRefresh = viewModel::refresh,
                                 )
                             }
@@ -409,7 +409,7 @@ private fun AppScaffold(
                                 val state = viewModel.state.collectAsStateWithLifecycle()
                                 MonumentDetailsScreen(
                                     state = state,
-                                    onNavigateUp = {  },
+                                    onNavigateUp = onNavigateUp,
                                 )
                             }
                         }
@@ -431,7 +431,7 @@ private fun AppScaffold(
                                 ) { parametersOf(key.raid) }
                                 val state = viewModel.state.collectAsStateWithLifecycle()
                                 RaidFormScreen(
-                                    onNavigateUp = { },
+                                    onNavigateUp = onNavigateUp,
                                     state = state,
                                     onAction = viewModel::onAction,
                                     uiEvent = viewModel.uiEvent
