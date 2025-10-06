@@ -162,7 +162,11 @@ fun NavigationRoot(startDestination: () -> NavKey) {
     val onBottomBarClick: (BottomNavKey) -> Unit = { navigateBottomBar(backStack, it) }
 
 
-    val onNavigateSingleTop: (NavKey) -> Unit = { dest ->
+    val onNavigateSingleTop: (NavKey) -> Unit = singleTop@ { dest ->
+        if (backStack.lastOrNull() == dest) {
+            return@singleTop
+        }
+
         when (dest) {
             is ServerDetails -> {
                 // remove any existing ServerDetails before pushing
@@ -181,7 +185,10 @@ fun NavigationRoot(startDestination: () -> NavKey) {
                 onPopWhile { it is RaidForm }
                 backStack.add(dest)
             }
-            else -> backStack.add(dest)
+            else -> {
+                backStack.removeAll { it == dest }
+                backStack.add(dest)
+            }
         }
     }
 
