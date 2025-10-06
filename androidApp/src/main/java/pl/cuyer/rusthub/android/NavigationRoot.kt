@@ -151,11 +151,7 @@ fun NavigationRoot(startDestination: () -> NavKey) {
     }
 
     val onPop: () -> Unit = { backStack.removeLastOrNull() }
-    val onPopWhile: ((NavKey?) -> Boolean) -> Unit = { predicate ->
-        while (predicate(backStack.lastOrNull())) {
-            backStack.removeLastOrNull()
-        }
-    }
+
     val onClear: () -> Unit = { backStack.clear() }
 
 
@@ -173,7 +169,6 @@ fun NavigationRoot(startDestination: () -> NavKey) {
                     snackbarHostState = snackbarHostState,
                     backStack = { backStack },
                     onNavigateUp = onPop,
-                    onPopWhile = onPopWhile,
                     onBack = {
                         backStack.removeLastOrNull()
                     },
@@ -190,7 +185,6 @@ fun NavigationRoot(startDestination: () -> NavKey) {
             onBack = {
                 backStack.removeLastOrNull()
             },
-            onPopWhile = onPopWhile,
             onClear = onClear,
             modifier = Modifier
                 .safeDrawingPadding()
@@ -206,7 +200,6 @@ private fun AppScaffold(
     onBack: () -> Unit,
     onNavigate: (NavKey) -> Unit,
     onNavigateUp: () -> Unit,
-    onPopWhile: ((NavKey?) -> Boolean) -> Unit,
     onClear: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -359,7 +352,7 @@ private fun AppScaffold(
                                 val state = viewModel.state.collectAsStateWithLifecycle()
                                 ItemDetailsScreen(
                                     state = state,
-                                    onNavigateUp = { onPopWhile { it is ItemDetails } },
+                                    onNavigateUp = {  },
                                     onRefresh = viewModel::refresh,
                                 )
                             }
@@ -391,7 +384,7 @@ private fun AppScaffold(
                                 val state = viewModel.state.collectAsStateWithLifecycle()
                                 MonumentDetailsScreen(
                                     state = state,
-                                    onNavigateUp = { onPopWhile { it is MonumentDetails } },
+                                    onNavigateUp = {  },
                                 )
                             }
                         }
@@ -413,7 +406,7 @@ private fun AppScaffold(
                                 ) { parametersOf(key.raid) }
                                 val state = viewModel.state.collectAsStateWithLifecycle()
                                 RaidFormScreen(
-                                    onNavigateUp = { onPopWhile { it is RaidForm } },
+                                    onNavigateUp = { },
                                     state = state,
                                     onAction = viewModel::onAction,
                                     uiEvent = viewModel.uiEvent
