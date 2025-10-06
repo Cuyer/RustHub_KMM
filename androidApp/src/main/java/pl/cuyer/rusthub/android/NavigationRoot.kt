@@ -154,20 +154,45 @@ fun NavigationRoot(startDestination: () -> NavKey) {
 
     val onClear: () -> Unit = { backStack.clear() }
 
+    val currentNavKey = backStack.lastOrNull()
+    val currentBottomNav = currentNavKey.toBottomNavKey()
 
-    LaunchedEffect(backStack.lastOrNull()) { snackbarHostState.currentSnackbarData?.dismiss() }
+    val onNavigate: (NavKey) -> Unit = { destination ->
+        if (backStack.lastOrNull() != destination) {
+            backStack.add(destination)
+        }
+    }
 
-    if (bottomNavItems ) {
+    val onBottomBarClick: (BottomNavKey) -> Unit = { item ->
+        val root = item.root
+        val existingIndex = backStack.indexOf(root)
+
+        if (existingIndex >= 0) {
+            backStack.subList(existingIndex + 1, backStack.size).clear()
+        } else {
+            backStack.clear()
+            backStack.add(root)
+        }
+
+        if (backStack.lastOrNull() != root) {
+            backStack.add(root)
+        }
+    }
+
+    LaunchedEffect(currentNavKey) { snackbarHostState.currentSnackbarData?.dismiss() }
+
+    if (currentBottomNav != null) {
         NavigationSuiteScaffold(
             containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
                 .safeDrawingPadding(),
-            navigationItems = { BottomBarItems(backStack.lastOrNull(), onBottomBarClick) },
+            navigationItems = { BottomBarItems(currentBottomNav, onBottomBarClick) },
             content = {
                 AppScaffold(
                     snackbarHostState = snackbarHostState,
                     backStack = { backStack },
+                    onNavigate = onNavigate,
                     onNavigateUp = onPop,
                     onBack = {
                         backStack.removeLastOrNull()
@@ -536,10 +561,10 @@ private fun AppScaffold(
 }
 
 @Composable
-private fun BottomBarItems(current: NavKey?, onNavigate: (BottomNavKey) -> Unit) {
+private fun BottomBarItems(current: BottomNavKey, onNavigate: (BottomNavKey) -> Unit) {
     bottomNavItems.forEach { item ->
         NavigationSuiteItem(
-            selected = ,
+            selected = current == item,
             onClick = { onNavigate(item) },
             icon = {
                 Icon(
@@ -550,4 +575,15 @@ private fun BottomBarItems(current: NavKey?, onNavigate: (BottomNavKey) -> Unit)
             label = { Text(stringResource(item.label)) }
         )
     }
+}
+
+private fun NavKey?.toBottomNavKey(): BottomNavKey? = when (this) {
+    ServerList, is ServerDetails -> BottomNavKey.Servers
+    ItemList, is ItemDetails -> BottomNavKey.Items
+    MonumentList, is MonumentDetails -> BottomNavKey.Monuments
+    RaidScheduler, is RaidForm -> BottomNavKey.Raids
+    Settings, ChangePassword, DeleteAccount, UpgradeAccount, PrivacyPolicy, Terms, About, is Subscription ->
+        BottomNavKey.Settings
+
+    else -> null
 }
