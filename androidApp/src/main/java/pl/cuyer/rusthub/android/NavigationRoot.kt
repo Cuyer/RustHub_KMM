@@ -157,7 +157,6 @@ fun NavigationRoot(startDestination: () -> NavKey) {
         }
     }
     val onClear: () -> Unit = { backStack.clear() }
-    val onBack: (Int) -> Unit = { keysToRemove -> repeat(keysToRemove) { onPop() } }
 
 
     LaunchedEffect(backStack.lastOrNull()) { snackbarHostState.currentSnackbarData?.dismiss() }
@@ -173,9 +172,11 @@ fun NavigationRoot(startDestination: () -> NavKey) {
                 AppScaffold(
                     snackbarHostState = snackbarHostState,
                     backStack = { backStack },
-                    onBack = onBack,
                     onNavigateUp = onPop,
                     onPopWhile = onPopWhile,
+                    onBack = {
+                        backStack.removeLastOrNull()
+                    },
                     onClear = onClear
                 )
             }
@@ -184,9 +185,11 @@ fun NavigationRoot(startDestination: () -> NavKey) {
         AppScaffold(
             snackbarHostState = snackbarHostState,
             backStack = { backStack },
-            onBack = onBack,
             onNavigate = onNavigate,
             onNavigateUp = onPop,
+            onBack = {
+                backStack.removeLastOrNull()
+            },
             onPopWhile = onPopWhile,
             onClear = onClear,
             modifier = Modifier
@@ -200,7 +203,7 @@ fun NavigationRoot(startDestination: () -> NavKey) {
 private fun AppScaffold(
     snackbarHostState: SnackbarHostState,
     backStack: () -> List<NavKey>,
-    onBack: (Int) -> Unit,
+    onBack: () -> Unit,
     onNavigate: (NavKey) -> Unit,
     onNavigateUp: () -> Unit,
     onPopWhile: ((NavKey?) -> Boolean) -> Unit,
@@ -533,7 +536,7 @@ private fun AppScaffold(
                                 )
                             )
                 },
-                onBack = { onBack(1) },
+                onBack = onBack,
             )
         }
     )
