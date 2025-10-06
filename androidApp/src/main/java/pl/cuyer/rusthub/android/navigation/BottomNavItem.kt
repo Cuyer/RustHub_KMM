@@ -26,14 +26,12 @@ internal sealed interface BottomNavKey {
     val root: NavKey
     val icon: ImageVector
     val label: StringResource
-    val isInHierarchy: (NavKey?) -> Boolean
 
     @Immutable
     data object Servers : BottomNavKey {
         override val root = ServerList
         override val icon = Icons.AutoMirrored.Filled.List
         override val label = SharedRes.strings.servers
-        override val isInHierarchy: (NavKey?) -> Boolean = { it is ServerList || it is ServerDetails }
     }
 
     @Immutable
@@ -41,7 +39,6 @@ internal sealed interface BottomNavKey {
         override val root = ItemList
         override val icon = Icons.Filled.Inventory
         override val label = SharedRes.strings.items
-        override val isInHierarchy: (NavKey?) -> Boolean = { it is ItemList || it is ItemDetails }
     }
 
     @Immutable
@@ -49,9 +46,6 @@ internal sealed interface BottomNavKey {
         override val root = MonumentList
         override val icon = Icons.Filled.AccountBalance
         override val label = SharedRes.strings.monuments
-        override val isInHierarchy: (NavKey?) -> Boolean = {
-            it is MonumentList || it is MonumentDetails
-        }
     }
 
     @Immutable
@@ -59,7 +53,6 @@ internal sealed interface BottomNavKey {
         override val root = RaidScheduler
         override val icon = Icons.Filled.Event
         override val label = SharedRes.strings.raids
-        override val isInHierarchy: (NavKey?) -> Boolean = { it is RaidScheduler || it is RaidForm }
     }
 
     @Immutable
@@ -67,7 +60,6 @@ internal sealed interface BottomNavKey {
         override val root = SettingsNav
         override val icon = Icons.Filled.Settings
         override val label = SharedRes.strings.settings
-        override val isInHierarchy: (NavKey?) -> Boolean = { it is SettingsNav }
     }
 }
 
