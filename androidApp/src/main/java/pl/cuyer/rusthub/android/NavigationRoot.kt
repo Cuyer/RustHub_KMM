@@ -1,7 +1,9 @@
 package pl.cuyer.rusthub.android
 
+import android.os.SystemClock
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -28,11 +30,14 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -260,7 +265,13 @@ private fun AppScaffold(
                             }
                             entry<Credentials> { key ->
                                 val viewModel: CredentialsViewModel =
-                                    koinViewModel { parametersOf(key.email, key.exists, key.provider) }
+                                    koinViewModel {
+                                        parametersOf(
+                                            key.email,
+                                            key.exists,
+                                            key.provider
+                                        )
+                                    }
                                 val state = viewModel.state.collectAsStateWithLifecycle()
                                 CredentialsScreen(
                                     state = state,
@@ -527,32 +538,12 @@ private fun AppScaffold(
                     .consumeWindowInsets(contentPadding),
                 sceneStrategy = listDetailStrategy,
                 transitionSpec = {
-                    fadeIn(
-                        animationSpec = spring(
-                            stiffness = Spring.StiffnessLow,
-                            dampingRatio = Spring.DampingRatioLowBouncy
-                        )
-                    ) togetherWith
-                            fadeOut(
-                                animationSpec = spring(
-                                    stiffness = Spring.StiffnessLow,
-                                    dampingRatio = Spring.DampingRatioLowBouncy
-                                )
-                            )
+                    fadeIn(animationSpec = tween(250)) togetherWith
+                            fadeOut(animationSpec = tween(200))
                 },
                 popTransitionSpec = {
-                    fadeIn(
-                        animationSpec = spring(
-                            stiffness = Spring.StiffnessLow,
-                            dampingRatio = Spring.DampingRatioLowBouncy
-                        )
-                    ) togetherWith
-                            fadeOut(
-                                animationSpec = spring(
-                                    stiffness = Spring.StiffnessLow,
-                                    dampingRatio = Spring.DampingRatioLowBouncy
-                                )
-                            )
+                    fadeIn(animationSpec = tween(250)) togetherWith
+                            fadeOut(animationSpec = tween(200))
                 },
                 onBack = onBack,
             )
@@ -561,14 +552,33 @@ private fun AppScaffold(
 }
 
 @Composable
-private fun BottomBarItems(current: BottomNavKey, onNavigate: (BottomNavKey) -> Unit) {
+private fun BottomBarItems(
+    current: BottomNavKey,
+    onNavigate: (BottomNavKey) -> Unit
+) {
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val lastClick = remember { mutableLongStateOf(0L) }
+
+    fun safeNavigate(item: BottomNavKey) {
+        val now = SystemClock.elapsedRealtime()
+
+        // 1) Throttle: ignore if tapped again within 760 ms
+        if (now - lastClick.longValue < 760L) return
+        lastClick.longValue = now
+
+        // 2) Lifecycle gate: ignore if not resumed (e.g. transition still running)
+        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return
+
+        onNavigate(item)
+    }
+
     bottomNavItems.forEach { item ->
         NavigationSuiteItem(
             selected = current == item,
-            onClick = { onNavigate(item) },
+            onClick = { safeNavigate(item) },
             icon = {
                 Icon(
-                    item.icon,
+                    imageVector = item.icon,
                     contentDescription = stringResource(item.label)
                 )
             },
