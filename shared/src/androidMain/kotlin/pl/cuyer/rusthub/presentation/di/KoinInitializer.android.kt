@@ -329,7 +329,8 @@ actual fun platformModule(passphrase: String): Module = module {
             snackbarController = get(),
             shareHandler = get(),
             reviewRequester = get(),
-            connectivityObserver = get()
+            connectivityObserver = get(),
+            adsConsentManager = get()
         )
     }
     viewModel { (plan: SubscriptionPlan?) ->

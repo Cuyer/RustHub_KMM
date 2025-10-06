@@ -7,6 +7,7 @@ import pl.cuyer.rusthub.domain.model.Raid
 import pl.cuyer.rusthub.presentation.model.SubscriptionPlan
 
 @Serializable
+@Immutable
 data object Onboarding : NavKey
 
 
@@ -19,21 +20,27 @@ data class Credentials(
 ) : NavKey
 
 @Serializable
+@Immutable
 data object ServerList : NavKey
 
 @Serializable
+@Immutable
 data object Settings : NavKey
 
 @Serializable
+@Immutable
 data object ChangePassword : NavKey
 
 @Serializable
+@Immutable
 data object DeleteAccount : NavKey
 
 @Serializable
+@Immutable
 data object UpgradeAccount : NavKey
 
 @Serializable
+@Immutable
 data object ConfirmEmail : NavKey
 
 @Serializable
@@ -44,6 +51,7 @@ data class ServerDetails(
 ) : NavKey
 
 @Serializable
+@Immutable
 data object ItemList : NavKey
 
 @Serializable
@@ -54,6 +62,7 @@ data class ItemDetails(
 ) : NavKey
 
 @Serializable
+@Immutable
 data object MonumentList : NavKey
 
 @Serializable
@@ -63,6 +72,7 @@ data class MonumentDetails(
 ) : NavKey
 
 @Serializable
+@Immutable
 data object RaidScheduler : NavKey
 
 @Serializable
@@ -70,6 +80,7 @@ data object RaidScheduler : NavKey
 data class RaidForm(val raid: Raid? = null) : NavKey
 
 @Serializable
+@Immutable
 data object PrivacyPolicy : NavKey
 
 @Serializable
@@ -77,9 +88,11 @@ data object PrivacyPolicy : NavKey
 data class ResetPassword(val email: String) : NavKey
 
 @Serializable
+@Immutable
 data object Terms : NavKey
 
 @Serializable
+@Immutable
 data object About : NavKey
 
 @Serializable

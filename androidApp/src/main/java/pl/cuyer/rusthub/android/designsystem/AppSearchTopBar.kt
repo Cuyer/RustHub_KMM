@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.android.designsystem
 
 
 import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -63,7 +64,9 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -96,9 +99,8 @@ fun RustSearchBarTopAppBar(
     placeholderRes: StringResource = SharedRes.strings.search_servers,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current
-    val windowSizeClass = calculateWindowSizeClass(context as Activity)
-    val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
+    val windowSizeClass = calculateWindowSizeClass(LocalActivity.current as Activity)
+    val isTabletMode = remember(windowSizeClass.widthSizeClass) { windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium }
     val searchBarState = rememberSearchBarState()
 
     LaunchedEffect(textFieldState.text) {

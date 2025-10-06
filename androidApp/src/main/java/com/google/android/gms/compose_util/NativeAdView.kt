@@ -37,6 +37,7 @@ import com.google.android.gms.ads.MediaContent
 import com.google.android.gms.ads.nativead.AdChoicesView
 import com.google.android.gms.ads.nativead.MediaView
 import com.google.android.gms.ads.nativead.NativeAdView
+import pl.cuyer.rusthub.domain.model.ads.NativeAdWrapper
 
 /**
  * A CompositionLocal that can provide a `NativeAdView` to ad attributes such as `NativeHeadline`.
@@ -221,18 +222,18 @@ fun NativeAdIconView(modifier: Modifier = Modifier, content: @Composable () -> U
  * @param modifier modify the native ad view element.
  */
 @Composable
-fun NativeAdMediaView(mediaContent: MediaContent?, modifier: Modifier = Modifier) {
+fun NativeAdMediaView(mediaContent: () -> MediaContent?, modifier: Modifier = Modifier) {
   val nativeAdView = LocalNativeAdView.current ?: throw IllegalStateException("NativeAdView null")
   val localContext = LocalContext.current
   AndroidView(
     factory = {
       MediaView(localContext).apply {
         nativeAdView.mediaView = this
-        mediaContent?.let { setMediaContent(it) }
+        mediaContent()?.let { setMediaContent(it) }
       }
     },
     update = { view ->
-      mediaContent?.let { view.mediaContent = it }
+      mediaContent()?.let { view.mediaContent = it }
     },
     modifier = modifier,
   )
@@ -315,7 +316,9 @@ fun NativeAdStoreView(modifier: Modifier = Modifier, content: @Composable () -> 
 fun NativeAdAttribution(text: String = "Ad", modifier: Modifier = Modifier) {
   Box(
     modifier =
-      modifier.background(ButtonDefaults.buttonColors().containerColor).clip(ButtonDefaults.shape)
+      modifier
+        .background(ButtonDefaults.buttonColors().containerColor)
+        .clip(ButtonDefaults.shape)
   ) {
     Text(color = ButtonDefaults.buttonColors().contentColor, text = text)
   }
@@ -333,7 +336,7 @@ fun NativeAdAttribution(text: String = "Ad", modifier: Modifier = Modifier) {
  * @param modifier modify the native ad view element.
  */
 @Composable
-fun NativeAdButton(text: String, modifier: Modifier = Modifier) {
+fun NativeAdButton(text: () -> String, modifier: Modifier = Modifier) {
   Box(
     modifier =
       modifier
@@ -341,6 +344,6 @@ fun NativeAdButton(text: String, modifier: Modifier = Modifier) {
         .clip(MaterialTheme.shapes.extraSmall)
         .padding(ButtonDefaults.ContentPadding)
   ) {
-    Text(color = MaterialTheme.colorScheme.onBackground, text = text)
+    Text(color = MaterialTheme.colorScheme.onBackground, text = text())
   }
 }

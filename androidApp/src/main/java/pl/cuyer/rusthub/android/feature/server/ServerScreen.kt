@@ -35,7 +35,6 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
@@ -51,7 +50,6 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -146,7 +144,6 @@ fun ServerScreen(
         }
     }
 
-    val ads = adState
     val activity = LocalActivity.current as Activity
 
     LaunchedEffect(Unit) {
@@ -405,7 +402,7 @@ fun ServerScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = spacing.xmedium),
-                                    ad = ads.value.ads[BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID]
+                                    ad = { adState.value.ads[BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID] }
                                 )
                                 Spacer(modifier = Modifier.height(spacing.medium))
                             }

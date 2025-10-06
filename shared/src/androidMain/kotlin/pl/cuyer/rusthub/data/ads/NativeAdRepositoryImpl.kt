@@ -5,6 +5,7 @@ import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.VideoOptions
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdOptions
 import io.github.aakira.napier.Napier
@@ -46,7 +47,9 @@ class NativeAdRepositoryImpl(
                     if (!cont.isCompleted) cont.resume(null)
                 }
             })
-            .withNativeAdOptions(NativeAdOptions.Builder().build())
+            .withNativeAdOptions(NativeAdOptions.Builder()
+                .setMediaAspectRatio(NativeAdOptions.NATIVE_MEDIA_ASPECT_RATIO_LANDSCAPE)
+                .build())
             .build()
 
         loader.loadAd(AdRequest.Builder().build())
