@@ -157,7 +157,7 @@ fun NavigationRoot(startDestination: () -> NavKey) {
 
     LaunchedEffect(backStack.lastOrNull()) { snackbarHostState.currentSnackbarData?.dismiss() }
 
-    if (bottomNavItems.any { it.isInHierarchy(backStack.lastOrNull()) }) {
+    if (bottomNavItems ) {
         NavigationSuiteScaffold(
             containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onBackground,
@@ -539,7 +539,7 @@ private fun AppScaffold(
 private fun BottomBarItems(current: NavKey?, onNavigate: (BottomNavKey) -> Unit) {
     bottomNavItems.forEach { item ->
         NavigationSuiteItem(
-            selected = item.isInHierarchy(current),
+            selected = ,
             onClick = { onNavigate(item) },
             icon = {
                 Icon(
