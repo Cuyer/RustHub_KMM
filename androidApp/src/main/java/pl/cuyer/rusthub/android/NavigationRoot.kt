@@ -173,7 +173,7 @@ fun NavigationRoot(startDestination: () -> NavKey) {
 
     val canNavigateBack by remember { derivedStateOf { backStack.size > 1 } }
     BackHandler(enabled = canNavigateBack) {
-        onBack(1)
+        onBackAction()
     }
     val currentNavKey = backStack.lastOrNull()
     val currentBottomNav = currentNavKey.toBottomNavKey()
