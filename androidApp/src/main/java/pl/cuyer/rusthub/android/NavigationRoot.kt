@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.android
 
+import androidx.activity.compose.BackHandler
 import android.os.SystemClock
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.core.Spring
@@ -30,6 +31,7 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItem
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
@@ -169,6 +171,10 @@ fun NavigationRoot(startDestination: () -> NavKey) {
         }
     }
 
+    val canNavigateBack by remember { derivedStateOf { backStack.size > 1 } }
+    BackHandler(enabled = canNavigateBack) {
+        onBack(1)
+    }
     val currentNavKey = backStack.lastOrNull()
     val currentBottomNav = currentNavKey.toBottomNavKey()
 
