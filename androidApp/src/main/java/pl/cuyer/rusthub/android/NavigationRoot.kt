@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.android
 
 import android.os.SystemClock
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -128,6 +129,7 @@ fun NavigationRoot(startDestination: () -> NavKey) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     ObserveAsEvents(flow = SnackbarController.events, snackbarHostState) { event ->
         scope.launch {
             keyboardController?.hide()
@@ -158,6 +160,14 @@ fun NavigationRoot(startDestination: () -> NavKey) {
     val onPop: () -> Unit = { backStack.removeLastOrNull() }
 
     val onClear: () -> Unit = { backStack.clear() }
+
+    val onBackAction: () -> Unit = {
+        if (backStack.size > 1) {
+            backStack.removeLastOrNull()
+        } else {
+            backPressedDispatcher?.onBackPressed()
+        }
+    }
 
     val currentNavKey = backStack.lastOrNull()
     val currentBottomNav = currentNavKey.toBottomNavKey()
@@ -199,9 +209,7 @@ fun NavigationRoot(startDestination: () -> NavKey) {
                     backStack = { backStack },
                     onNavigate = onNavigate,
                     onNavigateUp = onPop,
-                    onBack = {
-                        backStack.removeLastOrNull()
-                    },
+                    onBack = onBackAction,
                     onClear = onClear
                 )
             }
@@ -212,9 +220,7 @@ fun NavigationRoot(startDestination: () -> NavKey) {
             backStack = { backStack },
             onNavigate = onNavigate,
             onNavigateUp = onPop,
-            onBack = {
-                backStack.removeLastOrNull()
-            },
+            onBack = onBackAction,
             onClear = onClear,
             modifier = Modifier
                 .safeDrawingPadding()
