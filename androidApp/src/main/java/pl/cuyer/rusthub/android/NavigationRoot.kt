@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.android
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
@@ -27,6 +28,7 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItem
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -161,6 +163,10 @@ fun NavigationRoot(startDestination: () -> NavKey) {
     val onBack: (Int) -> Unit = { keysToRemove -> repeat(keysToRemove) { onPop() } }
     val onBottomBarClick: (BottomNavKey) -> Unit = { navigateBottomBar(backStack, it) }
 
+    val canNavigateBack by remember { derivedStateOf { backStack.size > 1 } }
+    BackHandler(enabled = canNavigateBack) {
+        onBack(1)
+    }
 
     val onNavigateSingleTop: (NavKey) -> Unit = { dest ->
         when (dest) {
