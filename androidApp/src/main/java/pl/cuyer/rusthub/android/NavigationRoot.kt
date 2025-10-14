@@ -1,8 +1,11 @@
 package pl.cuyer.rusthub.android
 
 import androidx.activity.compose.BackHandler
+import android.os.SystemClock
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -30,11 +33,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -58,6 +64,8 @@ import pl.cuyer.rusthub.android.feature.item.ItemScreen
 import pl.cuyer.rusthub.android.feature.monument.MonumentDetailsScreen
 import pl.cuyer.rusthub.android.feature.monument.MonumentScreen
 import pl.cuyer.rusthub.android.feature.onboarding.OnboardingScreen
+import pl.cuyer.rusthub.android.feature.raid.RaidFormScreen
+import pl.cuyer.rusthub.android.feature.raid.RaidSchedulerScreen
 import pl.cuyer.rusthub.android.feature.server.ServerDetailsScreen
 import pl.cuyer.rusthub.android.feature.server.ServerScreen
 import pl.cuyer.rusthub.android.feature.settings.ChangePasswordScreen
@@ -65,12 +73,9 @@ import pl.cuyer.rusthub.android.feature.settings.DeleteAccountScreen
 import pl.cuyer.rusthub.android.feature.settings.PrivacyPolicyScreen
 import pl.cuyer.rusthub.android.feature.settings.SettingsScreen
 import pl.cuyer.rusthub.android.feature.subscription.SubscriptionScreen
-import pl.cuyer.rusthub.android.feature.raid.RaidSchedulerScreen
-import pl.cuyer.rusthub.android.feature.raid.RaidFormScreen
-import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.navigation.BottomNavKey
+import pl.cuyer.rusthub.android.navigation.ObserveAsEvents
 import pl.cuyer.rusthub.android.navigation.bottomNavItems
-import pl.cuyer.rusthub.android.navigation.navigateBottomBar
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.common.Urls
 import pl.cuyer.rusthub.common.user.UserEvent
@@ -87,12 +92,12 @@ import pl.cuyer.rusthub.presentation.features.item.ItemViewModel
 import pl.cuyer.rusthub.presentation.features.monument.MonumentDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.monument.MonumentViewModel
 import pl.cuyer.rusthub.presentation.features.onboarding.OnboardingViewModel
+import pl.cuyer.rusthub.presentation.features.raid.RaidFormViewModel
+import pl.cuyer.rusthub.presentation.features.raid.RaidSchedulerViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerDetailsViewModel
 import pl.cuyer.rusthub.presentation.features.server.ServerViewModel
 import pl.cuyer.rusthub.presentation.features.settings.SettingsViewModel
 import pl.cuyer.rusthub.presentation.features.subscription.SubscriptionViewModel
-import pl.cuyer.rusthub.presentation.features.raid.RaidSchedulerViewModel
-import pl.cuyer.rusthub.presentation.features.raid.RaidFormViewModel
 import pl.cuyer.rusthub.presentation.navigation.About
 import pl.cuyer.rusthub.presentation.navigation.ChangePassword
 import pl.cuyer.rusthub.presentation.navigation.ConfirmEmail
@@ -103,9 +108,9 @@ import pl.cuyer.rusthub.presentation.navigation.ItemList
 import pl.cuyer.rusthub.presentation.navigation.MonumentDetails
 import pl.cuyer.rusthub.presentation.navigation.MonumentList
 import pl.cuyer.rusthub.presentation.navigation.Onboarding
-import pl.cuyer.rusthub.presentation.navigation.RaidScheduler
-import pl.cuyer.rusthub.presentation.navigation.RaidForm
 import pl.cuyer.rusthub.presentation.navigation.PrivacyPolicy
+import pl.cuyer.rusthub.presentation.navigation.RaidForm
+import pl.cuyer.rusthub.presentation.navigation.RaidScheduler
 import pl.cuyer.rusthub.presentation.navigation.ResetPassword
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
@@ -126,6 +131,7 @@ fun NavigationRoot(startDestination: () -> NavKey) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     ObserveAsEvents(flow = SnackbarController.events, snackbarHostState) { event ->
         scope.launch {
             keyboardController?.hide()
@@ -154,68 +160,62 @@ fun NavigationRoot(startDestination: () -> NavKey) {
     }
 
     val onPop: () -> Unit = { backStack.removeLastOrNull() }
-    val onPopWhile: ((NavKey?) -> Boolean) -> Unit = { predicate ->
-        while (predicate(backStack.lastOrNull())) {
+
+    val onClear: () -> Unit = { backStack.clear() }
+
+    val onBackAction: () -> Unit = {
+        if (backStack.size > 1) {
             backStack.removeLastOrNull()
+        } else {
+            backPressedDispatcher?.onBackPressed()
         }
     }
-    val onClear: () -> Unit = { backStack.clear() }
-    val onBack: (Int) -> Unit = { keysToRemove -> repeat(keysToRemove) { onPop() } }
-    val onBottomBarClick: (BottomNavKey) -> Unit = { navigateBottomBar(backStack, it) }
 
     val canNavigateBack by remember { derivedStateOf { backStack.size > 1 } }
     BackHandler(enabled = canNavigateBack) {
         onBack(1)
     }
+    val currentNavKey = backStack.lastOrNull()
+    val currentBottomNav = currentNavKey.toBottomNavKey()
 
-    val onNavigateSingleTop: (NavKey) -> Unit = { dest ->
-        when (dest) {
-            is ServerDetails -> {
-                // remove any existing ServerDetails before pushing
-                onPopWhile { it is ServerDetails }
-                backStack.add(dest)
-            }
-            is ItemDetails -> {
-                onPopWhile { it is ItemDetails }
-                backStack.add(dest)
-            }
-            is MonumentDetails -> {
-                onPopWhile { it is MonumentDetails }
-                backStack.add(dest)
-            }
-            is RaidForm -> {
-                onPopWhile { it is RaidForm }
-                backStack.add(dest)
-            }
-            else -> {
-                if (backStack.lastOrNull() == dest) {
-                    return@onNavigateSingleTop
-                }
-                backStack.removeAll { it == dest }
-                backStack.add(dest)
-            }
+    val onNavigate: (NavKey) -> Unit = { destination ->
+        if (backStack.lastOrNull() != destination) {
+            backStack.add(destination)
         }
     }
 
-    val onNavigate: (NavKey) -> Unit = onNavigateSingleTop
+    val onBottomBarClick: (BottomNavKey) -> Unit = { item ->
+        val root = item.root
+        val existingIndex = backStack.indexOf(root)
 
-    LaunchedEffect(backStack.lastOrNull()) { snackbarHostState.currentSnackbarData?.dismiss() }
+        if (existingIndex >= 0) {
+            backStack.subList(existingIndex + 1, backStack.size).clear()
+        } else {
+            backStack.clear()
+            backStack.add(root)
+        }
 
-    if (bottomNavItems.any { it.isInHierarchy(backStack.lastOrNull()) }) {
+        if (backStack.lastOrNull() != root) {
+            backStack.add(root)
+        }
+    }
+
+    LaunchedEffect(currentNavKey) { snackbarHostState.currentSnackbarData?.dismiss() }
+
+    if (currentBottomNav != null) {
         NavigationSuiteScaffold(
             containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
                 .safeDrawingPadding(),
-            navigationItems = { BottomBarItems(backStack.lastOrNull(), onBottomBarClick) },
+            navigationItems = { BottomBarItems(currentBottomNav, onBottomBarClick) },
             content = {
                 AppScaffold(
                     snackbarHostState = snackbarHostState,
                     backStack = { backStack },
-                    onBack = onBack,
                     onNavigate = onNavigate,
                     onNavigateUp = onPop,
-                    onPopWhile = onPopWhile,
+                    onBack = onBackAction,
                     onClear = onClear
                 )
             }
@@ -224,10 +224,9 @@ fun NavigationRoot(startDestination: () -> NavKey) {
         AppScaffold(
             snackbarHostState = snackbarHostState,
             backStack = { backStack },
-            onBack = onBack,
             onNavigate = onNavigate,
             onNavigateUp = onPop,
-            onPopWhile = onPopWhile,
+            onBack = onBackAction,
             onClear = onClear,
             modifier = Modifier
                 .safeDrawingPadding()
@@ -240,10 +239,9 @@ fun NavigationRoot(startDestination: () -> NavKey) {
 private fun AppScaffold(
     snackbarHostState: SnackbarHostState,
     backStack: () -> List<NavKey>,
-    onBack: (Int) -> Unit,
+    onBack: () -> Unit,
     onNavigate: (NavKey) -> Unit,
     onNavigateUp: () -> Unit,
-    onPopWhile: ((NavKey?) -> Boolean) -> Unit,
     onClear: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -262,249 +260,286 @@ private fun AppScaffold(
                         rememberSaveableStateHolderNavEntryDecorator(),
                         rememberViewModelStoreNavEntryDecorator(),
                     ),
-                    entryProvider = entryProvider {
-                        entry<Onboarding> {
-                            val viewModel = koinViewModel<OnboardingViewModel>()
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            OnboardingScreen(
-                                state = state,
-                                onAction = viewModel::onAction,
-                                uiEvent = viewModel.uiEvent,
-                                onNavigate = { dest ->
-                                    if (dest is ServerList) onClear()
-                                    onNavigate(dest)
-                                }
-                            )
-                        }
-                        entry<Credentials> { key ->
-                            val viewModel: CredentialsViewModel =
-                                koinViewModel { parametersOf(key.email, key.exists, key.provider) }
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            CredentialsScreen(
-                                state = state,
-                                uiEvent = viewModel.uiEvent,
-                                onAction = viewModel::onAction,
-                                onNavigate = { dest ->
-                                    if (dest is ServerList) onClear()
-                                    if (dest is ConfirmEmail) onNavigateUp()
-                                    onNavigate(dest)
-                                },
-                                onNavigateUp = onNavigateUp
-                            )
-                        }
-                        entry<ServerList>(metadata = ListDetailSceneStrategy.listPane()) {
-                            val viewModel = koinViewModel<ServerViewModel>()
-                            val adViewModel = koinViewModel<NativeAdViewModel>()
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            val paging = viewModel.paging.collectAsLazyPagingItems()
-                            val showAds by viewModel.showAds.collectAsStateWithLifecycle()
-                            val adState = adViewModel.state.collectAsStateWithLifecycle()
-                            ServerScreen(
-                                state = state,
-                                uiEvent = viewModel.uiEvent,
-                                onAction = viewModel::onAction,
-                                pagedList = paging,
-                                onNavigate = { dest -> onNavigate(dest) },
-                                showAds = showAds,
-                                adState = adState,
-                                onAdAction = adViewModel::onAction
-                            )
-                        }
-                        entry<ServerDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
-                            val viewModel: ServerDetailsViewModel = koinViewModel(
-                                key = key.id.toString()
-                            ) { parametersOf(key.id, key.name) }
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            val showAds by viewModel.showAds.collectAsStateWithLifecycle()
-                            val adViewModel = koinViewModel<NativeAdViewModel>()
-                            val adState = adViewModel.state.collectAsStateWithLifecycle()
-                            ServerDetailsScreen(
-                                state = state,
-                                uiEvent = viewModel.uiEvent,
-                                onAction = viewModel::onAction,
-                                onNavigate = { dest -> onNavigate(dest) },
-                                onNavigateUp = onNavigateUp,
-                                showAds = showAds,
-                                adState = adState,
-                                onAdAction = adViewModel::onAction
-                            )
-                        }
-                        entry<ItemList>(metadata = ListDetailSceneStrategy.listPane()) {
-                            val viewModel = koinViewModel<ItemViewModel>()
-                            val adViewModel = koinViewModel<NativeAdViewModel>()
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            val paging = viewModel.paging.collectAsLazyPagingItems()
-                            val showAds by viewModel.showAds.collectAsStateWithLifecycle()
-                            val adState = adViewModel.state.collectAsStateWithLifecycle()
-                            ItemScreen(
-                                state = state,
-                                uiEvent = viewModel.uiEvent,
-                                onAction = viewModel::onAction,
-                                pagedList = paging,
-                                onNavigate = { dest -> onNavigate(dest) },
-                                showAds = showAds,
-                                adState = adState,
-                                onAdAction = adViewModel::onAction
-                            )
-                        }
-                        entry<ItemDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
-                            val viewModel: ItemDetailsViewModel = koinViewModel(
-                                key = key.id.toString()
-                            ) { parametersOf(key.id, key.name) }
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            ItemDetailsScreen(
-                                state = state,
-                                onNavigateUp = { onPopWhile { it is ItemDetails } },
-                                onRefresh = viewModel::refresh,
-                            )
-                        }
-                        entry<MonumentList>(metadata = ListDetailSceneStrategy.listPane()) {
-                            val viewModel = koinViewModel<MonumentViewModel>()
-                            val adViewModel = koinViewModel<NativeAdViewModel>()
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            val paging = viewModel.paging.collectAsLazyPagingItems()
-                            val showAds by viewModel.showAds.collectAsStateWithLifecycle()
-                            val adState = adViewModel.state.collectAsStateWithLifecycle()
-                            MonumentScreen(
-                                state = state,
-                                onAction = viewModel::onAction,
-                                pagedList = paging,
-                                uiEvent = viewModel.uiEvent,
-                                onNavigate = { dest -> onNavigate(dest) },
-                                showAds = showAds,
-                                adState = adState,
-                                onAdAction = adViewModel::onAction
-                            )
-                        }
-                        entry<MonumentDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
-                            val viewModel: MonumentDetailsViewModel = koinViewModel(
-                                key = key.slug
-                            ) { parametersOf(key.slug) }
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            MonumentDetailsScreen(
-                                state = state,
-                                onNavigateUp = { onPopWhile { it is MonumentDetails } },
-                            )
-                        }
-                        entry<RaidScheduler>(metadata = ListDetailSceneStrategy.listPane()) {
-                            val viewModel = koinViewModel<RaidSchedulerViewModel>()
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            RaidSchedulerScreen(
-                                onNavigate = { dest -> onNavigate(dest) },
-                                state = state,
-                                onAction = viewModel::onAction,
-                                uiEvent = viewModel.uiEvent
-                            )
-                        }
-                        entry<RaidForm>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
-                            val viewModel: RaidFormViewModel = koinViewModel(
-                                key = key.raid?.id ?: "new"
-                            ) { parametersOf(key.raid) }
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            RaidFormScreen(
-                                onNavigateUp = { onPopWhile { it is RaidForm } },
-                                state = state,
-                                onAction = viewModel::onAction,
-                                uiEvent = viewModel.uiEvent
-                            )
-                        }
-                        entry<Settings> {
-                            val viewModel = koinViewModel<SettingsViewModel>()
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            SettingsScreen(
-                                state = state,
-                                uiEvent = viewModel.uiEvent,
-                                onAction = viewModel::onAction,
-                                onNavigate = { dest -> onNavigate(dest) }
-                            )
-                        }
-                        entry<DeleteAccount> {
-                            val viewModel = koinViewModel<DeleteAccountViewModel>()
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            DeleteAccountScreen(
-                                onNavigateUp = onNavigateUp,
-                                state = state,
-                                onAction = viewModel::onAction
-                            )
-                        }
-                        entry<UpgradeAccount> {
-                            val viewModel = koinViewModel<UpgradeViewModel>()
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            UpgradeAccountScreen(
-                                onNavigateUp = onNavigateUp,
-                                uiEvent = viewModel.uiEvent,
-                                state = state,
-                                onAction = viewModel::onAction
-                            )
-                        }
-                        entry<ConfirmEmail> {
-                            val viewModel = koinViewModel<ConfirmEmailViewModel>()
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            ConfirmEmailScreen(
-                                uiEvent = viewModel.uiEvent,
-                                state = state,
-                                onAction = viewModel::onAction,
-                                onNavigate = { dest ->
-                                    onClear()
-                                    onNavigate(dest)
-                                },
-                                onNavigateUp = onNavigateUp
-                            )
-                        }
-                        entry<ResetPassword> { key ->
-                            val viewModel: ResetPasswordViewModel =
-                                koinViewModel { parametersOf(key.email) }
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            ResetPasswordScreen(
-                                onNavigateUp = onNavigateUp,
-                                uiEvent = viewModel.uiEvent,
-                                state = state,
-                                onAction = viewModel::onAction
-                            )
-                        }
-                        entry<ChangePassword> {
-                            val viewModel = koinViewModel<ChangePasswordViewModel>()
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            ChangePasswordScreen(
-                                onNavigateUp = onNavigateUp,
-                                uiEvent = viewModel.uiEvent,
-                                state = state,
-                                onAction = viewModel::onAction
-                            )
+                    entryProvider = entryProvider provider@{
+                        fun registerAuthEntries() = with(this@provider) {
+                            entry<Onboarding> {
+                                val viewModel = koinViewModel<OnboardingViewModel>()
+                                val state = viewModel.state.collectAsStateWithLifecycle()
+                                OnboardingScreen(
+                                    state = state,
+                                    onAction = viewModel::onAction,
+                                    uiEvent = viewModel.uiEvent,
+                                    onNavigate = { dest ->
+                                        if (dest is ServerList) onClear()
+                                        onNavigate(dest)
+                                    }
+                                )
+                            }
+                            entry<Credentials> { key ->
+                                val viewModel: CredentialsViewModel =
+                                    koinViewModel {
+                                        parametersOf(
+                                            key.email,
+                                            key.exists,
+                                            key.provider
+                                        )
+                                    }
+                                val state = viewModel.state.collectAsStateWithLifecycle()
+                                CredentialsScreen(
+                                    state = state,
+                                    uiEvent = viewModel.uiEvent,
+                                    onAction = viewModel::onAction,
+                                    onNavigate = { dest ->
+                                        if (dest is ServerList) onClear()
+                                        if (dest is ConfirmEmail) onNavigateUp()
+                                        onNavigate(dest)
+                                    },
+                                    onNavigateUp = onNavigateUp
+                                )
+                            }
+                            entry<ConfirmEmail> {
+                                val viewModel = koinViewModel<ConfirmEmailViewModel>()
+                                val state = viewModel.state.collectAsStateWithLifecycle()
+                                ConfirmEmailScreen(
+                                    uiEvent = viewModel.uiEvent,
+                                    state = state,
+                                    onAction = viewModel::onAction,
+                                    onNavigate = { dest ->
+                                        onClear()
+                                        onNavigate(dest)
+                                    },
+                                    onNavigateUp = onNavigateUp
+                                )
+                            }
+                            entry<ResetPassword> { key ->
+                                val viewModel: ResetPasswordViewModel =
+                                    koinViewModel { parametersOf(key.email) }
+                                val state = viewModel.state.collectAsStateWithLifecycle()
+                                ResetPasswordScreen(
+                                    onNavigateUp = onNavigateUp,
+                                    uiEvent = viewModel.uiEvent,
+                                    state = state,
+                                    onAction = viewModel::onAction
+                                )
+                            }
+                            entry<ChangePassword> {
+                                val viewModel = koinViewModel<ChangePasswordViewModel>()
+                                val state = viewModel.state.collectAsStateWithLifecycle()
+                                ChangePasswordScreen(
+                                    onNavigateUp = onNavigateUp,
+                                    uiEvent = viewModel.uiEvent,
+                                    state = state,
+                                    onAction = viewModel::onAction
+                                )
+                            }
                         }
 
-                        entry<PrivacyPolicy> {
-                            PrivacyPolicyScreen(
-                                url = Urls.PRIVACY_POLICY_URL,
-                                onNavigateUp = onNavigateUp
-                            )
-                        }
-                        entry<Terms> {
-                            PrivacyPolicyScreen(
-                                url = Urls.TERMS_URL,
-                                title = stringResource(SharedRes.strings.terms_conditions),
-                                onNavigateUp = onNavigateUp
-                            )
-                        }
-                        entry<About> {
-                            AboutScreen(
-                                onNavigateUp = onNavigateUp
-                            )
-                        }
-                        entry<Subscription> { key ->
-                            val viewModel: SubscriptionViewModel = koinViewModel {
-                                parametersOf(key.plan)
+                        fun registerServerEntries() = with(this@provider) {
+                            entry<ServerList>(metadata = ListDetailSceneStrategy.listPane()) {
+                                val viewModel = koinViewModel<ServerViewModel>()
+                                val adViewModel = koinViewModel<NativeAdViewModel>()
+                                val state = viewModel.state.collectAsStateWithLifecycle()
+                                val paging = viewModel.paging.collectAsLazyPagingItems()
+                                val showAds by viewModel.showAds.collectAsStateWithLifecycle()
+                                val adState = adViewModel.state.collectAsStateWithLifecycle()
+                                ServerScreen(
+                                    state = state,
+                                    uiEvent = viewModel.uiEvent,
+                                    onAction = viewModel::onAction,
+                                    pagedList = paging,
+                                    onNavigate = { dest -> onNavigate(dest) },
+                                    showAds = showAds,
+                                    adState = adState,
+                                    onAdAction = adViewModel::onAction
+                                )
                             }
-                            val state = viewModel.state.collectAsStateWithLifecycle()
-                            SubscriptionScreen(
-                                state = state,
-                                onAction = viewModel::onAction,
-                                uiEvent = viewModel.uiEvent,
-                                onNavigateUp = onNavigateUp,
-                                onPrivacyPolicy = { onNavigate(PrivacyPolicy) },
-                                onTerms = { onNavigate(Terms) }
-                            )
+                            entry<ServerDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
+                                val viewModel: ServerDetailsViewModel = koinViewModel(
+                                    key = key.id.toString()
+                                ) { parametersOf(key.id, key.name) }
+                                val state = viewModel.state.collectAsStateWithLifecycle()
+                                val showAds by viewModel.showAds.collectAsStateWithLifecycle()
+                                val adViewModel = koinViewModel<NativeAdViewModel>()
+                                val adState = adViewModel.state.collectAsStateWithLifecycle()
+                                ServerDetailsScreen(
+                                    state = state,
+                                    uiEvent = viewModel.uiEvent,
+                                    onAction = viewModel::onAction,
+                                    onNavigate = { dest -> onNavigate(dest) },
+                                    onNavigateUp = onNavigateUp,
+                                    showAds = showAds,
+                                    adState = adState,
+                                    onAdAction = adViewModel::onAction
+                                )
+                            }
                         }
+
+                        fun registerItemEntries() = with(this@provider) {
+                            entry<ItemList>(metadata = ListDetailSceneStrategy.listPane()) {
+                                val viewModel = koinViewModel<ItemViewModel>()
+                                val adViewModel = koinViewModel<NativeAdViewModel>()
+                                val state = viewModel.state.collectAsStateWithLifecycle()
+                                val paging = viewModel.paging.collectAsLazyPagingItems()
+                                val showAds by viewModel.showAds.collectAsStateWithLifecycle()
+                                val adState = adViewModel.state.collectAsStateWithLifecycle()
+                                ItemScreen(
+                                    state = state,
+                                    uiEvent = viewModel.uiEvent,
+                                    onAction = viewModel::onAction,
+                                    pagedList = paging,
+                                    onNavigate = { dest -> onNavigate(dest) },
+                                    showAds = showAds,
+                                    adState = adState,
+                                    onAdAction = adViewModel::onAction
+                                )
+                            }
+                            entry<ItemDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
+                                val viewModel: ItemDetailsViewModel = koinViewModel(
+                                    key = key.id.toString()
+                                ) { parametersOf(key.id, key.name) }
+                                val state = viewModel.state.collectAsStateWithLifecycle()
+                                ItemDetailsScreen(
+                                    state = state,
+                                    onNavigateUp = onNavigateUp,
+                                    onRefresh = viewModel::refresh,
+                                )
+                            }
+                        }
+
+                        fun registerMonumentEntries() = with(this@provider) {
+                            entry<MonumentList>(metadata = ListDetailSceneStrategy.listPane()) {
+                                val viewModel = koinViewModel<MonumentViewModel>()
+                                val adViewModel = koinViewModel<NativeAdViewModel>()
+                                val state = viewModel.state.collectAsStateWithLifecycle()
+                                val paging = viewModel.paging.collectAsLazyPagingItems()
+                                val showAds by viewModel.showAds.collectAsStateWithLifecycle()
+                                val adState = adViewModel.state.collectAsStateWithLifecycle()
+                                MonumentScreen(
+                                    state = state,
+                                    onAction = viewModel::onAction,
+                                    pagedList = paging,
+                                    uiEvent = viewModel.uiEvent,
+                                    onNavigate = { dest -> onNavigate(dest) },
+                                    showAds = showAds,
+                                    adState = adState,
+                                    onAdAction = adViewModel::onAction
+                                )
+                            }
+                            entry<MonumentDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
+                                val viewModel: MonumentDetailsViewModel = koinViewModel(
+                                    key = key.slug
+                                ) { parametersOf(key.slug) }
+                                val state = viewModel.state.collectAsStateWithLifecycle()
+                                MonumentDetailsScreen(
+                                    state = state,
+                                    onNavigateUp = onNavigateUp,
+                                )
+                            }
+                        }
+
+                        fun registerRaidEntries() = with(this@provider) {
+                            entry<RaidScheduler>(metadata = ListDetailSceneStrategy.listPane()) {
+                                val viewModel = koinViewModel<RaidSchedulerViewModel>()
+                                val state = viewModel.state.collectAsStateWithLifecycle()
+                                RaidSchedulerScreen(
+                                    onNavigate = { dest -> onNavigate(dest) },
+                                    state = state,
+                                    onAction = viewModel::onAction,
+                                    uiEvent = viewModel.uiEvent
+                                )
+                            }
+                            entry<RaidForm>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
+                                val viewModel: RaidFormViewModel = koinViewModel(
+                                    key = key.raid?.id ?: "new"
+                                ) { parametersOf(key.raid) }
+                                val state = viewModel.state.collectAsStateWithLifecycle()
+                                RaidFormScreen(
+                                    onNavigateUp = onNavigateUp,
+                                    state = state,
+                                    onAction = viewModel::onAction,
+                                    uiEvent = viewModel.uiEvent
+                                )
+                            }
+                        }
+
+                        fun registerSettingsEntries() = with(this@provider) {
+                            entry<Settings> {
+                                val viewModel = koinViewModel<SettingsViewModel>()
+                                val state = viewModel.state.collectAsStateWithLifecycle()
+                                SettingsScreen(
+                                    state = state,
+                                    uiEvent = viewModel.uiEvent,
+                                    onAction = viewModel::onAction,
+                                    onNavigate = { dest -> onNavigate(dest) }
+                                )
+                            }
+                            entry<DeleteAccount> {
+                                val viewModel = koinViewModel<DeleteAccountViewModel>()
+                                val state = viewModel.state.collectAsStateWithLifecycle()
+                                DeleteAccountScreen(
+                                    onNavigateUp = onNavigateUp,
+                                    state = state,
+                                    onAction = viewModel::onAction
+                                )
+                            }
+                            entry<UpgradeAccount> {
+                                val viewModel = koinViewModel<UpgradeViewModel>()
+                                val state = viewModel.state.collectAsStateWithLifecycle()
+                                UpgradeAccountScreen(
+                                    onNavigateUp = onNavigateUp,
+                                    uiEvent = viewModel.uiEvent,
+                                    state = state,
+                                    onAction = viewModel::onAction
+                                )
+                            }
+                        }
+
+                        fun registerLegalEntries() = with(this@provider) {
+                            entry<PrivacyPolicy> {
+                                PrivacyPolicyScreen(
+                                    url = Urls.PRIVACY_POLICY_URL,
+                                    onNavigateUp = onNavigateUp
+                                )
+                            }
+                            entry<Terms> {
+                                PrivacyPolicyScreen(
+                                    url = Urls.TERMS_URL,
+                                    title = stringResource(SharedRes.strings.terms_conditions),
+                                    onNavigateUp = onNavigateUp
+                                )
+                            }
+                            entry<About> {
+                                AboutScreen(
+                                    onNavigateUp = onNavigateUp
+                                )
+                            }
+                        }
+
+                        fun registerSubscriptionEntry() = with(this@provider) {
+                            entry<Subscription> { key ->
+                                val viewModel: SubscriptionViewModel = koinViewModel {
+                                    parametersOf(key.plan)
+                                }
+                                val state = viewModel.state.collectAsStateWithLifecycle()
+                                SubscriptionScreen(
+                                    state = state,
+                                    onAction = viewModel::onAction,
+                                    uiEvent = viewModel.uiEvent,
+                                    onNavigateUp = onNavigateUp,
+                                    onPrivacyPolicy = { onNavigate(PrivacyPolicy) },
+                                    onTerms = { onNavigate(Terms) }
+                                )
+                            }
+                        }
+
+                        registerAuthEntries()
+                        registerServerEntries()
+                        registerItemEntries()
+                        registerMonumentEntries()
+                        registerRaidEntries()
+                        registerSettingsEntries()
+                        registerLegalEntries()
+                        registerSubscriptionEntry()
                     },
                 )
 
@@ -515,52 +550,62 @@ private fun AppScaffold(
                     .consumeWindowInsets(contentPadding),
                 sceneStrategy = listDetailStrategy,
                 transitionSpec = {
-                    fadeIn(
-                        animationSpec = spring(
-                            stiffness = Spring.StiffnessLow,
-                            dampingRatio = Spring.DampingRatioLowBouncy
-                        )
-                    ) togetherWith
-                            fadeOut(
-                                animationSpec = spring(
-                                    stiffness = Spring.StiffnessLow,
-                                    dampingRatio = Spring.DampingRatioLowBouncy
-                                )
-                            )
+                    fadeIn(animationSpec = tween(250)) togetherWith
+                            fadeOut(animationSpec = tween(200))
                 },
                 popTransitionSpec = {
-                    fadeIn(
-                        animationSpec = spring(
-                            stiffness = Spring.StiffnessLow,
-                            dampingRatio = Spring.DampingRatioLowBouncy
-                        )
-                    ) togetherWith
-                            fadeOut(
-                                animationSpec = spring(
-                                    stiffness = Spring.StiffnessLow,
-                                    dampingRatio = Spring.DampingRatioLowBouncy
-                                )
-                            )
+                    fadeIn(animationSpec = tween(250)) togetherWith
+                            fadeOut(animationSpec = tween(200))
                 },
-                onBack = { onBack(1) },
+                onBack = onBack,
             )
         }
     )
 }
 
 @Composable
-private fun BottomBarItems(current: NavKey?, onNavigate: (BottomNavKey) -> Unit) {
+private fun BottomBarItems(
+    current: BottomNavKey,
+    onNavigate: (BottomNavKey) -> Unit
+) {
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val lastClick = remember { mutableLongStateOf(0L) }
+
+    fun safeNavigate(item: BottomNavKey) {
+        val now = SystemClock.elapsedRealtime()
+
+        // 1) Throttle: ignore if tapped again within 760 ms
+        if (now - lastClick.longValue < 760L) return
+        lastClick.longValue = now
+
+        // 2) Lifecycle gate: ignore if not resumed (e.g. transition still running)
+        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return
+
+        onNavigate(item)
+    }
+
     bottomNavItems.forEach { item ->
         NavigationSuiteItem(
-            selected = item.isInHierarchy(current),
-            onClick = { onNavigate(item) },
+            selected = current == item,
+            onClick = { safeNavigate(item) },
             icon = {
                 Icon(
-                    item.icon,
+                    imageVector = item.icon,
                     contentDescription = stringResource(item.label)
                 )
             },
             label = { Text(stringResource(item.label)) }
         )
     }
+}
+
+private fun NavKey?.toBottomNavKey(): BottomNavKey? = when (this) {
+    ServerList, is ServerDetails -> BottomNavKey.Servers
+    ItemList, is ItemDetails -> BottomNavKey.Items
+    MonumentList, is MonumentDetails -> BottomNavKey.Monuments
+    RaidScheduler, is RaidForm -> BottomNavKey.Raids
+    Settings, ChangePassword, DeleteAccount, UpgradeAccount, PrivacyPolicy, Terms, About, is Subscription ->
+        BottomNavKey.Settings
+
+    else -> null
 }
