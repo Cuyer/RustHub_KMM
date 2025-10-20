@@ -5,6 +5,7 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.Flow
@@ -113,6 +114,10 @@ class ServerViewModel(
             initialValue = true
         )
 
+    private var filtersJob: Job? = null
+    private var searchQueriesJob: Job? = null
+    private var connectivityJob: Job? = null
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val paging: Flow<PagingData<ServerInfoUi>> =
         combine(queryFlow, filterChangeFlow) { query, filters -> query to filters }
@@ -135,7 +140,9 @@ class ServerViewModel(
             }
 
     private fun observeSearchQueries() {
-        getSearchQueriesUseCase()
+        searchQueriesJob?.cancel()
+
+        searchQueriesJob = getSearchQueriesUseCase()
             .distinctUntilChanged()
             .map { searchQuery ->
                 searchQuery.map { it.toUi() }
@@ -162,7 +169,9 @@ class ServerViewModel(
 
 
     private fun observeFilters() {
-        combine(
+        filtersJob?.cancel()
+
+        filtersJob = combine(
             getFiltersOptions.invoke(),
             getFiltersUseCase.invoke()
         ) { filtersOptions, filters ->
@@ -201,6 +210,7 @@ class ServerViewModel(
     }
 
     private fun refreshOptions() {
+        filtersJob?.cancel()
         observeFilters()
     }
 
@@ -427,7 +437,9 @@ class ServerViewModel(
     }
 
     private fun observeConnectivity() {
-        connectivityObserver.isConnected
+        connectivityJob?.cancel()
+
+        connectivityJob = connectivityObserver.isConnected
             .onEach { connected ->
                 _state.update { it.copy(isConnected = connected) }
             }

@@ -418,6 +418,12 @@ fun ServerScreen(
                                 Spacer(modifier = Modifier.height(spacing.medium))
                             }
                         }
+                        val labels = remember(item, stringProvider) {
+                            item.createLabels(stringProvider)
+                        }
+                        val details = remember(item, stringProvider) {
+                            item.createDetails(stringProvider)
+                        }
                         val interactionSource = remember { MutableInteractionSource() }
                         ServerListItem(
                             modifier = Modifier
@@ -440,8 +446,8 @@ fun ServerScreen(
                                 ),
                             serverName = item.name.orEmpty(),
                             flag = item.serverFlag,
-                            labels = { item.createLabels(stringProvider) },
-                            details = { item.createDetails(stringProvider) },
+                            labels = { labels },
+                            details = { details },
                             isOnline = item.serverStatus == ServerStatus.ONLINE
                         )
                     }

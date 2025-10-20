@@ -1,5 +1,6 @@
 package pl.cuyer.rusthub.presentation.features.item
 
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -7,8 +8,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.update
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.common.Result
 import pl.cuyer.rusthub.domain.usecase.GetItemDetailsUseCase
@@ -22,6 +23,7 @@ class ItemDetailsViewModel(
 
     private val initialState = ItemDetailsState(id = id, name = name)
     private val _state = MutableStateFlow(initialState)
+    private var detailsJob: Job? = null
     val state = _state
         .onStart { id?.let { observeItem(it) } }
         .stateIn(
@@ -31,7 +33,8 @@ class ItemDetailsViewModel(
         )
 
     private fun observeItem(id: Long) {
-        getItemDetailsUseCase(id, getCurrentAppLanguage())
+        detailsJob?.cancel()
+        detailsJob = getItemDetailsUseCase(id, getCurrentAppLanguage())
             .onStart { updateLoading(true) }
             .catch { e ->
                 if (e is CancellationException) throw e
@@ -54,8 +57,7 @@ class ItemDetailsViewModel(
     }
 
     fun refresh() {
-        val currentId = _state.value.id ?: id
-        currentId?.let { observeItem(it) }
+        (_state.value.id ?: id)?.let { observeItem(it) }
     }
 
     private fun updateLoading(loading: Boolean) {
