@@ -569,18 +569,8 @@ private fun BottomBarItems(
     onNavigate: (BottomNavKey) -> Unit
 ) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val lastClick = remember { mutableLongStateOf(0L) }
-
     fun safeNavigate(item: BottomNavKey) {
-        val now = SystemClock.elapsedRealtime()
-
-        // 1) Throttle: ignore if tapped again within 760 ms
-        if (now - lastClick.longValue < 760L) return
-        lastClick.longValue = now
-
-        // 2) Lifecycle gate: ignore if not resumed (e.g. transition still running)
         if (!lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return
-
         onNavigate(item)
     }
 
