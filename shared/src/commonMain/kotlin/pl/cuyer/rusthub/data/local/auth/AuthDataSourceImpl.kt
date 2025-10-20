@@ -87,7 +87,7 @@ class AuthDataSourceImpl(
         return queries.getUser()
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
-            .map { it?.toUser() }
+            .map { withContext(Dispatchers.Default) { it?.toUser() } }
             .catch { e ->
                 CrashReporter.recordException(e)
                 throw e

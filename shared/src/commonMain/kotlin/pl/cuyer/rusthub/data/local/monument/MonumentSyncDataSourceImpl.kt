@@ -24,7 +24,7 @@ class MonumentSyncDataSourceImpl(db: RustHubDatabase) : MonumentSyncDataSource, 
         return queries.getMonumentSync(Constants.DEFAULT_KEY)
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
-            .map { it?.sync_state?.let { value -> MonumentSyncState.valueOf(value) } }
+            .map { withContext(Dispatchers.Default) { it?.sync_state?.let { value -> MonumentSyncState.valueOf(value) }  } }
             .catch { e ->
                 CrashReporter.recordException(e)
                 throw e

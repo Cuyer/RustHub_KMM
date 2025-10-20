@@ -103,8 +103,7 @@ class MonumentDataSourceImpl(
         return queries.getMonumentBySlug(slug = slug, language = language.toEntity())
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
-            .map { it?.toMonument(json) }
-            .flowOn(Dispatchers.Default)
+            .map { withContext(Dispatchers.Default) { it?.toMonument(json) } }
             .catch { e ->
                 CrashReporter.recordException(e)
                 throw e

@@ -34,7 +34,7 @@ class FiltersDataSourceImpl(
                     .getFilters(DEFAULT_KEY)
                     .asFlow()
                     .mapToOneOrNull(Dispatchers.IO)
-                    .map { it?.toServerQuery() }
+                    .map { withContext(Dispatchers.Default) { it?.toServerQuery() } }
                     .catch { e ->
                         CrashReporter.recordException(e)
                         throw e

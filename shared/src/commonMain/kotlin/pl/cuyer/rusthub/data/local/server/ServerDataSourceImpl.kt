@@ -105,7 +105,7 @@ class ServerDataSourceImpl(
         return queries.getServerById(serverId)
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
-            .map { it?.toServerInfo() }
+            .map { withContext(Dispatchers.Default) { it?.toServerInfo() } }
             .catch { e ->
                 CrashReporter.recordException(e)
                 throw e
