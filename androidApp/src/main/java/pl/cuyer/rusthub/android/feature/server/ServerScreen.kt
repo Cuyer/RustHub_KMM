@@ -142,6 +142,7 @@ fun ServerScreen(
                     scrollBehavior.scrollOffset = 1f
                 }
             }
+
             UiEvent.NavigateUp -> Unit
         }
     }
@@ -376,12 +377,12 @@ fun ServerScreen(
                         if (pagedList.itemCount >= 5) 4 else pagedList.itemCount - 1
                     } else -1
                 }
-                val serverItemKey = remember(showAds, adIndex) {
-                    { index: Int, item: ServerInfoUi ->
+                val serverItemKey: (Int, ServerInfoUi) -> Any = remember(showAds, adIndex) {
+                    { index, item ->
                         when {
                             showAds && index == adIndex -> "ad-$adIndex"
-                            item.id != null -> item.id
-                            !item.serverIp.isNullOrEmpty() -> item.serverIp
+                            item.id != null -> "id-${item.id}"
+                            !item.serverIp.isNullOrEmpty() -> "ip-${item.serverIp}"
                             else -> "server-index-$index"
                         }
                     }
