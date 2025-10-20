@@ -550,12 +550,32 @@ private fun AppScaffold(
                     .consumeWindowInsets(contentPadding),
                 sceneStrategy = listDetailStrategy,
                 transitionSpec = {
-                    fadeIn(animationSpec = tween(250)) togetherWith
-                            fadeOut(animationSpec = tween(200))
+                    fadeIn(
+                        animationSpec = spring(
+                            stiffness = Spring.StiffnessLow,
+                            dampingRatio = Spring.DampingRatioLowBouncy
+                        )
+                    ) togetherWith
+                            fadeOut(
+                                animationSpec = spring(
+                                    stiffness = Spring.StiffnessLow,
+                                    dampingRatio = Spring.DampingRatioLowBouncy
+                                )
+                            )
                 },
                 popTransitionSpec = {
-                    fadeIn(animationSpec = tween(250)) togetherWith
-                            fadeOut(animationSpec = tween(200))
+                    fadeIn(
+                        animationSpec = spring(
+                            stiffness = Spring.StiffnessLow,
+                            dampingRatio = Spring.DampingRatioLowBouncy
+                        )
+                    ) togetherWith
+                            fadeOut(
+                                animationSpec = spring(
+                                    stiffness = Spring.StiffnessLow,
+                                    dampingRatio = Spring.DampingRatioLowBouncy
+                                )
+                            )
                 },
                 onBack = onBack,
             )
