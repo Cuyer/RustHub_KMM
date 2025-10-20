@@ -123,23 +123,26 @@ fun ServerScreen(
     var showSheet by rememberSaveable { mutableStateOf(false) }
     val textFieldState = rememberTextFieldState()
     val scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
+    val coroutineScope = rememberCoroutineScope()
+    val lazyListState = rememberLazyListState()
+    val pullToRefreshState = rememberPullToRefreshState()
+    val isAtTop by remember {
+        derivedStateOf {
+            lazyListState.firstVisibleItemIndex == 0 && lazyListState.firstVisibleItemScrollOffset == 0
+        }
+    }
 
     ObserveAsEvents(uiEvent) { event ->
         when (event) {
             is UiEvent.Navigate -> onNavigate(event.destination)
-            else -> Unit
-        }
-    }
-
-    val coroutineScope = rememberCoroutineScope()
-    val lazyListState = rememberLazyListState()
-
-    val pullToRefreshState = rememberPullToRefreshState()
-
-
-    val isAtTop by remember {
-        derivedStateOf {
-            lazyListState.firstVisibleItemIndex == 0 && lazyListState.firstVisibleItemScrollOffset == 0
+            is UiEvent.OnScrollToIndex -> {
+                coroutineScope.launch {
+                    val targetIndex = event.index.coerceAtLeast(0)
+                    lazyListState.animateScrollToItem(targetIndex)
+                    scrollBehavior.scrollOffset = 1f
+                }
+            }
+            UiEvent.NavigateUp -> Unit
         }
     }
 
