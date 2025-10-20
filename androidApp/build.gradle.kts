@@ -23,7 +23,7 @@ android {
         applicationId = "pl.cuyer.rusthub.android"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 106
+        versionCode = 108
         versionName = project.property("VERSION_NAME") as String
         buildConfigField("String", "SERVER_DETAILS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/9767963470\"")
         buildConfigField("String", "SERVERS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/4096035325\"")
@@ -155,6 +155,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.play.services.ads)
     implementation(libs.play.services.oss.licenses)
+    implementation(libs.sqlcipher.android)
     coreLibraryDesugaring(libs.desugar.jdk.libs.v215)
     debugImplementation(libs.compose.ui.tooling)
 }
