@@ -2,6 +2,18 @@ package pl.cuyer.rusthub.util
 
 import java.util.Locale
 
+private val countryDisplayNameToCode: Map<String, String> by lazy {
+    val locale = Locale.getDefault()
+    Locale.getISOCountries().associateBy { code ->
+        val displayName = Locale.Builder()
+            .setRegion(code)
+            .build()
+            .getDisplayCountry(locale)
+            .lowercase(locale)
+        displayName
+    }
+}
+
 actual fun getCountryDisplayName(countryCode: String): String {
     return try {
         Locale.Builder()
@@ -14,14 +26,8 @@ actual fun getCountryDisplayName(countryCode: String): String {
 }
 
 actual fun getCountryCode(displayName: String): String? {
-    val locales = Locale.getISOCountries()
-    val target = displayName.trim().lowercase(Locale.getDefault())
+    val locale = Locale.getDefault()
+    val target = displayName.trim().lowercase(locale)
 
-    return locales.firstOrNull { code ->
-        val name = Locale.Builder().setRegion(code).build()
-            .getDisplayCountry(Locale.getDefault())
-            .lowercase(Locale.getDefault())
-
-        name == target
-    }
+    return countryDisplayNameToCode[target]
 }

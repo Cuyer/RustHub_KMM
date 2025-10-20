@@ -13,6 +13,7 @@ import pl.cuyer.rusthub.util.catchAndLog
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -100,6 +101,11 @@ class ItemViewModel(
         }.flatMapLatest { (query, category) ->
             getPagedItemsUseCase(query, category, getCurrentAppLanguage())
         }
+            .onCompletion { cause ->
+                if (cause == null) {
+                    _uiEvent.send(UiEvent.OnScrollToIndex(0))
+                }
+            }
             .cachedIn(coroutineScope)
             .catchAndLog { }
 

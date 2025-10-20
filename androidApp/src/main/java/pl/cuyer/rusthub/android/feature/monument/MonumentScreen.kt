@@ -109,7 +109,17 @@ fun MonumentScreen(
     }
 
     ObserveAsEvents(uiEvent) { event ->
-        if (event is UiEvent.Navigate) onNavigate(event.destination)
+        when (event) {
+            is UiEvent.Navigate -> onNavigate(event.destination)
+            is UiEvent.OnScrollToIndex -> {
+                coroutineScope.launch {
+                    val targetIndex = event.index.coerceAtLeast(0)
+                    lazyListState.animateScrollToItem(targetIndex)
+                    scrollBehavior.scrollOffset = 1f
+                }
+            }
+            UiEvent.NavigateUp -> Unit
+        }
     }
 
     LaunchedEffect(showAds) {

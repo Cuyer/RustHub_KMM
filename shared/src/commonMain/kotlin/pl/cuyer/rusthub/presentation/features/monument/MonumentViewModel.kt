@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.domain.model.Monument
@@ -102,6 +103,11 @@ class MonumentViewModel(
         }
             .flatMapLatest { (query, type) ->
                 getPagedMonumentsUseCase(query, type, getCurrentAppLanguage())
+            }
+            .onCompletion { cause ->
+                if (cause == null) {
+                    _uiEvent.send(UiEvent.OnScrollToIndex(0))
+                }
             }
             .cachedIn(coroutineScope)
             .catchAndLog { }

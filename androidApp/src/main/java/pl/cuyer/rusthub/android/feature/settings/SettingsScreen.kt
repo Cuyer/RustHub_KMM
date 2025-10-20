@@ -106,8 +106,8 @@ fun SettingsScreen(
             onAction(SettingsAction.OnResume)
         }
     }
-    val context = LocalContext.current
-    val windowSizeClass = calculateWindowSizeClass(context as Activity)
+    val activity = LocalActivity.current as Activity
+    val windowSizeClass = calculateWindowSizeClass(activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
 
     val themeSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)

@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.android.feature.auth
 
 import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateBounds
@@ -84,8 +85,8 @@ fun ConfirmEmailScreen(
     onNavigateUp: () -> Unit = {},
     onNavigate: (NavKey) -> Unit,
 ) {
-    val context = LocalContext.current
-    val windowSizeClass = calculateWindowSizeClass(context as Activity)
+    val activity = LocalActivity.current as Activity
+    val windowSizeClass = calculateWindowSizeClass(activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
     val interactionSource = remember { MutableInteractionSource() }
     val focusManager = LocalFocusManager.current
