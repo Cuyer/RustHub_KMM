@@ -47,7 +47,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -367,7 +366,7 @@ private fun MonumentTypeChips(
         }
         items(MonumentType.entries.size) { index ->
             val type = MonumentType.entries[index]
-            val text by rememberUpdatedState(type.displayName(sp))
+            val text = remember(type, sp) { type.displayName(sp) }
             FilterChip(
                 selected = selected == type,
                 onClick = { onSelectedChange(type) },
