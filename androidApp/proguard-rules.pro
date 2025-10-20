@@ -32,3 +32,6 @@
 -keep class pl.cuyer.rusthub.SharedRes$images { *; }
 
 -dontwarn okhttp3.internal.Util
+
+# Keep Compose indirect input nodes – Room checks for them via reflection at runtime
+-keep class androidx.compose.ui.input.indirect.** { *; }
