@@ -614,7 +614,7 @@ private fun NavKey?.toBottomNavKey(): BottomNavKey? = when (this) {
     ItemList, is ItemDetails -> BottomNavKey.Items
     MonumentList, is MonumentDetails -> BottomNavKey.Monuments
     RaidScheduler, is RaidForm -> BottomNavKey.Raids
-    Settings, ChangePassword, DeleteAccount, UpgradeAccount, PrivacyPolicy, Terms, About, is Subscription ->
+    Settings, ChangePassword, DeleteAccount, UpgradeAccount, About, is Subscription ->
         BottomNavKey.Settings
 
     else -> null
