@@ -104,7 +104,6 @@ import pl.cuyer.rusthub.presentation.model.createLabels
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.UiEvent
 import pl.cuyer.rusthub.util.StringProvider
-import java.util.UUID
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class,
@@ -374,6 +373,16 @@ fun ServerScreen(
                         if (pagedList.itemCount >= 5) 4 else pagedList.itemCount - 1
                     } else -1
                 }
+                val serverItemKey = remember(showAds, adIndex) {
+                    { index: Int, item: ServerInfoUi ->
+                        when {
+                            showAds && index == adIndex -> "ad-$adIndex"
+                            item.id != null -> item.id
+                            !item.serverIp.isNullOrEmpty() -> item.serverIp
+                            else -> "server-index-$index"
+                        }
+                    }
+                }
                 LazyColumn(
                     state = lazyListState,
                     contentPadding = PaddingValues(
@@ -387,9 +396,7 @@ fun ServerScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     onPagingItemsIndexed(
-                        key = { index, item ->
-                            if (showAds && index == adIndex) "ad" else item.id ?: UUID.randomUUID()
-                        },
+                        key = serverItemKey,
                         contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "server" }
                     ) { index, item ->
                         if (showAds && index == adIndex) {
