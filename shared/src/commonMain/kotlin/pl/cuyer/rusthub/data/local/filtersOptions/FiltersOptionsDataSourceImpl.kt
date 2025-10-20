@@ -37,7 +37,11 @@ class FiltersOptionsDataSourceImpl(
             .getFiltersOptions(DEFAULT_KEY)
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
-            .map { it.toDomain() }
+            .map { entity ->
+                withContext(Dispatchers.Default) {
+                    entity.toDomain()
+                }
+            }
             .catch { e ->
                 CrashReporter.recordException(e)
                 throw e
