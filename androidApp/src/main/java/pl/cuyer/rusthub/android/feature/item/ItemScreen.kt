@@ -54,7 +54,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -431,7 +430,7 @@ private fun ItemCategoryChips(
             )
         }
         items(ItemCategory.entries) { category ->
-            val text by rememberUpdatedState(category.displayName(sp))
+            val text = remember(category, sp) { category.displayName(sp) }
             FilterChip(
                 selected = selected == category,
                 onClick = { onSelectedChange(category) },
