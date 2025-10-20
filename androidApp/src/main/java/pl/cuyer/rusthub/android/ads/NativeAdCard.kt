@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
@@ -50,6 +51,11 @@ private fun NativeAdLayout(
     mediaHeight: Dp
 ) {
     adProvider()?.let { ad ->
+        val iconBitmap = remember(ad.icon) {
+            ad.icon?.drawable?.let { drawable ->
+                drawable.toBitmap().asImageBitmap()
+            }
+        }
         ElevatedCard(modifier = modifier.fillMaxWidth()) {
             NativeAdView(modifier = Modifier.fillMaxWidth()) {
                 Column(
@@ -59,10 +65,10 @@ private fun NativeAdLayout(
                 ) {
                     NativeAdAttribution(text = stringResource(SharedRes.strings.ad_label))
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        ad.icon?.drawable?.let { drawable ->
+                        iconBitmap?.let { bitmap ->
                             NativeAdIconView {
                                 Image(
-                                    bitmap = drawable.toBitmap().asImageBitmap(),
+                                    bitmap = bitmap,
                                     contentDescription = ad.headline,
                                     modifier = Modifier
                                         .padding(end = 8.dp)
