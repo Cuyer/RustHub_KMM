@@ -99,8 +99,9 @@ fun RustSearchBarTopAppBar(
     placeholderRes: StringResource = SharedRes.strings.search_servers,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val windowSizeClass = calculateWindowSizeClass(LocalActivity.current as Activity)
-    val isTabletMode = remember(windowSizeClass.widthSizeClass) { windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium }
+    val activity = LocalActivity.current as Activity
+    val windowSizeClass = remember(activity) { calculateWindowSizeClass(activity) }
+    val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
     val searchBarState = rememberSearchBarState()
 
     LaunchedEffect(textFieldState.text) {
