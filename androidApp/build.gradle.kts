@@ -155,6 +155,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.play.services.ads)
     implementation(libs.play.services.oss.licenses)
+    implementation(libs.sqlcipher.android)
     coreLibraryDesugaring(libs.desugar.jdk.libs.v215)
     debugImplementation(libs.compose.ui.tooling)
 }
