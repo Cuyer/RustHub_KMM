@@ -183,8 +183,8 @@ fun SubscriptionScreen(
         state.value.currentPlan?.let { selectedPlan = it }
     }
     val pagerState = rememberPagerState(pageCount = { benefits.size })
-    val context = LocalContext.current
-    val windowSizeClass = calculateWindowSizeClass(context as Activity)
+    val activity = LocalActivity.current as Activity
+    val windowSizeClass = calculateWindowSizeClass(activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
 
     Scaffold(

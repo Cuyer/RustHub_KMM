@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.android.feature.settings
 
 import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateBounds
 import androidx.compose.foundation.clickable
@@ -79,8 +80,8 @@ fun DeleteAccountScreen(
     state: State<DeleteAccountState>,
     onAction: (DeleteAccountAction) -> Unit
 ) {
-    val context = LocalContext.current
-    val windowSizeClass = calculateWindowSizeClass(context as Activity)
+    val activity = LocalActivity.current as Activity
+    val windowSizeClass = calculateWindowSizeClass(activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
     val interactionSource = remember { MutableInteractionSource() }
     val focusManager = LocalFocusManager.current

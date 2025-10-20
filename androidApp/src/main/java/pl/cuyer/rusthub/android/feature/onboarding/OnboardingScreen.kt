@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.android.feature.onboarding
 
 import android.app.Activity
 import android.util.Log
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateBounds
@@ -134,8 +135,8 @@ fun OnboardingScreen(
         if (event is UiEvent.Navigate) onNavigate(event.destination)
     }
 
-    val context = LocalContext.current
-    val windowSizeClass = calculateWindowSizeClass(context as Activity)
+    val activity = LocalActivity.current as Activity
+    val windowSizeClass = calculateWindowSizeClass(activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
 
     Box(

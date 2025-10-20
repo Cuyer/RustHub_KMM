@@ -18,6 +18,7 @@ import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
 import pl.cuyer.rusthub.util.CrashReporter
 import database.FiltersEntity
+import kotlinx.coroutines.IO
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -44,7 +45,7 @@ class FiltersDataSourceImpl(
 
     private suspend fun ensureDefaultFilters() {
         withContext(Dispatchers.IO) {
-            val exists = safeQuery<FiltersEntity?>(null) {
+            val exists = safeQuery(null) {
                 queries.getFilters(DEFAULT_KEY).executeAsOneOrNull()
             }
             if (exists == null) {

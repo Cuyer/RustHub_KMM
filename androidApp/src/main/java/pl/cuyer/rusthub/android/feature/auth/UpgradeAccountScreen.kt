@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.android.feature.auth
 
 import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateBounds
 import androidx.compose.foundation.clickable
@@ -84,10 +85,10 @@ fun UpgradeAccountScreen(
     onAction: (UpgradeAction) -> Unit,
     onNavigateUp: () -> Unit = {},
 ) {
-    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
-    val windowSizeClass = calculateWindowSizeClass(context as Activity)
+    val activity = LocalActivity.current as Activity
+    val windowSizeClass = calculateWindowSizeClass(activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
     val currentState = state.value
 

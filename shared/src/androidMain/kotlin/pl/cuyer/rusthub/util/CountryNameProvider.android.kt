@@ -4,13 +4,13 @@ import java.util.Locale
 
 private val countryDisplayNameToCode: Map<String, String> by lazy {
     val locale = Locale.getDefault()
-    Locale.getISOCountries().associate { code ->
+    Locale.getISOCountries().associateBy { code ->
         val displayName = Locale.Builder()
             .setRegion(code)
             .build()
             .getDisplayCountry(locale)
             .lowercase(locale)
-        displayName to code
+        displayName
     }
 }
 

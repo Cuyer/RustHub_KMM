@@ -100,7 +100,7 @@ fun RustSearchBarTopAppBar(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val activity = LocalActivity.current as Activity
-    val windowSizeClass = remember(activity) { calculateWindowSizeClass(activity) }
+    val windowSizeClass = calculateWindowSizeClass(activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
     val searchBarState = rememberSearchBarState()
 
