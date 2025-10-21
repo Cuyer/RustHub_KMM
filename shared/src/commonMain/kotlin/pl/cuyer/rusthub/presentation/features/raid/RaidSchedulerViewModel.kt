@@ -71,6 +71,8 @@ class RaidSchedulerViewModel(
     private var loadJob: Job? = null
     private var deleteJob: Job? = null
     private var searchJob: Job? = null
+    private var raidsJob: Job? = null
+    private var connectivityJob: Job? = null
 
     init {
         observeConnectivity()
@@ -195,7 +197,9 @@ class RaidSchedulerViewModel(
     }
 
     private fun observeRaids() {
-        observeRaidsUseCase()
+        raidsJob?.cancel()
+
+        raidsJob = observeRaidsUseCase()
             .onEach { raids ->
                 _state.update { it.copy(raids = raids) }
                 val ids = raids.flatMap { it.steamIds }.distinct()
@@ -276,7 +280,9 @@ class RaidSchedulerViewModel(
     }
 
     private fun observeConnectivity() {
-        connectivityObserver.isConnected
+        connectivityJob?.cancel()
+
+        connectivityJob = connectivityObserver.isConnected
             .onEach { connected ->
                 val wasDisconnected = state.value.isConnected.not() && connected
                 _state.update { it.copy(isConnected = connected) }

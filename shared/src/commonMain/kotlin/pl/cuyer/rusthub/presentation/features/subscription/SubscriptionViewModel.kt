@@ -77,6 +77,9 @@ class SubscriptionViewModel(
 
     private var subscriptionJob: Job? = null
     private var productsJob: Job? = null
+    private var purchasesJob: Job? = null
+    private var errorsJob: Job? = null
+    private var connectivityJob: Job? = null
 
     init {
         loadProducts()
@@ -137,11 +140,12 @@ class SubscriptionViewModel(
                 )
             }
             .launchIn(coroutineScope)
-            .also { productsJob = it }
     }
 
     private fun observePurchases() {
-        billingRepository
+        purchasesJob?.cancel()
+
+        purchasesJob = billingRepository
             .purchaseFlow
             .distinctUntilChanged()
             .onEach { purchase ->
@@ -151,7 +155,9 @@ class SubscriptionViewModel(
     }
 
     private fun observeErrors() {
-        billingRepository
+        errorsJob?.cancel()
+
+        errorsJob = billingRepository
             .errorFlow
             .distinctUntilChanged()
             .onEach { code ->
@@ -161,7 +167,9 @@ class SubscriptionViewModel(
     }
 
     private fun observeConnectivity() {
-        connectivityObserver.isConnected
+        connectivityJob?.cancel()
+
+        connectivityJob = connectivityObserver.isConnected
             .onEach { connected ->
                 val wasDisconnected = state.value.isConnected.not() && connected
                 _state.update { it.copy(isConnected = connected) }

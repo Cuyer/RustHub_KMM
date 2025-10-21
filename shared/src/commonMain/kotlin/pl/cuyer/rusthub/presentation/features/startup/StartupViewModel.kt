@@ -2,6 +2,7 @@ package pl.cuyer.rusthub.presentation.features.startup
 
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import pl.cuyer.rusthub.util.catchAndLog
@@ -71,9 +72,13 @@ class StartupViewModel(
         initialValue = _state.value
     )
 
+    private var preferencesJob: Job? = null
+    private var startupJob: Job? = null
+
     init {
         observePreferences()
-        coroutineScope.launch {
+        startupJob?.cancel()
+        startupJob = coroutineScope.launch {
             if (monumentDataSource.isEmpty(getCurrentAppLanguage())) {
                 monumentSyncDataSource.setState(MonumentSyncState.PENDING)
                 monumentsScheduler.startNow()
@@ -88,7 +93,9 @@ class StartupViewModel(
     }
 
     private fun observePreferences() {
-        preferencesFlow
+        preferencesJob?.cancel()
+
+        preferencesJob = preferencesFlow
             .onEach { prefs ->
                 val theme = if (prefs.useSystemColors) Theme.SYSTEM else prefs.themeConfig
                 updateTheme(theme, prefs.useDynamicColor)
