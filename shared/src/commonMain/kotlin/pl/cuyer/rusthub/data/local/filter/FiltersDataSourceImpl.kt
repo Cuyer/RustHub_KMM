@@ -19,6 +19,7 @@ import pl.cuyer.rusthub.domain.repository.filters.FiltersDataSource
 import pl.cuyer.rusthub.util.CrashReporter
 import database.FiltersEntity
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.flowOn
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -35,6 +36,7 @@ class FiltersDataSourceImpl(
                     .asFlow()
                     .mapToOneOrNull(Dispatchers.IO)
                     .map { it?.toServerQuery() }
+                    .flowOn(Dispatchers.Default)
                     .catch { e ->
                         CrashReporter.recordException(e)
                         throw e

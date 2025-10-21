@@ -550,12 +550,32 @@ private fun AppScaffold(
                     .consumeWindowInsets(contentPadding),
                 sceneStrategy = listDetailStrategy,
                 transitionSpec = {
-                    fadeIn(animationSpec = tween(250)) togetherWith
-                            fadeOut(animationSpec = tween(200))
+                    fadeIn(
+                        animationSpec = spring(
+                            stiffness = Spring.StiffnessLow,
+                            dampingRatio = Spring.DampingRatioLowBouncy
+                        )
+                    ) togetherWith
+                            fadeOut(
+                                animationSpec = spring(
+                                    stiffness = Spring.StiffnessLow,
+                                    dampingRatio = Spring.DampingRatioLowBouncy
+                                )
+                            )
                 },
                 popTransitionSpec = {
-                    fadeIn(animationSpec = tween(250)) togetherWith
-                            fadeOut(animationSpec = tween(200))
+                    fadeIn(
+                        animationSpec = spring(
+                            stiffness = Spring.StiffnessLow,
+                            dampingRatio = Spring.DampingRatioLowBouncy
+                        )
+                    ) togetherWith
+                            fadeOut(
+                                animationSpec = spring(
+                                    stiffness = Spring.StiffnessLow,
+                                    dampingRatio = Spring.DampingRatioLowBouncy
+                                )
+                            )
                 },
                 onBack = onBack,
             )
@@ -569,18 +589,8 @@ private fun BottomBarItems(
     onNavigate: (BottomNavKey) -> Unit
 ) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val lastClick = remember { mutableLongStateOf(0L) }
-
     fun safeNavigate(item: BottomNavKey) {
-        val now = SystemClock.elapsedRealtime()
-
-        // 1) Throttle: ignore if tapped again within 760 ms
-        if (now - lastClick.longValue < 760L) return
-        lastClick.longValue = now
-
-        // 2) Lifecycle gate: ignore if not resumed (e.g. transition still running)
         if (!lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return
-
         onNavigate(item)
     }
 
@@ -604,7 +614,7 @@ private fun NavKey?.toBottomNavKey(): BottomNavKey? = when (this) {
     ItemList, is ItemDetails -> BottomNavKey.Items
     MonumentList, is MonumentDetails -> BottomNavKey.Monuments
     RaidScheduler, is RaidForm -> BottomNavKey.Raids
-    Settings, ChangePassword, DeleteAccount, UpgradeAccount, PrivacyPolicy, Terms, About, is Subscription ->
+    Settings, ChangePassword, DeleteAccount, UpgradeAccount, About, is Subscription ->
         BottomNavKey.Settings
 
     else -> null

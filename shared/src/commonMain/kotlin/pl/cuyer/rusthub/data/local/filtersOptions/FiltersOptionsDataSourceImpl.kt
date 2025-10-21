@@ -3,8 +3,10 @@ package pl.cuyer.rusthub.data.local.filtersOptions
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import pl.cuyer.rusthub.common.Constants.DEFAULT_KEY
@@ -37,7 +39,8 @@ class FiltersOptionsDataSourceImpl(
             .getFiltersOptions(DEFAULT_KEY)
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
-            .map { it.toDomain() }
+            .map {  it.toDomain() }
+            .flowOn(Dispatchers.Default)
             .catch { e ->
                 CrashReporter.recordException(e)
                 throw e

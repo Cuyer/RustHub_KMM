@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import pl.cuyer.rusthub.common.Constants
@@ -88,6 +89,7 @@ class AuthDataSourceImpl(
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
             .map { it?.toUser() }
+            .flowOn(Dispatchers.Default)
             .catch { e ->
                 CrashReporter.recordException(e)
                 throw e

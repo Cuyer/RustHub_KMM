@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.presentation.features.monument
 
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -27,8 +28,12 @@ class MonumentDetailsViewModel(
             initialValue = _state.value,
         )
 
+    private var monumentJob: Job? = null
+
     private fun observeMonument(slug: String) {
-        getMonumentDetailsUseCase(slug, getCurrentAppLanguage())
+        monumentJob?.cancel()
+
+        monumentJob = getMonumentDetailsUseCase(slug, getCurrentAppLanguage())
             .onStart { updateLoading(true) }
             .catch { e ->
                 if (e is CancellationException) throw e
