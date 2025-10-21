@@ -100,6 +100,9 @@ class SettingsViewModel(
     private var logoutJob: Job? = null
     private var emailConfirmed: Boolean = true
     private var subscriptionJob: Job? = null
+    private var userJob: Job? = null
+    private var preferencesJob: Job? = null
+    private var connectivityJob: Job? = null
     private val _state = MutableStateFlow(SettingsState())
     val state = _state
         .onStart {
@@ -161,7 +164,9 @@ class SettingsViewModel(
     }
 
     private fun observePreferences() {
-        getUserPreferencesUseCase()
+        preferencesJob?.cancel()
+
+        preferencesJob = getUserPreferencesUseCase()
             .combine(systemDarkThemeObserver.isSystemDarkTheme) { prefs, systemDark ->
                 val theme = if (prefs.useSystemColors) {
                     if (systemDark) Theme.DARK else Theme.LIGHT
@@ -180,7 +185,9 @@ class SettingsViewModel(
     }
 
     private fun observeConnectivity() {
-        connectivityObserver.isConnected
+        connectivityJob?.cancel()
+
+        connectivityJob = connectivityObserver.isConnected
             .onEach { connected ->
                 val wasDisconnected = state.value.isConnected.not() && connected
                 _state.update { it.copy(isConnected = connected) }
@@ -190,7 +197,9 @@ class SettingsViewModel(
     }
 
     private fun observeUser() {
-        getUserUseCase()
+        userJob?.cancel()
+
+        userJob = getUserUseCase()
             .onEach { user ->
                 _state.update { it.copy(currentUser = user) }
                 updateUser(user, state.value.currentSubscription)

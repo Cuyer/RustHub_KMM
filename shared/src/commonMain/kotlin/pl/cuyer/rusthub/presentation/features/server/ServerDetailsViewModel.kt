@@ -97,6 +97,8 @@ class ServerDetailsViewModel(
     private var toggleJob: Job? = null
     private var subscriptionJob: Job? = null
     private var serverDetailsJob: Job? = null
+    private var userJob: Job? = null
+    private var connectivityJob: Job? = null
     private var emailConfirmed: Boolean = true
 
     fun onAction(action: ServerDetailsAction) {
@@ -129,7 +131,9 @@ class ServerDetailsViewModel(
     }
 
     private fun observeUser() {
-        getUserUseCase()
+        userJob?.cancel()
+
+        userJob = getUserUseCase()
             .distinctUntilChanged()
             .onEach { user -> emailConfirmed = user?.emailConfirmed == true }
             .launchIn(coroutineScope)
@@ -401,7 +405,9 @@ class ServerDetailsViewModel(
     }
 
     private fun observeConnectivity() {
-        connectivityObserver.isConnected
+        connectivityJob?.cancel()
+
+        connectivityJob = connectivityObserver.isConnected
             .onEach { connected ->
                 _state.update { it.copy(isConnected = connected) }
             }
