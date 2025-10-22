@@ -4,6 +4,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.flow.Flow
@@ -89,6 +90,9 @@ class ItemViewModel(
             initialValue = true
         )
 
+    private var searchQueriesJob: Job? = null
+    private var connectivityJob: Job? = null
+
     init {
         observeSearchQueries()
         observeConnectivity()
@@ -140,7 +144,9 @@ class ItemViewModel(
     }
 
     private fun observeSearchQueries() {
-        getSearchQueriesUseCase()
+        searchQueriesJob?.cancel()
+
+        searchQueriesJob = getSearchQueriesUseCase()
             .distinctUntilChanged()
             .map { queries -> queries.map { it.toUi() } }
             .flowOn(Dispatchers.Default)
@@ -195,7 +201,9 @@ class ItemViewModel(
     }
 
     private fun observeConnectivity() {
-        connectivityObserver.isConnected
+        connectivityJob?.cancel()
+
+        connectivityJob = connectivityObserver.isConnected
             .onEach { connected ->
                 _state.update { it.copy(isConnected = connected) }
             }
