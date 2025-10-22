@@ -7,6 +7,9 @@ pluginManagement {
         maven {
             url = uri("https://androidx.dev/kmp/builds/14314545/artifacts/snapshots/repository")
         }
+        maven {
+            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+        }
     }
     resolutionStrategy {
         eachPlugin {
@@ -24,6 +27,9 @@ dependencyResolutionManagement {
         mavenCentral()
         maven {
             url = uri("https://androidx.dev/kmp/builds/14314545/artifacts/snapshots/repository")
+        }
+        maven {
+            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
         }
     }
 }
