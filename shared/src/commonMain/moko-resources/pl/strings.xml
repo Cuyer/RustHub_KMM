@@ -553,4 +553,5 @@
     <string name="raid_notification_title">Przypomnienie o rajdzie</string>
     <string name="raid_notification_body">Rajd %1$s właśnie się zaczyna</string>
     <string name="raid_date_in_past">Wybierz przyszłą datę</string>
+    <string name="error_opening_uri">Wystąpił błąd przy otwieraniu linku. Upewnij się, że posiadasz aplikację, która może go obsłużyć</string>
 </resources>

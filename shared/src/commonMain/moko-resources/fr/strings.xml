@@ -549,4 +549,5 @@
     <string name="raid_notification_scheduled">Vous serez informé du raid à %1$s</string>
     <string name="exact_alarm_permission_required">Activez les alarmes exactes pour enregistrer le raid.</string>
     <string name="its_time_to_raid">Il est temps de raider !</string>
+    <string name="error_opening_uri">Une erreur est survenue lors de l’ouverture du lien. Assurez-vous de disposer d’une application pouvant l’ouvrir.</string>
 </resources>
