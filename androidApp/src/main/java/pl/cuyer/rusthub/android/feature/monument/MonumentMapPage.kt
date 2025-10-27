@@ -24,6 +24,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
@@ -130,6 +131,7 @@ fun MonumentMapPage(
         }
         item(key = "credit", contentType = "credit") {
             val scope = rememberCoroutineScope()
+            val context = LocalContext.current
             Text(
                 text = stringResource(SharedRes.strings.map_creator_credit),
                 style = MaterialTheme.typography.bodyMedium,
@@ -145,7 +147,7 @@ fun MonumentMapPage(
                            scope.launch {
                                SnackbarController.sendEvent(
                                    event = SnackbarEvent(
-                                       message = SharedRes.strings.error_opening_uri
+                                       message = SharedRes.strings.error_opening_uri.getString(context)
                                    )
                                )
                            }
