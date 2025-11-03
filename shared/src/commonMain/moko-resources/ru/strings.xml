@@ -550,4 +550,5 @@
     <string name="raid_notification_scheduled">Вы получите уведомление о рейде в %1$s</string>
     <string name="exact_alarm_permission_required">Включите точные будильники, чтобы сохранить рейд.</string>
     <string name="its_time_to_raid">Время рейда!</string>
+    <string name="error_opening_uri">Произошла ошибка при открытии ссылки. Убедитесь, что у вас установлено приложение, которое может её открыть.</string>
 </resources>

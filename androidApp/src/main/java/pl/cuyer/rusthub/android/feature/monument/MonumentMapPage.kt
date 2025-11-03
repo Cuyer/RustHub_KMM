@@ -20,20 +20,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
+import kotlinx.coroutines.launch
 import pl.cuyer.rusthub.SharedRes
+import pl.cuyer.rusthub.android.R
 import pl.cuyer.rusthub.android.designsystem.MapDialog
 import pl.cuyer.rusthub.android.designsystem.shimmer
 import pl.cuyer.rusthub.android.theme.spacing
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.common.getImageByFileName
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
+import pl.cuyer.rusthub.presentation.snackbar.SnackbarEvent
+import pl.cuyer.rusthub.util.CrashReporter
 
 @Composable
 fun MonumentMapPage(
@@ -123,6 +130,8 @@ fun MonumentMapPage(
             )
         }
         item(key = "credit", contentType = "credit") {
+            val scope = rememberCoroutineScope()
+            val context = LocalContext.current
             Text(
                 text = stringResource(SharedRes.strings.map_creator_credit),
                 style = MaterialTheme.typography.bodyMedium,
@@ -132,7 +141,17 @@ fun MonumentMapPage(
                     .animateItem()
                     .padding(horizontal = spacing.xmedium)
                     .clickable {
-                        uriHandler.openUri("https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835")
+                        try {
+                            uriHandler.openUri("https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835")
+                        } catch (e: Exception) {
+                           scope.launch {
+                               SnackbarController.sendEvent(
+                                   event = SnackbarEvent(
+                                       message = SharedRes.strings.error_opening_uri.getString(context)
+                                   )
+                               )
+                           }
+                        }
                     }
             )
         }

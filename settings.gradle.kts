@@ -5,7 +5,10 @@ pluginManagement {
         gradlePluginPortal()
         mavenCentral()
         maven {
-            url = uri("https://androidx.dev/kmp/builds/14298127/artifacts/snapshots/repository")
+            url = uri("https://androidx.dev/kmp/builds/14373148/artifacts/snapshots/repository")
+        }
+        maven {
+            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
         }
     }
     resolutionStrategy {
@@ -23,7 +26,10 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven {
-            url = uri("https://androidx.dev/kmp/builds/14298127/artifacts/snapshots/repository")
+            url = uri("https://androidx.dev/kmp/builds/14373148/artifacts/snapshots/repository")
+        }
+        maven {
+            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
         }
     }
 }

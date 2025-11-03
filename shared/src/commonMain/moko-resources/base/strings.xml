@@ -555,4 +555,5 @@
     <string name="raid_notification_title">Raid reminder</string>
     <string name="raid_notification_body">%1$s raid is starting now</string>
     <string name="raid_date_in_past">Please select a future date</string>
+    <string name="error_opening_uri">An error occurred while opening the link. Make sure you have an app that can handle it.</string>
 </resources>

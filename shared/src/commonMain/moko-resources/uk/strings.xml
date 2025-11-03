@@ -551,4 +551,5 @@
     <string name="raid_notification_scheduled">Ви отримаєте повідомлення про рейд о %1$s</string>
     <string name="exact_alarm_permission_required">Увімкніть точні нагадування, щоб зберегти рейд.</string>
     <string name="its_time_to_raid">Час на рейд!</string>
+    <string name="error_opening_uri">Сталася помилка під час відкриття посилання. Переконайтеся, що у вас є застосунок, який може його відкрити.</string>
 </resources>

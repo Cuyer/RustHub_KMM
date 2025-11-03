@@ -550,4 +550,5 @@
     <string name="raid_notification_scheduled">Du wirst über den Überfall um %1$s benachrichtigt</string>
     <string name="exact_alarm_permission_required">Aktiviere genaue Alarme, um den Überfall zu speichern.</string>
     <string name="its_time_to_raid">Es ist Zeit für den Raid!</string>
+    <string name="error_opening_uri">Beim Öffnen des Links ist ein Fehler aufgetreten. Bitte stelle sicher, dass du eine App hast, die ihn öffnen kann.</string> <!-- de -->
 </resources>

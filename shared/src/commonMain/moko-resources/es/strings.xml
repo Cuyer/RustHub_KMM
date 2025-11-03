@@ -551,4 +551,5 @@
     <string name="raid_notification_scheduled">Serás notificado de la incursión a las %1$s</string>
     <string name="exact_alarm_permission_required">Activa las alarmas exactas para guardar la incursión.</string>
     <string name="its_time_to_raid">¡Es hora de atacar!</string>
+    <string name="error_opening_uri">Se ha producido un error al abrir el enlace. Asegúrate de tener una aplicación que pueda manejarlo.</string>
 </resources>

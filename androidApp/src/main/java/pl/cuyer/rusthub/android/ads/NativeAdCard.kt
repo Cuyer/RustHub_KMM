@@ -37,12 +37,6 @@ import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
 import pl.cuyer.rusthub.domain.model.ads.NativeAdWrapper
 
-@Composable
-private fun ApplyNativeAd(ad: NativeAdWrapper?) {
-    val nativeAdView = LocalNativeAdView.current
-    LaunchedEffect(nativeAdView, ad) { ad?.let { nativeAdView?.setNativeAd(it) } }
-}
-
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun NativeAdLayout(
@@ -52,12 +46,13 @@ private fun NativeAdLayout(
 ) {
     adProvider()?.let { ad ->
         val iconBitmap = remember(ad.icon) {
-            ad.icon?.drawable?.let { drawable ->
-                drawable.toBitmap().asImageBitmap()
-            }
+            ad.icon?.drawable?.toBitmap()?.asImageBitmap()
         }
         ElevatedCard(modifier = modifier.fillMaxWidth()) {
-            NativeAdView(modifier = Modifier.fillMaxWidth()) {
+            NativeAdView(
+                modifier = Modifier.fillMaxWidth(),
+                nativeAd = ad
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -108,9 +103,8 @@ private fun NativeAdLayout(
                             Text(it, style = MaterialTheme.typography.bodyMedium)
                         }
                     }
-                    ad.mediaContent?.let { mediaContent ->
+                    ad.mediaContent?.let { _ ->
                         NativeAdMediaView(
-                            mediaContent = { mediaContent },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(mediaHeight)
@@ -141,7 +135,6 @@ private fun NativeAdLayout(
                             }
                         }
                     }
-                    ApplyNativeAd(ad)
                 }
             }
         }

@@ -23,7 +23,7 @@ android {
         applicationId = "pl.cuyer.rusthub.android"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 109
+        versionCode = 112
         versionName = project.property("VERSION_NAME") as String
         buildConfigField("String", "SERVER_DETAILS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/9767963470\"")
         buildConfigField("String", "SERVERS_ADMOB_NATIVE_AD_ID", "\"ca-app-pub-4286204280518303/4096035325\"")
@@ -125,12 +125,10 @@ dependencies {
     implementation(libs.androidx.navigation)
     implementation(libs.androidx.navigation.ui)
     implementation(libs.androidx.navigation.viewmodel)
+    implementation(libs.androidx.navigation.event)
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
-    implementation(libs.androidx.material3.adaptive.navigation3) {
-        isChanging = true
-    }
+    implementation(libs.androidx.material3.adaptive.navigation3)
     implementation(libs.androidx.compose.material3.windowsizeclass)
-    implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.compose.icons)
     implementation(libs.paging.compose)

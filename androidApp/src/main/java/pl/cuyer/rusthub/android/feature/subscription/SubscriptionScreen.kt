@@ -732,6 +732,11 @@ private fun FaqSection() {
         Spacer(modifier = Modifier.height(spacing.medium))
         faqs.forEach { (q, a) ->
             var expanded by remember { mutableStateOf(false) }
+            val sd = if (expanded) {
+                stringResource(SharedRes.strings.expanded)
+            } else {
+                stringResource(SharedRes.strings.collapsed)
+            }
             val rotation by animateFloatAsState(
                 targetValue = if (expanded) 180f else 0f,
                 label = "rotation"
@@ -743,58 +748,59 @@ private fun FaqSection() {
                     contentColor = MaterialTheme.colorScheme.onBackground
                 )
             ) {
-                LookaheadScope {
-                    val sd = if (expanded) {
-                        stringResource(SharedRes.strings.expanded)
-                    } else {
-                        stringResource(SharedRes.strings.collapsed)
-                    }
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .toggleable(
-                                value = expanded,
-                                role = Role.Button,
-                                onValueChange = { expanded = !expanded }
-                            )
-                            .semantics {
-                                stateDescription = sd
-                            }
-                            .padding(spacing.medium)
-                            .animateBounds(this@LookaheadScope),
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .toggleable(
+                            value = expanded,
+                            role = Role.Button,
+                            onValueChange = { expanded = !expanded }
+                        )
+                        .semantics {
+                            stateDescription = sd
+                        }
+                        .padding(spacing.medium)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                modifier = Modifier.weight(0.9f),
-                                text = q,
-                                style = MaterialTheme.typography.titleSmall
-                            )
+                        Text(
+                            modifier = Modifier.weight(0.9f),
+                            text = q,
+                            style = MaterialTheme.typography.titleSmall
+                        )
 
-                            // Decorative arrow icon
-                            Icon(
-                                modifier = Modifier
-                                    .rotate(rotation)
-                                    .semantics { hideFromAccessibility() },
-                                imageVector = Icons.Default.ExpandMore,
-                                contentDescription = null
+                        // Decorative arrow icon
+                        Icon(
+                            modifier = Modifier
+                                .rotate(rotation)
+                                .semantics { hideFromAccessibility() },
+                            imageVector = Icons.Default.ExpandMore,
+                            contentDescription = null
+                        )
+                    }
+                    AnimatedVisibility(
+                        visible = expanded,
+                        enter = fadeIn(
+                            animationSpec = spring(
+                                stiffness = Spring.StiffnessLow,
+                                dampingRatio = Spring.DampingRatioLowBouncy
                             )
-                        }
-                        AnimatedVisibility(
-                            visible = expanded,
-                            enter = fadeIn(animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy)),
-                            exit = fadeOut(animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy))
-                        ) {
-                            Text(
-                                a,
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(top = spacing.small)
+                        ),
+                        exit = fadeOut(
+                            animationSpec = spring(
+                                stiffness = Spring.StiffnessLow,
+                                dampingRatio = Spring.DampingRatioLowBouncy
                             )
-                        }
+                        )
+                    ) {
+                        Text(
+                            a,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(top = spacing.small)
+                        )
                     }
                 }
             }
