@@ -50,11 +50,13 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.SearchBarScrollBehavior
 import androidx.compose.material3.SearchBarState
 import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberSearchBarState
@@ -97,6 +99,7 @@ fun RustSearchBarTopAppBar(
     showFiltersIcon: Boolean = true,
     filtersCount: () -> Int = { 0 },
     placeholderRes: StringResource = SharedRes.strings.search_servers,
+    scrollBehavior: SearchBarScrollBehavior? = null
 ) {
     val coroutineScope = rememberCoroutineScope()
     val activity = LocalActivity.current as Activity
@@ -210,7 +213,7 @@ fun RustSearchBarTopAppBar(
         modifier = Modifier.fillMaxWidth(),
         state = searchBarState,
         inputField = inputField,
-        scrollBehavior = null
+        scrollBehavior = scrollBehavior
     )
 
     if (!isTabletMode) {

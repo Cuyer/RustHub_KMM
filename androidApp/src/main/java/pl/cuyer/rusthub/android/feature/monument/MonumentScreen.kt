@@ -2,7 +2,6 @@ package pl.cuyer.rusthub.android.feature.monument
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.animateBounds
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -51,7 +50,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavKey
@@ -62,7 +60,6 @@ import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.BuildConfig
 import pl.cuyer.rusthub.android.ads.NativeAdCard
-import pl.cuyer.rusthub.android.ads.NativeAdListItem
 import pl.cuyer.rusthub.android.designsystem.MonumentListItem
 import pl.cuyer.rusthub.android.designsystem.MonumentListItemShimmer
 import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
@@ -167,33 +164,31 @@ fun MonumentScreen(
             }
         },
         topBar = {
-            LookaheadScope {
-                Column(
-                    modifier = with(scrollBehavior) { Modifier.searchBarScrollBehavior() }
-                        .animateBounds(this)
-                ) {
-                    RustSearchBarTopAppBar(
-                        textFieldState = textFieldState,
-                        onSearchTriggered = {
-                            onAction(MonumentAction.OnSearch(textFieldState.text.toString()))
-                        },
-                        onOpenFilters = {},
-                        searchQueryUi = { state.value.searchQueries },
-                        onDelete = {
-                            if (it.isBlank()) onAction(MonumentAction.DeleteSearchQueries)
-                            else onAction(MonumentAction.DeleteSearchQueryByQuery(it))
-                        },
-                        onClearSearchQuery = { onAction(MonumentAction.OnClearSearchQuery) },
-                        placeholderRes = SharedRes.strings.search_monuments,
-                        showFiltersIcon = false,
-                    )
-                    MonumentTypeChips(
-                        selected = state.value.selectedType,
-                        onSelectedChange = { onAction(MonumentAction.OnTypeChange(it)) },
-                        modifier = Modifier
-                            .padding(horizontal = spacing.xmedium)
-                    )
-                }
+            Column(
+                modifier = with(scrollBehavior) { Modifier.searchBarScrollBehavior() }
+            ) {
+                RustSearchBarTopAppBar(
+                    scrollBehavior = scrollBehavior,
+                    textFieldState = textFieldState,
+                    onSearchTriggered = {
+                        onAction(MonumentAction.OnSearch(textFieldState.text.toString()))
+                    },
+                    onOpenFilters = {},
+                    searchQueryUi = { state.value.searchQueries },
+                    onDelete = {
+                        if (it.isBlank()) onAction(MonumentAction.DeleteSearchQueries)
+                        else onAction(MonumentAction.DeleteSearchQueryByQuery(it))
+                    },
+                    onClearSearchQuery = { onAction(MonumentAction.OnClearSearchQuery) },
+                    placeholderRes = SharedRes.strings.search_monuments,
+                    showFiltersIcon = false,
+                )
+                MonumentTypeChips(
+                    selected = state.value.selectedType,
+                    onSelectedChange = { onAction(MonumentAction.OnTypeChange(it)) },
+                    modifier = Modifier
+                        .padding(horizontal = spacing.xmedium)
+                )
             }
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)

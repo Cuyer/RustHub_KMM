@@ -58,7 +58,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -74,7 +73,6 @@ import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.BuildConfig
 import pl.cuyer.rusthub.android.ads.NativeAdCard
-import pl.cuyer.rusthub.android.ads.NativeAdListItem
 import pl.cuyer.rusthub.android.designsystem.ItemListItem
 import pl.cuyer.rusthub.android.designsystem.ItemListItemShimmer
 import pl.cuyer.rusthub.android.designsystem.RustSearchBarTopAppBar
@@ -180,60 +178,58 @@ fun ItemScreen(
             }
         },
         topBar = {
-            LookaheadScope {
-                Column(
-                    modifier = with(scrollBehavior) { Modifier.searchBarScrollBehavior() }
-                        .animateBounds(this)
+            Column(
+                modifier = with(scrollBehavior) { Modifier.searchBarScrollBehavior() }
+            ) {
+                RustSearchBarTopAppBar(
+                    scrollBehavior = scrollBehavior,
+                    textFieldState = textFieldState,
+                    onSearchTriggered = {
+                        onAction(ItemAction.OnSearch(textFieldState.text.toString()))
+                    },
+                    onOpenFilters = {},
+                    searchQueryUi = { state.value.searchQueries },
+                    onDelete = {
+                        if (it.isBlank()) onAction(ItemAction.DeleteSearchQueries)
+                        else onAction(ItemAction.DeleteSearchQueryByQuery(it))
+                    },
+                    onClearSearchQuery = { onAction(ItemAction.OnClearSearchQuery) },
+                    showFiltersIcon = false,
+                    placeholderRes = SharedRes.strings.search_items
+                )
+                ItemCategoryChips(
+                    selected = state.value.selectedCategory,
+                    onSelectedChange = {
+                        onAction(ItemAction.OnCategoryChange(it))
+                    },
+                    modifier = Modifier
+                        .padding(horizontal = spacing.xmedium)
+                )
+                AnimatedVisibility(
+                    visible = !state.value.isConnected,
+                    enter = slideInVertically(
+                        animationSpec = spring(
+                            stiffness = Spring.StiffnessLow,
+                            dampingRatio = Spring.DampingRatioLowBouncy
+                        )
+                    ),
+                    exit = slideOutVertically(
+                        animationSpec = spring(
+                            stiffness = Spring.StiffnessLow,
+                            dampingRatio = Spring.DampingRatioLowBouncy
+                        )
+                    )
                 ) {
-                    RustSearchBarTopAppBar(
-                        textFieldState = textFieldState,
-                        onSearchTriggered = {
-                            onAction(ItemAction.OnSearch(textFieldState.text.toString()))
-                        },
-                        onOpenFilters = {},
-                        searchQueryUi = { state.value.searchQueries },
-                        onDelete = {
-                            if (it.isBlank()) onAction(ItemAction.DeleteSearchQueries)
-                            else onAction(ItemAction.DeleteSearchQueryByQuery(it))
-                        },
-                        onClearSearchQuery = { onAction(ItemAction.OnClearSearchQuery) },
-                        showFiltersIcon = false,
-                        placeholderRes = SharedRes.strings.search_items
-                    )
-                    ItemCategoryChips(
-                        selected = state.value.selectedCategory,
-                        onSelectedChange = {
-                            onAction(ItemAction.OnCategoryChange(it))
-                        },
+                    Text(
+                        textAlign = TextAlign.Center,
+                        text = stringResource(SharedRes.strings.offline_cached_items_info),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSecondary,
                         modifier = Modifier
-                            .padding(horizontal = spacing.xmedium)
+                            .fillMaxWidth()
+                            .padding(top = spacing.xsmall)
+                            .background(MaterialTheme.colorScheme.secondary)
                     )
-                    AnimatedVisibility(
-                        visible = !state.value.isConnected,
-                        enter = slideInVertically(
-                            animationSpec = spring(
-                                stiffness = Spring.StiffnessLow,
-                                dampingRatio = Spring.DampingRatioLowBouncy
-                            )
-                        ),
-                        exit = slideOutVertically(
-                            animationSpec = spring(
-                                stiffness = Spring.StiffnessLow,
-                                dampingRatio = Spring.DampingRatioLowBouncy
-                            )
-                        )
-                    ) {
-                        Text(
-                            textAlign = TextAlign.Center,
-                            text = stringResource(SharedRes.strings.offline_cached_items_info),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSecondary,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = spacing.xsmall)
-                                .background(MaterialTheme.colorScheme.secondary)
-                        )
-                    }
                 }
             }
         },

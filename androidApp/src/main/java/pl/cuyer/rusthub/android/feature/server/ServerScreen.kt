@@ -65,7 +65,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -204,65 +203,63 @@ fun ServerScreen(
             }
         },
         topBar = {
-            LookaheadScope {
-                Column(
-                    modifier = with(scrollBehavior)
-                    { Modifier.searchBarScrollBehavior() }
-                        .animateBounds(this)
-                ) {
-                    RustSearchBarTopAppBar(
-                        textFieldState = textFieldState,
-                        onSearchTriggered = {
-                            onAction(ServerAction.OnSearch(textFieldState.text.toString()))
-                        },
-                        onOpenFilters = { showSheet = true },
-                        searchQueryUi = { state.value.searchQuery },
-                        onDelete = {
-                            if (it.isBlank()) onAction(ServerAction.DeleteSearchQueries) else onAction(
-                                ServerAction.DeleteSearchQueryByQuery(it)
-                            )
-                        },
-                        onClearSearchQuery = {
-                            onAction(ServerAction.OnClearSearchQuery)
-                        },
-                        showFiltersIcon = true,
-                        filtersCount = { activeFiltersCount }
-                    )
-                    ServerFilterChips(
-                        selected = state.value.filters?.filter ?: ServerFilter.ALL,
-                        onSelectedChange = {
-                            onAction(ServerAction.OnFilterChange(it))
-                        },
-                        modifier = Modifier
-                            .padding(horizontal = spacing.xmedium)
+            Column(
+                modifier = with(scrollBehavior)
+                { Modifier.searchBarScrollBehavior() }
+            ) {
+                RustSearchBarTopAppBar(
+                    scrollBehavior = scrollBehavior,
+                    textFieldState = textFieldState,
+                    onSearchTriggered = {
+                        onAction(ServerAction.OnSearch(textFieldState.text.toString()))
+                    },
+                    onOpenFilters = { showSheet = true },
+                    searchQueryUi = { state.value.searchQuery },
+                    onDelete = {
+                        if (it.isBlank()) onAction(ServerAction.DeleteSearchQueries) else onAction(
+                            ServerAction.DeleteSearchQueryByQuery(it)
+                        )
+                    },
+                    onClearSearchQuery = {
+                        onAction(ServerAction.OnClearSearchQuery)
+                    },
+                    showFiltersIcon = true,
+                    filtersCount = { activeFiltersCount }
+                )
+                ServerFilterChips(
+                    selected = state.value.filters?.filter ?: ServerFilter.ALL,
+                    onSelectedChange = {
+                        onAction(ServerAction.OnFilterChange(it))
+                    },
+                    modifier = Modifier
+                        .padding(horizontal = spacing.xmedium)
 
+                )
+                AnimatedVisibility(
+                    visible = !state.value.isConnected,
+                    enter = slideInVertically(
+                        animationSpec = spring(
+                            stiffness = Spring.StiffnessLow,
+                            dampingRatio = Spring.DampingRatioLowBouncy
+                        )
+                    ),
+                    exit = slideOutVertically(
+                        animationSpec = spring(
+                            stiffness = Spring.StiffnessLow,
+                            dampingRatio = Spring.DampingRatioLowBouncy
+                        )
                     )
-                    AnimatedVisibility(
-                        visible = !state.value.isConnected,
-                        enter = slideInVertically(
-                            animationSpec = spring(
-                                stiffness = Spring.StiffnessLow,
-                                dampingRatio = Spring.DampingRatioLowBouncy
-                            )
-                        ),
-                        exit = slideOutVertically(
-                            animationSpec = spring(
-                                stiffness = Spring.StiffnessLow,
-                                dampingRatio = Spring.DampingRatioLowBouncy
-                            )
-                        )
-                    ) {
-                        Text(
-                            textAlign = TextAlign.Center,
-                            text = stringResource(SharedRes.strings.offline_cached_servers_info),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSecondary,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = spacing.xsmall)
-                                .background(MaterialTheme.colorScheme.secondary)
-                        )
-                    }
+                ) {
+                    Text(
+                        textAlign = TextAlign.Center,
+                        text = stringResource(SharedRes.strings.offline_cached_servers_info),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = spacing.xsmall)
+                            .background(MaterialTheme.colorScheme.secondary)
+                    )
                 }
             }
         },
