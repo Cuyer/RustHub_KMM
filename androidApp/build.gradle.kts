@@ -125,12 +125,10 @@ dependencies {
     implementation(libs.androidx.navigation)
     implementation(libs.androidx.navigation.ui)
     implementation(libs.androidx.navigation.viewmodel)
+    implementation(libs.androidx.navigation.event)
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
-    implementation(libs.androidx.material3.adaptive.navigation3) {
-        isChanging = true
-    }
+    implementation(libs.androidx.material3.adaptive.navigation3)
     implementation(libs.androidx.compose.material3.windowsizeclass)
-    implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.compose.icons)
     implementation(libs.paging.compose)

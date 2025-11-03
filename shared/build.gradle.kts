@@ -1,4 +1,5 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 
@@ -57,6 +58,7 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.compose)
             implementation(libs.androidx.navigation)
+            implementation(libs.androidx.navigation.event)
             implementation(libs.androidx.work.runtime)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.certificate.transparency)
