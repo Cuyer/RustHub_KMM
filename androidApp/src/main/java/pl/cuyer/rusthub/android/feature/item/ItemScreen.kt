@@ -182,7 +182,6 @@ fun ItemScreen(
                 modifier = with(scrollBehavior) { Modifier.searchBarScrollBehavior() }
             ) {
                 RustSearchBarTopAppBar(
-                    scrollBehavior = scrollBehavior,
                     textFieldState = textFieldState,
                     onSearchTriggered = {
                         onAction(ItemAction.OnSearch(textFieldState.text.toString()))

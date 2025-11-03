@@ -208,7 +208,6 @@ fun ServerScreen(
                 { Modifier.searchBarScrollBehavior() }
             ) {
                 RustSearchBarTopAppBar(
-                    scrollBehavior = scrollBehavior,
                     textFieldState = textFieldState,
                     onSearchTriggered = {
                         onAction(ServerAction.OnSearch(textFieldState.text.toString()))
@@ -224,7 +223,7 @@ fun ServerScreen(
                         onAction(ServerAction.OnClearSearchQuery)
                     },
                     showFiltersIcon = true,
-                    filtersCount = { activeFiltersCount }
+                    filtersCount = { activeFiltersCount },
                 )
                 ServerFilterChips(
                     selected = state.value.filters?.filter ?: ServerFilter.ALL,
