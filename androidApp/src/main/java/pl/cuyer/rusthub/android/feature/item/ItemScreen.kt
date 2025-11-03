@@ -63,6 +63,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavKey
+import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -348,28 +349,24 @@ fun ItemScreen(
                     verticalArrangement = Arrangement.spacedBy(spacing.medium),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    onPagingItemsIndexed(
-                        key = { index, item ->
-                            if (showAds && index == 0) "ad" else item.id
-                        },
-                        contentType = { index, _ -> if (showAds && index == 0) "ad" else "item" }
-                    ) { index, item ->
-                        if (showAds && index == 0) {
-                            Column(
+                    if (showAds && pagedList.itemCount > 0 && pagedList.loadState.refresh is LoadState.NotLoading) {
+                        item(
+                            key = "ad",
+                            contentType = "ad"
+                        ) {
+                            NativeAdCard(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .animateItem(),
-                            ) {
-                                NativeAdCard(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = spacing.xmedium),
-                                    ad = { adState.value.ads[BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID] }
-                                )
-                                Spacer(modifier = Modifier.height(spacing.medium))
-                            }
+                                    .animateItem()
+                                    .padding(horizontal = spacing.xmedium),
+                                ad = { adState.value.ads[BuildConfig.ITEMS_ADMOB_NATIVE_AD_ID] }
+                            )
                         }
-
+                    }
+                    onPagingItemsIndexed(
+                        key = { _, item -> item.id },
+                        contentType = { _, _ -> "item" }
+                    ) { _, item ->
                         ItemListItem(
                             modifier = Modifier
                                 .fillMaxWidth()
