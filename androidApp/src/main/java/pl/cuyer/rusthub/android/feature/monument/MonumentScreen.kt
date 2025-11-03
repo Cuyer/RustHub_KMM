@@ -287,11 +287,6 @@ fun MonumentScreen(
                         }
                     }
                 ) {
-                    val adIndex = remember(pagedList.itemCount) {
-                        if (pagedList.itemCount > 0) {
-                            if (pagedList.itemCount >= 5) 4 else pagedList.itemCount - 1
-                        } else -1
-                    }
                     LazyColumn(
                         contentPadding = PaddingValues(
                             top = 0.dp,
@@ -305,11 +300,11 @@ fun MonumentScreen(
                     ) {
                         onPagingItemsIndexed(
                             key = { index, item ->
-                                if (showAds && index == adIndex) "ad" else item.slug ?: index
+                                if (showAds && index == 0) "ad" else item.slug ?: index
                             },
-                            contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "monument" }
+                            contentType = { index, _ -> if (showAds && index == 0) "ad" else "monument" }
                         ) { index, monument ->
-                            if (showAds && index == adIndex) {
+                            if (showAds && index == 0) {
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()

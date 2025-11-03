@@ -336,11 +336,6 @@ fun ItemScreen(
                     }
                 }
             ) {
-                val adIndex = remember(pagedList.itemCount) {
-                    if (pagedList.itemCount > 0) {
-                        if (pagedList.itemCount >= 5) 4 else pagedList.itemCount - 1
-                    } else -1
-                }
                 LazyColumn(
                     contentPadding = PaddingValues(
                         top = 0.dp,
@@ -355,11 +350,11 @@ fun ItemScreen(
                 ) {
                     onPagingItemsIndexed(
                         key = { index, item ->
-                            if (showAds && index == adIndex) "ad" else item.id
+                            if (showAds && index == 0) "ad" else item.id
                         },
-                        contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "item" }
+                        contentType = { index, _ -> if (showAds && index == 0) "ad" else "item" }
                     ) { index, item ->
-                        if (showAds && index == adIndex) {
+                        if (showAds && index == 0) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
