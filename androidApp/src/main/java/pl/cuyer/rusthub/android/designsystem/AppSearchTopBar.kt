@@ -66,12 +66,18 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Modifier.Companion
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -105,14 +111,14 @@ fun RustSearchBarTopAppBar(
     val windowSizeClass = calculateWindowSizeClass(activity)
     val isTabletMode = windowSizeClass.widthSizeClass >= WindowWidthSizeClass.Medium
     val searchBarState = rememberSearchBarState()
-
+    var inputFieldWidth by remember { mutableIntStateOf(0) }
     LaunchedEffect(textFieldState.text) {
         if (textFieldState.text.isBlank()) onClearSearchQuery()
     }
 
-    val inputField: @Composable () -> Unit = {
+    val inputField = @Composable {
         SearchBarDefaults.InputField(
-            modifier = if (!isTabletMode) Modifier.fillMaxWidth() else Modifier,
+            modifier = Modifier.onSizeChanged { inputFieldWidth = it.width },
             searchBarState = searchBarState,
             textFieldState = textFieldState,
             onSearch = {
@@ -209,12 +215,10 @@ fun RustSearchBarTopAppBar(
     }
 
     AppBarWithSearch(
-        modifier = Modifier.fillMaxWidth(),
         state = searchBarState,
         inputField = inputField,
         scrollBehavior = null
     )
-
     if (!isTabletMode) {
         ExpandedFullScreenSearchBar(
             state = searchBarState,
@@ -223,22 +227,36 @@ fun RustSearchBarTopAppBar(
             SearchHistorySuggestions(
                 searchQueryUi = searchQueryUi,
                 textFieldState = textFieldState,
-                searchBarState = searchBarState,
                 onDelete = onDelete,
-                onSearchTriggered = onSearchTriggered
+                onSearchTriggered = onSearchTriggered,
+                onCollapse = {
+                    coroutineScope.launch {
+                        searchBarState.animateToCollapsed()
+                    }
+                }
             )
         }
     } else {
         ExpandedDockedSearchBar(
+            modifier =
+                Modifier.layout { measurable, constraints ->
+                    val placeable =
+                        measurable.measure(constraints.copy(maxWidth = inputFieldWidth))
+                    layout(placeable.width, placeable.height) { placeable.place(0, 0) }
+                },
             state = searchBarState,
             inputField = inputField
         ) {
             SearchHistorySuggestions(
                 searchQueryUi = searchQueryUi,
                 textFieldState = textFieldState,
-                searchBarState = searchBarState,
                 onDelete = onDelete,
-                onSearchTriggered = onSearchTriggered
+                onSearchTriggered = onSearchTriggered,
+                onCollapse = {
+                    coroutineScope.launch {
+                        searchBarState.animateToCollapsed()
+                    }
+                }
             )
         }
 
@@ -250,31 +268,16 @@ fun RustSearchBarTopAppBar(
 private fun SearchHistorySuggestions(
     searchQueryUi: () -> List<SearchQueryUi>,
     textFieldState: TextFieldState,
-    searchBarState: SearchBarState,
     onDelete: (String) -> Unit,
     onSearchTriggered: () -> Unit,
+    onCollapse: () -> Unit
 ) {
-    val coroutineScope = rememberCoroutineScope()
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(spacing.xxmedium)
     ) {
-        item(key = "label", contentType = "label") {
-            AnimatedVisibility(
-                visible = searchQueryUi().isNotEmpty(),
-                enter = fadeIn(
-                    animationSpec = spring(
-                        stiffness = Spring.StiffnessLow,
-                        dampingRatio = Spring.DampingRatioLowBouncy,
-                    )
-                ),
-                exit = fadeOut(
-                    animationSpec = spring(
-                        stiffness = Spring.StiffnessLow,
-                        dampingRatio = Spring.DampingRatioLowBouncy,
-                    )
-                )
-            ) {
+        if (searchQueryUi().isNotEmpty()) {
+            item(key = "label", contentType = "label") {
                 Row {
                     Text(
                         modifier = Modifier
@@ -318,7 +321,7 @@ private fun SearchHistorySuggestions(
                         .clickable {
                             textFieldState.setTextAndPlaceCursorAtEnd(item.query)
                             onSearchTriggered()
-                            coroutineScope.launch { searchBarState.animateToCollapsed() }
+                            onCollapse()
                         },
                     colors = ListItemDefaults.colors().copy(
                         containerColor = SearchBarDefaults.colors().containerColor
@@ -340,7 +343,7 @@ private fun SearchHistorySuggestions(
                         onClick = {
                             onDelete("")
                             textFieldState.setTextAndPlaceCursorAtEnd("")
-                            coroutineScope.launch { searchBarState.animateToCollapsed() }
+                            onCollapse()
                         },
                         colors = ButtonDefaults.elevatedButtonColors(
                             containerColor = MaterialTheme.colorScheme.background,
