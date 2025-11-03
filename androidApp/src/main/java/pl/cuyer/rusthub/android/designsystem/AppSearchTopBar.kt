@@ -98,8 +98,7 @@ fun RustSearchBarTopAppBar(
     onClearSearchQuery: () -> Unit,
     showFiltersIcon: Boolean = true,
     filtersCount: () -> Int = { 0 },
-    placeholderRes: StringResource = SharedRes.strings.search_servers,
-    scrollBehavior: SearchBarScrollBehavior? = null
+    placeholderRes: StringResource = SharedRes.strings.search_servers
 ) {
     val coroutineScope = rememberCoroutineScope()
     val activity = LocalActivity.current as Activity
@@ -213,7 +212,7 @@ fun RustSearchBarTopAppBar(
         modifier = Modifier.fillMaxWidth(),
         state = searchBarState,
         inputField = inputField,
-        scrollBehavior = scrollBehavior
+        scrollBehavior = null
     )
 
     if (!isTabletMode) {

@@ -168,7 +168,6 @@ fun MonumentScreen(
                 modifier = with(scrollBehavior) { Modifier.searchBarScrollBehavior() }
             ) {
                 RustSearchBarTopAppBar(
-                    scrollBehavior = scrollBehavior,
                     textFieldState = textFieldState,
                     onSearchTriggered = {
                         onAction(MonumentAction.OnSearch(textFieldState.text.toString()))
