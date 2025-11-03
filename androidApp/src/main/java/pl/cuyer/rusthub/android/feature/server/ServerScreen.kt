@@ -368,15 +368,10 @@ fun ServerScreen(
                     onAction(ServerAction.OnError(error))
                 }
             ) {
-                val adIndex = remember(pagedList.itemCount) {
-                    if (pagedList.itemCount > 0) {
-                        if (pagedList.itemCount >= 5) 4 else pagedList.itemCount - 1
-                    } else -1
-                }
-                val serverItemKey: (Int, ServerInfoUi) -> Any = remember(showAds, adIndex) {
+                val serverItemKey: (Int, ServerInfoUi) -> Any = remember(showAds) {
                     { index, item ->
                         when {
-                            showAds && index == adIndex -> "ad-$adIndex"
+                            showAds -> "ad"
                             item.id != null -> "id-${item.id}"
                             !item.serverIp.isNullOrEmpty() -> "ip-${item.serverIp}"
                             else -> "server-index-$index"
@@ -397,9 +392,9 @@ fun ServerScreen(
                 ) {
                     onPagingItemsIndexed(
                         key = serverItemKey,
-                        contentType = { index, _ -> if (showAds && index == adIndex) "ad" else "server" }
+                        contentType = { index, _ -> if (showAds && index == 0) "ad" else "server" }
                     ) { index, item ->
-                        if (showAds && index == adIndex) {
+                        if (showAds && index == 0) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
