@@ -70,6 +70,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavKey
+import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -368,16 +369,6 @@ fun ServerScreen(
                     onAction(ServerAction.OnError(error))
                 }
             ) {
-                val serverItemKey: (Int, ServerInfoUi) -> Any = remember(showAds) {
-                    { index, item ->
-                        when {
-                            showAds -> "ad"
-                            item.id != null -> "id-${item.id}"
-                            !item.serverIp.isNullOrEmpty() -> "ip-${item.serverIp}"
-                            else -> "server-index-$index"
-                        }
-                    }
-                }
                 LazyColumn(
                     state = lazyListState,
                     contentPadding = PaddingValues(
@@ -390,25 +381,25 @@ fun ServerScreen(
                     verticalArrangement = Arrangement.spacedBy(spacing.medium),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    onPagingItemsIndexed(
-                        key = serverItemKey,
-                        contentType = { index, _ -> if (showAds && index == 0) "ad" else "server" }
-                    ) { index, item ->
-                        if (showAds && index == 0) {
-                            Column(
+                    if (showAds && pagedList.itemCount > 0 && pagedList.loadState.refresh is LoadState.NotLoading) {
+                        item(
+                            key = "ad",
+                            contentType = "ad"
+                        ) {
+                            NativeAdCard(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .animateItem()
-                            ) {
-                                NativeAdCard(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = spacing.xmedium),
-                                    ad = { adState.value.ads[BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID] }
-                                )
-                                Spacer(modifier = Modifier.height(spacing.medium))
-                            }
+                                    .padding(horizontal = spacing.xmedium),
+                                ad = { adState.value.ads[BuildConfig.SERVERS_ADMOB_NATIVE_AD_ID] }
+                            )
                         }
+                    }
+
+                    onPagingItemsIndexed(
+                        key = { _, item -> item.id ?: item.hashCode() },
+                        contentType = { _, _ -> "item" }
+                    ) { _, item ->
                         val labels = remember(item, stringProvider) {
                             item.createLabels(stringProvider)
                         }

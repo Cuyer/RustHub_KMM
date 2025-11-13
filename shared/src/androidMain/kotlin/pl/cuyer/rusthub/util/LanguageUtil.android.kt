@@ -17,20 +17,17 @@ actual fun updateAppLanguage(language: Language) {
         Language.UKRAINIAN -> "uk"
     }
     val locale = Locale.forLanguageTag(tag)
-    if (locale.language.isEmpty()) return
-    runCatching {
+    if (locale.language.isNotEmpty()) {
         val locales = LocaleListCompat.create(locale)
         AppCompatDelegate.setApplicationLocales(locales)
     }
 }
 
 actual fun getCurrentAppLanguage(): Language {
-    val locales = runCatching { AppCompatDelegate.getApplicationLocales() }.getOrNull()
-    val code = if (locales != null && !locales.isEmpty) {
-        locales[0]?.language ?: Locale.getDefault().language
-    } else {
-        Locale.getDefault().language
-    }
+    val locale = runCatching {
+        AppCompatDelegate.getApplicationLocales().takeIf { !it.isEmpty }?.get(0)
+    }.getOrNull()
+    val code = (locale ?: Locale.getDefault()).language
     return when (code) {
         "pl" -> Language.POLISH
         "de" -> Language.GERMAN

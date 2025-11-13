@@ -12,13 +12,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,6 +26,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
@@ -53,6 +53,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavKey
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -298,27 +299,24 @@ fun MonumentScreen(
                         verticalArrangement = Arrangement.spacedBy(spacing.medium),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        onPagingItemsIndexed(
-                            key = { index, item ->
-                                if (showAds && index == 0) "ad" else item.slug ?: index
-                            },
-                            contentType = { index, _ -> if (showAds && index == 0) "ad" else "monument" }
-                        ) { index, monument ->
-                            if (showAds && index == 0) {
-                                Column(
+                        if (showAds && pagedList.itemCount > 0 && pagedList.loadState.refresh is LoadState.NotLoading) {
+                            item(
+                                key = "ad",
+                                contentType = "ad"
+                            ) {
+                                NativeAdCard(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .animateItem()
-                                ) {
-                                    NativeAdCard(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = spacing.xmedium),
-                                        ad = { adState.value.ads[BuildConfig.MONUMENTS_ADMOB_NATIVE_AD_ID] }
-                                    )
-                                    Spacer(modifier = Modifier.height(spacing.medium))
-                                }
+                                        .padding(horizontal = spacing.xmedium),
+                                    ad = { adState.value.ads[BuildConfig.MONUMENTS_ADMOB_NATIVE_AD_ID] }
+                                )
                             }
+                        }
+                        onPagingItemsIndexed(
+                            key = { _, item -> item.slug ?: item.hashCode() },
+                            contentType = { _, _ -> "monument" }
+                        ) { _, monument ->
                             MonumentListItem(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -327,6 +325,19 @@ fun MonumentScreen(
                                 monument = monument,
                                 onClick = { slug -> onAction(MonumentAction.OnMonumentClick(slug)) }
                             )
+                        }
+                        onAppendItem {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                CircularProgressIndicator(
+                                    Modifier
+                                        .animateItem()
+                                )
+                            }
                         }
                     }
                 }

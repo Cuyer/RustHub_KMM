@@ -12,49 +12,42 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.theme.spacing
-import pl.cuyer.rusthub.android.util.composeUtil.keyboardAsState
 import pl.cuyer.rusthub.android.util.composeUtil.stringResource
-import pl.cuyer.rusthub.android.designsystem.shimmer
 import pl.cuyer.rusthub.domain.model.CountryRegionMapper
 import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Region
@@ -108,10 +101,10 @@ fun FilterBottomSheet(
                     modifier = Modifier.fillMaxHeight(0.85f)
                 )
             } else {
-                val current = filters
-                if (current == null || (current.lists.isEmpty() &&
-                        current.checkboxes.isEmpty() &&
-                        current.ranges.isEmpty())) {
+                if (filters == null || (filters.lists.isEmpty() &&
+                            filters.checkboxes.isEmpty() &&
+                            filters.ranges.isEmpty())
+                ) {
                     Box(
                         modifier = Modifier
                             .fillMaxHeight(0.85f)
@@ -130,15 +123,15 @@ fun FilterBottomSheet(
                             .verticalScroll(scrollState)
                     ) {
                         FilterBottomSheetContent(
-                            lists = current.lists,
+                            lists = filters.lists,
                             onListChange = { index, selected ->
                                 onAction(ServerAction.OnDropdownChange(index, selected))
                             },
-                            checkboxes = current.checkboxes,
+                            checkboxes = filters.checkboxes,
                             onCheckboxChange = { index, checked ->
                                 onAction(ServerAction.OnCheckboxChange(index, checked))
                             },
-                            ranges = current.ranges,
+                            ranges = filters.ranges,
                             onRangeChange = { index, value ->
                                 onAction(ServerAction.OnRangeChange(index, value))
                             }
@@ -211,6 +204,7 @@ private fun DropdownFilters(
                         } ?: false
                     } ?: true
                 }
+
                 2 -> { idx ->
                     selectedCountry?.let { flag ->
                         val countryRegion = CountryRegionMapper.regionForFlag(flag)
@@ -218,6 +212,7 @@ private fun DropdownFilters(
                         countryRegion == region
                     } ?: true
                 }
+
                 else -> { _ -> true }
             }
             AppExposedDropdownMenu(
@@ -262,50 +257,126 @@ private fun CheckboxFilters(
     }
 }
 
+private fun getVirtualValueForIndex1(realValue: Float?, maxIntValue: Int): Float {
+    return when (realValue?.toInt()) {
+        1 -> 0f
+        2 -> 1f
+        3 -> 2f
+        4 -> 3f
+        5 -> 4f
+        6 -> 5f
+        maxIntValue -> 6f
+        null -> 3f // Domyślna wartość (mapuje na 4)
+        else -> 6f // Nieznane wartości mapuj na MAX
+    }
+}
+
+private fun getRealValueForIndex1(virtualValue: Float, maxIntValue: Int): Int {
+    return when (virtualValue.toInt()) {
+        0 -> 1
+        1 -> 2
+        2 -> 3
+        3 -> 4
+        4 -> 5
+        5 -> 6
+        else -> maxIntValue // Pozycja 6 i wszystkie inne/nieoczekiwane mapuj na MAX
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
+@Composable
+private fun SingleRangeSlider(
+    label: String,
+    initialValue: Float,
+    valueRange: ClosedFloatingPointRange<Float>,
+    steps: Int,
+    formatValue: (Float) -> String,
+    onValueChange: (Float) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val sliderState = rememberSliderState(
+        value = initialValue,
+        valueRange = valueRange,
+        steps = steps
+    )
+
+    LaunchedEffect(sliderState) {
+        snapshotFlow { sliderState.value }
+            .debounce { 500 }
+            .distinctUntilChanged()
+            .collect { value ->
+                onValueChange(value)
+            }
+    }
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(spacing.small)
+    ) {
+        Text(
+            text = "$label: ${formatValue(sliderState.value)}",
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Slider(
+            state = sliderState
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RangeFilters(
     options: List<FilterRangeOption>,
     onOptionsChange: (Int, Int?) -> Unit
 ) {
-    val focusManager = LocalFocusManager.current
-    val keyboardState = keyboardAsState()
     Column(verticalArrangement = Arrangement.spacedBy(spacing.small)) {
         options.forEachIndexed { index, option ->
             key(option.label) {
-                val textFieldState = rememberTextFieldState(
-                    initialText = option.value?.toString() ?: ""
-                )
+                val maxIntValue = option.max
+                val maxValue = maxIntValue.toFloat()
 
-                LaunchedEffect(option.value) {
-                    val text = option.value?.toString() ?: ""
-                    if (text != textFieldState.text.toString()) {
-                        textFieldState.setTextAndPlaceCursorAtEnd(text)
+                if (index == 1) {
+                    val steps = 5
+                    val virtualValueRange = 0f..6f
+
+                    val initialValue = remember(option.value, maxIntValue) {
+                        getVirtualValueForIndex1(option.value?.toFloat(), maxIntValue)
                     }
-                }
 
-                LaunchedEffect(textFieldState) {
-                    snapshotFlow { textFieldState.text.toString() }
-                        .debounce(500)
-                        .distinctUntilChanged()
-                        .collect { text ->
-                            val newValue = text.toIntOrNull()
-                            if (newValue != option.value) {
-                                onOptionsChange(index, newValue)
-                            }
+                    SingleRangeSlider(
+                        label = option.label,
+                        initialValue = initialValue,
+                        valueRange = virtualValueRange,
+                        steps = steps,
+                        formatValue = { virtualValue ->
+                            getRealValueForIndex1(virtualValue, maxIntValue).toString()
+                        },
+                        onValueChange = { virtualValue ->
+                            onOptionsChange(index, getRealValueForIndex1(virtualValue, maxIntValue))
                         }
+                    )
                 }
+                else {
+                    val initialValue = remember(option.value, maxValue, index) {
+                        option.value?.toFloat() ?: when (index) {
+                            0, 2 -> maxValue
+                            else -> 4f
+                        }
+                    }
 
-                AppTextField(
-                    modifier = Modifier,
-                    textFieldState = textFieldState,
-                    labelText = option.label,
-                    maxLength = option.max.toString().length,
-                    placeholderText = stringResource(SharedRes.strings.enter_a_number),
-                    keyboardType = KeyboardType.NumberPassword,
-                    imeAction = ImeAction.Done,
-                    focusManager = focusManager,
-                    keyboardState = keyboardState
-                )
+                    SingleRangeSlider(
+                        label = option.label,
+                        initialValue = initialValue,
+                        valueRange = 0f..maxValue,
+                        steps = 0,
+                        formatValue = { realValue ->
+                            realValue.toInt().toString()
+                        },
+                        onValueChange = { realValue ->
+                            onOptionsChange(index, realValue.toInt())
+                        }
+                    )
+                }
             }
         }
     }
