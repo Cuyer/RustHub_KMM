@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
@@ -175,20 +176,38 @@ class ServerViewModel(
             getFiltersOptions.invoke(),
             getFiltersUseCase.invoke()
         ) { filtersOptions, filters ->
-            filters.toUi(
+
+            if (filtersOptions == null || filtersOptions.maxPlayerCount == 0) {
+                return@combine null
+            }
+
+            val areFiltersUnset = filters?.playerCount == null &&
+                    filters?.groupLimit == null &&
+                    filters?.ranking == null
+            val effectiveFilters = if (areFiltersUnset) {
+                filters?.copy(
+                    playerCount = filtersOptions.maxPlayerCount.toLong(),
+                    groupLimit = 4,
+                    ranking = filtersOptions.maxRanking.toLong()
+                )
+            } else {
+                filters
+            }
+
+            effectiveFilters.toUi(
                 stringProvider = stringProvider,
-                maps = filtersOptions?.maps?.map { it.displayName } ?: emptyList(),
-                flags = filtersOptions?.flags?.map { it.displayName } ?: emptyList(),
-                regions = filtersOptions?.regions?.map { it.displayName(stringProvider) }
-                    ?: emptyList(),
-                difficulties = filtersOptions?.difficulty?.map { it.displayName } ?: emptyList(),
-                schedules = filtersOptions?.wipeSchedules?.map { it.displayName(stringProvider) }
-                    ?: emptyList(),
-                playerCount = filtersOptions?.maxPlayerCount ?: 0,
-                groupLimit = filtersOptions?.maxGroupLimit ?: 0,
-                ranking = filtersOptions?.maxRanking ?: 0
+                maps = filtersOptions.maps.map { it.displayName },
+                flags = filtersOptions.flags.map { it.displayName },
+                regions = filtersOptions.regions.map { it.displayName(stringProvider) },
+                difficulties = filtersOptions.difficulty.map { it.displayName },
+                schedules = filtersOptions.wipeSchedules.map { it.displayName(stringProvider) },
+                playerCount = filtersOptions.maxPlayerCount,
+                groupLimit = filtersOptions.maxGroupLimit,
+                ranking = filtersOptions.maxRanking
             )
-        }.distinctUntilChanged()
+        }
+            .filterNotNull()
+            .distinctUntilChanged()
             .flowOn(Dispatchers.Default)
             .onStart { updateIsLoadingFilters(true) }
             .onEach { mappedFilters ->
