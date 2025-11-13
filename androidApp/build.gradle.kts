@@ -110,6 +110,7 @@ android {
 dependencies {
     implementation(projects.shared)
     implementation(libs.androidx.datastore.preferences)
+    implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.foundation)
     implementation(libs.compose.ui.tooling.preview)
@@ -125,7 +126,6 @@ dependencies {
     implementation(libs.androidx.navigation)
     implementation(libs.androidx.navigation.ui)
     implementation(libs.androidx.navigation.viewmodel)
-    implementation(libs.androidx.navigation.event)
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     implementation(libs.androidx.material3.adaptive.navigation3)
     implementation(libs.androidx.compose.material3.windowsizeclass)

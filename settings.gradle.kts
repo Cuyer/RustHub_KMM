@@ -5,9 +5,6 @@ pluginManagement {
         gradlePluginPortal()
         mavenCentral()
         maven {
-            url = uri("https://androidx.dev/kmp/builds/14427339/artifacts/snapshots/repository")
-        }
-        maven {
             url = uri("https://central.sonatype.com/repository/maven-snapshots/")
         }
     }
@@ -25,9 +22,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven {
-            url = uri("https://androidx.dev/kmp/builds/14427339/artifacts/snapshots/repository")
-        }
         maven {
             url = uri("https://central.sonatype.com/repository/maven-snapshots/")
         }
