@@ -35,10 +35,12 @@ fun FilterUi.toDomain(stringProvider: StringProvider): ServerQuery {
     val official = checkboxes.getOrNull(0)?.isChecked
     val modded = checkboxes.getOrNull(1)?.isChecked
 
-    val playerCount = ranges.getOrNull(0)?.value?.toLong()
+    val playerCountRaw = ranges.getOrNull(0)?.value?.toLong()
+    val playerCount = if (playerCountRaw == 0L) null else playerCountRaw
     val groupLimitRaw = ranges.getOrNull(1)?.value?.toLong()
     val groupLimit = if (groupLimitRaw == 0L) null else groupLimitRaw
-    val ranking = ranges.getOrNull(2)?.value?.toLong()
+    val rankingRaw = ranges.getOrNull(2)?.value?.toLong()
+    val ranking = if (rankingRaw == 0L) null else rankingRaw
 
     return ServerQuery(
         map = selectedMap?.let { Maps.fromDisplayName(it) },
@@ -59,6 +61,6 @@ fun FilterUi.toDomain(stringProvider: StringProvider): ServerQuery {
 fun FilterUi.activeFiltersCount(): Int {
     val dropdownCount = lists.count { it.selectedIndex != null  && it.selectedIndex != -1}
     val checkboxCount = checkboxes.count { it.isChecked }
-    val rangeCount = ranges.count { it.value != null }
+    val rangeCount = ranges.count { it.value != 0 && it.value != null }
     return dropdownCount + checkboxCount + rangeCount
 }

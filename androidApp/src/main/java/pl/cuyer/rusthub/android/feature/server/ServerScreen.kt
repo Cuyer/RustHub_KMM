@@ -4,7 +4,6 @@ import android.app.Activity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.animateBounds
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -19,13 +18,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
@@ -98,7 +95,6 @@ import pl.cuyer.rusthub.presentation.features.ads.NativeAdState
 import pl.cuyer.rusthub.presentation.features.server.ServerAction
 import pl.cuyer.rusthub.presentation.features.server.ServerState
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
-import pl.cuyer.rusthub.presentation.model.activeFiltersCount
 import pl.cuyer.rusthub.presentation.model.createDetails
 import pl.cuyer.rusthub.presentation.model.createLabels
 import pl.cuyer.rusthub.presentation.navigation.ServerDetails
@@ -160,9 +156,6 @@ fun ServerScreen(
     val stringProvider = koinInject<StringProvider>()
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val activeFiltersCount = remember(state.value.filters) {
-        state.value.filters?.activeFiltersCount() ?: 0
-    }
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -224,7 +217,7 @@ fun ServerScreen(
                         onAction(ServerAction.OnClearSearchQuery)
                     },
                     showFiltersIcon = true,
-                    filtersCount = { activeFiltersCount },
+                    filterUi = { state.value.filters },
                 )
                 ServerFilterChips(
                     selected = state.value.filters?.filter ?: ServerFilter.ALL,

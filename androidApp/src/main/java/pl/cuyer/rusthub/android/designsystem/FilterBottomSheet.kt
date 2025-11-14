@@ -57,6 +57,10 @@ import pl.cuyer.rusthub.presentation.model.FilterDropdownOption
 import pl.cuyer.rusthub.presentation.model.FilterRangeOption
 import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.util.StringProvider
+import kotlin.div
+import kotlin.text.toFloat
+import kotlin.text.toInt
+import kotlin.toString
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -257,6 +261,38 @@ private fun CheckboxFilters(
     }
 }
 
+private fun getVirtualValueForPlayerCount(realValue: Float?, maxIntValue: Int): Float {
+    if (realValue == null) return 0f
+    val stepSize = 50
+    val steps = maxIntValue / stepSize
+    val value = realValue.toInt()
+    if (value >= maxIntValue) return steps.toFloat()
+    return (value / stepSize).toFloat()
+}
+
+private fun getRealValueForPlayerCount(virtualValue: Float, maxIntValue: Int): Int {
+    val stepSize = 50
+    val steps = maxIntValue / stepSize
+    val idx = virtualValue.toInt().coerceIn(0, steps)
+    return if (idx == steps) maxIntValue else (idx * stepSize)
+}
+
+private fun getVirtualValueForRanking(realValue: Float?, maxIntValue: Int): Float {
+    if (realValue == null) return 0f
+    val stepSize = 100
+    val steps = maxIntValue / stepSize
+    val value = realValue.toInt()
+    if (value >= maxIntValue) return steps.toFloat()
+    return (value / stepSize).toFloat()
+}
+
+private fun getRealValueForRanking(virtualValue: Float, maxIntValue: Int): Int {
+    val stepSize = 100
+    val steps = maxIntValue / stepSize
+    val idx = virtualValue.toInt().coerceIn(0, steps)
+    return if (idx == steps) maxIntValue else (idx * stepSize)
+}
+
 private fun getVirtualValueForIndex1(realValue: Float?, maxIntValue: Int): Float {
     return when (realValue?.toInt()) {
         0 -> 0f
@@ -283,38 +319,6 @@ private fun getRealValueForIndex1(virtualValue: Float, maxIntValue: Int): Int {
         6 -> 6
         else -> maxIntValue // Position 7 and others map to MAX
     }
-}
-
-private fun getVirtualValueForPlayerCount(realValue: Float?, maxIntValue: Int): Float {
-    if (realValue == null) return 0f
-    val stepSize = 50
-    val steps = maxIntValue / stepSize
-    val value = realValue.toInt()
-    if (value >= maxIntValue) return steps.toFloat()
-    return (value / stepSize).coerceIn(0, steps).toFloat()
-}
-
-private fun getRealValueForPlayerCount(virtualValue: Float, maxIntValue: Int): Int {
-    val stepSize = 50
-    val steps = maxIntValue / stepSize
-    val idx = virtualValue.toInt().coerceIn(0, steps)
-    return if (idx == steps) maxIntValue else (idx * stepSize)
-}
-
-private fun getVirtualValueForRanking(realValue: Float?, maxIntValue: Int): Float {
-    if (realValue == null) return 0f
-    val stepSize = 100
-    val steps = maxIntValue / stepSize
-    val value = realValue.toInt()
-    if (value >= maxIntValue) return steps.toFloat()
-    return (value / stepSize).coerceIn(0, steps).toFloat()
-}
-
-private fun getRealValueForRanking(virtualValue: Float, maxIntValue: Int): Int {
-    val stepSize = 100
-    val steps = maxIntValue / stepSize
-    val idx = virtualValue.toInt().coerceIn(0, steps)
-    return if (idx == steps) maxIntValue else (idx * stepSize)
 }
 
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
@@ -368,12 +372,12 @@ private fun RangeFilters(
         options.forEachIndexed { index, option ->
             key(option.label) {
                 val maxIntValue = option.max
-                val maxValue = maxIntValue.toFloat()
                 when (index) {
                     0 -> { // Player count slider
                         val stepSize = 50
-                        val steps = maxIntValue / stepSize
-                        val virtualValueRange = 0f..steps.toFloat()
+                        val positions = (maxIntValue / stepSize) + 1 // np. 1000/50=20, +1=21 pozycji
+                        val steps = positions - 1 // 20
+                        val virtualValueRange = 0f..steps.toFloat() // 0..20
                         val initialValue = remember(option.value, maxIntValue) {
                             getVirtualValueForPlayerCount(option.value?.toFloat(), maxIntValue)
                         }
@@ -392,8 +396,9 @@ private fun RangeFilters(
                     }
                     2 -> { // Ranking slider
                         val stepSize = 100
-                        val steps = maxIntValue / stepSize
-                        val virtualValueRange = 0f..steps.toFloat()
+                        val positions = (maxIntValue / stepSize) + 1 // np. 3500/100=35, +1=36 pozycji
+                        val steps = positions - 1 // 35
+                        val virtualValueRange = 0f..steps.toFloat() // 0..35
                         val initialValue = remember(option.value, maxIntValue) {
                             getVirtualValueForRanking(option.value?.toFloat(), maxIntValue)
                         }
@@ -411,8 +416,9 @@ private fun RangeFilters(
                         )
                     }
                     1 -> { // Group limit slider
-                        val steps = 7
-                        val virtualValueRange = 0f..7f
+                        val positions = 8 // 0..6 + max
+                        val steps = positions - 1 // 7
+                        val virtualValueRange = 0f..steps.toFloat() // 0..7
                         val initialValue = remember(option.value, maxIntValue) {
                             getVirtualValueForIndex1(option.value?.toFloat(), maxIntValue)
                         }
@@ -430,13 +436,13 @@ private fun RangeFilters(
                         )
                     }
                     else -> {
-                        val initialValue = remember(option.value, maxValue, index) {
-                            option.value?.toFloat() ?: maxValue
+                        val initialValue = remember(option.value, option.max.toFloat(), index) {
+                            option.value?.toFloat() ?: option.max.toFloat()
                         }
                         SingleRangeSlider(
                             label = option.label,
                             initialValue = initialValue,
-                            valueRange = 0f..maxValue,
+                            valueRange = 0f..option.max.toFloat(),
                             steps = 0,
                             formatValue = { realValue ->
                                 realValue.toInt().toString()
