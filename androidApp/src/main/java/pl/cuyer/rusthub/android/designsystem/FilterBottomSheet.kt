@@ -40,9 +40,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import pl.cuyer.rusthub.SharedRes
 import pl.cuyer.rusthub.android.theme.RustHubTheme
@@ -57,9 +57,6 @@ import pl.cuyer.rusthub.presentation.model.FilterDropdownOption
 import pl.cuyer.rusthub.presentation.model.FilterRangeOption
 import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.util.StringProvider
-import kotlin.text.toFloat
-import kotlin.text.toInt
-import kotlin.toString
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -262,60 +259,62 @@ private fun CheckboxFilters(
 
 private fun getVirtualValueForIndex1(realValue: Float?, maxIntValue: Int): Float {
     return when (realValue?.toInt()) {
-        1 -> 0f
-        2 -> 1f
-        3 -> 2f
-        4 -> 3f
-        5 -> 4f
-        6 -> 5f
-        maxIntValue -> 6f
-        null -> 2f // Domyślna wartość (mapuje na 4)
-        else -> 6f // Nieznane wartości mapuj na MAX
+        0 -> 0f
+        1 -> 1f
+        2 -> 2f
+        3 -> 3f
+        4 -> 4f
+        5 -> 5f
+        6 -> 6f
+        maxIntValue -> 7f
+        null -> 0f
+        else -> 7f // Unknown values map to MAX
     }
 }
 
 private fun getRealValueForIndex1(virtualValue: Float, maxIntValue: Int): Int {
     return when (virtualValue.toInt()) {
-        0 -> 1
-        1 -> 2
-        2 -> 3
-        3 -> 4
-        4 -> 5
-        5 -> 6
-        else -> maxIntValue // Pozycja 6 i wszystkie inne/nieoczekiwane mapuj na MAX
+        0 -> 0
+        1 -> 1
+        2 -> 2
+        3 -> 3
+        4 -> 4
+        5 -> 5
+        6 -> 6
+        else -> maxIntValue // Position 7 and others map to MAX
     }
 }
 
 private fun getVirtualValueForPlayerCount(realValue: Float?, maxIntValue: Int): Float {
     if (realValue == null) return 0f
-    val steps = 9
-    val stepSize = maxIntValue / steps.toFloat()
+    val stepSize = 10
+    val steps = maxIntValue / stepSize
     val value = realValue.toInt()
     if (value >= maxIntValue) return steps.toFloat()
-    return ((value / stepSize).toInt()).coerceIn(0, steps).toFloat()
+    return (value / stepSize).coerceIn(0, steps).toFloat()
 }
 
 private fun getRealValueForPlayerCount(virtualValue: Float, maxIntValue: Int): Int {
-    val steps = 9
-    val stepSize = maxIntValue / steps.toFloat()
+    val stepSize = 10
+    val steps = maxIntValue / stepSize
     val idx = virtualValue.toInt().coerceIn(0, steps)
-    return if (idx == steps) maxIntValue else (idx * stepSize).toInt()
+    return if (idx == steps) maxIntValue else (idx * stepSize)
 }
 
 private fun getVirtualValueForRanking(realValue: Float?, maxIntValue: Int): Float {
     if (realValue == null) return 0f
-    val steps = 99
-    val stepSize = maxIntValue / steps.toFloat()
+    val stepSize = 100
+    val steps = maxIntValue / stepSize
     val value = realValue.toInt()
     if (value >= maxIntValue) return steps.toFloat()
-    return ((value / stepSize).toInt()).coerceIn(0, steps).toFloat()
+    return (value / stepSize).coerceIn(0, steps).toFloat()
 }
 
 private fun getRealValueForRanking(virtualValue: Float, maxIntValue: Int): Int {
-    val steps = 99
-    val stepSize = maxIntValue / steps.toFloat()
+    val stepSize = 100
+    val steps = maxIntValue / stepSize
     val idx = virtualValue.toInt().coerceIn(0, steps)
-    return if (idx == steps) maxIntValue else (idx * stepSize).toInt()
+    return if (idx == steps) maxIntValue else (idx * stepSize)
 }
 
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
@@ -358,6 +357,7 @@ private fun SingleRangeSlider(
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RangeFilters(
@@ -371,7 +371,8 @@ private fun RangeFilters(
                 val maxValue = maxIntValue.toFloat()
                 when (index) {
                     0 -> { // Player count slider
-                        val steps = 9
+                        val stepSize = 10
+                        val steps = maxIntValue / stepSize
                         val virtualValueRange = 0f..steps.toFloat()
                         val initialValue = remember(option.value, maxIntValue) {
                             getVirtualValueForPlayerCount(option.value?.toFloat(), maxIntValue)
@@ -390,7 +391,8 @@ private fun RangeFilters(
                         )
                     }
                     2 -> { // Ranking slider
-                        val steps = 99
+                        val stepSize = 100
+                        val steps = maxIntValue / stepSize
                         val virtualValueRange = 0f..steps.toFloat()
                         val initialValue = remember(option.value, maxIntValue) {
                             getVirtualValueForRanking(option.value?.toFloat(), maxIntValue)
@@ -408,9 +410,9 @@ private fun RangeFilters(
                             }
                         )
                     }
-                    1 -> {
-                        val steps = 5
-                        val virtualValueRange = 0f..6f
+                    1 -> { // Group limit slider
+                        val steps = 7
+                        val virtualValueRange = 0f..7f
                         val initialValue = remember(option.value, maxIntValue) {
                             getVirtualValueForIndex1(option.value?.toFloat(), maxIntValue)
                         }
