@@ -58,6 +58,7 @@ import pl.cuyer.rusthub.presentation.model.FilterRangeOption
 import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.util.StringProvider
 import kotlin.div
+import kotlin.math.roundToInt
 import kotlin.text.toFloat
 import kotlin.text.toInt
 import kotlin.toString
@@ -273,7 +274,7 @@ private fun getVirtualValueForPlayerCount(realValue: Float?, maxIntValue: Int): 
 private fun getRealValueForPlayerCount(virtualValue: Float, maxIntValue: Int): Int {
     val stepSize = 50
     val steps = maxIntValue / stepSize
-    val idx = virtualValue.toInt().coerceIn(0, steps)
+    val idx = virtualValue.roundToInt().coerceIn(0, steps)
     return if (idx == steps) maxIntValue else (idx * stepSize)
 }
 
@@ -289,7 +290,7 @@ private fun getVirtualValueForRanking(realValue: Float?, maxIntValue: Int): Floa
 private fun getRealValueForRanking(virtualValue: Float, maxIntValue: Int): Int {
     val stepSize = 100
     val steps = maxIntValue / stepSize
-    val idx = virtualValue.toInt().coerceIn(0, steps)
+    val idx = virtualValue.roundToInt().coerceIn(0, steps)
     return if (idx == steps) maxIntValue else (idx * stepSize)
 }
 
@@ -309,7 +310,7 @@ private fun getVirtualValueForIndex1(realValue: Float?, maxIntValue: Int): Float
 }
 
 private fun getRealValueForIndex1(virtualValue: Float, maxIntValue: Int): Int {
-    return when (virtualValue.toInt()) {
+    return when (virtualValue.roundToInt().coerceIn(0, 7)) {
         0 -> 0
         1 -> 1
         2 -> 2
