@@ -287,7 +287,7 @@ private fun getRealValueForIndex1(virtualValue: Float, maxIntValue: Int): Int {
 
 private fun getVirtualValueForPlayerCount(realValue: Float?, maxIntValue: Int): Float {
     if (realValue == null) return 0f
-    val stepSize = 10
+    val stepSize = 50
     val steps = maxIntValue / stepSize
     val value = realValue.toInt()
     if (value >= maxIntValue) return steps.toFloat()
@@ -295,7 +295,7 @@ private fun getVirtualValueForPlayerCount(realValue: Float?, maxIntValue: Int): 
 }
 
 private fun getRealValueForPlayerCount(virtualValue: Float, maxIntValue: Int): Int {
-    val stepSize = 10
+    val stepSize = 50
     val steps = maxIntValue / stepSize
     val idx = virtualValue.toInt().coerceIn(0, steps)
     return if (idx == steps) maxIntValue else (idx * stepSize)
@@ -336,7 +336,7 @@ private fun SingleRangeSlider(
 
     LaunchedEffect(sliderState) {
         snapshotFlow { sliderState.value }
-            .debounce { 500 }
+            .debounce { 1000 }
             .distinctUntilChanged()
             .collect { value ->
                 onValueChange(value)
@@ -371,7 +371,7 @@ private fun RangeFilters(
                 val maxValue = maxIntValue.toFloat()
                 when (index) {
                     0 -> { // Player count slider
-                        val stepSize = 10
+                        val stepSize = 50
                         val steps = maxIntValue / stepSize
                         val virtualValueRange = 0f..steps.toFloat()
                         val initialValue = remember(option.value, maxIntValue) {
