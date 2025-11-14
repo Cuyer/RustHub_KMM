@@ -36,7 +36,8 @@ fun FilterUi.toDomain(stringProvider: StringProvider): ServerQuery {
     val modded = checkboxes.getOrNull(1)?.isChecked
 
     val playerCount = ranges.getOrNull(0)?.value?.toLong()
-    val groupLimit = ranges.getOrNull(1)?.value?.toLong()
+    val groupLimitRaw = ranges.getOrNull(1)?.value?.toLong()
+    val groupLimit = if (groupLimitRaw == 0L) null else groupLimitRaw
     val ranking = ranges.getOrNull(2)?.value?.toLong()
 
     return ServerQuery(
