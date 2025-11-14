@@ -187,7 +187,7 @@ class ServerViewModel(
             val effectiveFilters = if (areFiltersUnset) {
                 filters?.copy(
                     playerCount = filtersOptions.maxPlayerCount.toLong(),
-                    groupLimit = 3,
+                    groupLimit = 0,
                     ranking = filtersOptions.maxRanking.toLong()
                 )
             } else {
