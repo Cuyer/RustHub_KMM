@@ -57,6 +57,9 @@ import pl.cuyer.rusthub.presentation.model.FilterDropdownOption
 import pl.cuyer.rusthub.presentation.model.FilterRangeOption
 import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.util.StringProvider
+import kotlin.text.toFloat
+import kotlin.text.toInt
+import kotlin.toString
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -266,7 +269,7 @@ private fun getVirtualValueForIndex1(realValue: Float?, maxIntValue: Int): Float
         5 -> 4f
         6 -> 5f
         maxIntValue -> 6f
-        null -> 3f // Domyślna wartość (mapuje na 4)
+        null -> 2f // Domyślna wartość (mapuje na 4)
         else -> 6f // Nieznane wartości mapuj na MAX
     }
 }
@@ -281,6 +284,38 @@ private fun getRealValueForIndex1(virtualValue: Float, maxIntValue: Int): Int {
         5 -> 6
         else -> maxIntValue // Pozycja 6 i wszystkie inne/nieoczekiwane mapuj na MAX
     }
+}
+
+private fun getVirtualValueForPlayerCount(realValue: Float?, maxIntValue: Int): Float {
+    if (realValue == null) return 0f
+    val steps = 9
+    val stepSize = maxIntValue / steps.toFloat()
+    val value = realValue.toInt()
+    if (value >= maxIntValue) return steps.toFloat()
+    return ((value / stepSize).toInt()).coerceIn(0, steps).toFloat()
+}
+
+private fun getRealValueForPlayerCount(virtualValue: Float, maxIntValue: Int): Int {
+    val steps = 9
+    val stepSize = maxIntValue / steps.toFloat()
+    val idx = virtualValue.toInt().coerceIn(0, steps)
+    return if (idx == steps) maxIntValue else (idx * stepSize).toInt()
+}
+
+private fun getVirtualValueForRanking(realValue: Float?, maxIntValue: Int): Float {
+    if (realValue == null) return 0f
+    val steps = 99
+    val stepSize = maxIntValue / steps.toFloat()
+    val value = realValue.toInt()
+    if (value >= maxIntValue) return steps.toFloat()
+    return ((value / stepSize).toInt()).coerceIn(0, steps).toFloat()
+}
+
+private fun getRealValueForRanking(virtualValue: Float, maxIntValue: Int): Int {
+    val steps = 99
+    val stepSize = maxIntValue / steps.toFloat()
+    val idx = virtualValue.toInt().coerceIn(0, steps)
+    return if (idx == steps) maxIntValue else (idx * stepSize).toInt()
 }
 
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
@@ -334,48 +369,81 @@ private fun RangeFilters(
             key(option.label) {
                 val maxIntValue = option.max
                 val maxValue = maxIntValue.toFloat()
-
-                if (index == 1) {
-                    val steps = 5
-                    val virtualValueRange = 0f..6f
-
-                    val initialValue = remember(option.value, maxIntValue) {
-                        getVirtualValueForIndex1(option.value?.toFloat(), maxIntValue)
+                when (index) {
+                    0 -> { // Player count slider
+                        val steps = 9
+                        val virtualValueRange = 0f..steps.toFloat()
+                        val initialValue = remember(option.value, maxIntValue) {
+                            getVirtualValueForPlayerCount(option.value?.toFloat(), maxIntValue)
+                        }
+                        SingleRangeSlider(
+                            label = option.label,
+                            initialValue = initialValue,
+                            valueRange = virtualValueRange,
+                            steps = steps,
+                            formatValue = { virtualValue ->
+                                getRealValueForPlayerCount(virtualValue, maxIntValue).toString()
+                            },
+                            onValueChange = { virtualValue ->
+                                onOptionsChange(index, getRealValueForPlayerCount(virtualValue, maxIntValue))
+                            }
+                        )
                     }
-
-                    SingleRangeSlider(
-                        label = option.label,
-                        initialValue = initialValue,
-                        valueRange = virtualValueRange,
-                        steps = steps,
-                        formatValue = { virtualValue ->
-                            getRealValueForIndex1(virtualValue, maxIntValue).toString()
-                        },
-                        onValueChange = { virtualValue ->
-                            onOptionsChange(index, getRealValueForIndex1(virtualValue, maxIntValue))
+                    2 -> { // Ranking slider
+                        val steps = 99
+                        val virtualValueRange = 0f..steps.toFloat()
+                        val initialValue = remember(option.value, maxIntValue) {
+                            getVirtualValueForRanking(option.value?.toFloat(), maxIntValue)
                         }
-                    )
-                }
-                else {
-                    val initialValue = remember(option.value, maxValue, index) {
-                        option.value?.toFloat() ?: when (index) {
-                            0, 2 -> maxValue
-                            else -> 4f
-                        }
+                        SingleRangeSlider(
+                            label = option.label,
+                            initialValue = initialValue,
+                            valueRange = virtualValueRange,
+                            steps = steps,
+                            formatValue = { virtualValue ->
+                                getRealValueForRanking(virtualValue, maxIntValue).toString()
+                            },
+                            onValueChange = { virtualValue ->
+                                onOptionsChange(index, getRealValueForRanking(virtualValue, maxIntValue))
+                            }
+                        )
                     }
-
-                    SingleRangeSlider(
-                        label = option.label,
-                        initialValue = initialValue,
-                        valueRange = 0f..maxValue,
-                        steps = 0,
-                        formatValue = { realValue ->
-                            realValue.toInt().toString()
-                        },
-                        onValueChange = { realValue ->
-                            onOptionsChange(index, realValue.toInt())
+                    1 -> {
+                        val steps = 5
+                        val virtualValueRange = 0f..6f
+                        val initialValue = remember(option.value, maxIntValue) {
+                            getVirtualValueForIndex1(option.value?.toFloat(), maxIntValue)
                         }
-                    )
+                        SingleRangeSlider(
+                            label = option.label,
+                            initialValue = initialValue,
+                            valueRange = virtualValueRange,
+                            steps = steps,
+                            formatValue = { virtualValue ->
+                                getRealValueForIndex1(virtualValue, maxIntValue).toString()
+                            },
+                            onValueChange = { virtualValue ->
+                                onOptionsChange(index, getRealValueForIndex1(virtualValue, maxIntValue))
+                            }
+                        )
+                    }
+                    else -> {
+                        val initialValue = remember(option.value, maxValue, index) {
+                            option.value?.toFloat() ?: maxValue
+                        }
+                        SingleRangeSlider(
+                            label = option.label,
+                            initialValue = initialValue,
+                            valueRange = 0f..maxValue,
+                            steps = 0,
+                            formatValue = { realValue ->
+                                realValue.toInt().toString()
+                            },
+                            onValueChange = { realValue ->
+                                onOptionsChange(index, realValue.toInt())
+                            }
+                        )
+                    }
                 }
             }
         }
