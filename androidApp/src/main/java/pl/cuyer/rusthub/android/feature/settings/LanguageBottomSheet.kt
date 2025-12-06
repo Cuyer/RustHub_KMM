@@ -49,11 +49,7 @@ fun LanguageBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = sheetState,
-        modifier = Modifier.bottomSheetNestedScroll(sheetState) { velocity ->
-            coroutineScope.launch { sheetState.settleCompat(velocity) }
-                .invokeOnCompletion { if (!sheetState.isVisible) onDismiss() }
-        }
+        sheetState = sheetState
     ) {
         Column(
             modifier = Modifier

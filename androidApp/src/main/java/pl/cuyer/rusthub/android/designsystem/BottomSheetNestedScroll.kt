@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.Velocity
 
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Deprecated("No longer needed")
 @Composable
 fun Modifier.bottomSheetNestedScroll(
     sheetState: SheetState,
