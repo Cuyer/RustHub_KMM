@@ -12,7 +12,7 @@ import database.MonumentEntity
 import database.ServerEntity
 import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
-import pl.cuyer.rusthub.BuildConfig
+import pl.cuyer.rusthub.SharedBuildConfig
 
 actual class DatabaseDriverFactory(
     private val context: Context,
@@ -56,7 +56,7 @@ actual class DatabaseDriverFactory(
     }
 
     private fun createDriver(): AndroidSqliteDriver {
-        return if (BuildConfig.USE_ENCRYPTED_DB) {
+        return if (SharedBuildConfig.USE_ENCRYPTED_DB) {
             loadSqlCipherLibraries()
             val factory = SupportOpenHelperFactory(
                 Base64.decode(requireNotNull(passphrase), Base64.NO_WRAP)
