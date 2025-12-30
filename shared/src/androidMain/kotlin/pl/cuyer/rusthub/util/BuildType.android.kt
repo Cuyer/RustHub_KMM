@@ -1,7 +1,7 @@
 package pl.cuyer.rusthub.util
 
-import pl.cuyer.rusthub.SharedBuildConfig
+import pl.cuyer.rusthub.BuildConfig
 
 actual object BuildType {
-    actual val isDebug: Boolean = SharedBuildConfig.IS_DEBUG_BUILD
+    actual val isDebug: Boolean = BuildConfig.DEBUG
 }
