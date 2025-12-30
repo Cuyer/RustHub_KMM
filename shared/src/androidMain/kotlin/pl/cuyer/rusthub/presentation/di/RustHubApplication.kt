@@ -20,8 +20,8 @@ import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.dsl.module
-import pl.cuyer.rusthub.BuildConfig
 import pl.cuyer.rusthub.data.local.DatabasePassphraseProvider
+import pl.cuyer.rusthub.SharedBuildConfig
 import pl.cuyer.rusthub.util.ActivityProvider
 import pl.cuyer.rusthub.util.NotificationPresenter
 import pl.cuyer.rusthub.work.CustomWorkerFactory
@@ -40,7 +40,7 @@ class RustHubApplication : Application(), Configuration.Provider {
     @SuppressLint("MissingPermission")
     override fun onCreate() {
         super.onCreate()
-        if (BuildConfig.DEBUG) {
+        if (SharedBuildConfig.IS_DEBUG_BUILD) {
             StrictMode.setThreadPolicy(
                 StrictMode.ThreadPolicy.Builder()
                     .detectAll()
@@ -56,10 +56,10 @@ class RustHubApplication : Application(), Configuration.Provider {
         }
         if (needCtProvider()) {
             installCertificateTransparencyProvider {
-                logger = BasicAndroidCTLogger(BuildConfig.DEBUG)
+                logger = BasicAndroidCTLogger(SharedBuildConfig.IS_DEBUG_BUILD)
             }
         }
-        val factory = if (BuildConfig.DEBUG) {
+        val factory = if (SharedBuildConfig.IS_DEBUG_BUILD) {
             DebugAppCheckProviderFactory.getInstance()
         } else {
             PlayIntegrityAppCheckProviderFactory.getInstance()
@@ -71,7 +71,7 @@ class RustHubApplication : Application(), Configuration.Provider {
             val passphrase = DatabasePassphraseProvider(this@RustHubApplication).loadPassphrase()
             initKoin(passphrase) {
                 androidContext(this@RustHubApplication)
-                if (BuildConfig.DEBUG) {
+                if (SharedBuildConfig.IS_DEBUG_BUILD) {
                     androidLogger()
                 }
                 modules(module { single { activityProvider } })

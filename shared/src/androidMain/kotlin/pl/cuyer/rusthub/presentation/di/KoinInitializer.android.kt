@@ -7,7 +7,7 @@ import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import pl.cuyer.rusthub.BuildConfig
+import pl.cuyer.rusthub.SharedBuildConfig
 import pl.cuyer.rusthub.data.local.DatabaseDriverFactory
 import pl.cuyer.rusthub.data.network.HttpClientFactory
 import pl.cuyer.rusthub.database.RustHubDatabase
@@ -71,7 +71,7 @@ import pl.cuyer.rusthub.presentation.features.monument.MonumentDetailsViewModel
 
 actual fun platformModule(passphrase: String): Module = module {
     single<RustHubDatabase>(createdAtStart = true) {
-        if (BuildConfig.USE_ENCRYPTED_DB) {
+        if (SharedBuildConfig.USE_ENCRYPTED_DB) {
             DatabaseDriverFactory(androidContext(), passphrase).create()
         } else {
             DatabaseDriverFactory(androidContext()).create()

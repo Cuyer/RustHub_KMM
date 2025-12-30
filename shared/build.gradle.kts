@@ -1,3 +1,4 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -6,7 +7,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kotlinCocoapods)
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.sqlDelightGradlePlugin)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.mokoMultiplatformResources)
@@ -14,13 +15,27 @@ plugins {
     alias(libs.plugins.protobuf)
 }
 
+val rusthubEnvironment = providers.gradleProperty("RUSTHUB_ENVIRONMENT").orElse("production").get()
+val isDevelopment = rusthubEnvironment.equals("development", ignoreCase = true)
+
 kotlin {
-    androidTarget {
-        compilations.all {
-            compileTaskProvider.configure {
-                compilerOptions {
-                    jvmTarget.set(JvmTarget.JVM_17)
-                }
+    androidLibrary {
+        namespace = "pl.cuyer.rusthub"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        androidResources {
+            enable = true
+        }
+
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
+
+        localDependencySelection {
+            selectBuildTypeFrom.set(listOf("debug", "release"))
+            productFlavorDimension("mode") {
+                selectFrom.set(listOf("development", "production"))
             }
         }
     }
@@ -117,69 +132,6 @@ kotlin {
     }
 }
 
-android {
-    namespace = "pl.cuyer.rusthub"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-    flavorDimensions += "mode"
-    signingConfigs {
-        create("development") {
-            storeFile = rootProject.file("androidApp/keystore-dev.jks")
-            storePassword = System.getenv("DEV_STORE_PASSWORD")
-            keyAlias = System.getenv("DEV_SIGNING_KEY_ALIAS")
-            keyPassword = System.getenv("DEV_SIGNING_KEY_PASSWORD")
-        }
-        create("production") {
-            storeFile = rootProject.file("androidApp/keystore-prod.jks")
-            storePassword = System.getenv("PROD_STORE_PASSWORD")
-            keyAlias = System.getenv("PROD_SIGNING_KEY_ALIAS")
-            keyPassword = System.getenv("PROD_SIGNING_KEY_PASSWORD")
-        }
-    }
-
-    productFlavors {
-        create("production") {
-            dimension = "mode"
-            buildConfigField("String", "BASE_URL", "\"https://api.rusthub.me/\"")
-            buildConfigField("String", "PRIVACY_POLICY_URL", "\"https://rusthub.me/privacy\"")
-            buildConfigField("String", "TERMS_URL", "\"https://rusthub.me/terms\"")
-            buildConfigField("Boolean", "USE_ENCRYPTED_DB", "true")
-            signingConfig = signingConfigs.getByName("production")
-        }
-        create("development") {
-            dimension = "mode"
-            buildConfigField("String", "BASE_URL", "\"https://api.dev.rusthub.me/\"")
-            buildConfigField("String", "PRIVACY_POLICY_URL", "\"http://localhost:5173/privacy\"")
-            buildConfigField("String", "TERMS_URL", "\"http://localhost:5173/terms\"")
-            buildConfigField("Boolean", "USE_ENCRYPTED_DB", "false")
-            signingConfig = signingConfigs.getByName("development")
-        }
-    }
-
-    buildFeatures {
-        buildConfig = true
-    }
-
-
-    
-    buildTypes {
-        release {
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard.pro")
-            isJniDebuggable = false
-        }
-
-        getByName("debug") {
-            signingConfig = signingConfigs.getByName("development")
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-}
-
 multiplatformResources {
     resourcesPackage.set("pl.cuyer.rusthub")
     resourcesClassName.set("SharedRes")
@@ -190,6 +142,23 @@ buildkonfig {
     exposeObjectWithName = "SharedBuildConfig"
     defaultConfigs {
         buildConfigField(STRING, "VERSION_NAME", project.property("VERSION_NAME") as String)
+        buildConfigField(
+            STRING,
+            "BASE_URL",
+            if (isDevelopment) "https://api.dev.rusthub.me/" else "https://api.rusthub.me/",
+        )
+        buildConfigField(
+            STRING,
+            "PRIVACY_POLICY_URL",
+            if (isDevelopment) "http://localhost:5173/privacy" else "https://rusthub.me/privacy",
+        )
+        buildConfigField(
+            STRING,
+            "TERMS_URL",
+            if (isDevelopment) "http://localhost:5173/terms" else "https://rusthub.me/terms",
+        )
+        buildConfigField(BOOLEAN, "USE_ENCRYPTED_DB", (!isDevelopment).toString())
+        buildConfigField(BOOLEAN, "IS_DEBUG_BUILD", isDevelopment.toString())
     }
 }
 
