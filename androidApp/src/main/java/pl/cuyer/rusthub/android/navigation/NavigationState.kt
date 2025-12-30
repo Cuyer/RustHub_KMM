@@ -1,19 +1,21 @@
 package pl.cuyer.rusthub.android.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberDecoratedNavEntries
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
-import androidx.navigation3.runtime.rememberViewModelStoreNavEntryDecorator
 
 /**
  * Create a navigation state that persists config changes and process death.
@@ -42,6 +44,7 @@ fun rememberNavigationState(
  * @param topLevelStack - the top level back stack. It holds only top level keys.
  * @param subStacks - the back stacks for each top level key
  */
+@Immutable
 class NavigationState(
     startKey: NavKey,
     val topLevelStack: NavBackStack<NavKey>,
@@ -106,6 +109,7 @@ fun NavigationState.toEntries(
  *
  * @param state - The navigation state that will be updated in response to navigation events.
  */
+@Immutable
 class Navigator(val state: NavigationState) {
 
     /**
@@ -125,12 +129,11 @@ class Navigator(val state: NavigationState) {
      * Go back to the previous navigation key.
      */
     fun goBack(): Boolean {
-        return when {
-            state.currentKey == state.startKey &&
-                state.topLevelStack.size == 1 &&
-                state.currentSubStack.size == 1 -> false
+        return when (state.currentKey) {
+            state.startKey if state.topLevelStack.size == 1 &&
+                    state.currentSubStack.size == 1 -> false
 
-            state.currentKey == state.currentTopLevelKey -> {
+            state.currentTopLevelKey -> {
                 state.topLevelStack.removeLastOrNull() != null
             }
 

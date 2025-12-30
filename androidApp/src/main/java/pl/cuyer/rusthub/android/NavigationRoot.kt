@@ -59,6 +59,7 @@ import pl.cuyer.rusthub.presentation.navigation.ServerDetails
 import pl.cuyer.rusthub.presentation.navigation.ServerList
 import pl.cuyer.rusthub.presentation.navigation.Settings
 import pl.cuyer.rusthub.presentation.navigation.Subscription
+import pl.cuyer.rusthub.presentation.navigation.UpgradeAccount
 import pl.cuyer.rusthub.presentation.snackbar.Duration
 import pl.cuyer.rusthub.presentation.snackbar.SnackbarController
 
@@ -107,7 +108,7 @@ fun NavigationRoot(navigationState: NavigationState) {
         NavigationSuiteScaffold(
             containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onBackground,
-            navigationItems = { BottomBarItems(currentBottomNav, navigator::navigate) },
+            navigationItems = { BottomBarItems(currentBottomNav) { navigator.navigate(it.root) } },
             content = {
                 AppScaffold(
                     snackbarHostState = snackbarHostState,

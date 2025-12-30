@@ -1,13 +1,15 @@
+@file:OptIn(ExperimentalMaterial3AdaptiveApi::class)
+
 package pl.cuyer.rusthub.android
 
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.entry
 import androidx.navigation3.runtime.entryProvider
 import androidx.paging.compose.collectAsLazyPagingItems
 import org.koin.compose.viewmodel.koinViewModel
@@ -84,10 +86,7 @@ internal fun EntryProviderScope<NavKey>.registerAuthEntries(
             state = state,
             onAction = viewModel::onAction,
             uiEvent = viewModel.uiEvent,
-            onNavigate = { destination ->
-                if (destination in navigator.state.topLevelKeys) navigator.resetTo(destination)
-                navigator.navigate(destination)
-            }
+            onNavigate = navigator::navigate
         )
     }
     entry<Credentials> { key ->
@@ -104,11 +103,7 @@ internal fun EntryProviderScope<NavKey>.registerAuthEntries(
             state = state,
             uiEvent = viewModel.uiEvent,
             onAction = viewModel::onAction,
-            onNavigate = { destination ->
-                if (destination in navigator.state.topLevelKeys) navigator.resetTo(destination)
-                if (destination is ConfirmEmail) navigator.goBack()
-                navigator.navigate(destination)
-            },
+            onNavigate = navigator::navigate,
             onNavigateUp = { navigator.goBack() }
         )
     }
@@ -119,10 +114,7 @@ internal fun EntryProviderScope<NavKey>.registerAuthEntries(
             uiEvent = viewModel.uiEvent,
             state = state,
             onAction = viewModel::onAction,
-            onNavigate = { destination ->
-                if (destination in navigator.state.topLevelKeys) navigator.resetTo(destination)
-                navigator.navigate(destination)
-            },
+            onNavigate = navigator::navigate,
             onNavigateUp = { navigator.goBack() }
         )
     }
@@ -219,9 +211,8 @@ internal fun EntryProviderScope<NavKey>.registerItemEntries(
         val state = viewModel.state.collectAsStateWithLifecycle()
         ItemDetailsScreen(
             state = state,
-            onAction = viewModel::onAction,
-            uiEvent = viewModel.uiEvent,
-            onNavigateUp = { navigator.goBack() }
+            onNavigateUp = { navigator.goBack() },
+            onRefresh = viewModel::refresh
         )
     }
 }
@@ -249,12 +240,10 @@ internal fun EntryProviderScope<NavKey>.registerMonumentEntries(
     }
     entry<MonumentDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
         val viewModel: MonumentDetailsViewModel =
-            koinViewModel(key = key.id.toString()) { parametersOf(key.id, key.name) }
+            koinViewModel(key = key.slug) { parametersOf(key.slug) }
         val state = viewModel.state.collectAsStateWithLifecycle()
         MonumentDetailsScreen(
             state = state,
-            uiEvent = viewModel.uiEvent,
-            onAction = viewModel::onAction,
             onNavigateUp = { navigator.goBack() },
         )
     }
@@ -263,7 +252,7 @@ internal fun EntryProviderScope<NavKey>.registerMonumentEntries(
 internal fun EntryProviderScope<NavKey>.registerRaidEntries(
     navigator: Navigator,
 ) {
-    entry<RaidScheduler> {
+    entry<RaidScheduler>(metadata = ListDetailSceneStrategy.listPane()) {
         val viewModel = koinViewModel<RaidSchedulerViewModel>()
         val state = viewModel.state.collectAsStateWithLifecycle()
         RaidSchedulerScreen(
@@ -273,8 +262,8 @@ internal fun EntryProviderScope<NavKey>.registerRaidEntries(
             onNavigate = navigator::navigate
         )
     }
-    entry<RaidForm> { key ->
-        val viewModel: RaidFormViewModel = koinViewModel { parametersOf(key.serverName, key.raidId) }
+    entry<RaidForm>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
+        val viewModel: RaidFormViewModel = koinViewModel(key = key.raid?.id ?: "new") { parametersOf(key.raid) }
         val state = viewModel.state.collectAsStateWithLifecycle()
         RaidFormScreen(
             state = state,
@@ -290,23 +279,18 @@ internal fun EntryProviderScope<NavKey>.registerSettingsEntries(
 ) {
     entry<Settings> {
         val viewModel = koinViewModel<SettingsViewModel>()
-        val keyboard = LocalSoftwareKeyboardController.current
         val state = viewModel.state.collectAsStateWithLifecycle()
         SettingsScreen(
             state = state,
             uiEvent = viewModel.uiEvent,
             onAction = viewModel::onAction,
-            onNavigate = navigator::navigate,
-            onNavigateUp = { navigator.goBack() },
-            keyboard = keyboard,
-            onSupportRequested = { navigator.navigate(About) }
+            onNavigate = navigator::navigate
         )
     }
     entry<DeleteAccount> {
         val viewModel = koinViewModel<DeleteAccountViewModel>()
         val state = viewModel.state.collectAsStateWithLifecycle()
         DeleteAccountScreen(
-            uiEvent = viewModel.uiEvent,
             state = state,
             onAction = viewModel::onAction,
             onNavigateUp = { navigator.goBack() }
@@ -319,7 +303,6 @@ internal fun EntryProviderScope<NavKey>.registerSettingsEntries(
             state = state,
             onAction = viewModel::onAction,
             uiEvent = viewModel.uiEvent,
-            onNavigate = navigator::navigate,
             onNavigateUp = { navigator.goBack() }
         )
     }

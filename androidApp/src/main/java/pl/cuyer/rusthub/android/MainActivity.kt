@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity() {
                             val baseTopLevelKeys = remember { (bottomNavItems.map { it.root } + Onboarding).toSet() }
                             val navigationState = rememberNavigationState(
                                 startKey = state.value.startDestination,
-                                topLevelKeys = baseTopLevelKeys + state.value.startDestination,
+                                topLevelKeys = baseTopLevelKeys,
                             )
 
                             RustHubBackground {
