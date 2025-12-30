@@ -66,7 +66,6 @@ import kotlin.toString
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FilterBottomSheet(
-    modifier: Modifier = Modifier,
     filters: FilterUi?,
     isLoadingFilters: Boolean,
     sheetState: SheetState,
@@ -74,15 +73,9 @@ fun FilterBottomSheet(
     onAction: (ServerAction) -> Unit
 ) {
     val scrollState = rememberScrollState()
-    val coroutineScope = rememberCoroutineScope()
-
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = sheetState,
-        modifier = modifier.bottomSheetNestedScroll(sheetState) { velocity ->
-            coroutineScope.launch { sheetState.settleCompat(velocity) }
-                .invokeOnCompletion { if (!sheetState.isVisible) onDismiss() }
-        }
+        sheetState = sheetState
     ) {
         val header = stringResource(SharedRes.strings.filter_options)
         Text(

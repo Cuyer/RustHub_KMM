@@ -43,15 +43,9 @@ fun ThemeBottomSheet(
     onUseSystemColorsChange: (Boolean) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val coroutineScope = rememberCoroutineScope()
-
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        modifier = Modifier.bottomSheetNestedScroll(sheetState) { velocity ->
-            coroutineScope.launch { sheetState.settleCompat(velocity) }
-                .invokeOnCompletion { if (!sheetState.isVisible) onDismiss() }
-        }
     ) {
         Column(
             modifier = Modifier
