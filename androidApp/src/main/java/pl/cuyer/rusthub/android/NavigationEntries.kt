@@ -206,7 +206,7 @@ internal fun EntryProviderScope<NavKey>.registerItemEntries(
     }
     entry<ItemDetails>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
         val viewModel: ItemDetailsViewModel = koinViewModel(key = key.id.toString()) {
-            parametersOf(key.id)
+            parametersOf(key.id, key.name)
         }
         val state = viewModel.state.collectAsStateWithLifecycle()
         ItemDetailsScreen(
