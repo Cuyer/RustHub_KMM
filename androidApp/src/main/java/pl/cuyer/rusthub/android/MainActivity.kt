@@ -10,6 +10,7 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -28,11 +29,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.getViewModel
+import pl.cuyer.rusthub.android.navigation.bottomNavItems
+import pl.cuyer.rusthub.android.navigation.rememberNavigationState
 import pl.cuyer.rusthub.android.theme.RustHubTheme
 import pl.cuyer.rusthub.android.util.composeUtil.isSystemInDarkTheme
 import pl.cuyer.rusthub.domain.model.Theme
 import pl.cuyer.rusthub.presentation.di.RustHubApplication
 import pl.cuyer.rusthub.presentation.features.startup.StartupViewModel
+import pl.cuyer.rusthub.presentation.navigation.Onboarding
 import pl.cuyer.rusthub.util.InAppUpdateManager
 
 class MainActivity : AppCompatActivity() {
@@ -132,8 +136,14 @@ class MainActivity : AppCompatActivity() {
                     ) {
                         val state = startupViewModel.state.collectAsStateWithLifecycle()
                         if (!state.value.isLoading) {
+                            val baseTopLevelKeys = remember { (bottomNavItems.map { it.root } + Onboarding).toSet() }
+                            val navigationState = rememberNavigationState(
+                                startKey = state.value.startDestination,
+                                topLevelKeys = baseTopLevelKeys,
+                            )
+
                             RustHubBackground {
-                                NavigationRoot(startDestination = { state.value.startDestination })
+                                NavigationRoot(navigationState = navigationState)
                             }
                         }
                     }
