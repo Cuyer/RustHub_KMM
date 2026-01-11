@@ -30,7 +30,6 @@ import pl.cuyer.rusthub.util.catchAndLog
 import pl.cuyer.rusthub.common.BaseViewModel
 import pl.cuyer.rusthub.domain.model.SearchQuery
 import pl.cuyer.rusthub.domain.model.ServerFilter
-import pl.cuyer.rusthub.domain.model.ServerQuery
 import pl.cuyer.rusthub.domain.model.displayName
 import pl.cuyer.rusthub.domain.model.Flag
 import pl.cuyer.rusthub.domain.model.Region
@@ -43,6 +42,7 @@ import pl.cuyer.rusthub.domain.usecase.GetPagedServersUseCase
 import pl.cuyer.rusthub.domain.usecase.GetSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.SaveSearchQueryUseCase
+import pl.cuyer.rusthub.domain.usecase.EnsureDefaultFiltersUseCase
 import pl.cuyer.rusthub.presentation.model.FilterUi
 import pl.cuyer.rusthub.presentation.model.SearchQueryUi
 import pl.cuyer.rusthub.presentation.model.ServerInfoUi
@@ -77,6 +77,7 @@ class ServerViewModel(
     private val saveSearchQueryUseCase: SaveSearchQueryUseCase,
     private val getSearchQueriesUseCase: GetSearchQueriesUseCase,
     private val deleteSearchQueriesUseCase: DeleteSearchQueriesUseCase,
+    private val ensureDefaultFiltersUseCase: EnsureDefaultFiltersUseCase,
     private val stringProvider: StringProvider,
     private val connectivityObserver: ConnectivityObserver,
     private val getUserUseCase: GetUserUseCase,
@@ -105,6 +106,7 @@ class ServerViewModel(
 
     private val filterChangeFlow = state
         .map { it.filters }
+        .filterNotNull()
         .distinctUntilChanged()
 
     val showAds = getUserUseCase()
@@ -122,10 +124,11 @@ class ServerViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val paging: Flow<PagingData<ServerInfoUi>> =
         combine(queryFlow, filterChangeFlow) { query, filters -> query to filters }
+            .onStart { ensureDefaultFiltersUseCase() }
             .flatMapLatest { (query, filters) ->
                 getPagedServersUseCase(
                     searchQuery = query,
-                    filters = filters?.toDomain(stringProvider) ?: ServerQuery()
+                    filters = filters.toDomain(stringProvider)
                 ).map { pagingData ->
                     pagingData.map { it.toUiModel(stringProvider) }
                 }.flowOn(Dispatchers.Default)

@@ -45,7 +45,7 @@ class FiltersDataSourceImpl(
         }
     }
 
-    private suspend fun ensureDefaultFilters() {
+    override suspend fun ensureDefaultFilters() {
         withContext(Dispatchers.IO) {
             val exists = safeQuery(null) {
                 queries.getFilters(DEFAULT_KEY).executeAsOneOrNull()

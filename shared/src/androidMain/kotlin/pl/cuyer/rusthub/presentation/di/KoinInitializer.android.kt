@@ -168,6 +168,7 @@ actual fun platformModule(passphrase: String): Module = module {
             saveSearchQueryUseCase = get(),
             getSearchQueriesUseCase = get(),
             deleteSearchQueriesUseCase = get(),
+            ensureDefaultFiltersUseCase = get(),
             stringProvider = get(),
             connectivityObserver = get(),
             getUserUseCase = get(),
@@ -347,4 +348,3 @@ actual fun platformModule(passphrase: String): Module = module {
         )
     }
 }
-

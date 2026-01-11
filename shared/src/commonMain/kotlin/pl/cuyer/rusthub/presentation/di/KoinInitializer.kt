@@ -62,6 +62,7 @@ import pl.cuyer.rusthub.domain.usecase.ChangePasswordUseCase
 import pl.cuyer.rusthub.domain.usecase.CheckEmailConfirmedUseCase
 import pl.cuyer.rusthub.domain.usecase.CheckUserExistsUseCase
 import pl.cuyer.rusthub.domain.usecase.ClearFiltersUseCase
+import pl.cuyer.rusthub.domain.usecase.EnsureDefaultFiltersUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteAccountUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteSearchQueriesUseCase
 import pl.cuyer.rusthub.domain.usecase.DeleteItemSearchQueriesUseCase
@@ -185,6 +186,7 @@ val appModule = module {
     single { SaveItemSearchQueryUseCase(get()) }
     single { SaveMonumentSearchQueryUseCase(get()) }
     single { ClearFiltersUseCase(get()) }
+    single { EnsureDefaultFiltersUseCase(get()) }
     singleOf(::ServerCacheDataSourceImpl) bind ServerCacheDataSource::class
     single { GetFiltersOptionsUseCase(get(), get()) }
     single { GetSearchQueriesUseCase(get()) }

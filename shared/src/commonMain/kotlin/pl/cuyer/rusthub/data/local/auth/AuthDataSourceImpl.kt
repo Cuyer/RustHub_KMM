@@ -64,6 +64,7 @@ class AuthDataSourceImpl(
                     emailConfirmed = if (emailConfirmed) 1L else 0L
                 )
             }
+            filtersDataSource.ensureDefaultFilters()
             CrashReporter.setUserId(username)
         }
     }
