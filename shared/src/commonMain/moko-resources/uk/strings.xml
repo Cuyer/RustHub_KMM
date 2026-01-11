@@ -182,7 +182,7 @@
     <string name="preferences">Уподобання</string>
     <string name="premium" translatable="false">Premium</string>
     <string name="free_trial">Безкоштовний пробний період</string>
-    <string name="subscribe_free_trial">Почати безкоштовний пробний період для %s</string>
+    <string name="subscribe_free_trial">Почати безкоштовний пробний період</string>
     <string name="manage_privacy">Керуйте конфіденційністю</string>
     <string name="manage_privacy_button">Керуйте кнопкою конфіденційності</string>
     <string name="privacy_policy">Політика конфіденційності</string>
