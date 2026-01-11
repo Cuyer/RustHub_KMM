@@ -182,6 +182,7 @@
     <string name="preferences">Настройки</string>
     <string name="premium" translatable="false">Premium</string>
     <string name="free_trial">Бесплатный пробный период</string>
+    <string name="subscribe_free_trial">Начать бесплатный пробный период для %s</string>
     <string name="manage_privacy">Управление конфиденциальностью</string>
     <string name="manage_privacy_button">Кнопка управления конфиденциальностью</string>
     <string name="privacy_policy">Политика конфиденциальности</string>
