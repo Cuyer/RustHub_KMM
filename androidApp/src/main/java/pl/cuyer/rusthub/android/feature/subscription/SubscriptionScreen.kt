@@ -1,6 +1,7 @@
 package pl.cuyer.rusthub.android.feature.subscription
 
 import android.app.Activity
+import android.widget.Space
 import androidx.activity.compose.LocalActivity
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContent
@@ -522,68 +523,65 @@ private fun PlanSelector(
             }
             val product = products[plan]
 
-            Box {
-                ElevatedCard(
-                    onClick = { onPlanSelect(plan) },
-                    enabled = !lifetimeOwned && plan != currentPlan,
-                    colors = CardDefaults.elevatedCardColors().copy(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.onBackground
-                    ),
-                    modifier = Modifier
-                        .semantics {
-                            role = Role.RadioButton
-                            stateDescription = sd
-                        }
-                        .then(
-                            if (isSelected) Modifier
-                                .fillMaxHeight()
-                                .border(
-                                    width = 1.dp,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    shape = CardDefaults.elevatedShape
-                                ) else Modifier.fillMaxHeight()
-                        )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(spacing.medium)
-                            .widthIn(min = 60.dp, max = 90.dp)
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(
-                            stringResource(SharedRes.strings.pro),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color(0xFFFDDA0D)
-                        )
-                        Text(stringResource(plan.label), style = MaterialTheme.typography.titleMedium)
-                        Text(
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxSize(),
-                            text = product?.price ?: stringResource(plan.billed),
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Thin)
-                        )
+            ElevatedCard(
+                onClick = { onPlanSelect(plan) },
+                enabled = !lifetimeOwned && plan != currentPlan,
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                ),
+                modifier = Modifier
+                    .semantics {
+                        role = Role.RadioButton
+                        stateDescription = sd
                     }
-                }
+                    .then(
+                        if (isSelected) Modifier
+                            .fillMaxHeight()
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.primary,
+                                shape = CardDefaults.elevatedShape
+                            ) else Modifier.fillMaxHeight()
+                    )
+            ) {
                 if (product?.hasFreeTrial == true) {
                     Surface(
-                        modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .offset(x = spacing.small, y = -spacing.xsmall),
-                        shape = RoundedCornerShape(50),
+                        shape = RoundedCornerShape(
+                            topStart = 0.dp,
+                            topEnd = 0.dp,
+                            bottomStart = 8.dp,
+                            bottomEnd = 8.dp
+                        ),
                         color = MaterialTheme.colorScheme.primary
                     ) {
                         Text(
-                            modifier = Modifier.padding(
-                                horizontal = spacing.small,
-                                vertical = spacing.xsmall
-                            ),
+                            modifier = Modifier.padding(spacing.small),
                             text = stringResource(SharedRes.strings.free_trial),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
+                }
+                Column(
+                    modifier = Modifier
+                        .padding(spacing.medium)
+                        .widthIn(min = 60.dp, max = 90.dp)
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        stringResource(SharedRes.strings.pro),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color(0xFFFDDA0D)
+                    )
+                    Text(stringResource(plan.label), style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxSize(),
+                        text = product?.price ?: stringResource(plan.billed),
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Thin)
+                    )
                 }
             }
         }

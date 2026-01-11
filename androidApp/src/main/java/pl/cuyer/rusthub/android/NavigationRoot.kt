@@ -8,6 +8,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -114,6 +115,7 @@ fun NavigationRoot(navigationState: NavigationState) {
                     snackbarHostState = snackbarHostState,
                     navigationState = navigationState,
                     navigator = navigator,
+                    hasBottomNav = true,
                 )
             }
         )
@@ -122,6 +124,7 @@ fun NavigationRoot(navigationState: NavigationState) {
             snackbarHostState = snackbarHostState,
             navigationState = navigationState,
             navigator = navigator,
+            hasBottomNav = false,
         )
     }
 }
@@ -133,6 +136,7 @@ private fun AppScaffold(
     navigationState: NavigationState,
     navigator: Navigator,
     modifier: Modifier = Modifier,
+    hasBottomNav: Boolean
 ) {
     val entryProvider = rememberNavigationEntryProvider(navigator)
     val entries = navigationState.toEntries(entryProvider)
@@ -143,7 +147,17 @@ private fun AppScaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onBackground,
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = {
+            val snackbarModifier = if (hasBottomNav) {
+                Modifier
+            } else {
+                Modifier.navigationBarsPadding()
+            }
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = snackbarModifier
+            )
+        },
         content = { contentPadding ->
             NavDisplay(
                 entries = entries,

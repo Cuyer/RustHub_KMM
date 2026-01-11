@@ -315,7 +315,7 @@ private fun SearchHistorySuggestions(
                             onSearchTriggered()
                             onCollapse()
                         },
-                    colors = ListItemDefaults.colors().copy(
+                    colors = ListItemDefaults.colors(
                         containerColor = SearchBarDefaults.colors().containerColor
                     ),
                     headlineContent = { Text(item.query) }
