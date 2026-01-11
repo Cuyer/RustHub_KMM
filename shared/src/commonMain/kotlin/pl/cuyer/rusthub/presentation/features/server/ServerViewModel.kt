@@ -341,10 +341,29 @@ class ServerViewModel(
         coroutineScope.launch {
             runCatching {
                 clearFiltersUseCase()
+            }.onSuccess {
+                resetFiltersState()
             }.onFailure {
                 CrashReporter.recordException(it)
                 sendSnackbarEvent(stringProvider.get(SharedRes.strings.error_clearing_filters))
             }
+        }
+    }
+
+    private fun resetFiltersState() {
+        _state.update { state ->
+            val current = state.filters ?: return@update state
+            val clearedLists = current.lists.map { it.copy(selectedIndex = null) }
+            val clearedCheckboxes = current.checkboxes.map { it.copy(isChecked = false) }
+            val clearedRanges = current.ranges.map { it.copy(value = 0) }
+            state.copy(
+                filters = current.copy(
+                    lists = clearedLists,
+                    checkboxes = clearedCheckboxes,
+                    ranges = clearedRanges,
+                    filter = ServerFilter.ALL
+                )
+            )
         }
     }
 
