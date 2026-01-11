@@ -10,6 +10,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.CancellationException
 import java.security.KeyStore
+import java.security.KeyStoreException
+import java.security.ProviderException
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
@@ -38,6 +40,18 @@ actual class DatabasePassphraseProvider(private val context: Context) {
     private fun getOrCreateKey(): SecretKey {
         val existing = keyStore.getKey(KEY_ALIAS, null) as? SecretKey
         if (existing != null) return existing
+        return try {
+            generateKey()
+        } catch (e: ProviderException) {
+            resetStorage()
+            generateKey()
+        } catch (e: KeyStoreException) {
+            resetStorage()
+            generateKey()
+        }
+    }
+
+    private fun generateKey(): SecretKey {
         val spec = KeyGenParameterSpec.Builder(
             KEY_ALIAS,
             KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
