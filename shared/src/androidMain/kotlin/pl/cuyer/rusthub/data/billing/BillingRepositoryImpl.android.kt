@@ -73,13 +73,15 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
             val subsList = mutableListOf<BillingProduct>()
             if (subsResult.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 subsResult.productDetailsList?.forEach { pd ->
-                    pd.subscriptionOfferDetails?.forEach { offer ->
-                        val planId = offer.basePlanId
-                        if (subsPlans.any { it.basePlanId == planId }) {
-                            productMap[planId] = ProductData(pd, offer.offerToken)
-                            subsList.add(pd.toBillingProduct(planId, offer))
+                    pd.subscriptionOfferDetails
+                        ?.groupBy { it.basePlanId }
+                        ?.forEach { (planId, offers) ->
+                            if (subsPlans.any { it.basePlanId == planId }) {
+                                val offer = offers.selectBestOffer() ?: return@forEach
+                                productMap[planId] = ProductData(pd, offer.offerToken)
+                                subsList.add(pd.toBillingProduct(planId, offer))
+                            }
                         }
-                    }
                 }
             } else {
                 _errorFlow.tryEmit(subsResult.billingResult.responseCode.toErrorCode())
@@ -160,9 +162,21 @@ class BillingRepositoryImpl(context: Context) : BillingRepository {
         _purchaseFlow.tryEmit(PurchaseInfo(product, purchase.purchaseToken))
     }
 
-    private fun ProductDetails.toBillingProduct(planId: String, offer: ProductDetails.SubscriptionOfferDetails): BillingProduct {
-        val price = offer.pricingPhases.pricingPhaseList.firstOrNull()?.formattedPrice ?: ""
-        return BillingProduct(id = planId, title = name, description = description, price = price)
+    private fun ProductDetails.toBillingProduct(
+        planId: String,
+        offer: ProductDetails.SubscriptionOfferDetails
+    ): BillingProduct {
+        val phases = offer.pricingPhases.pricingPhaseList
+        val paidPhase = phases.firstOrNull { it.priceAmountMicros > 0L }
+        val price = paidPhase?.formattedPrice ?: phases.firstOrNull()?.formattedPrice ?: ""
+        val hasFreeTrial = phases.any { it.isFreeTrialPhase() }
+        return BillingProduct(
+            id = planId,
+            title = name,
+            description = description,
+            price = price,
+            hasFreeTrial = hasFreeTrial
+        )
     }
 
     private fun ProductDetails.toBillingProduct(productId: String): BillingProduct {
@@ -186,4 +200,16 @@ private fun Int.toErrorCode(): BillingErrorCode {
         BillingClient.BillingResponseCode.FEATURE_NOT_SUPPORTED -> BillingErrorCode.FEATURE_NOT_SUPPORTED
         else -> BillingErrorCode.UNKNOWN
     }
+}
+
+private fun List<ProductDetails.SubscriptionOfferDetails>.selectBestOffer(): ProductDetails.SubscriptionOfferDetails? {
+    return sortedWith(compareByDescending { it.hasFreeTrial() }).firstOrNull()
+}
+
+private fun ProductDetails.SubscriptionOfferDetails.hasFreeTrial(): Boolean {
+    return pricingPhases.pricingPhaseList.any { it.isFreeTrialPhase() }
+}
+
+private fun ProductDetails.PricingPhase.isFreeTrialPhase(): Boolean {
+    return priceAmountMicros == 0L && billingPeriod.isNotBlank()
 }

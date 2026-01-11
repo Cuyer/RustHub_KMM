@@ -501,6 +501,7 @@ private fun PlanSelector(
             } else {
                 stringResource(SharedRes.strings.plan_not_selected)
             }
+            val product = products[plan]
 
             ElevatedCard(
                 onClick = { onPlanSelect(plan) },
@@ -537,10 +538,17 @@ private fun PlanSelector(
                         color = Color(0xFFFDDA0D)
                     )
                     Text(stringResource(plan.label), style = MaterialTheme.typography.titleMedium)
+                    if (product?.hasFreeTrial == true) {
+                        Text(
+                            text = stringResource(SharedRes.strings.free_trial),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                     Text(
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxSize(),
-                        text = products[plan]?.price ?: stringResource(plan.billed),
+                        text = product?.price ?: stringResource(plan.billed),
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Thin)
                     )
                 }
