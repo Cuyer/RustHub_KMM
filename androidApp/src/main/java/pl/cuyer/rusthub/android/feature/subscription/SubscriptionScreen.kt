@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -41,6 +42,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -60,6 +62,7 @@ import pl.cuyer.rusthub.android.designsystem.shimmer
 import androidx.compose.ui.draw.clip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -358,7 +361,15 @@ private fun SubscriptionScreenCompact(
                 }
             }
         }
-        SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms, currentPlan, isLoading) {
+        SubscribeActions(
+            selectedPlan = selectedPlan,
+            onNavigateUp = onNavigateUp,
+            onPrivacyPolicy = onPrivacyPolicy,
+            onTerms = onTerms,
+            currentPlan = currentPlan,
+            hasFreeTrial = products[selectedPlan()]?.hasFreeTrial == true,
+            isLoading = isLoading
+        ) {
             onAction(SubscriptionAction.Subscribe(selectedPlan(), activity))
         }
         Spacer(modifier = Modifier.height(spacing.medium))
@@ -413,7 +424,15 @@ private fun SubscriptionScreenExpanded(
                     }
                 }
             }
-            SubscribeActions(selectedPlan, onNavigateUp, onPrivacyPolicy, onTerms, currentPlan, isLoading) {
+            SubscribeActions(
+                selectedPlan = selectedPlan,
+                onNavigateUp = onNavigateUp,
+                onPrivacyPolicy = onPrivacyPolicy,
+                onTerms = onTerms,
+                currentPlan = currentPlan,
+                hasFreeTrial = products[selectedPlan()]?.hasFreeTrial == true,
+                isLoading = isLoading
+            ) {
                 onAction(SubscriptionAction.Subscribe(selectedPlan(), activity))
             }
         }
@@ -503,54 +522,68 @@ private fun PlanSelector(
             }
             val product = products[plan]
 
-            ElevatedCard(
-                onClick = { onPlanSelect(plan) },
-                enabled = !lifetimeOwned && plan != currentPlan,
-                colors = CardDefaults.elevatedCardColors().copy(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.onBackground
-                ),
-                modifier = Modifier
-                    .semantics {
-                        role = Role.RadioButton
-                        stateDescription = sd
-                    }
-                    .then(
-                        if (isSelected) Modifier
-                            .fillMaxHeight()
-                            .border(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.primary,
-                                shape = CardDefaults.elevatedShape
-                            ) else Modifier.fillMaxHeight()
-                    )
-            ) {
-                Column(
+            Box {
+                ElevatedCard(
+                    onClick = { onPlanSelect(plan) },
+                    enabled = !lifetimeOwned && plan != currentPlan,
+                    colors = CardDefaults.elevatedCardColors().copy(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        contentColor = MaterialTheme.colorScheme.onBackground
+                    ),
                     modifier = Modifier
-                        .padding(spacing.medium)
-                        .widthIn(min = 60.dp, max = 90.dp)
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                        .semantics {
+                            role = Role.RadioButton
+                            stateDescription = sd
+                        }
+                        .then(
+                            if (isSelected) Modifier
+                                .fillMaxHeight()
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = CardDefaults.elevatedShape
+                                ) else Modifier.fillMaxHeight()
+                        )
                 ) {
-                    Text(
-                        stringResource(SharedRes.strings.pro),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color(0xFFFDDA0D)
-                    )
-                    Text(stringResource(plan.label), style = MaterialTheme.typography.titleMedium)
-                    if (product?.hasFreeTrial == true) {
+                    Column(
+                        modifier = Modifier
+                            .padding(spacing.medium)
+                            .widthIn(min = 60.dp, max = 90.dp)
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
                         Text(
-                            text = stringResource(SharedRes.strings.free_trial),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.primary
+                            stringResource(SharedRes.strings.pro),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color(0xFFFDDA0D)
+                        )
+                        Text(stringResource(plan.label), style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxSize(),
+                            text = product?.price ?: stringResource(plan.billed),
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Thin)
                         )
                     }
-                    Text(
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxSize(),
-                        text = product?.price ?: stringResource(plan.billed),
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Thin)
-                    )
+                }
+                if (product?.hasFreeTrial == true) {
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .offset(x = spacing.small, y = -spacing.xsmall),
+                        shape = RoundedCornerShape(50),
+                        color = MaterialTheme.colorScheme.primary
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(
+                                horizontal = spacing.small,
+                                vertical = spacing.xsmall
+                            ),
+                            text = stringResource(SharedRes.strings.free_trial),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
                 }
             }
         }
@@ -564,6 +597,7 @@ private fun SubscribeActions(
     onPrivacyPolicy: () -> Unit,
     onTerms: () -> Unit,
     currentPlan: SubscriptionPlan?,
+    hasFreeTrial: Boolean,
     isLoading: Boolean,
     onSubscribe: () -> Unit
 ) {
@@ -575,6 +609,10 @@ private fun SubscribeActions(
         lifetimeOwned -> stringResource(SharedRes.strings.lifetime_plan_active)
         samePlan -> stringResource(SharedRes.strings.subscribed)
         sameProduct -> stringResource(SharedRes.strings.change_plan)
+        hasFreeTrial -> stringResource(
+            SharedRes.strings.subscribe_free_trial,
+            stringResource(plan.label)
+        )
         else -> stringResource(SharedRes.strings.subscribe_to_plan, stringResource(plan.label))
     }
 

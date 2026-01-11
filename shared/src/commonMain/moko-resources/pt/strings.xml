@@ -181,6 +181,7 @@
     <string name="preferences">Preferências</string>
     <string name="premium" translatable="false">Premium</string>
     <string name="free_trial">Teste gratuito</string>
+    <string name="subscribe_free_trial">Iniciar teste gratuito para %s</string>
     <string name="manage_privacy">Gerenciar privacidade</string>
     <string name="manage_privacy_button">Gerenciar o botão de privacidade</string>
     <string name="privacy_policy">Política de Privacidade</string>

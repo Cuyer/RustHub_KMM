@@ -182,6 +182,7 @@
     <string name="preferences">Einstellungen</string>
     <string name="premium" translatable="false">Premium</string>
     <string name="free_trial">Kostenloser Testzeitraum</string>
+    <string name="subscribe_free_trial">Kostenlosen Testzeitraum für %s starten</string>
     <string name="manage_privacy">Datenschutz verwalten</string>
     <string name="manage_privacy_button">Schaltfläche Datenschutz verwalten</string>
     <string name="privacy_policy">Datenschutzerklärung</string>
