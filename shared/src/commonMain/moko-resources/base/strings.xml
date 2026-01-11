@@ -183,7 +183,7 @@
     <string name="preferences">Preferences</string>
     <string name="premium" translatable="false" >Premium</string>
     <string name="free_trial">Free trial</string>
-    <string name="subscribe_free_trial">Start free trial for %s</string>
+    <string name="subscribe_free_trial">Start free trial</string>
     <string name="manage_privacy">Manage privacy</string>
     <string name="manage_privacy_button">Manage privacy button</string>
     <string name="privacy_policy">Privacy policy</string>

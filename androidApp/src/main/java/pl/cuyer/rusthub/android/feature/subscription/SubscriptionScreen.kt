@@ -607,10 +607,7 @@ private fun SubscribeActions(
         lifetimeOwned -> stringResource(SharedRes.strings.lifetime_plan_active)
         samePlan -> stringResource(SharedRes.strings.subscribed)
         sameProduct -> stringResource(SharedRes.strings.change_plan)
-        hasFreeTrial -> stringResource(
-            SharedRes.strings.subscribe_free_trial,
-            stringResource(plan.label)
-        )
+        hasFreeTrial -> stringResource(SharedRes.strings.subscribe_free_trial)
         else -> stringResource(SharedRes.strings.subscribe_to_plan, stringResource(plan.label))
     }
 
@@ -637,7 +634,11 @@ private fun SubscribeActions(
                 enabled = !samePlan && !lifetimeOwned
             ) {
                 Crossfade(targetState = text) { value ->
-                    Text(value)
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = value,
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
         }
