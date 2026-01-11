@@ -5,7 +5,6 @@ import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.VideoOptions
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdOptions
 import io.github.aakira.napier.Napier
@@ -32,12 +31,12 @@ class NativeAdRepositoryImpl(
 
     private suspend fun loadAd(adId: String): NativeAd? = suspendCancellableCoroutine { cont ->
         val activity = activityProvider.currentActivity()
-        if (activity == null || activity.isFinishing || activity.isDestroyed) {
+        if (activity == null || activity.isFinishing || activity.isDestroyed || activity.window == null) {
             cont.resume(null)
             return@suspendCancellableCoroutine
         }
 
-        val loader = AdLoader.Builder(activity, adId)
+        val loader = AdLoader.Builder(activity.applicationContext, adId)
             .forNativeAd { ad ->
                 if (!cont.isCompleted) cont.resume(ad)
             }
@@ -47,7 +46,8 @@ class NativeAdRepositoryImpl(
                     if (!cont.isCompleted) cont.resume(null)
                 }
             })
-            .withNativeAdOptions(NativeAdOptions.Builder()
+            .withNativeAdOptions(
+                NativeAdOptions.Builder()
                 .setMediaAspectRatio(NativeAdOptions.NATIVE_MEDIA_ASPECT_RATIO_LANDSCAPE)
                 .build())
             .build()

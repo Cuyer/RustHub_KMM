@@ -20,13 +20,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.ads.MobileAds
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import pl.cuyer.rusthub.android.navigation.bottomNavItems
@@ -120,11 +118,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                launch {
-                    withContext(Dispatchers.IO) {
-                        MobileAds.initialize(this@MainActivity)
-                    }
-                }
+                MobileAds.initialize(this@MainActivity)
 
                 inAppUpdateManager.setLauncher(updateLauncher, this@MainActivity)
                 inAppUpdateManager.check(this@MainActivity)
